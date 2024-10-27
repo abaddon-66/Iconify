@@ -50,4 +50,10 @@ class PreferenceMenu : Preference {
 
         holder.findViewById(R.id.end_arrow)?.visibility = if (showArrow) View.VISIBLE else View.GONE
     }
+
+    fun setShowArrow(showArrow: Boolean) {
+        this.showArrow = showArrow
+        notifyChanged()
+    }
+
 }
