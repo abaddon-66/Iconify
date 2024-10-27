@@ -2,7 +2,11 @@ package com.drdisagree.iconify.xposed.modules
 
 import android.annotation.SuppressLint
 import android.app.WallpaperManager
+import android.content.BroadcastReceiver
+import android.content.ComponentName
 import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
@@ -19,8 +23,13 @@ import android.widget.FrameLayout
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import com.drdisagree.iconify.IExtractSubjectCallback
+import com.drdisagree.iconify.common.Const.ACTION_EXTRACT_FAILURE
+import com.drdisagree.iconify.common.Const.ACTION_EXTRACT_SUBJECT
+import com.drdisagree.iconify.common.Const.ACTION_EXTRACT_SUCCESS
+import com.drdisagree.iconify.common.Const.AI_PLUGIN_PACKAGE
 import com.drdisagree.iconify.common.Const.SYSTEMUI_PACKAGE
 import com.drdisagree.iconify.common.Preferences.CUSTOM_DEPTH_WALLPAPER_SWITCH
+import com.drdisagree.iconify.common.Preferences.DEPTH_WALLPAPER_AI_MODE
 import com.drdisagree.iconify.common.Preferences.DEPTH_WALLPAPER_CHANGED
 import com.drdisagree.iconify.common.Preferences.DEPTH_WALLPAPER_FOREGROUND_ALPHA
 import com.drdisagree.iconify.common.Preferences.DEPTH_WALLPAPER_ON_AOD
@@ -65,10 +74,36 @@ class DepthWallpaperA14(context: Context?) : ModPack(context!!) {
     private var mLayersCreated = false
     private var showOnAOD = true
     private var keepLockScreenShade = true
+    private var mAiMode = 0
     private var foregroundPath = Environment.getExternalStorageDirectory()
         .toString() + "/.iconify_files/depth_wallpaper_fg.png"
     private var backgroundPath = Environment.getExternalStorageDirectory()
         .toString() + "/.iconify_files/depth_wallpaper_bg.png"
+    private var mPluginReceiverRegistered = false
+
+    val mPluginReceiver: BroadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            if (intent.action != null) {
+                when (intent.action) {
+                    ACTION_EXTRACT_SUCCESS -> {
+                        mWallpaperForegroundCacheValid = false
+                        Handler(Looper.getMainLooper()).post {
+                            Toast.makeText(mContext, "Extract success", Toast.LENGTH_LONG).show()
+                        }
+                    }
+
+                    ACTION_EXTRACT_FAILURE -> {
+                        mWallpaperForegroundCacheValid = false
+                        val error = intent.getStringExtra("error")
+                        log("Subject extraction failed \n$error")
+                        Handler(Looper.getMainLooper()).post {
+                            Toast.makeText(mContext, "Subject extraction failed", Toast.LENGTH_LONG).show()
+                        }
+                    }
+                }
+            }
+        }
+    }
 
     override fun updatePrefs(vararg key: String) {
         if (!XprefsIsInitialized) return
@@ -79,6 +114,7 @@ class DepthWallpaperA14(context: Context?) : ModPack(context!!) {
             foregroundAlpha = getSliderInt(DEPTH_WALLPAPER_FOREGROUND_ALPHA, 80) / 100.0f
             showOnAOD = getBoolean(DEPTH_WALLPAPER_ON_AOD, true)
             keepLockScreenShade = getBoolean(LOCKSCREEN_SHADE_SWITCH, true)
+            mAiMode = getString(DEPTH_WALLPAPER_AI_MODE, "0")!!.toInt()
         }
 
         if (key.isNotEmpty()) {
@@ -102,6 +138,23 @@ class DepthWallpaperA14(context: Context?) : ModPack(context!!) {
     }
 
     override fun handleLoadPackage(loadPackageParam: LoadPackageParam) {
+
+        if (!mPluginReceiverRegistered) {
+            val intentFilter = IntentFilter()
+            intentFilter.addAction(ACTION_EXTRACT_SUCCESS)
+            intentFilter.addAction(ACTION_EXTRACT_FAILURE)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                mContext.registerReceiver(
+                    mPluginReceiver,
+                    intentFilter,
+                    Context.RECEIVER_EXPORTED
+                )
+            } else {
+                mContext.registerReceiver(mPluginReceiver, intentFilter)
+            }
+            mPluginReceiverRegistered = true
+        }
+
         val qsImplClass = findClassInArray(
             loadPackageParam.classLoader,
             "$SYSTEMUI_PACKAGE.qs.QSImpl",
@@ -319,12 +372,16 @@ class DepthWallpaperA14(context: Context?) : ModPack(context!!) {
                             }
                         }
 
-                        enqueueProxyCommand { proxy ->
-                            proxy?.extractSubject(
-                                finalScaledWallpaperBitmap,
-                                foregroundPath,
-                                callback
-                            )
+                        if (mAiMode == 0) {
+                            enqueueProxyCommand { proxy ->
+                                proxy?.extractSubject(
+                                    finalScaledWallpaperBitmap,
+                                    foregroundPath,
+                                    callback
+                                )
+                            }
+                        } else {
+                            sendPluginIntent()
                         }
                     }
                 }
@@ -372,6 +429,25 @@ class DepthWallpaperA14(context: Context?) : ModPack(context!!) {
             })
 
         setCustomDepthWallpaper()
+    }
+
+    fun sendPluginIntent() {
+        try {
+            val intent: Intent = Intent(ACTION_EXTRACT_SUBJECT)
+            intent.setComponent(
+                ComponentName(
+                    AI_PLUGIN_PACKAGE,
+                    "$AI_PLUGIN_PACKAGE.receivers.SubjectExtractionReceiver"
+                )
+            )
+            intent.putExtra("sourcePath", backgroundPath)
+            intent.putExtra("destinationPath", foregroundPath)
+            intent.setPackage(mContext.packageName)
+            intent.addFlags(Intent.FLAG_RECEIVER_FOREGROUND)
+            mContext.sendBroadcast(intent)
+        } catch (t: Throwable) {
+            log(t)
+        }
     }
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)

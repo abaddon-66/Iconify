@@ -58,6 +58,8 @@ import com.drdisagree.iconify.common.Preferences.CUSTOM_BATTERY_SWAP_PERCENTAGE
 import com.drdisagree.iconify.common.Preferences.CUSTOM_BATTERY_WIDTH
 import com.drdisagree.iconify.common.Preferences.CUSTOM_DEPTH_WALLPAPER_SWITCH
 import com.drdisagree.iconify.common.Preferences.CUSTOM_QS_MARGIN
+import com.drdisagree.iconify.common.Preferences.DEPTH_WALLPAPER_AI_MODE
+import com.drdisagree.iconify.common.Preferences.DEPTH_WALLPAPER_AI_STATUS
 import com.drdisagree.iconify.common.Preferences.DEPTH_WALLPAPER_BACKGROUND_MOVEMENT_MULTIPLIER
 import com.drdisagree.iconify.common.Preferences.DEPTH_WALLPAPER_FADE_ANIMATION
 import com.drdisagree.iconify.common.Preferences.DEPTH_WALLPAPER_FOREGROUND_ALPHA
@@ -229,7 +231,9 @@ object PrefsHelper {
             FIX_NOTIFICATION_FOOTER_BUTTON_COLOR -> isAtleastA14
 
             CUSTOM_DEPTH_WALLPAPER_SWITCH,
-            DEPTH_WALLPAPER_ON_AOD -> Build.VERSION.SDK_INT > Build.VERSION_CODES.TIRAMISU
+            DEPTH_WALLPAPER_ON_AOD,
+            DEPTH_WALLPAPER_AI_MODE,
+            DEPTH_WALLPAPER_AI_STATUS -> Build.VERSION.SDK_INT > Build.VERSION_CODES.TIRAMISU
 
             DEPTH_WALLPAPER_FADE_ANIMATION,
             DEPTH_WALLPAPER_PARALLAX_EFFECT,
