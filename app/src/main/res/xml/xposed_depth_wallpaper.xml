@@ -9,6 +9,23 @@
         android:title="@string/enable_depth_wallpaper_title"
         app:iconSpaceReserved="false" />
 
+    <com.drdisagree.iconify.ui.preferences.ListPreference
+        android:dependency="xposed_depthwallpaper"
+        android:defaultValue="0"
+        android:entries="@array/depth_wallpaper_mode_entries"
+        android:entryValues="@array/depth_wallpaper_mode_values"
+        android:key="xposed_depthwallpaper_aimode"
+        app:useSimpleSummaryProvider="true"
+        android:title="@string/depth_wallpaper_ai_mode"
+        app:iconSpaceReserved="false" />
+
+    <com.drdisagree.iconify.ui.preferences.PreferenceMenu
+        android:dependency="xposed_depthwallpaper"
+        android:key="xposed_depthwallpaper_aistatus"
+        android:title="@string/depth_wallpaper_ai_status"
+        app:showArrow="false"
+        app:iconSpaceReserved="false" />
+
     <com.drdisagree.iconify.ui.preferences.SwitchPreference
         android:dependency="xposed_depthwallpaper"
         android:key="xposed_customdepthwallpaper"

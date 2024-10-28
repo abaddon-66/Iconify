@@ -1,6 +1,8 @@
 package com.drdisagree.iconify.ui.fragments.xposed
 
 import android.app.Activity
+import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.widget.Toast
@@ -9,15 +11,22 @@ import androidx.activity.result.contract.ActivityResultContracts
 import com.drdisagree.iconify.Iconify.Companion.appContext
 import com.drdisagree.iconify.Iconify.Companion.appContextLocale
 import com.drdisagree.iconify.R
+import com.drdisagree.iconify.common.Const.AI_PLUGIN_PACKAGE
+import com.drdisagree.iconify.common.Const.AI_PLUGIN_URL
+import com.drdisagree.iconify.common.Preferences.DEPTH_WALLPAPER_AI_MODE
+import com.drdisagree.iconify.common.Preferences.DEPTH_WALLPAPER_AI_STATUS
 import com.drdisagree.iconify.common.Preferences.DEPTH_WALLPAPER_CHANGED
 import com.drdisagree.iconify.common.Preferences.DEPTH_WALLPAPER_SWITCH
 import com.drdisagree.iconify.common.Resources.DEPTH_WALL_BG_DIR
 import com.drdisagree.iconify.common.Resources.DEPTH_WALL_FG_DIR
+import com.drdisagree.iconify.config.RPrefs
 import com.drdisagree.iconify.config.RPrefs.putBoolean
 import com.drdisagree.iconify.ui.activities.MainActivity
 import com.drdisagree.iconify.ui.base.ControlledPreferenceFragmentCompat
 import com.drdisagree.iconify.ui.preferences.FilePickerPreference
+import com.drdisagree.iconify.ui.preferences.PreferenceMenu
 import com.drdisagree.iconify.ui.preferences.SwitchPreference
+import com.drdisagree.iconify.utils.AppUtils
 import com.drdisagree.iconify.utils.FileUtils.getRealPath
 import com.drdisagree.iconify.utils.FileUtils.launchFilePicker
 import com.drdisagree.iconify.utils.FileUtils.moveToIconifyHiddenDir
@@ -100,6 +109,9 @@ class DepthWallpaper : ControlledPreferenceFragmentCompat() {
                     requiresSystemUiRestart = true
                 )
             }
+            DEPTH_WALLPAPER_AI_MODE -> {
+                checkAiStatus()
+            }
         }
     }
 
@@ -115,23 +127,16 @@ class DepthWallpaper : ControlledPreferenceFragmentCompat() {
                     )
                 )
             } else {
-                BitmapSubjectSegmenter(requireContext())
-                    .checkModelAvailability { moduleAvailabilityResponse: ModuleAvailabilityResponse? ->
-                        setSummary(
-                            getString(
-                                R.string.enable_depth_wallpaper_desc,
-                                getString(
-                                    if (moduleAvailabilityResponse?.areModulesAvailable() == true) {
-                                        R.string.depth_wallpaper_model_ready
-                                    } else {
-                                        R.string.depth_wallpaper_model_not_available
-                                    }
-                                )
-                            )
-                        )
-                    }
+                setSummary(
+                    getString(
+                        R.string.enable_depth_wallpaper_desc,
+                        ""
+                    ).replace("\n", "") // hide args
+                )
             }
         }
+
+        checkAiStatus()
 
         findPreference<FilePickerPreference>("xposed_depthwallpaperbgimagepicker")?.apply {
             setOnButtonClick {
@@ -145,4 +150,41 @@ class DepthWallpaper : ControlledPreferenceFragmentCompat() {
             }
         }
     }
+
+    private fun checkAiStatus() {
+        findPreference<PreferenceMenu>(DEPTH_WALLPAPER_AI_STATUS)?.apply {
+            if (RPrefs.getString(DEPTH_WALLPAPER_AI_MODE, "0") == "0") {
+                BitmapSubjectSegmenter(requireContext())
+                    .checkModelAvailability { moduleAvailabilityResponse: ModuleAvailabilityResponse? ->
+                        setSummary(
+                            getString(
+                                if (moduleAvailabilityResponse?.areModulesAvailable() == true) {
+                                    R.string.depth_wallpaper_model_ready
+                                } else {
+                                    R.string.depth_wallpaper_model_not_available
+                                }
+                            )
+                        )
+                    }
+            } else {
+                setShowArrow(true)
+                if (AppUtils.isAppInstalled(AI_PLUGIN_PACKAGE)) {
+                    setSummary(getString(R.string.depth_wallpaper_ai_status_plugin_installed))
+                    setOnPreferenceClickListener {
+                        val intent = requireContext().packageManager.getLaunchIntentForPackage(AI_PLUGIN_PACKAGE)
+                        startActivity(intent!!)
+                        true
+                    }
+                } else {
+                    setSummary(getString(R.string.depth_wallpaper_ai_status_plugin_not_installed))
+                    setOnPreferenceClickListener {
+                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(AI_PLUGIN_URL))
+                        startActivity(intent)
+                        true
+                    }
+                }
+            }
+        }
+    }
+
 }

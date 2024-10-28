@@ -158,6 +158,8 @@ object Preferences {
     const val CUSTOM_BATTERY_HEIGHT = "xposed_custombatteryheight"
     const val HIDE_DATA_DISABLED_ICON = "xposed_hideDataDisabledIcon"
     const val DEPTH_WALLPAPER_SWITCH = "xposed_depthwallpaper"
+    const val DEPTH_WALLPAPER_AI_STATUS = "xposed_depthwallpaper_aistatus"
+    const val DEPTH_WALLPAPER_AI_MODE = "xposed_depthwallpaper_aimode"
     const val CUSTOM_DEPTH_WALLPAPER_SWITCH = "xposed_customdepthwallpaper"
     const val DEPTH_WALLPAPER_FOREGROUND_ALPHA = "xposed_depthwallpaperforegroundalpha"
     const val DEPTH_WALLPAPER_ON_AOD = "xposed_depthwallpaperaonaod"

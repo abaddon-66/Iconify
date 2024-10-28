@@ -45,10 +45,18 @@ object Const {
         BootLoopProtector.LOAD_TIME_KEY_KEY,
         BootLoopProtector.PACKAGE_STRIKE_KEY_KEY,
     )
+
+    // AI Plugin
+    const val AI_PLUGIN_PACKAGE = "it.dhd.oxygencustomizer.aiplugin"
+    const val AI_PLUGIN_URL = "https://github.com/DHD2280/Oxygen-Customizer-AI-Plugin/releases/latest/"
+
     const val ACTION_HOOK_CHECK_REQUEST = "${BuildConfig.APPLICATION_ID}.ACTION_HOOK_CHECK_REQUEST"
     const val ACTION_HOOK_CHECK_RESULT = "${BuildConfig.APPLICATION_ID}.ACTION_HOOK_CHECK_RESULT"
     const val ACTION_BOOT_COMPLETED = "${BuildConfig.APPLICATION_ID}.ACTION_BOOT_COMPLETED"
     const val ACTION_WEATHER_INFLATED = "${BuildConfig.APPLICATION_ID}.ACTION_WEATHER_INFLATED"
+    const val ACTION_EXTRACT_SUBJECT: String = "$AI_PLUGIN_PACKAGE.ACTION_EXTRACT_SUBJECT"
+    const val ACTION_EXTRACT_SUCCESS: String = "$AI_PLUGIN_PACKAGE.ACTION_EXTRACT_SUCCESS"
+    const val ACTION_EXTRACT_FAILURE: String = "$AI_PLUGIN_PACKAGE.ACTION_EXTRACT_FAILURE"
 
     // Module script
     val MAGISK_UPDATE_BINARY = """
