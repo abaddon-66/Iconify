@@ -714,6 +714,12 @@
     <!-- Xposed Depth Wallpaper -->
     <string name="enable_depth_wallpaper_title">奥行きのある壁紙を有効化</string>
     <string name="enable_depth_wallpaper_desc">Show iOS like depth wallpaper\n%s</string>
+    <string name="depth_wallpaper_ai_mode">AI Mode</string>
+    <string name="depth_wallpaper_ai_mlkit">MLKit (Google)</string>
+    <string name="depth_wallpaper_ai_plugin">Plugin</string>
+    <string name="depth_wallpaper_ai_status">AI Status</string>
+    <string name="depth_wallpaper_ai_status_plugin_not_installed">AI Plugin not installed.\nTap to download</string>
+    <string name="depth_wallpaper_ai_status_plugin_installed">AI Plugin installed.\nTap to open</string>
     <string name="enable_custom_depth_wallpaper_title">Custom Images</string>
     <string name="enable_custom_depth_wallpaper_desc">Set custom images as depth wallpaper</string>
     <string name="depth_wallpaper_on_aod_title">Show on AOD</string>

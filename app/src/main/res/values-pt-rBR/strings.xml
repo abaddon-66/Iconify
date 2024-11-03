@@ -714,6 +714,12 @@
     <!-- Xposed Depth Wallpaper -->
     <string name="enable_depth_wallpaper_title">Ativar plano de fundo com profundidade</string>
     <string name="enable_depth_wallpaper_desc">Mostrar iOS como plano de fundo de profundidade\n%s</string>
+    <string name="depth_wallpaper_ai_mode">Modo IA</string>
+    <string name="depth_wallpaper_ai_mlkit">MLKit (Google)</string>
+    <string name="depth_wallpaper_ai_plugin">Plugin</string>
+    <string name="depth_wallpaper_ai_status">Status IA</string>
+    <string name="depth_wallpaper_ai_status_plugin_not_installed">Plugin IA não instalado.\nToque para baixar</string>
+    <string name="depth_wallpaper_ai_status_plugin_installed">Plugin IA instalado.\nToque para abrir</string>
     <string name="enable_custom_depth_wallpaper_title">Imagens personalizadas</string>
     <string name="enable_custom_depth_wallpaper_desc">Defina imagens personalizadas como plano de fundo de profundidade</string>
     <string name="depth_wallpaper_on_aod_title">Mostrar no AOD</string>
