@@ -1093,8 +1093,10 @@ class QSLightThemeA14(context: Context?) : ModPack(context!!) {
         } catch (ignored: Throwable) {
         }
 
-        if (lightQSHeaderEnabled && !isCurrentlyDark) {
-            Utils.enableOverlay(qsLightThemeOverlay)
+        if (lightQSHeaderEnabled) {
+            if (!isCurrentlyDark) {
+                Utils.enableOverlay(qsLightThemeOverlay)
+            }
             if (dualToneQSEnabled) Utils.enableOverlay(qsDualToneOverlay)
         }
     }
