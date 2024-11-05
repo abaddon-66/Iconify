@@ -46,6 +46,7 @@ class QSLightThemeA14(context: Context?) : ModPack(context!!) {
 
     private var mBehindColors: Any? = null
     private var isDark: Boolean
+    private var colorActive: Int? = null
     private var colorInactive: Int? = null
     private var unlockedScrimState: Any? = null
     private var qsTextAlwaysWhite = false
@@ -729,7 +730,7 @@ class QSLightThemeA14(context: Context?) : ModPack(context!!) {
 
             hookAllConstructors(expandableControllerImplClass, object : XC_MethodHook() {
                 override fun beforeHookedMethod(param: MethodHookParam) {
-                    if (isDark || lightQSHeaderEnabled) return
+                    if (isDark || !lightQSHeaderEnabled) return
 
                     param.args[1] = callStaticMethod(graphicsColorKtClass, "Color", Color.BLACK)
                 }
@@ -737,12 +738,14 @@ class QSLightThemeA14(context: Context?) : ModPack(context!!) {
 
             hookAllMethods(themeColorKtClass, "colorAttr", object : XC_MethodHook() {
                 override fun beforeHookedMethod(param: MethodHookParam) {
-                    if (isDark || lightQSHeaderEnabled) return
+                    if (isDark || !lightQSHeaderEnabled) return
 
                     val code = param.args[0] as Int
                     var result = 0
 
-                    if (code != PM_LITE_BACKGROUND_CODE) {
+                    if (code == PM_LITE_BACKGROUND_CODE) {
+                        result = colorActive!!
+                    } else {
                         try {
                             when (mContext.resources.getResourceName(code).split("/")[1]) {
                                 "underSurface", "onShadeActive", "shadeInactive" -> {
@@ -765,16 +768,18 @@ class QSLightThemeA14(context: Context?) : ModPack(context!!) {
 
             hookAllConstructors(footerActionsViewModelClass, object : XC_MethodHook() {
                 override fun afterHookedMethod(param: MethodHookParam) {
-                    if (!lightQSHeaderEnabled || isDark) return
+                    if (!lightQSHeaderEnabled) return
 
-                    // Power button
-                    val power = getObjectField(param.thisObject, "power")
-                    setObjectField(power, "iconTint", Color.WHITE)
-                    setObjectField(power, "backgroundColor", PM_LITE_BACKGROUND_CODE)
+                    if (!isDark) {
+                        // Power button
+                        val power = getObjectField(param.thisObject, "power")
+                        setObjectField(power, "iconTint", Color.WHITE)
+                        setObjectField(power, "backgroundColor", PM_LITE_BACKGROUND_CODE)
 
-                    // Settings button
-                    val settings = getObjectField(param.thisObject, "settings")
-                    setObjectField(settings, "iconTint", Color.BLACK)
+                        // Settings button
+                        val settings = getObjectField(param.thisObject, "settings")
+                        setObjectField(settings, "iconTint", Color.BLACK)
+                    }
 
                     // We must use the classes defined in the apk. Using our own will fail.
                     val stateFlowImplClass = findClass(
@@ -1109,15 +1114,21 @@ class QSLightThemeA14(context: Context?) : ModPack(context!!) {
                 setObjectField(unlockedScrimState, "mBehindTint", Color.TRANSPARENT)
             }
 
-            if (!isDark) {
-                colorInactive = mContext.resources.getColor(
-                    mContext.resources.getIdentifier(
-                        "android:color/system_neutral1_10",
-                        "color",
-                        mContext.packageName
-                    ), mContext.theme
-                )
-            }
+            colorActive = mContext.resources.getColor(
+                mContext.resources.getIdentifier(
+                    "android:color/system_accent1_600",
+                    "color",
+                    mContext.packageName
+                ), mContext.theme
+            )
+
+            colorInactive = mContext.resources.getColor(
+                mContext.resources.getIdentifier(
+                    "android:color/system_neutral1_10",
+                    "color",
+                    mContext.packageName
+                ), mContext.theme
+            )
 
             mScrimBehindTint = if (isDark) {
                 mContext.resources.getColor(
