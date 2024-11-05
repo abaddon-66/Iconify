@@ -356,25 +356,31 @@ class BackgroundChip(context: Context?) : ModPack(context!!) {
     private fun updateStatusBarClock(force: Boolean) {
         if (!mShowSBClockBg) return
 
-        if (mClockView != null && mClockView!!.background == null || force) {
-            updateClockView(
-                mClockView,
-                Gravity.LEFT or Gravity.CENTER
-            )
+        if (mClockView != null && (mClockView!!.background == null || force)) {
+            mClockView!!.post {
+                updateClockView(
+                    mClockView,
+                    Gravity.LEFT or Gravity.CENTER
+                )
+            }
         }
 
-        if (mCenterClockView != null && mCenterClockView!!.background == null || force) {
-            updateClockView(
-                mCenterClockView,
-                Gravity.CENTER
-            )
+        if (mCenterClockView != null && (mCenterClockView!!.background == null || force)) {
+            mCenterClockView!!.post {
+                updateClockView(
+                    mCenterClockView,
+                    Gravity.CENTER
+                )
+            }
         }
 
-        if (mRightClockView != null && mRightClockView!!.background == null || force) {
-            updateClockView(
-                mRightClockView,
-                Gravity.RIGHT or Gravity.CENTER
-            )
+        if (mRightClockView != null && (mRightClockView!!.background == null || force)) {
+            mRightClockView!!.post {
+                updateClockView(
+                    mRightClockView,
+                    Gravity.RIGHT or Gravity.CENTER
+                )
+            }
         }
     }
 
