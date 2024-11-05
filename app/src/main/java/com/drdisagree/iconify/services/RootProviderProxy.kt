@@ -90,74 +90,74 @@ class RootProviderProxy : Service() {
             callback: IExtractSubjectCallback
         ) {
             ensureEnvironment()
+            val tag = BitmapSubjectSegmenter::class.java.simpleName
 
             try {
                 val bitmapSubjectSegmenter = BitmapSubjectSegmenter(applicationContext)
 
-                bitmapSubjectSegmenter
-                    .segmentSubject(
-                        input,
-                        object : SegmentResultListener {
-                            override fun onStart() {
-                                callback.onStart(getString(R.string.depth_wallpaper_subject_extraction_started))
-                            }
+                bitmapSubjectSegmenter.segmentSubject(
+                    input,
+                    object : SegmentResultListener {
+                        override fun onStart() {
+                            callback.onStart(getString(R.string.depth_wallpaper_subject_extraction_started))
+                        }
 
-                            override fun onSuccess(result: Bitmap?) {
-                                try {
-                                    val tempFile = File.createTempFile(
-                                        "depth_wallpaper_fg",
-                                        ".png"
-                                    )
+                        override fun onSuccess(result: Bitmap?) {
+                            try {
+                                val tempFile = File.createTempFile(
+                                    "depth_wallpaper_fg",
+                                    ".png"
+                                )
 
-                                    val outputStream = FileOutputStream(tempFile)
-                                    result!!.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
+                                val outputStream = FileOutputStream(tempFile)
+                                result!!.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
 
-                                    outputStream.close()
-                                    result.recycle()
+                                outputStream.close()
+                                result.recycle()
 
-                                    val isSuccess = FileUtils.moveToIconifyHiddenDir(
-                                        tempFile.absolutePath,
-                                        resultPath
-                                    )
+                                val isSuccess = FileUtils.moveToIconifyHiddenDir(
+                                    tempFile.absolutePath,
+                                    resultPath
+                                )
 
-                                    tempFile.delete()
+                                tempFile.delete()
 
-                                    callback.onResult(
-                                        isSuccess,
-                                        if (isSuccess) {
-                                            getString(R.string.depth_wallpaper_subject_extraction_success)
-                                        } else {
-                                            getString(R.string.depth_wallpaper_subject_extraction_failed)
-                                        }
-                                    )
-                                } catch (throwable: Throwable) {
-                                    Log.e(
-                                        TAG,
-                                        "BitmapSubjectSegmenter - onSuccess: $throwable"
-                                    )
-
-                                    callback.onResult(
-                                        false,
+                                callback.onResult(
+                                    isSuccess,
+                                    if (isSuccess) {
+                                        getString(R.string.depth_wallpaper_subject_extraction_success)
+                                    } else {
                                         getString(R.string.depth_wallpaper_subject_extraction_failed)
-                                    )
-                                }
-                            }
+                                    }
+                                )
+                            } catch (throwable: Throwable) {
+                                Log.e(
+                                    TAG,
+                                    "$tag - onSuccess: $throwable"
+                                )
 
-                            override fun onFail() {
-                                bitmapSubjectSegmenter.checkModelAvailability { moduleAvailabilityResponse: ModuleAvailabilityResponse? ->
-                                    callback.onResult(
-                                        false,
-                                        if (moduleAvailabilityResponse?.areModulesAvailable() == true) {
-                                            getString(R.string.depth_wallpaper_subject_extraction_failed)
-                                        } else {
-                                            getString(R.string.depth_wallpaper_missing_ai_model)
-                                        }
-                                    )
-                                }
+                                callback.onResult(
+                                    false,
+                                    getString(R.string.depth_wallpaper_subject_extraction_failed)
+                                )
                             }
-                        })
+                        }
+
+                        override fun onFail() {
+                            bitmapSubjectSegmenter.checkModelAvailability { moduleAvailabilityResponse: ModuleAvailabilityResponse? ->
+                                callback.onResult(
+                                    false,
+                                    if (moduleAvailabilityResponse?.areModulesAvailable() == true) {
+                                        getString(R.string.depth_wallpaper_subject_extraction_failed)
+                                    } else {
+                                        getString(R.string.depth_wallpaper_missing_ai_model)
+                                    }
+                                )
+                            }
+                        }
+                    })
             } catch (throwable: Throwable) {
-                Log.e(TAG, "BitmapSubjectSegmenter - segmentSubject: $throwable")
+                Log.e(TAG, "$tag - segmentSubject: $throwable")
 
                 callback.onResult(
                     false,

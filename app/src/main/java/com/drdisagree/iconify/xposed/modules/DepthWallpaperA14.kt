@@ -17,12 +17,15 @@ import android.os.Environment
 import android.os.Handler
 import android.os.Looper
 import android.view.View
+import android.view.View.OnAttachStateChangeListener
 import android.view.ViewGroup
+import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.view.WindowManager
 import android.widget.FrameLayout
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import com.drdisagree.iconify.IExtractSubjectCallback
+import com.drdisagree.iconify.R
 import com.drdisagree.iconify.common.Const.ACTION_EXTRACT_FAILURE
 import com.drdisagree.iconify.common.Const.ACTION_EXTRACT_SUBJECT
 import com.drdisagree.iconify.common.Const.ACTION_EXTRACT_SUCCESS
@@ -36,8 +39,10 @@ import com.drdisagree.iconify.common.Preferences.DEPTH_WALLPAPER_ON_AOD
 import com.drdisagree.iconify.common.Preferences.DEPTH_WALLPAPER_SWITCH
 import com.drdisagree.iconify.common.Preferences.LOCKSCREEN_SHADE_SWITCH
 import com.drdisagree.iconify.xposed.HookEntry.Companion.enqueueProxyCommand
+import com.drdisagree.iconify.xposed.HookRes.Companion.modRes
 import com.drdisagree.iconify.xposed.ModPack
 import com.drdisagree.iconify.xposed.modules.utils.Helpers.findClassInArray
+import com.drdisagree.iconify.xposed.modules.utils.Helpers.tryHookAllConstructors
 import com.drdisagree.iconify.xposed.utils.XPrefs.Xprefs
 import com.drdisagree.iconify.xposed.utils.XPrefs.XprefsIsInitialized
 import de.robv.android.xposed.XC_MethodHook
@@ -46,6 +51,7 @@ import de.robv.android.xposed.XposedBridge.hookAllMethods
 import de.robv.android.xposed.XposedBridge.log
 import de.robv.android.xposed.XposedHelpers.callMethod
 import de.robv.android.xposed.XposedHelpers.findClass
+import de.robv.android.xposed.XposedHelpers.findClassIfExists
 import de.robv.android.xposed.XposedHelpers.getFloatField
 import de.robv.android.xposed.XposedHelpers.getObjectField
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam
@@ -80,30 +86,8 @@ class DepthWallpaperA14(context: Context?) : ModPack(context!!) {
     private var backgroundPath = Environment.getExternalStorageDirectory()
         .toString() + "/.iconify_files/depth_wallpaper_bg.png"
     private var mPluginReceiverRegistered = false
-
-    val mPluginReceiver: BroadcastReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context, intent: Intent) {
-            if (intent.action != null) {
-                when (intent.action) {
-                    ACTION_EXTRACT_SUCCESS -> {
-                        mWallpaperForegroundCacheValid = false
-                        Handler(Looper.getMainLooper()).post {
-                            Toast.makeText(mContext, "Extract success", Toast.LENGTH_LONG).show()
-                        }
-                    }
-
-                    ACTION_EXTRACT_FAILURE -> {
-                        mWallpaperForegroundCacheValid = false
-                        val error = intent.getStringExtra("error")
-                        log("Subject extraction failed \n$error")
-                        Handler(Looper.getMainLooper()).post {
-                            Toast.makeText(mContext, "Subject extraction failed", Toast.LENGTH_LONG).show()
-                        }
-                    }
-                }
-            }
-        }
-    }
+    private lateinit var mPluginReceiver: BroadcastReceiver
+    private var wallpaperProcessorThread: Thread? = null
 
     override fun updatePrefs(vararg key: String) {
         if (!XprefsIsInitialized) return
@@ -137,20 +121,54 @@ class DepthWallpaperA14(context: Context?) : ModPack(context!!) {
         }
     }
 
+    @SuppressLint("UnspecifiedRegisterReceiverFlag")
     override fun handleLoadPackage(loadPackageParam: LoadPackageParam) {
+        mPluginReceiver = object : BroadcastReceiver() {
+            override fun onReceive(context: Context, intent: Intent) {
+                if (intent.action != null) {
+                    when (intent.action) {
+                        ACTION_EXTRACT_SUCCESS -> {
+                            mWallpaperForegroundCacheValid = false
+                            Handler(Looper.getMainLooper()).post {
+                                Toast.makeText(
+                                    mContext,
+                                    modRes.getString(R.string.depth_wallpaper_subject_extraction_success),
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                        }
+
+                        ACTION_EXTRACT_FAILURE -> {
+                            mWallpaperForegroundCacheValid = false
+                            log("Subject extraction failed\n${intent.getStringExtra("error")}")
+
+                            Handler(Looper.getMainLooper()).post {
+                                Toast.makeText(
+                                    mContext,
+                                    modRes.getString(R.string.depth_wallpaper_subject_extraction_failed),
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
         if (!mPluginReceiverRegistered) {
-            val intentFilter = IntentFilter()
-            intentFilter.addAction(ACTION_EXTRACT_SUCCESS)
-            intentFilter.addAction(ACTION_EXTRACT_FAILURE)
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                mContext.registerReceiver(
-                    mPluginReceiver,
-                    intentFilter,
-                    Context.RECEIVER_EXPORTED
-                )
-            } else {
-                mContext.registerReceiver(mPluginReceiver, intentFilter)
+            IntentFilter().apply {
+                addAction(ACTION_EXTRACT_SUCCESS)
+                addAction(ACTION_EXTRACT_FAILURE)
+            }.also { intentFilter ->
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    mContext.registerReceiver(
+                        mPluginReceiver,
+                        intentFilter,
+                        Context.RECEIVER_EXPORTED
+                    )
+                } else {
+                    mContext.registerReceiver(mPluginReceiver, intentFilter)
+                }
             }
             mPluginReceiverRegistered = true
         }
@@ -176,9 +194,68 @@ class DepthWallpaperA14(context: Context?) : ModPack(context!!) {
             "$SYSTEMUI_PACKAGE.scrim.ScrimView",
             loadPackageParam.classLoader
         )
+        val aodBurnInLayerClass = findClassIfExists(
+            "$SYSTEMUI_PACKAGE.keyguard.ui.view.layout.sections.AodBurnInLayer",
+            loadPackageParam.classLoader
+        )
+        val keyguardBottomAreaViewClass = findClass(
+            "$SYSTEMUI_PACKAGE.statusbar.phone.KeyguardBottomAreaView",
+            loadPackageParam.classLoader
+        )
+
+        if (aodBurnInLayerClass != null) {
+            tryHookAllConstructors(aodBurnInLayerClass, object : XC_MethodHook() {
+                override fun afterHookedMethod(param: MethodHookParam) { // A15 compose keyguard
+                    if (!showDepthWallpaper) return
+
+                    val entryV = param.thisObject as View
+
+                    entryV.addOnAttachStateChangeListener(object : OnAttachStateChangeListener {
+                        override fun onViewAttachedToWindow(v: View) {
+                            Handler(Looper.getMainLooper()).postDelayed({
+                                val rootView = entryV.parent as ViewGroup
+
+                                if (!mLayersCreated) {
+                                    createLayers()
+                                }
+
+                                reAddView(
+                                    rootView,
+                                    mWallpaperForeground,
+                                    0
+                                )
+                                reAddView(
+                                    rootView,
+                                    rootView.findViewById(
+                                        mContext.resources.getIdentifier(
+                                            "lockscreen_clock_view_large",
+                                            "id",
+                                            mContext.packageName
+                                        )
+                                    ),
+                                    0
+                                )
+                                reAddView(
+                                    rootView,
+                                    rootView.findViewById(
+                                        mContext.resources.getIdentifier(
+                                            "lockscreen_clock_view",
+                                            "id",
+                                            mContext.packageName
+                                        )
+                                    ),
+                                    0
+                                )
+                            }, 1000)
+                        }
+
+                        override fun onViewDetachedFromWindow(v: View) {}
+                    })
+                }
+            })
+        }
 
         hookAllMethods(scrimViewClass, "setViewAlpha", object : XC_MethodHook() {
-            @Throws(Throwable::class)
             override fun beforeHookedMethod(param: MethodHookParam) {
                 if (!mLayersCreated) return
 
@@ -216,7 +293,6 @@ class DepthWallpaperA14(context: Context?) : ModPack(context!!) {
         })
 
         hookAllMethods(centralSurfacesImplClass, "start", object : XC_MethodHook() {
-            @Throws(Throwable::class)
             override fun afterHookedMethod(param: MethodHookParam) {
                 val scrimBehind = getObjectField(mScrimController, "mScrimBehind") as View
                 val rootView = scrimBehind.parent as ViewGroup
@@ -233,14 +309,29 @@ class DepthWallpaperA14(context: Context?) : ModPack(context!!) {
                     createLayers()
                 }
 
-                rootView.addView(mWallpaperBackground, 0)
+                reAddView(rootView, mWallpaperBackground, 0)
 
-                targetView.addView(mWallpaperForeground, 1)
+                val keyguardRootView = rootView.findViewById<View?>(
+                    mContext.resources.getIdentifier(
+                        "keyguard_root_view",
+                        "id",
+                        mContext.packageName
+                    )
+                )
+
+                if (keyguardRootView == null) { // legacy view
+                    reAddView(targetView, mWallpaperForeground, 1)
+                } else { // A15 QPR1 compose view
+                    reAddView(
+                        rootView,
+                        mWallpaperForeground,
+                        rootView.indexOfChild(keyguardRootView) + 1
+                    )
+                }
             }
         })
 
         hookAllMethods(centralSurfacesImplClass, "onStartedWakingUp", object : XC_MethodHook() {
-            @Throws(Throwable::class)
             override fun afterHookedMethod(param: MethodHookParam) {
                 setDepthWallpaper()
             }
@@ -248,7 +339,6 @@ class DepthWallpaperA14(context: Context?) : ModPack(context!!) {
 
         hookAllMethods(canvasEngineClass, "onSurfaceDestroyed", object : XC_MethodHook() {
             // lockscreen wallpaper changed
-            @Throws(Throwable::class)
             override fun afterHookedMethod(param: MethodHookParam) {
                 if (showDepthWallpaper && !showCustomImages && isLockScreenWallpaper(param.thisObject)) {
                     invalidateCache()
@@ -257,7 +347,6 @@ class DepthWallpaperA14(context: Context?) : ModPack(context!!) {
         })
 
         hookAllMethods(canvasEngineClass, "onCreate", object : XC_MethodHook() {
-            @Throws(Throwable::class)
             override fun afterHookedMethod(param: MethodHookParam) {
                 if (callMethod(
                         getObjectField(
@@ -274,136 +363,139 @@ class DepthWallpaperA14(context: Context?) : ModPack(context!!) {
         })
 
         hookAllMethods(canvasEngineClass, "drawFrameOnCanvas", object : XC_MethodHook() {
-            @RequiresApi(Build.VERSION_CODES.TIRAMISU)
-            @Throws(Throwable::class)
+            @SuppressLint("NewApi")
             override fun afterHookedMethod(param: MethodHookParam) {
+                wallpaperProcessorThread?.interrupt()
+
                 if (showDepthWallpaper && !showCustomImages && isLockScreenWallpaper(param.thisObject)) {
-                    val wallpaperBitmap = Bitmap.createBitmap((param.args[0] as Bitmap))
+                    wallpaperProcessorThread = Thread {
+                        val wallpaperBitmap = Bitmap.createBitmap((param.args[0] as Bitmap))
+                        val cacheIsValid: Boolean = assertCache(wallpaperBitmap)
 
-                    val cacheIsValid: Boolean = assertCache(wallpaperBitmap)
-
-                    val displayBounds = (callMethod(
-                        param.thisObject,
-                        "getDisplayContext"
-                    ) as Context)
-                        .getSystemService(
-                            WindowManager::class.java
-                        )
-                        .currentWindowMetrics
-                        .bounds
-
-                    val ratioW = 1f * displayBounds.width() / wallpaperBitmap.width
-                    val ratioH = 1f * displayBounds.height() / wallpaperBitmap.height
-
-                    val desiredHeight = Math.round(
-                        max(
-                            ratioH.toDouble(),
-                            ratioW.toDouble()
-                        ) * wallpaperBitmap.height
-                    ).toInt()
-                    val desiredWidth = Math.round(
-                        max(
-                            ratioH.toDouble(),
-                            ratioW.toDouble()
-                        ) * wallpaperBitmap.width
-                    ).toInt()
-
-                    val xPixelShift = (desiredWidth - displayBounds.width()) / 2
-                    val yPixelShift = (desiredHeight - displayBounds.height()) / 2
-
-                    var scaledWallpaperBitmap = Bitmap.createScaledBitmap(
-                        wallpaperBitmap,
-                        desiredWidth,
-                        desiredHeight,
-                        true
-                    )
-
-                    // crop to display bounds
-                    scaledWallpaperBitmap = Bitmap.createBitmap(
-                        scaledWallpaperBitmap,
-                        xPixelShift,
-                        yPixelShift,
-                        displayBounds.width(),
-                        displayBounds.height()
-                    )
-                    val finalScaledWallpaperBitmap = scaledWallpaperBitmap
-
-                    try {
-                        val file = File(backgroundPath)
-                        file.parentFile?.mkdirs()
-                        val out = FileOutputStream(file)
-                        finalScaledWallpaperBitmap.compress(Bitmap.CompressFormat.PNG, 100, out)
-                        out.flush()
-                        out.close()
-                    } catch (throwable: IOException) {
-                        log(TAG + throwable)
-                    }
-
-                    if (!mLayersCreated) {
-                        createLayers()
-                    }
-
-                    mWallpaperBackground.post {
-                        mWallpaperBitmapContainer.background = BitmapDrawable(
-                            mContext.resources,
-                            finalScaledWallpaperBitmap
-                        )
-                        if (mScrimController != null) {
-                            mWallpaperDimmingOverlay.setBackgroundColor(Color.BLACK)
-                            mWallpaperDimmingOverlay.alpha = getFloatField(
-                                mScrimController,
-                                "mScrimBehindAlphaKeyguard"
+                        val displayBounds = (callMethod(
+                            param.thisObject,
+                            "getDisplayContext"
+                        ) as Context)
+                            .getSystemService(
+                                WindowManager::class.java
                             )
+                            .currentWindowMetrics
+                            .bounds
+
+                        val ratioW = 1f * displayBounds.width() / wallpaperBitmap.width
+                        val ratioH = 1f * displayBounds.height() / wallpaperBitmap.height
+
+                        val desiredHeight = Math.round(
+                            max(
+                                ratioH.toDouble(),
+                                ratioW.toDouble()
+                            ) * wallpaperBitmap.height
+                        ).toInt()
+                        val desiredWidth = Math.round(
+                            max(
+                                ratioH.toDouble(),
+                                ratioW.toDouble()
+                            ) * wallpaperBitmap.width
+                        ).toInt()
+
+                        val xPixelShift = (desiredWidth - displayBounds.width()) / 2
+                        val yPixelShift = (desiredHeight - displayBounds.height()) / 2
+
+                        val scaledWallpaperBitmap = Bitmap.createScaledBitmap(
+                            wallpaperBitmap,
+                            desiredWidth,
+                            desiredHeight,
+                            true
+                        ).let {
+                            Bitmap.createBitmap(
+                                it,
+                                xPixelShift,
+                                yPixelShift,
+                                displayBounds.width(),
+                                displayBounds.height()
+                            )
+                        }.let {
+                            Bitmap.createBitmap(it)
                         }
-                    }
 
-                    if (!cacheIsValid) {
-                        val callback = object : IExtractSubjectCallback.Stub() {
-                            override fun onStart(message: String) {
-                                Handler(Looper.getMainLooper()).post {
-                                    Toast.makeText(mContext, message, Toast.LENGTH_LONG).show()
-                                }
-                            }
-
-                            override fun onResult(success: Boolean, message: String) {
-                                Handler(Looper.getMainLooper()).post {
-                                    Toast.makeText(mContext, message, Toast.LENGTH_SHORT).show()
-                                }
-                            }
+                        try {
+                            val file = File(backgroundPath)
+                            file.parentFile?.mkdirs()
+                            val out = FileOutputStream(file)
+                            scaledWallpaperBitmap.compress(Bitmap.CompressFormat.PNG, 100, out)
+                            out.flush()
+                            out.close()
+                        } catch (throwable: IOException) {
+                            log(TAG + throwable)
                         }
 
-                        if (mAiMode == 0) {
-                            enqueueProxyCommand { proxy ->
-                                proxy?.extractSubject(
-                                    finalScaledWallpaperBitmap,
-                                    foregroundPath,
-                                    callback
+                        if (!mLayersCreated) {
+                            createLayers()
+                        }
+
+                        mWallpaperBackground.post {
+                            mWallpaperBitmapContainer.background = BitmapDrawable(
+                                mContext.resources,
+                                scaledWallpaperBitmap
+                            )
+                            if (mScrimController != null) {
+                                mWallpaperDimmingOverlay.setBackgroundColor(Color.BLACK)
+                                mWallpaperDimmingOverlay.alpha = getFloatField(
+                                    mScrimController,
+                                    "mScrimBehindAlphaKeyguard"
                                 )
                             }
-                        } else {
-                            sendPluginIntent()
                         }
+
+                        if (!cacheIsValid) {
+                            val callback = object : IExtractSubjectCallback.Stub() {
+                                override fun onStart(message: String) {
+                                    Handler(Looper.getMainLooper()).post {
+                                        Toast.makeText(mContext, message, Toast.LENGTH_LONG).show()
+                                    }
+                                }
+
+                                override fun onResult(success: Boolean, message: String) {
+                                    Handler(Looper.getMainLooper()).post {
+                                        Toast.makeText(mContext, message, Toast.LENGTH_SHORT).show()
+                                    }
+                                }
+                            }
+
+                            if (mAiMode == 0) {
+                                enqueueProxyCommand { proxy ->
+                                    proxy.extractSubject(
+                                        scaledWallpaperBitmap,
+                                        foregroundPath,
+                                        callback
+                                    )
+                                }
+                            } else {
+                                sendPluginIntent()
+                            }
+                        }
+
+                        wallpaperProcessorThread = null
                     }
+
+                    wallpaperProcessorThread?.start()
                 }
             }
         })
 
         hookAllConstructors(scrimControllerClass, object : XC_MethodHook() {
-            @Throws(Throwable::class)
             override fun afterHookedMethod(param: MethodHookParam) {
                 mScrimController = param.thisObject
             }
         })
 
         hookAllMethods(scrimControllerClass, "applyAndDispatchState", object : XC_MethodHook() {
-            @Throws(Throwable::class)
             override fun afterHookedMethod(param: MethodHookParam) {
                 setDepthWallpaper()
             }
         })
 
         hookAllMethods(qsImplClass, "setQsExpansion", object : XC_MethodHook() {
-            @Throws(Throwable::class)
             override fun beforeHookedMethod(param: MethodHookParam) {
                 if (callMethod(param.thisObject, "isKeyguardState") as Boolean) {
                     setDepthWallpaper()
@@ -414,11 +506,6 @@ class DepthWallpaperA14(context: Context?) : ModPack(context!!) {
         /*
          * Custom depth wallpaper images
          */
-        val keyguardBottomAreaViewClass = findClass(
-            "$SYSTEMUI_PACKAGE.statusbar.phone.KeyguardBottomAreaView",
-            loadPackageParam.classLoader
-        )
-
         hookAllMethods(
             keyguardBottomAreaViewClass,
             "onConfigurationChanged",
@@ -426,27 +513,37 @@ class DepthWallpaperA14(context: Context?) : ModPack(context!!) {
                 override fun afterHookedMethod(param: MethodHookParam) {
                     setCustomDepthWallpaper()
                 }
-            })
+            }
+        )
 
         setCustomDepthWallpaper()
     }
 
     fun sendPluginIntent() {
         try {
-            val intent: Intent = Intent(ACTION_EXTRACT_SUBJECT)
-            intent.setComponent(
-                ComponentName(
-                    AI_PLUGIN_PACKAGE,
-                    "$AI_PLUGIN_PACKAGE.receivers.SubjectExtractionReceiver"
-                )
+            Handler(Looper.getMainLooper()).post {
+                Toast.makeText(
+                    mContext,
+                    modRes.getString(R.string.depth_wallpaper_subject_extraction_started),
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+
+            mContext.sendBroadcast(
+                Intent(ACTION_EXTRACT_SUBJECT).apply {
+                    setComponent(
+                        ComponentName(
+                            AI_PLUGIN_PACKAGE,
+                            "$AI_PLUGIN_PACKAGE.receivers.SubjectExtractionReceiver"
+                        )
+                    )
+                    putExtra("sourcePath", backgroundPath)
+                    putExtra("destinationPath", foregroundPath)
+                    setPackage(mContext.packageName)
+                    addFlags(Intent.FLAG_RECEIVER_FOREGROUND)
+                }
             )
-            intent.putExtra("sourcePath", backgroundPath)
-            intent.putExtra("destinationPath", foregroundPath)
-            intent.setPackage(mContext.packageName)
-            intent.addFlags(Intent.FLAG_RECEIVER_FOREGROUND)
-            mContext.sendBroadcast(intent)
-        } catch (t: Throwable) {
-            log(t)
+        } catch (_: Throwable) {
         }
     }
 
@@ -488,7 +585,10 @@ class DepthWallpaperA14(context: Context?) : ModPack(context!!) {
         mWallpaperDimmingOverlay = FrameLayout(mContext)
         mWallpaperBitmapContainer = FrameLayout(mContext)
 
-        val layoutParams = FrameLayout.LayoutParams(-1, -1)
+        val layoutParams = FrameLayout.LayoutParams(
+            MATCH_PARENT,
+            MATCH_PARENT
+        )
 
         mWallpaperDimmingOverlay.setBackgroundColor(
             if (File(backgroundPath).exists()) {
@@ -507,6 +607,8 @@ class DepthWallpaperA14(context: Context?) : ModPack(context!!) {
 
         mWallpaperForeground.layoutParams = layoutParams
         mWallpaperBackground.layoutParams = layoutParams
+
+        mWallpaperForeground.id = View.generateViewId()
 
         mLayersCreated = true
     }
@@ -662,6 +764,13 @@ class DepthWallpaperA14(context: Context?) : ModPack(context!!) {
                 }
             }, 0, 5, TimeUnit.SECONDS)
         } catch (ignored: Throwable) {
+        }
+    }
+
+    private fun reAddView(parentView: ViewGroup, childView: View?, index: Int) {
+        childView?.let { view ->
+            (view.parent as? ViewGroup)?.removeView(childView)
+            parentView.addView(view, index)
         }
     }
 
