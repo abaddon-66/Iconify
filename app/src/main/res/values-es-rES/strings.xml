@@ -714,6 +714,12 @@
     <!-- Xposed Depth Wallpaper -->
     <string name="enable_depth_wallpaper_title">Habilitar fondo de pantalla con profundidad</string>
     <string name="enable_depth_wallpaper_desc">Mostrar fondo de pantalla con profundidad parecido a iOS\n%s</string>
+    <string name="depth_wallpaper_ai_mode">AI Mode</string>
+    <string name="depth_wallpaper_ai_mlkit">MLKit (Google)</string>
+    <string name="depth_wallpaper_ai_plugin">Plugin</string>
+    <string name="depth_wallpaper_ai_status">AI Status</string>
+    <string name="depth_wallpaper_ai_status_plugin_not_installed">AI Plugin not installed.\nTap to download</string>
+    <string name="depth_wallpaper_ai_status_plugin_installed">AI Plugin installed.\nTap to open</string>
     <string name="enable_custom_depth_wallpaper_title">Imágenes personalizadas</string>
     <string name="enable_custom_depth_wallpaper_desc">Establecer imágenes personalizadas como fondo de pantalla de profundidad</string>
     <string name="depth_wallpaper_on_aod_title">Mostrar en pantalla ambiente</string>

@@ -638,7 +638,7 @@
     <string name="battery_circle">Круглая батарея</string>
     <string name="battery_dotted_circle">Точечный круг батареи</string>
     <string name="battery_filled_circle">Заполненный круг</string>
-    <string name="battery_landscape_kim">Landscape Kim</string>
+    <string name="battery_landscape_kim">Горизонтальная батарея Kim</string>
     <!-- Xposed Volume Panel -->
     <string name="volume_percentage_title">Проценты громкости</string>
     <string name="volume_percentage_desc">Показывать проценты выше слайдера громкости</string>
@@ -714,6 +714,12 @@
     <!-- Xposed Depth Wallpaper -->
     <string name="enable_depth_wallpaper_title">Включить глубинные обои</string>
     <string name="enable_depth_wallpaper_desc">Показывать глубинные обои в стиле iOS\n%s</string>
+    <string name="depth_wallpaper_ai_mode">Режим ИИ</string>
+    <string name="depth_wallpaper_ai_mlkit">MLKit (Google)</string>
+    <string name="depth_wallpaper_ai_plugin">Плагин</string>
+    <string name="depth_wallpaper_ai_status">Статус ИИ</string>
+    <string name="depth_wallpaper_ai_status_plugin_not_installed">Плагин ИИ не установлен.\nНажмите, чтобы загрузить</string>
+    <string name="depth_wallpaper_ai_status_plugin_installed">Плагин ИИ установлен.\nНажмите, чтобы открыть</string>
     <string name="enable_custom_depth_wallpaper_title">Пользовательские изображения</string>
     <string name="enable_custom_depth_wallpaper_desc">Установить пользовательское изображение в качестве глубинных обоев</string>
     <string name="depth_wallpaper_on_aod_title">Отображать на AOD</string>
@@ -840,7 +846,7 @@
     <string name="info_tester_desc">За тестирование приложения.</string>
     <string name="info_betterqs_desc">За разрешение на использование Better QS</string>
     <string name="info_binaries_desc">Для исполняемых двоичных файлов Android.</string>
-    <string name="info_buttercup_desc">For some lockscreen clock styles.</string>
+    <string name="info_buttercup_desc">Для некоторых стилей часов на экране блокировки.</string>
     <string name="section_title_contributors">Участники проекта</string>
     <string name="info_contributor_desc">Вклад на github.</string>
     <string name="info_contributor_desc_2">Помощь мне в Telegram.</string>
@@ -1106,8 +1112,8 @@
     <string name="location_query_hint">Поиск местоположения</string>
     <string name="weather_permission_dialog_title">Разрешить доступ к данным о местоположении</string>
     <string name="weather_permission_dialog_message">Для получения данных о погоде требуются разрешения на местоположение. Нажмите ОК, чтобы открыть Настройки.</string>
-    <string name="omnijaws_today">Today</string>
-    <string name="omnijaws_tomorrow">Tomorrow</string>
+    <string name="omnijaws_today">Cегодня</string>
+    <string name="omnijaws_tomorrow">Завтра</string>
     <!-- Weather Conditions -->
     <string name="weather_condition_clouds">Пасмурно</string>
     <string name="weather_condition_rain">Дождливо</string>
@@ -1124,9 +1130,9 @@
     <string name="weather_api_key">OpenWeatherMap API ключ</string>
     <string name="weather_provider_owm_key_title">Требуется API ключ OpenWeatherMap</string>
     <string name="weather_provider_owm_key_message">Пожалуйста, введите ваш API ключ OpenWeatherMap для получения данных о погоде.</string>
-    <string name="yandex_api_key">Yandex API Key</string>
-    <string name="weather_provider_yandex_key_title">Yandex API Key required</string>
-    <string name="weather_provider_yandex_key_message">Please enter your Yandex API key to fetch weather data.</string>
+    <string name="yandex_api_key">Яндекс API ключ</string>
+    <string name="weather_provider_yandex_key_title">Требуется ключ Яндекс API</string>
+    <string name="weather_provider_yandex_key_message">Пожалуйста, введите ваш API ключ Яндекс для получения данных о погоде.</string>
     <string name="weather_show_location">Показать местоположение</string>
     <string name="weather_show_location_summary">Показывать местоположение перед иконкой</string>
     <string name="weather_show_condition">Показать состояние</string>
