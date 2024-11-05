@@ -83,7 +83,7 @@ Furthermore, the open-source nature of Iconify encourages community contribution
 
   > [!TIP]
   > 
-  > KernelSU doesn't show root prompt. You will have to manually enable root access for Iconify from KernelSU app itself.
+  > KernelSU doesn't show root prompt. You will have to manually enable root access for Iconify from the KernelSU app itself.
 
 # 🤫 Roadmap
 
