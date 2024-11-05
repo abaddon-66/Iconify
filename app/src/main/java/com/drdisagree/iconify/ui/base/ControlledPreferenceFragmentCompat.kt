@@ -223,8 +223,10 @@ abstract class ControlledPreferenceFragmentCompat : PreferenceFragmentCompat() {
                     if (fragment is LockscreenClockParent) {
                         resultFragment = LockscreenClockParent.getPreferenceFragment()
                         fragment.scrollToPreference()
+                    } else {
+                        resultFragment = fragment as ControlledPreferenceFragmentCompat
                     }
-                    SearchPreferenceResult.highlight(resultFragment, result.key);
+                    SearchPreferenceResult.highlight(resultFragment, result.key)
                     break
                 }
             }
