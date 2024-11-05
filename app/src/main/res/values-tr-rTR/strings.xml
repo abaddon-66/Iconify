@@ -714,6 +714,12 @@
     <!-- Xposed Depth Wallpaper -->
     <string name="enable_depth_wallpaper_title">Derinlikli Duvar Kağıdını Etkinleştir</string>
     <string name="enable_depth_wallpaper_desc">iOS\'a benzer derinlikli duvar kağıdını göster\n%s</string>
+    <string name="depth_wallpaper_ai_mode">AI Mode</string>
+    <string name="depth_wallpaper_ai_mlkit">MLKit (Google)</string>
+    <string name="depth_wallpaper_ai_plugin">Plugin</string>
+    <string name="depth_wallpaper_ai_status">AI Status</string>
+    <string name="depth_wallpaper_ai_status_plugin_not_installed">AI Plugin not installed.\nTap to download</string>
+    <string name="depth_wallpaper_ai_status_plugin_installed">AI Plugin installed.\nTap to open</string>
     <string name="enable_custom_depth_wallpaper_title">Özel Resimler</string>
     <string name="enable_custom_depth_wallpaper_desc">Özel görüntüleri derinlikli duvar kağıdı olarak ayarla</string>
     <string name="depth_wallpaper_on_aod_title">AOD\'de göster</string>
@@ -743,7 +749,7 @@
     <string name="sb_clock_background_chip_desc">Durum çubuğundaki saatte arka planı göster</string>
     <string name="sb_clock_customize_chip_title">Customize Clock Chip</string>
     <string name="sb_clock_customize_chip_desc">Custom colors, roundness, stroke etc.</string>
-    <string name="section_title_text">Text</string>
+    <string name="section_title_text">Yazı</string>
     <string name="statusbar_clock_text_title">Clock Text Color</string>
     <string name="sbclock_color_follow_system">Sisteme Göre</string>
     <string name="sbclock_color_transparent_text">Şeffaf Metin</string>
@@ -1126,7 +1132,7 @@
     <string name="weather_provider_owm_key_message">Hava durumu verilerini almak için lütfen OpenWeatherMap API anahtarınızı girin.</string>
     <string name="yandex_api_key">Yandex API Key</string>
     <string name="weather_provider_yandex_key_title">Yandex API Key required</string>
-    <string name="weather_provider_yandex_key_message">Please enter your Yandex API key to fetch weather data.</string>
+    <string name="weather_provider_yandex_key_message">Lütfen hava durumu verilerini almak için Yandex API anahtarınızı girin.</string>
     <string name="weather_show_location">Konumu Göster</string>
     <string name="weather_show_location_summary">Simgeden önce konumu göster</string>
     <string name="weather_show_condition">Durumu Göster</string>
@@ -1163,11 +1169,11 @@
     <string name="lockscreen_weather_selection_str_border_accent">Vurgu renkli karanlık kenar</string>
     <string name="lockscreen_weather_selection_str_border_gradient">Karanlık gradyan renkli kenarlar</string>
     <!-- Alert Dialogs -->
-    <string name="systemui_restart_required_title">SystemUI Restart Needed</string>
-    <string name="systemui_restart_required_desc">A SystemUI restart is needed for this change to take effect.</string>
-    <string name="device_restart_required_title">Device Restart Needed</string>
-    <string name="device_restart_required_desc">A device restart is needed for this change to take effect.</string>
-    <string name="switch_theme_required_title">Switch Device Theme</string>
+    <string name="systemui_restart_required_title">Sistem Arayüzü\'nün Yeniden Başlatılması Gerekiyor</string>
+    <string name="systemui_restart_required_desc">Bu değişikliğin etkili olması için Sistem Arayüzü\'nün yeniden başlatılması gerekir.</string>
+    <string name="device_restart_required_title">Cihazın Yeniden Başlatılması Gerekiyor</string>
+    <string name="device_restart_required_desc">Bu değişikliğin etkili olması için cihazın yeniden başlatılması gerekir.</string>
+    <string name="switch_theme_required_title">Cihaz Temasını Değiştir</string>
     <string name="switch_theme_required_desc">Switch between light and dark themes if unexpected behavior occurs.</string>
     <string name="device_rotation_required_title">Device Rotation Theme</string>
     <string name="device_rotation_required_desc">Switch rotation of your device for this change to take effect.</string>
