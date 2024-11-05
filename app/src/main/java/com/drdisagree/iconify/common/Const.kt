@@ -46,9 +46,14 @@ object Const {
         BootLoopProtector.PACKAGE_STRIKE_KEY_KEY,
     )
 
+    // Shell commands
+    const val RESET_LOCKSCREEN_CLOCK_COMMAND =
+        "settings put secure lock_screen_custom_clock_face default"
+
     // AI Plugin
     const val AI_PLUGIN_PACKAGE = "it.dhd.oxygencustomizer.aiplugin"
-    const val AI_PLUGIN_URL = "https://github.com/DHD2280/Oxygen-Customizer-AI-Plugin/releases/latest/"
+    const val AI_PLUGIN_URL =
+        "https://github.com/DHD2280/Oxygen-Customizer-AI-Plugin/releases/latest/"
 
     const val ACTION_HOOK_CHECK_REQUEST = "${BuildConfig.APPLICATION_ID}.ACTION_HOOK_CHECK_REQUEST"
     const val ACTION_HOOK_CHECK_RESULT = "${BuildConfig.APPLICATION_ID}.ACTION_HOOK_CHECK_RESULT"

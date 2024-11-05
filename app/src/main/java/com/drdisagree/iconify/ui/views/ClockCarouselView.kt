@@ -2,6 +2,7 @@ package com.drdisagree.iconify.ui.views
 
 import android.content.Context
 import android.content.res.ColorStateList
+import android.graphics.Color
 import android.util.AttributeSet
 import android.util.Log
 import android.view.LayoutInflater
@@ -13,7 +14,7 @@ import androidx.constraintlayout.helper.widget.Carousel
 import androidx.constraintlayout.motion.widget.MotionLayout
 import androidx.core.view.doOnPreDraw
 import com.drdisagree.iconify.R
-import com.drdisagree.iconify.ui.models.ClockCarouselItemViewModel
+import com.drdisagree.iconify.ui.models.ClockCarouselItemModel
 import com.drdisagree.iconify.ui.widgets.ClockHostView
 import kotlin.math.max
 
@@ -95,7 +96,7 @@ class ClockCarouselView(
     }
 
     fun setUpClockCarouselView(
-        clocks: List<ClockCarouselItemViewModel>,
+        clocks: List<ClockCarouselItemModel>,
         clockListener: OnClockSelected
     ) {
         clockSelectedListener = clockListener
@@ -194,7 +195,8 @@ class ClockCarouselView(
                     triggerId: Int,
                     positive: Boolean,
                     progress: Float
-                ) {}
+                ) {
+                }
             }
         )
     }
@@ -226,7 +228,7 @@ class ClockCarouselView(
     }
 
     private class ClockCarouselAdapter(
-        val clocks: List<ClockCarouselItemViewModel>,
+        val clocks: List<ClockCarouselItemModel>,
         private val onClockSelected: OnClockSelected
     ) : Carousel.Adapter {
 
@@ -240,25 +242,23 @@ class ClockCarouselView(
 
         override fun populate(view: View?, index: Int) {
             val viewRoot = view as? ViewGroup ?: return
-            val cardView =
-                getClockCardViewId(viewRoot.id)?.let { viewRoot.findViewById(it) as? View }
-                    ?: return
-            val clockScaleView =
-                getClockScaleViewId(viewRoot.id)?.let { viewRoot.findViewById(it) as? View }
-                    ?: return
-            val clockHostView =
-                getClockHostViewId(viewRoot.id)?.let { viewRoot.findViewById(it) as? ClockHostView }
-                    ?: return
-            val clockTextView =
-                getClockTextId(viewRoot.id)?.let { viewRoot.findViewById(it) as? View }
-                    ?: return
+            val cardView = getClockCardViewId(viewRoot.id)?.let {
+                viewRoot.findViewById(it) as? View
+            } ?: return
+            val clockScaleView = getClockScaleViewId(viewRoot.id)?.let {
+                viewRoot.findViewById(it) as? View
+            } ?: return
+            val clockHostView = getClockHostViewId(viewRoot.id)?.let {
+                viewRoot.findViewById(it) as? ClockHostView
+            } ?: return
+            val clockTextView = getClockTextId(viewRoot.id)?.let {
+                viewRoot.findViewById(it) as? View
+            } as TextView? ?: return
 
             // Add the clock view to the clock host view
             clockHostView.removeAllViews()
-            val clockView =
-                clocks[index].view
-            // The clock view might still be attached to an existing parent. Detach before adding to
-            // another parent.
+            val clockView = clocks[index].view
+            // The clock view might still be attached to an existing parent. Detach before adding to another parent.
             (clockView.parent as? ViewGroup)?.removeView(clockView)
             clockHostView.addView(clockView)
 
@@ -267,7 +267,7 @@ class ClockCarouselView(
             // Accessibility
             viewRoot.contentDescription = getContentDescription(index)
             viewRoot.isSelected = isMiddleView
-            (clockTextView as TextView).text = clocks[index].clockName
+            clockTextView.text = clocks[index].clockName
 
             initializeDynamicClockView(
                 isMiddleView,
@@ -277,6 +277,7 @@ class ClockCarouselView(
             )
             cardView.alpha = if (isMiddleView) 0f else 1f
             clockTextView.alpha = if (isMiddleView) 1f else 0f
+            clockTextView.setTextColor(if (isMiddleView) Color.WHITE else Color.TRANSPARENT)
         }
 
         private fun initializeDynamicClockView(
@@ -404,6 +405,6 @@ class ClockCarouselView(
     }
 
     fun interface OnClockSelected {
-        fun onClockSelected(clock: ClockCarouselItemViewModel)
+        fun onClockSelected(clock: ClockCarouselItemModel)
     }
 }

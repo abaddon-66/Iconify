@@ -37,6 +37,7 @@
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
                 android:clipChildren="false" />
+
         </com.drdisagree.iconify.ui.widgets.FixedWidthDisplayRatioFrameLayout>
 
         <TextView
@@ -44,7 +45,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|center_horizontal"
-            android:gravity="center_horizontal"/>
+            android:gravity="center_horizontal" />
 
     </FrameLayout>
 
@@ -79,6 +80,7 @@
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
                 android:clipChildren="false" />
+
         </com.drdisagree.iconify.ui.widgets.FixedWidthDisplayRatioFrameLayout>
 
         <TextView
@@ -86,7 +88,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|center_horizontal"
-            android:gravity="center_horizontal"/>
+            android:gravity="center_horizontal" />
 
     </FrameLayout>
 
@@ -123,6 +125,7 @@
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
                 android:clipChildren="false" />
+
         </com.drdisagree.iconify.ui.widgets.FixedWidthDisplayRatioFrameLayout>
 
         <TextView
@@ -130,7 +133,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|center_horizontal"
-            android:gravity="center_horizontal"/>
+            android:gravity="center_horizontal" />
 
     </FrameLayout>
 
@@ -173,7 +176,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|center_horizontal"
-            android:gravity="center_horizontal"/>
+            android:gravity="center_horizontal" />
 
     </FrameLayout>
 
@@ -208,6 +211,7 @@
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
                 android:clipChildren="false" />
+
         </com.drdisagree.iconify.ui.widgets.FixedWidthDisplayRatioFrameLayout>
 
         <TextView

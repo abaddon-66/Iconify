@@ -35,6 +35,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import com.drdisagree.iconify.BuildConfig
 import com.drdisagree.iconify.R
+import com.drdisagree.iconify.common.Const.RESET_LOCKSCREEN_CLOCK_COMMAND
 import com.drdisagree.iconify.common.Const.SYSTEMUI_PACKAGE
 import com.drdisagree.iconify.common.Preferences.DEPTH_WALLPAPER_FADE_ANIMATION
 import com.drdisagree.iconify.common.Preferences.DEPTH_WALLPAPER_SWITCH
@@ -690,7 +691,7 @@ class LockscreenClock(context: Context?) : ModPack(context!!) {
 
         if (!isAndroid13OrBelow && showLockscreenClock) {
             enqueueProxyCommand { proxy ->
-                proxy.runCommand("settings put secure lock_screen_custom_clock_face default")
+                proxy.runCommand(RESET_LOCKSCREEN_CLOCK_COMMAND)
             }
         }
     }

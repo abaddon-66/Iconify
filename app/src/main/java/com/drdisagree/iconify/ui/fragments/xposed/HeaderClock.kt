@@ -107,26 +107,23 @@ class HeaderClock : ControlledPreferenceFragmentCompat() {
                     BuildConfig.APPLICATION_ID
                 ) != 0
         ) {
-            maxIndex++
-        }
-
-        for (i in 0 until maxIndex) {
             headerClock.add(
                 ClockModel(
-                    if (i == 0) {
+                    if (maxIndex == 0) {
                         requireContext().getString(R.string.clock_none)
                     } else {
-                        requireContext().getString(R.string.clock_style_name, i)
+                        requireContext().getString(R.string.clock_style_name, maxIndex)
                     },
                     requireContext()
                         .resources
                         .getIdentifier(
-                            HEADER_CLOCK_LAYOUT + i,
+                            HEADER_CLOCK_LAYOUT + maxIndex,
                             "layout",
                             BuildConfig.APPLICATION_ID
                         )
                 )
             )
+            maxIndex++
         }
 
         return ClockPreviewAdapter(

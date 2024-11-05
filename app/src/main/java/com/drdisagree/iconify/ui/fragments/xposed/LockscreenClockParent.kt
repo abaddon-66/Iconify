@@ -26,7 +26,7 @@ import com.drdisagree.iconify.databinding.FragmentXposedLockscreenClockBinding
 import com.drdisagree.iconify.ui.activities.MainActivity.Companion.replaceFragment
 import com.drdisagree.iconify.ui.base.BaseFragment
 import com.drdisagree.iconify.ui.base.ControlledPreferenceFragmentCompat
-import com.drdisagree.iconify.ui.models.ClockCarouselItemViewModel
+import com.drdisagree.iconify.ui.models.ClockCarouselItemModel
 import com.drdisagree.iconify.ui.preferences.preferencesearch.SearchPreferenceResult
 import com.drdisagree.iconify.ui.utils.ViewHelper.setHeader
 import com.drdisagree.iconify.ui.views.ClockCarouselView
@@ -35,6 +35,7 @@ import com.drdisagree.iconify.utils.WallpaperUtils.loadWallpaper
 import com.topjohnwu.superuser.internal.UiThreadHandler.handler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.util.concurrent.Executors
 
 class LockscreenClockParent : BaseFragment() {
 
@@ -89,65 +90,63 @@ class LockscreenClockParent : BaseFragment() {
         val clockCarouselView =
             binding.clockCarouselView.clockCarouselViewStub.inflate() as ClockCarouselView
 
-        val lsClock: MutableList<ClockCarouselItemViewModel> = ArrayList()
-        var maxIndex = 0
-        while (resources.getIdentifier(
-                "preview_lockscreen_clock_$maxIndex",
-                "layout",
-                BuildConfig.APPLICATION_ID
-            ) != 0
-        ) {
-            maxIndex++
-        }
-
-        for (i in 0 until maxIndex) {
-            lsClock.add(
-                ClockCarouselItemViewModel(
-                    if (i == 0) {
-                        requireContext().getString(R.string.clock_none)
-                    } else {
-                        requireContext().getString(R.string.clock_style_name, i)
-                    },
-                    i,
-                    getInt(LSCLOCK_STYLE, 0) == i,
-                    LOCKSCREEN_CLOCK_LAYOUT + i,
-                    LayoutInflater.from(requireContext()).inflate(
-                        resources.getIdentifier(
-                            LOCKSCREEN_CLOCK_LAYOUT + i,
-                            "layout",
-                            BuildConfig.APPLICATION_ID
+        Executors.newSingleThreadExecutor().execute {
+            val lsClock: MutableList<ClockCarouselItemModel> = ArrayList()
+            var maxIndex = 0
+            while (resources.getIdentifier(
+                    LOCKSCREEN_CLOCK_LAYOUT + maxIndex,
+                    "layout",
+                    BuildConfig.APPLICATION_ID
+                ) != 0
+            ) {
+                lsClock.add(
+                    ClockCarouselItemModel(
+                        if (maxIndex == 0) requireContext().getString(R.string.clock_none) else requireContext().getString(
+                            R.string.clock_style_name,
+                            maxIndex
                         ),
-                        null
-                    ).apply {
-                        layoutParams = FrameLayout.LayoutParams(
-                            FrameLayout.LayoutParams.MATCH_PARENT,
-                            FrameLayout.LayoutParams.WRAP_CONTENT
+                        maxIndex,
+                        getInt(LSCLOCK_STYLE, 0) == maxIndex,
+                        LOCKSCREEN_CLOCK_LAYOUT + maxIndex,
+                        LayoutInflater.from(requireContext()).inflate(
+                            resources.getIdentifier(
+                                LOCKSCREEN_CLOCK_LAYOUT + maxIndex,
+                                "layout",
+                                BuildConfig.APPLICATION_ID
+                            ),
+                            null
                         ).apply {
-                            gravity = Gravity.CENTER_HORIZONTAL
+                            layoutParams = FrameLayout.LayoutParams(
+                                FrameLayout.LayoutParams.MATCH_PARENT,
+                                FrameLayout.LayoutParams.WRAP_CONTENT
+                            ).apply {
+                                gravity = Gravity.CENTER_HORIZONTAL
+                            }
                         }
-                    }
+                    )
                 )
-            )
+                maxIndex++
+            }
+
+            Handler(Looper.getMainLooper()).postDelayed({
+                clockCarouselView.setUpClockCarouselView(lsClock) { onClockSelected ->
+                    updateRunnable?.let {
+                        handler.removeCallbacks(it)
+                    }
+                    updateRunnable = Runnable {
+                        putInt(LSCLOCK_STYLE, onClockSelected.clockLayout)
+                    }
+                    updateRunnable?.let {
+                        handler.postDelayed(it, 500)
+                    }
+                }
+
+                binding.clockCarouselView.screenPreviewClickView.setOnSideClickedListener { isStart ->
+                    if (isStart) clockCarouselView.scrollToPrevious()
+                    else clockCarouselView.scrollToNext()
+                }
+            }, 50)
         }
-
-        Handler(Looper.getMainLooper()).postDelayed({
-            clockCarouselView.setUpClockCarouselView(lsClock) { onClockSelected ->
-                updateRunnable?.let {
-                    handler.removeCallbacks(it)
-                }
-                updateRunnable = Runnable {
-                    putInt(LSCLOCK_STYLE, onClockSelected.clockLayout)
-                }
-                updateRunnable?.let {
-                    handler.postDelayed(it, 500)
-                }
-            }
-
-            binding.clockCarouselView.screenPreviewClickView.setOnSideClickedListener { isStart ->
-                if (isStart) clockCarouselView.scrollToPrevious()
-                else clockCarouselView.scrollToNext()
-            }
-        }, 50)
     }
 
     override fun onSearchResultClicked(result: SearchPreferenceResult) {
@@ -165,11 +164,14 @@ class LockscreenClockParent : BaseFragment() {
         viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Main) {
             val bitmap = loadWallpaper(requireContext(), isLockscreen = true).await()
 
+            binding.clockCarouselView.preview.wallpaperDimmingScrim.visibility = View.VISIBLE
+            binding.clockCarouselView.preview.wallpaperFadeinScrim.visibility = View.VISIBLE
+            binding.clockCarouselView.preview.wallpaperPreviewSpinner.visibility = View.GONE
+
             if (bitmap != null) {
-                binding.clockCarouselView.preview.wallpaperDimmingScrim.visibility = View.VISIBLE
-                binding.clockCarouselView.preview.wallpaperFadeinScrim.visibility = View.VISIBLE
-                binding.clockCarouselView.preview.wallpaperPreviewSpinner.visibility = View.GONE
                 binding.clockCarouselView.preview.wallpaperFadeinScrim.setImageBitmap(bitmap)
+            } else {
+                binding.clockCarouselView.preview.wallpaperFadeinScrim.setImageResource(R.drawable.google_pixel_wallpaper)
             }
         }
     }
@@ -188,7 +190,7 @@ class LockscreenClockParent : BaseFragment() {
 
     fun scrollToPreference() {
         Handler(Looper.getMainLooper()).postDelayed({
-            binding?.scrollView!!.smoothScrollTo(0, binding.fragmentContainer.top)
+            binding.scrollView.smoothScrollTo(0, binding.fragmentContainer.top)
         }, 180)
     }
 

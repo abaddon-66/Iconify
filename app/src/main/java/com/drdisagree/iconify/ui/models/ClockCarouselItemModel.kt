@@ -2,7 +2,7 @@ package com.drdisagree.iconify.ui.models
 
 import android.view.View
 
-class ClockCarouselItemViewModel(
+class ClockCarouselItemModel(
     val clockName: String,
     val clockLayout: Int,
     val isSelected: Boolean,
