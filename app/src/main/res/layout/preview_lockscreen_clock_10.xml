@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="18dp"
-        android:background="@drawable/preview_lockscreen_clock_10_background"
+        android:background="@drawable/lockscreen_clock_10_background"
         android:orientation="vertical"
         android:padding="18dp"
         android:theme="@style/ConsolasFontTextAppearance"
