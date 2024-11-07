@@ -310,24 +310,7 @@ class DepthWallpaperA14(context: Context?) : ModPack(context!!) {
                 }
 
                 reAddView(rootView, mWallpaperBackground, 0)
-
-                val keyguardRootView = rootView.findViewById<View?>(
-                    mContext.resources.getIdentifier(
-                        "keyguard_root_view",
-                        "id",
-                        mContext.packageName
-                    )
-                )
-
-                if (keyguardRootView == null) { // legacy view
-                    reAddView(targetView, mWallpaperForeground, 1)
-                } else { // A15 QPR1 compose view
-                    reAddView(
-                        rootView,
-                        mWallpaperForeground,
-                        rootView.indexOfChild(keyguardRootView) + 1
-                    )
-                }
+                reAddView(targetView, mWallpaperForeground, 1)
             }
         })
 
@@ -652,7 +635,7 @@ class DepthWallpaperA14(context: Context?) : ModPack(context!!) {
                 }
             }
 
-            if (mWallpaperForegroundCacheValid) {
+            if (mWallpaperForegroundCacheValid && mWallpaperForeground.background != null) {
                 mWallpaperForeground.background.alpha = (foregroundAlpha * 255).toInt()
 
                 if (state != "KEYGUARD") { // AOD
@@ -734,8 +717,9 @@ class DepthWallpaperA14(context: Context?) : ModPack(context!!) {
                                     val bitmapDrawable = BitmapDrawable.createFromStream(
                                         inputStream,
                                         ""
-                                    )
-                                    bitmapDrawable!!.alpha = 255
+                                    )!!.apply {
+                                        alpha = 255
+                                    }
 
                                     mWallpaperBackground.post {
                                         mWallpaperBitmapContainer.background = bitmapDrawable
