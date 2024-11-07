@@ -20,6 +20,7 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.SeekBar
+import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import com.drdisagree.iconify.R
 import com.drdisagree.iconify.common.Const.SYSTEMUI_PACKAGE
@@ -38,6 +39,7 @@ import de.robv.android.xposed.XC_MethodHook
 import de.robv.android.xposed.XposedBridge.hookAllConstructors
 import de.robv.android.xposed.XposedBridge.hookAllMethods
 import de.robv.android.xposed.XposedBridge.log
+import de.robv.android.xposed.XposedHelpers.callStaticMethod
 import de.robv.android.xposed.XposedHelpers.findClass
 import de.robv.android.xposed.XposedHelpers.findClassIfExists
 import de.robv.android.xposed.XposedHelpers.getIntField
@@ -52,38 +54,30 @@ class QSFluidThemeA14(context: Context?) : ModPack(context!!) {
 
     private var wasDark: Boolean = SystemUtils.isDarkMode
     private var mSlider: SeekBar? = null
-    val colorActive = intArrayOf(
-        mContext.resources.getColor(
-            mContext.resources.getIdentifier(
-                "android:color/system_accent1_400",
-                "color",
-                mContext.packageName
-            ), mContext.theme
+    var colorActive = mContext.resources.getColor(
+        mContext.resources.getIdentifier(
+            "android:color/system_accent1_400",
+            "color",
+            mContext.packageName
+        ), mContext.theme
+    )
+    var colorInactive = SettingsLibUtils.getColorAttrDefaultColor(
+        mContext,
+        mContext.resources.getIdentifier(
+            "offStateColor",
+            "attr",
+            mContext.packageName
         )
     )
-    val colorActiveAlpha = intArrayOf(
-        Color.argb(
-            (ACTIVE_ALPHA * 255).toInt(), Color.red(
-                colorActive[0]
-            ), Color.green(colorActive[0]), Color.blue(colorActive[0])
-        )
-    )
-    var colorInactive = intArrayOf(
-        SettingsLibUtils.getColorAttrDefaultColor(
-            mContext,
-            mContext.resources.getIdentifier("offStateColor", "attr", mContext.packageName)
-        )
-    )
-    val colorInactiveAlpha = intArrayOf(
-        changeAlpha(colorInactive[0], INACTIVE_ALPHA)
-    )
+    var colorActiveAlpha = changeAlpha(colorActive, ACTIVE_ALPHA)
+    var colorInactiveAlpha = changeAlpha(colorInactive, INACTIVE_ALPHA)
 
     override fun updatePrefs(vararg key: String) {
         if (!XprefsIsInitialized) return
 
         Xprefs.apply {
             fluidQsThemeEnabled = getBoolean(FLUID_QSPANEL, false)
-            fluidNotifEnabled = fluidQsThemeEnabled &&
+            fluidNotificationEnabled = fluidQsThemeEnabled &&
                     getBoolean(FLUID_NOTIF_TRANSPARENCY, false)
             fluidPowerMenuEnabled = fluidQsThemeEnabled &&
                     getBoolean(FLUID_POWERMENU_TRANSPARENCY, false)
@@ -143,6 +137,18 @@ class QSFluidThemeA14(context: Context?) : ModPack(context!!) {
             "$SYSTEMUI_PACKAGE.statusbar.notification.row.ActivatableNotificationView",
             loadPackageParam.classLoader
         )
+        val themeColorKtClass = findClassIfExists(
+            "com.android.compose.theme.ColorKt",
+            loadPackageParam.classLoader
+        )
+        val footerActionsViewModelClass = findClassIfExists(
+            "$SYSTEMUI_PACKAGE.qs.footer.ui.viewmodel.FooterActionsViewModel",
+            loadPackageParam.classLoader
+        )
+        val footerActionsViewBinderClass = findClassIfExists(
+            "$SYSTEMUI_PACKAGE.qs.footer.ui.binder.FooterActionsViewBinder",
+            loadPackageParam.classLoader
+        )
 
         // Initialize resources and colors
         hookAllMethods(qsTileViewImplClass, "init", object : XC_MethodHook() {
@@ -165,10 +171,9 @@ class QSFluidThemeA14(context: Context?) : ModPack(context!!) {
             })
         }
 
-        // QS tile color
         hookAllConstructors(qsTileViewImplClass, object : XC_MethodHook() {
             override fun afterHookedMethod(param: MethodHookParam) {
-                colorInactive[0] = SettingsLibUtils.getColorAttrDefaultColor(
+                val tempColorInactive = SettingsLibUtils.getColorAttrDefaultColor(
                     mContext,
                     mContext.resources.getIdentifier(
                         "offStateColor",
@@ -176,7 +181,17 @@ class QSFluidThemeA14(context: Context?) : ModPack(context!!) {
                         mContext.packageName
                     )
                 )
-                colorInactiveAlpha[0] = changeAlpha(colorInactive[0], INACTIVE_ALPHA)
+
+                colorInactive = if (tempColorInactive != 0) tempColorInactive
+                else SettingsLibUtils.getColorAttrDefaultColor(
+                    mContext,
+                    mContext.resources.getIdentifier(
+                        "shadeInactive",
+                        "attr",
+                        mContext.packageName
+                    )
+                )
+                colorInactiveAlpha = changeAlpha(colorInactive, INACTIVE_ALPHA)
             }
         })
 
@@ -186,13 +201,13 @@ class QSFluidThemeA14(context: Context?) : ModPack(context!!) {
 
                 try {
                     if (param.args[0] as Int == Tile.STATE_ACTIVE) {
-                        param.result = changeAlpha(colorActive[0], ACTIVE_ALPHA)
+                        param.result = colorActiveAlpha
                     } else {
                         val inactiveColor = param.result as Int?
 
                         inactiveColor?.let {
-                            colorInactive[0] = it
-                            colorInactiveAlpha[0] = changeAlpha(it, INACTIVE_ALPHA)
+                            colorInactive = it
+                            colorInactiveAlpha = changeAlpha(it, INACTIVE_ALPHA)
 
                             if (param.args[0] as Int == Tile.STATE_INACTIVE) {
                                 param.result = changeAlpha(it, INACTIVE_ALPHA)
@@ -218,7 +233,7 @@ class QSFluidThemeA14(context: Context?) : ModPack(context!!) {
                             "state"
                         ) as Int == Tile.STATE_ACTIVE
                     ) {
-                        param.result = colorActive[0]
+                        param.result = colorActive
                     }
                 } catch (ignored: Throwable) {
                 }
@@ -233,7 +248,7 @@ class QSFluidThemeA14(context: Context?) : ModPack(context!!) {
                         getIntField(param.args[1], "state") == Tile.STATE_ACTIVE
                     ) {
                         (param.args[0] as ImageView).imageTintList = ColorStateList.valueOf(
-                            colorActive[0]
+                            colorActive
                         )
                     }
                 } catch (ignored: Throwable) {
@@ -249,7 +264,7 @@ class QSFluidThemeA14(context: Context?) : ModPack(context!!) {
                     if (param.args[0] is ImageView &&
                         getIntField(param.args[1], "state") == Tile.STATE_ACTIVE
                     ) {
-                        setObjectField(param.thisObject, "mTint", colorActive[0])
+                        setObjectField(param.thisObject, "mTint", colorActive)
                     }
                 } catch (ignored: Throwable) {
                 }
@@ -280,11 +295,11 @@ class QSFluidThemeA14(context: Context?) : ModPack(context!!) {
                     // Security footer
                     view.let {
                         it.getChildAt(0)?.apply {
-                            background?.setTint(colorInactiveAlpha[0])
+                            background?.setTint(colorInactiveAlpha)
                             background?.alpha = (INACTIVE_ALPHA * 255).toInt()
                         }
                         it.getChildAt(1)?.apply {
-                            background?.setTint(colorInactiveAlpha[0])
+                            background?.setTint(colorInactiveAlpha)
                             background?.alpha = (INACTIVE_ALPHA * 255).toInt()
                         }
                     }
@@ -297,7 +312,7 @@ class QSFluidThemeA14(context: Context?) : ModPack(context!!) {
                             mContext.packageName
                         )
                     )?.apply {
-                        background.setTint(colorInactiveAlpha[0])
+                        background.setTint(colorInactiveAlpha)
                     }
 
                     // Multi user switch
@@ -308,7 +323,7 @@ class QSFluidThemeA14(context: Context?) : ModPack(context!!) {
                             mContext.packageName
                         )
                     )?.apply {
-                        background.setTint(colorInactiveAlpha[0])
+                        background.setTint(colorInactiveAlpha)
                     }
 
                     // Power menu button
@@ -329,14 +344,14 @@ class QSFluidThemeA14(context: Context?) : ModPack(context!!) {
                             )
                         )
                     }?.apply {
-                        background.setTint(colorActive[0])
+                        background.setTint(colorActive)
                         background.alpha = (ACTIVE_ALPHA * 255).toInt()
 
                         if (this is ImageView) {
-                            imageTintList = ColorStateList.valueOf(colorActive[0])
+                            imageTintList = ColorStateList.valueOf(colorActive)
                         } else if (this is ViewGroup) {
                             (getChildAt(0) as ImageView).setColorFilter(
-                                colorActive[0],
+                                colorActive,
                                 PorterDuff.Mode.SRC_IN
                             )
                         }
@@ -347,14 +362,40 @@ class QSFluidThemeA14(context: Context?) : ModPack(context!!) {
         }
 
         try { // Compose implementation of QS Footer actions
-            val footerActionsViewModelClass = findClass(
-                "$SYSTEMUI_PACKAGE.qs.footer.ui.viewmodel.FooterActionsViewModel",
+            val graphicsColorKtClass = findClass(
+                "androidx.compose.ui.graphics.ColorKt",
                 loadPackageParam.classLoader
             )
-            val footerActionsViewBinderClass = findClass(
-                "$SYSTEMUI_PACKAGE.qs.footer.ui.binder.FooterActionsViewBinder",
-                loadPackageParam.classLoader
-            )
+
+            hookAllMethods(themeColorKtClass, "colorAttr", object : XC_MethodHook() {
+                override fun beforeHookedMethod(param: MethodHookParam) {
+                    if (!fluidQsThemeEnabled) return
+
+                    val code = param.args[0] as Int
+                    var result = 0
+
+                    when (code) {
+                        PM_LITE_BACKGROUND_CODE -> {
+                            result = colorActiveAlpha
+                        }
+
+                        else -> {
+                            try {
+                                when (mContext.resources.getResourceName(code).split("/")[1]) {
+                                    "underSurface", "onShadeActive", "shadeInactive" -> {
+                                        result = colorInactiveAlpha // button backgrounds
+                                    }
+                                }
+                            } catch (ignored: Throwable) {
+                            }
+                        }
+                    }
+
+                    if (result != 0) {
+                        param.result = callStaticMethod(graphicsColorKtClass, "Color", result)
+                    }
+                }
+            })
 
             hookAllConstructors(footerActionsViewModelClass, object : XC_MethodHook() {
                 override fun afterHookedMethod(param: MethodHookParam) {
@@ -362,7 +403,8 @@ class QSFluidThemeA14(context: Context?) : ModPack(context!!) {
 
                     // Power button
                     val power = getObjectField(param.thisObject, "power")
-                    setObjectField(power, "iconTint", colorActive[0])
+                    setObjectField(power, "iconTint", colorActive)
+                    setObjectField(power, "backgroundColor", PM_LITE_BACKGROUND_CODE)
 
                     // We must use the classes defined in the apk. Using our own will fail.
                     val stateFlowImplClass = findClass(
@@ -404,27 +446,16 @@ class QSFluidThemeA14(context: Context?) : ModPack(context!!) {
                     view.background?.alpha = (INACTIVE_ALPHA * 255).toInt()
                 }
             })
-        } catch (ignored: Throwable) {
-        }
 
-        try { // Compose implementation of QS Footer actions
-            val footerActionsViewBinderClass = findClass(
-                "$SYSTEMUI_PACKAGE.qs.footer.ui.binder.FooterActionsViewBinder",
-                loadPackageParam.classLoader
-            )
+            hookAllMethods(footerActionsViewBinderClass, "bind", object : XC_MethodHook() {
+                override fun afterHookedMethod(param: MethodHookParam) {
+                    if (!fluidQsThemeEnabled) return
 
-            hookAllMethods(
-                footerActionsViewBinderClass,
-                "bind",
-                object : XC_MethodHook() {
-                    override fun afterHookedMethod(param: MethodHookParam) {
-                        if (!fluidQsThemeEnabled) return
-
-                        val view = param.args[0] as LinearLayout
-                        view.setBackgroundColor(Color.TRANSPARENT)
-                        view.elevation = 0f
-                    }
-                })
+                    val view = param.args[0] as LinearLayout
+                    view.setBackgroundColor(Color.TRANSPARENT)
+                    view.elevation = 0f
+                }
+            })
         } catch (ignored: Throwable) {
         }
 
@@ -471,14 +502,14 @@ class QSFluidThemeA14(context: Context?) : ModPack(context!!) {
                         param.thisObject,
                         "mIcon"
                     ) as ImageView).imageTintList = ColorStateList.valueOf(
-                        colorActive[0]
+                        colorActive
                     )
 
                     (getObjectField(
                         param.thisObject,
                         "mIcon"
                     ) as ImageView).backgroundTintList = ColorStateList.valueOf(
-                        colorActiveAlpha[0]
+                        colorActiveAlpha
                     )
                 } catch (throwable: Throwable) {
                     log(TAG + throwable)
@@ -496,14 +527,14 @@ class QSFluidThemeA14(context: Context?) : ModPack(context!!) {
                             param.thisObject,
                             "mIcon"
                         ) as ImageView).imageTintList = ColorStateList.valueOf(
-                            colorActive[0]
+                            colorActive
                         )
 
                         (getObjectField(
                             param.thisObject,
                             "mIcon"
                         ) as ImageView).backgroundTintList = ColorStateList.valueOf(
-                            colorActiveAlpha[0]
+                            colorActiveAlpha
                         )
                     } catch (throwable: Throwable) {
                         try {
@@ -511,14 +542,14 @@ class QSFluidThemeA14(context: Context?) : ModPack(context!!) {
                                 param.thisObject,
                                 "mIconView"
                             ) as ImageView).imageTintList = ColorStateList.valueOf(
-                                colorActive[0]
+                                colorActive
                             )
 
                             (getObjectField(
                                 param.thisObject,
                                 "mIconView"
                             ) as ImageView).backgroundTintList = ColorStateList.valueOf(
-                                colorActiveAlpha[0]
+                                colorActiveAlpha
                             )
                         } catch (ignored: Throwable) {
                         }
@@ -539,14 +570,14 @@ class QSFluidThemeA14(context: Context?) : ModPack(context!!) {
                             param.thisObject,
                             "mIcon"
                         ) as ImageView).imageTintList = ColorStateList.valueOf(
-                            colorActive[0]
+                            colorActive
                         )
 
                         (getObjectField(
                             param.thisObject,
                             "mIcon"
                         ) as ImageView).backgroundTintList = ColorStateList.valueOf(
-                            colorActiveAlpha[0]
+                            colorActiveAlpha
                         )
                     } catch (throwable: Throwable) {
                         log(TAG + throwable)
@@ -579,7 +610,7 @@ class QSFluidThemeA14(context: Context?) : ModPack(context!!) {
 
                 try {
                     (getObjectField(param.thisObject, "mAutoBrightnessView") as View)
-                        .background.setTint(colorActiveAlpha[0])
+                        .background.setTint(colorActiveAlpha)
                 } catch (ignored: Throwable) {
                 }
             }
@@ -592,7 +623,7 @@ class QSFluidThemeA14(context: Context?) : ModPack(context!!) {
 
                 try {
                     if (param.args[0] as Int == Tile.STATE_ACTIVE) {
-                        param.result = colorActive[0]
+                        param.result = colorActive
                     }
                 } catch (throwable: Throwable) {
                     log(TAG + throwable)
@@ -610,24 +641,26 @@ class QSFluidThemeA14(context: Context?) : ModPack(context!!) {
 
                     try {
                         if (param.args[0] as Int == Tile.STATE_ACTIVE) {
-                            param.result = colorActive[0]
+                            param.result = colorActive
                         }
                     } catch (throwable: Throwable) {
                         log(TAG + throwable)
                     }
                 }
-            })
+            }
+        )
 
         hookAllConstructors(qsTileViewImplClass, object : XC_MethodHook() {
             override fun afterHookedMethod(param: MethodHookParam) {
                 if (!fluidQsThemeEnabled) return
 
-                colorInactive[0] = changeAlpha(
+                colorInactive = changeAlpha(
                     getObjectField(
                         param.thisObject,
                         "colorInactive"
                     ) as Int, 1.0f
                 )
+                colorInactiveAlpha = changeAlpha(colorInactive, INACTIVE_ALPHA)
 
                 initResources()
 
@@ -636,7 +669,7 @@ class QSFluidThemeA14(context: Context?) : ModPack(context!!) {
                     setObjectField(
                         param.thisObject,
                         "colorActive",
-                        changeAlpha(colorActive[0], ACTIVE_ALPHA)
+                        colorActiveAlpha
                     )
 
                     setObjectField(
@@ -660,13 +693,13 @@ class QSFluidThemeA14(context: Context?) : ModPack(context!!) {
                     setObjectField(
                         param.thisObject,
                         "colorLabelActive",
-                        colorActive[0]
+                        colorActive
                     )
 
                     setObjectField(
                         param.thisObject,
                         "colorSecondaryLabelActive",
-                        colorActive[0]
+                        colorActive
                     )
                 } catch (throwable: Throwable) {
                     log(TAG + throwable)
@@ -705,12 +738,13 @@ class QSFluidThemeA14(context: Context?) : ModPack(context!!) {
             override fun beforeHookedMethod(param: MethodHookParam) {
                 if (!fluidQsThemeEnabled) return
 
-                colorInactive[0] = changeAlpha(
+                colorInactive = changeAlpha(
                     getObjectField(
                         param.thisObject,
                         "colorInactive"
                     ) as Int, 1.0f
                 )
+                colorInactiveAlpha = changeAlpha(colorInactive, INACTIVE_ALPHA)
 
                 initResources()
 
@@ -718,7 +752,7 @@ class QSFluidThemeA14(context: Context?) : ModPack(context!!) {
                     setObjectField(
                         param.thisObject,
                         "colorActive",
-                        changeAlpha(colorActive[0], ACTIVE_ALPHA)
+                        colorActiveAlpha
                     )
 
                     setObjectField(
@@ -742,13 +776,13 @@ class QSFluidThemeA14(context: Context?) : ModPack(context!!) {
                     setObjectField(
                         param.thisObject,
                         "colorLabelActive",
-                        colorActive[0]
+                        colorActive
                     )
 
                     setObjectField(
                         param.thisObject,
                         "colorSecondaryLabelActive",
-                        colorActive[0]
+                        colorActive
                     )
                 } catch (throwable: Throwable) {
                     log(TAG + throwable)
@@ -762,7 +796,7 @@ class QSFluidThemeA14(context: Context?) : ModPack(context!!) {
             "onFinishInflate",
             object : XC_MethodHook() {
                 override fun afterHookedMethod(param: MethodHookParam) {
-                    if (!fluidQsThemeEnabled || !fluidNotifEnabled) return
+                    if (!fluidQsThemeEnabled || !fluidNotificationEnabled) return
 
                     val mBackgroundNormal =
                         getObjectField(param.thisObject, "mBackgroundNormal") as View?
@@ -777,7 +811,7 @@ class QSFluidThemeA14(context: Context?) : ModPack(context!!) {
                 "onFinishInflate",
                 object : XC_MethodHook() {
                     override fun afterHookedMethod(param: MethodHookParam) {
-                        if (!fluidQsThemeEnabled || !fluidNotifEnabled) return
+                        if (!fluidQsThemeEnabled || !fluidNotificationEnabled) return
 
                         val mPillView = (param.thisObject as ViewGroup).findViewById<View?>(
                             mContext.resources.getIdentifier(
@@ -794,7 +828,7 @@ class QSFluidThemeA14(context: Context?) : ModPack(context!!) {
         // Notification footer buttons
         val updateNotificationFooterButtons: XC_MethodHook = object : XC_MethodHook() {
             override fun afterHookedMethod(param: MethodHookParam) {
-                if (!fluidQsThemeEnabled || !fluidNotifEnabled) return
+                if (!fluidQsThemeEnabled || !fluidNotificationEnabled) return
 
                 try {
                     val mManageButton: Button = try {
@@ -879,21 +913,8 @@ class QSFluidThemeA14(context: Context?) : ModPack(context!!) {
             wasDark = isDark
         }
 
-        colorActive[0] = mContext.resources.getColor(
-            mContext.resources.getIdentifier(
-                "android:color/system_accent1_400",
-                "color",
-                mContext.packageName
-            ), mContext.theme
-        )
-
-        colorActiveAlpha[0] = Color.argb(
-            (ACTIVE_ALPHA * 255).toInt(), Color.red(
-                colorActive[0]
-            ), Color.green(colorActive[0]), Color.blue(colorActive[0])
-        )
-
-        colorInactiveAlpha[0] = changeAlpha(colorInactive[0], INACTIVE_ALPHA)
+        colorActive = ContextCompat.getColor(mContext, android.R.color.system_accent1_400)
+        colorActiveAlpha = changeAlpha(colorActive, ACTIVE_ALPHA)
     }
 
     private fun changeAlpha(color: Int, alpha: Float): Int {
@@ -912,14 +933,14 @@ class QSFluidThemeA14(context: Context?) : ModPack(context!!) {
 
     private fun createBrightnessDrawable(context: Context): LayerDrawable {
         val res = context.resources
-        val cornerRadius = context.resources.getDimensionPixelSize(
+        val cornerRadius = res.getDimensionPixelSize(
             res.getIdentifier(
                 "rounded_slider_corner_radius",
                 "dimen",
                 context.packageName
             )
         )
-        val height = context.resources.getDimensionPixelSize(
+        val height = res.getDimensionPixelSize(
             res.getIdentifier(
                 "rounded_slider_height",
                 "dimen",
@@ -937,8 +958,8 @@ class QSFluidThemeA14(context: Context?) : ModPack(context!!) {
 
         val backgroundShape = ShapeDrawable(RoundRectShape(radiusF, null, null))
         backgroundShape.intrinsicHeight = height
-        backgroundShape.paint.color = changeAlpha(colorInactiveAlpha[0], INACTIVE_ALPHA)
-        backgroundShape.setTint(colorInactiveAlpha[0])
+        backgroundShape.alpha = (BRIGHTNESS_BAR_BACKGROUND_ALPHA * 255).toInt()
+        backgroundShape.setTint(colorInactive)
 
         // Create the progress drawable
         var progressDrawable: RoundedCornerProgressDrawable? = null
@@ -946,8 +967,8 @@ class QSFluidThemeA14(context: Context?) : ModPack(context!!) {
             progressDrawable = RoundedCornerProgressDrawable(
                 createBrightnessForegroundDrawable(context)
             )
-            progressDrawable.alpha = (ACTIVE_ALPHA * 255).toInt()
-            progressDrawable.setTint(colorActive[0])
+            progressDrawable.alpha = (BRIGHTNESS_BAR_FOREGROUND_ALPHA * 255).toInt()
+            progressDrawable.setTint(colorActive)
         } catch (ignored: Throwable) {
         }
 
@@ -964,8 +985,8 @@ class QSFluidThemeA14(context: Context?) : ModPack(context!!) {
         )
 
         if (startDrawable != null && endDrawable != null) {
-            startDrawable.setTint(colorActive[0])
-            endDrawable.setTint(colorActive[0])
+            startDrawable.setTint(colorActive)
+            endDrawable.setTint(colorActive)
         }
 
         // Create the layer drawable
@@ -993,7 +1014,7 @@ class QSFluidThemeA14(context: Context?) : ModPack(context!!) {
         )
 
         rectangleDrawable.cornerRadius = cornerRadius.toFloat()
-        rectangleDrawable.setColor(colorActive[0])
+        rectangleDrawable.setColor(colorActive)
 
         val layerDrawable = LayerDrawable(arrayOf<Drawable>(rectangleDrawable))
         layerDrawable.setLayerGravity(0, Gravity.FILL_HORIZONTAL or Gravity.CENTER)
@@ -1007,10 +1028,13 @@ class QSFluidThemeA14(context: Context?) : ModPack(context!!) {
     companion object {
         private val TAG = "Iconify - ${QSFluidThemeA14::class.java.simpleName}: "
         private const val ACTIVE_ALPHA = 0.2f
-        private const val INACTIVE_ALPHA = ACTIVE_ALPHA + 0.2f
-        private const val UNAVAILABLE_ALPHA = INACTIVE_ALPHA - 0.1f
+        private const val INACTIVE_ALPHA = 0.4f
+        private const val UNAVAILABLE_ALPHA = 0.3f
+        private const val BRIGHTNESS_BAR_BACKGROUND_ALPHA = 0.3f
+        private const val BRIGHTNESS_BAR_FOREGROUND_ALPHA = 0.2f
+        private const val PM_LITE_BACKGROUND_CODE = 1
         private var fluidQsThemeEnabled = false
-        private var fluidNotifEnabled = false
+        private var fluidNotificationEnabled = false
         private var fluidPowerMenuEnabled = false
     }
 }
