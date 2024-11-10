@@ -731,8 +731,6 @@ class DepthWallpaperA14(context: Context?) : ModPack(context!!) {
                                                 "mScrimBehindAlphaKeyguard"
                                             )
                                         }
-
-                                        mWallpaperBackground.visibility = View.VISIBLE
                                     }
                                 }
                             }
