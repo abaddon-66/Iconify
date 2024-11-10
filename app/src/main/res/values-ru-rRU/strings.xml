@@ -445,9 +445,9 @@
     <string name="oneplus_qs_header_title">QS в стиле Oneplus</string>
     <string name="oneplus_qs_header_desc">Включить медиаплеер и плитки в стиле OOS в QS</string>
     <string name="oneplus_qs_header_vibrate_title">Виброотклик</string>
-    <string name="oneplus_qs_header_vibrate_desc">Добавить вибро отклик на плитки</string>
-    <string name="oneplus_qs_header_hide_stock_media_player_title">Скрыть стандартный медиа плеер</string>
-    <string name="oneplus_qs_header_hide_stock_media_player_desc">Удалить медиа плеер из панели быстрых настроек</string>
+    <string name="oneplus_qs_header_vibrate_desc">Добавить виброотклик на плитки</string>
+    <string name="oneplus_qs_header_hide_stock_media_player_title">Скрыть стандартный медиаплеер</string>
+    <string name="oneplus_qs_header_hide_stock_media_player_desc">Удалить медиаплеер из панели быстрых настроек</string>
     <string name="oneplus_qs_header_blur_level">Уровень размытия</string>
     <string name="oneplus_qs_header_fade_level">Уровень затемнения</string>
     <string name="oneplus_qs_header_top_margin">Верхнее поле</string>
