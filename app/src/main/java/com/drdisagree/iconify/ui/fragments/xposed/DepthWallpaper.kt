@@ -109,6 +109,7 @@ class DepthWallpaper : ControlledPreferenceFragmentCompat() {
                     requiresSystemUiRestart = true
                 )
             }
+
             DEPTH_WALLPAPER_AI_MODE -> {
                 checkAiStatus()
             }
@@ -171,16 +172,27 @@ class DepthWallpaper : ControlledPreferenceFragmentCompat() {
                 if (AppUtils.isAppInstalled(AI_PLUGIN_PACKAGE)) {
                     setSummary(getString(R.string.depth_wallpaper_ai_status_plugin_installed))
                     setOnPreferenceClickListener {
-                        val intent = requireContext().packageManager.getLaunchIntentForPackage(AI_PLUGIN_PACKAGE)
-                        startActivity(intent!!)
+                        startActivity(
+                            requireContext()
+                                .packageManager
+                                .getLaunchIntentForPackage(AI_PLUGIN_PACKAGE)!!
+                        )
                         true
                     }
                 } else {
                     setSummary(getString(R.string.depth_wallpaper_ai_status_plugin_not_installed))
                     setOnPreferenceClickListener {
-                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(AI_PLUGIN_URL))
-                        startActivity(intent)
-                        true
+                        try {
+                            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(AI_PLUGIN_URL)))
+                            true
+                        } catch (e: Exception) {
+                            Toast.makeText(
+                                requireContext(),
+                                getString(R.string.toast_error),
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            false
+                        }
                     }
                 }
             }
