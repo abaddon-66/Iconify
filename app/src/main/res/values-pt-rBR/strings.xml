@@ -920,7 +920,7 @@
     <string name="btn_enable_custom_colors">Aplicar cores</string>
     <string name="btn_reset">Redefinir</string>
     <string name="btn_reboot_now">Reiniciar agora</string>
-    <string name="btn_download">Download</string>
+    <string name="btn_download">Baixar</string>
     <string name="btn_restart_systemui">Reiniciar Interface do sistema</string>
     <string name="btn_pick_font">Escolher fonte</string>
     <string name="btn_reset_tint">Redefinir tonalidade</string>
