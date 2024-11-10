@@ -25,6 +25,7 @@ import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.TransitionDrawable
 import android.media.MediaMetadata
 import android.media.session.MediaController
+import android.media.session.MediaSession
 import android.media.session.MediaSessionManager
 import android.media.session.PlaybackState
 import android.net.ConnectivityManager
@@ -33,6 +34,7 @@ import android.net.NetworkCapabilities
 import android.net.wifi.WifiManager
 import android.os.Handler
 import android.os.Looper
+import android.os.UserHandle
 import android.provider.Settings
 import android.telephony.SubscriptionManager
 import android.telephony.TelephonyManager
@@ -68,6 +70,7 @@ import com.drdisagree.iconify.utils.color.monet.quantize.QuantizerCelebi
 import com.drdisagree.iconify.utils.color.monet.score.Score
 import com.drdisagree.iconify.xposed.ModPack
 import com.drdisagree.iconify.xposed.modules.utils.ActivityLauncherUtils
+import com.drdisagree.iconify.xposed.modules.utils.Helpers
 import com.drdisagree.iconify.xposed.modules.utils.Helpers.findClassInArray
 import com.drdisagree.iconify.xposed.modules.utils.Helpers.isMethodAvailable
 import com.drdisagree.iconify.xposed.modules.utils.Helpers.isQsTileOverlayEnabled
@@ -274,6 +277,10 @@ class OpQsHeader(context: Context?) : ModPack(context!!) {
             "$SYSTEMUI_PACKAGE.media.controls.ui.controller.MediaControlPanel",
             "$SYSTEMUI_PACKAGE.media.controls.ui.MediaControlPanel"
         )
+        val volumeDialogImplClass = findClass(
+            "$SYSTEMUI_PACKAGE.volume.VolumeDialogImpl",
+            loadPackageParam.classLoader
+        )
         launchableImageView = findClassIfExists(
             "$SYSTEMUI_PACKAGE.animation.view.LaunchableImageView",
             loadPackageParam.classLoader
@@ -320,12 +327,20 @@ class OpQsHeader(context: Context?) : ModPack(context!!) {
             }
         })
 
-        hookAllConstructors(mediaControlPanelClass, object : XC_MethodHook() {
+        val getMediaOutputDialog = object : XC_MethodHook() {
             override fun afterHookedMethod(param: MethodHookParam) {
-                mMediaOutputDialogFactory =
-                    getObjectField(param.thisObject, "mMediaOutputDialogFactory")
+                if (mMediaOutputDialogFactory == null) {
+                    mMediaOutputDialogFactory = try {
+                        getObjectField(param.thisObject, "mMediaOutputDialogFactory")
+                    } catch (ignored: Throwable) {
+                        getObjectField(param.thisObject, "mMediaOutputDialogManager")
+                    }
+                }
             }
-        })
+        }
+
+        hookAllConstructors(mediaControlPanelClass, getMediaOutputDialog)
+        hookAllConstructors(volumeDialogImplClass, getMediaOutputDialog)
 
         hookAllMethods(qsTileViewImplClass, "init", object : XC_MethodHook() {
             override fun beforeHookedMethod(param: MethodHookParam) {
@@ -620,14 +635,25 @@ class OpQsHeader(context: Context?) : ModPack(context!!) {
                             val qsPanel = getObjectField(param.thisObject, "mView")
                             val qsPanelTag = callMethod(qsPanel, "getDumpableTag")
 
-                            callMethod(
-                                mQSLogger,
-                                "logSwitchTileLayout",
-                                horizontal,
-                                mUsingHorizontalLayout,
-                                force,
-                                qsPanelTag
-                            )
+                            try {
+                                callMethod(
+                                    mQSLogger,
+                                    "logSwitchTileLayout",
+                                    horizontal,
+                                    mUsingHorizontalLayout,
+                                    force,
+                                    qsPanelTag
+                                )
+                            } catch (ignored: Throwable) {
+                                callMethod(
+                                    mQSLogger,
+                                    "logSwitchTileLayout",
+                                    qsPanelTag,
+                                    horizontal,
+                                    mUsingHorizontalLayout,
+                                    force
+                                )
+                            }
 
                             setObjectField(
                                 param.thisObject,
@@ -2053,7 +2079,9 @@ class OpQsHeader(context: Context?) : ModPack(context!!) {
     }
 
     private fun launchMediaOutputSwitcher(packageName: String?, v: View) {
-        if (packageName != null && mMediaOutputDialogFactory != null) {
+        if (packageName == null) return
+
+        if (mMediaOutputDialogFactory != null) {
             if (isMethodAvailable(
                     mMediaOutputDialogFactory,
                     "create",
@@ -2073,25 +2101,46 @@ class OpQsHeader(context: Context?) : ModPack(context!!) {
                 )
             ) {
                 callMethod(mMediaOutputDialogFactory, "create", v, packageName, true, true)
+            } else if (isMethodAvailable(
+                    mMediaOutputDialogFactory,
+                    "createAndShow",
+                    String::class.java,
+                    Boolean::class.java,
+                    View::class.java,
+                    UserHandle::class.java,
+                    MediaSession.Token::class.java
+                )
+            ) {
+                callMethod(
+                    mMediaOutputDialogFactory,
+                    "createAndShow",
+                    packageName,
+                    true,
+                    v,
+                    null,
+                    null
+                )
             } else {
-                log(TAG + "MediaOutputDialogFactory is not available")
+                log(TAG + "No method available to create MediaOutputDialog")
             }
+        } else {
+            log(TAG + "MediaOutputDialogFactory is not available")
         }
     }
 
     private fun launchMediaPlayer(packageName: String?) {
-        val appIntent = if (packageName != null) Intent(
-            mContext.packageManager.getLaunchIntentForPackage(packageName)
-        )
-        else null
+        if (packageName == null) return
 
-        if (appIntent != null) {
-            appIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            appIntent.setPackage(packageName)
-            mActivityLauncherUtils.launchApp(appIntent, true)
-            vibrate()
-            return
-        }
+        mActivityLauncherUtils.launchApp(
+            Intent(
+                mContext.packageManager.getLaunchIntentForPackage(packageName)
+            ).apply {
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                setPackage(packageName)
+            },
+            true
+        )
+        vibrate()
     }
 
     private fun areDataEqual(

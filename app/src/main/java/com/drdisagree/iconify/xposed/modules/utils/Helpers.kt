@@ -226,6 +226,15 @@ object Helpers {
         }
     }
 
+    fun isFieldAvailable(clazz: Class<*>, fieldName: String): Boolean {
+        return try {
+            clazz::class.java.getDeclaredField(fieldName)
+            true
+        } catch (ignored: NoSuchFieldException) {
+            false
+        }
+    }
+
     val isQsTileOverlayEnabled: Boolean
         get() {
             val output = Shell.cmd(
