@@ -91,6 +91,8 @@ class LockscreenClockParent : BaseFragment() {
             binding.clockCarouselView.clockCarouselViewStub.inflate() as ClockCarouselView
 
         Executors.newSingleThreadExecutor().execute {
+            if (context == null) return@execute
+
             val lsClock: MutableList<ClockCarouselItemModel> = ArrayList()
             var maxIndex = 0
             while (resources.getIdentifier(
@@ -99,16 +101,16 @@ class LockscreenClockParent : BaseFragment() {
                     BuildConfig.APPLICATION_ID
                 ) != 0
             ) {
+                if (context == null) return@execute
+
                 lsClock.add(
                     ClockCarouselItemModel(
-                        if (maxIndex == 0) requireContext().getString(R.string.clock_none) else requireContext().getString(
-                            R.string.clock_style_name,
-                            maxIndex
-                        ),
+                        if (maxIndex == 0) getString(R.string.clock_none)
+                        else getString(R.string.clock_style_name, maxIndex),
                         maxIndex,
                         getInt(LSCLOCK_STYLE, 0) == maxIndex,
                         LOCKSCREEN_CLOCK_LAYOUT + maxIndex,
-                        LayoutInflater.from(requireContext()).inflate(
+                        LayoutInflater.from(context).inflate(
                             resources.getIdentifier(
                                 LOCKSCREEN_CLOCK_LAYOUT + maxIndex,
                                 "layout",
@@ -126,6 +128,8 @@ class LockscreenClockParent : BaseFragment() {
                     )
                 )
                 maxIndex++
+
+                if (context == null) return@execute
             }
 
             Handler(Looper.getMainLooper()).postDelayed({
@@ -162,6 +166,8 @@ class LockscreenClockParent : BaseFragment() {
 
     private fun loadAndSetWallpaper() {
         viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Main) {
+            if (context == null) return@launch
+
             val bitmap = loadWallpaper(requireContext(), isLockscreen = true).await()
 
             binding.clockCarouselView.preview.wallpaperDimmingScrim.visibility = View.VISIBLE
