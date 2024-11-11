@@ -28,13 +28,14 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.lang.reflect.InvocationTargetException
 import java.util.LinkedList
 import java.util.Queue
 import java.util.concurrent.CompletableFuture
 
 class HookEntry : ServiceConnection {
 
-    private var mContext: Context? = null
+    private lateinit var mContext: Context
 
     init {
         instance = this
@@ -57,15 +58,15 @@ class HookEntry : ServiceConnection {
                 hookAllMethods(phoneWindowManagerClass, "init", object : XC_MethodHook() {
                     override fun beforeHookedMethod(param: MethodHookParam) {
                         try {
-                            if (mContext == null) {
+                            if (!::mContext.isInitialized) {
                                 mContext = param.args[0] as Context
 
-                                HookRes.modRes = mContext!!.createPackageContext(
+                                HookRes.modRes = mContext.createPackageContext(
                                     BuildConfig.APPLICATION_ID,
                                     Context.CONTEXT_IGNORE_SECURITY
                                 ).resources
 
-                                XPrefs.init(mContext!!)
+                                XPrefs.init(mContext)
 
                                 CompletableFuture.runAsync { waitForXprefsLoad(loadPackageParam) }
                             }
@@ -87,15 +88,15 @@ class HookEntry : ServiceConnection {
                         object : XC_MethodHook() {
                             override fun afterHookedMethod(param: MethodHookParam) {
                                 try {
-                                    if (mContext == null) {
+                                    if (!::mContext.isInitialized) {
                                         mContext = param.args[2] as Context
 
-                                        HookRes.modRes = mContext!!.createPackageContext(
+                                        HookRes.modRes = mContext.createPackageContext(
                                             BuildConfig.APPLICATION_ID,
                                             Context.CONTEXT_IGNORE_SECURITY
                                         ).resources
 
-                                        XPrefs.init(mContext!!)
+                                        XPrefs.init(mContext)
 
                                         waitForXprefsLoad(loadPackageParam)
                                     }
@@ -112,11 +113,11 @@ class HookEntry : ServiceConnection {
 
     private fun onXPrefsReady(loadPackageParam: LoadPackageParam) {
         if (!isChildProcess && BootLoopProtector.isBootLooped(loadPackageParam.packageName)) {
-            log("Possible bootloop in ${loadPackageParam.packageName} ; Iconify will not load for now...")
+            log("Possible crash in ${loadPackageParam.packageName} ; Iconify will not load for now...")
             return
         }
 
-        SystemUtils(mContext!!)
+        SystemUtils(mContext)
 
         loadModPacks(loadPackageParam)
     }
@@ -136,13 +137,18 @@ class HookEntry : ServiceConnection {
 
                 try {
                     instance.updatePrefs()
-                } catch (ignored: Throwable) {
+                } catch (throwable: Throwable) {
+                    log(TAG + "Failed to update prefs in ${mod.name}")
+                    log(TAG + throwable)
                 }
 
                 instance.handleLoadPackage(loadPackageParam)
                 runningMods.add(instance)
+            } catch (invocationTargetException: InvocationTargetException) {
+                log(TAG + "Start Error Dump - Occurred in ${mod.name}")
+                log(TAG + invocationTargetException.cause)
             } catch (throwable: Throwable) {
-                log("Start Error Dump - Occurred in ${mod.name}")
+                log(TAG + "Start Error Dump - Occurred in ${mod.name}")
                 log(TAG + throwable)
             }
         }
@@ -165,7 +171,7 @@ class HookEntry : ServiceConnection {
 
     private fun forceConnectRootService() {
         CoroutineScope(Dispatchers.Main).launch {
-            val mUserManager = mContext!!.getSystemService(Context.USER_SERVICE) as UserManager?
+            val mUserManager = mContext.getSystemService(Context.USER_SERVICE) as UserManager?
 
             withContext(Dispatchers.IO) {
                 while (mUserManager == null || !mUserManager.isUserUnlocked) {
@@ -197,7 +203,7 @@ class HookEntry : ServiceConnection {
                 )
             }
 
-            mContext!!.bindService(
+            mContext.bindService(
                 intent,
                 instance!!,
                 Context.BIND_AUTO_CREATE or Context.BIND_ADJUST_WITH_ACTIVITY
