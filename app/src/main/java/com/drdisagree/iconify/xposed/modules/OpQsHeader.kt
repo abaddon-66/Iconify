@@ -70,11 +70,10 @@ import com.drdisagree.iconify.utils.color.monet.quantize.QuantizerCelebi
 import com.drdisagree.iconify.utils.color.monet.score.Score
 import com.drdisagree.iconify.xposed.ModPack
 import com.drdisagree.iconify.xposed.modules.utils.ActivityLauncherUtils
-import com.drdisagree.iconify.xposed.modules.utils.Helpers
 import com.drdisagree.iconify.xposed.modules.utils.Helpers.findClassInArray
 import com.drdisagree.iconify.xposed.modules.utils.Helpers.isMethodAvailable
 import com.drdisagree.iconify.xposed.modules.utils.Helpers.isQsTileOverlayEnabled
-import com.drdisagree.iconify.xposed.modules.utils.SettingsLibUtils.Companion.getColorAttr
+import com.drdisagree.iconify.xposed.modules.utils.SettingsLibUtils.Companion.getColorAttrDefaultColor
 import com.drdisagree.iconify.xposed.modules.utils.TouchAnimator
 import com.drdisagree.iconify.xposed.modules.utils.VibrationUtils
 import com.drdisagree.iconify.xposed.modules.utils.ViewHelper.applyBlur
@@ -2195,23 +2194,14 @@ class OpQsHeader(context: Context?) : ModPack(context!!) {
         }
 
         mContext.apply {
-            colorAccent = getColorAttr(
+            colorAccent = getColorAttrDefaultColor(
                 this,
-                resources.getIdentifier(
-                    "colorAccent",
-                    "attr",
-                    FRAMEWORK_PACKAGE
-                )
-            ).defaultColor
-            colorPrimary = getColorAttr(
+                android.R.attr.colorAccent
+            )
+            colorPrimary = getColorAttrDefaultColor(
                 this,
-                resources.getIdentifier(
-                    "colorPrimary",
-                    "attr",
-                    FRAMEWORK_PACKAGE
-                )
-            ).defaultColor
-
+                android.R.attr.colorPrimary
+            )
             qsTileCornerRadius = resources.getDimensionPixelSize(
                 resources.getIdentifier(
                     "qs_corner_radius",
