@@ -1898,7 +1898,11 @@ class OpQsHeader(context: Context?) : ModPack(context!!) {
     }
 
     private fun applyColorFilterToBitmap(bitmap: Bitmap, color: Int?): Bitmap {
-        val colorFilteredBitmap = Bitmap.createBitmap(bitmap.width, bitmap.height, bitmap.config)
+        val colorFilteredBitmap = Bitmap.createBitmap(
+            bitmap.width,
+            bitmap.height,
+            bitmap.config ?: Bitmap.Config.ARGB_8888
+        )
 
         val paint = Paint().apply {
             isAntiAlias = true

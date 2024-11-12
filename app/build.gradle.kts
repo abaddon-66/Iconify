@@ -10,12 +10,12 @@ plugins {
 
 android {
     namespace = "com.drdisagree.iconify"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.drdisagree.iconify"
         minSdk = 31
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 21
         versionName = "6.9.0"
         setProperty("archivesBaseName", "Iconify v$versionName")
