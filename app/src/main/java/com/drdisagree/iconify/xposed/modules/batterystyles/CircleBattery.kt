@@ -91,7 +91,7 @@ open class CircleBattery(private val mContext: Context, frameColor: Int) : Batte
 
     private fun initColors() {
         customBlendColor = try {
-            Xprefs.getBoolean(Preferences.CUSTOM_BATTERY_BLEND_COLOR, false) ?: false
+            Xprefs.getBoolean(Preferences.CUSTOM_BATTERY_BLEND_COLOR, false)
         } catch (ignored: Throwable) {
             getBoolean(Preferences.CUSTOM_BATTERY_BLEND_COLOR, false)
         }
@@ -242,6 +242,7 @@ open class CircleBattery(private val mContext: Context, frameColor: Int) : Batte
     }
 
     @SuppressLint("DiscouragedApi", "RestrictedApi")
+    @Suppress("DEPRECATION")
     private fun updateSize() {
         val res = mContext.resources
         mDiameter = getBounds().bottom - getBounds().top

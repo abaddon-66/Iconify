@@ -28,6 +28,7 @@ class RootProviderProxy : Service() {
 
         init {
             try {
+                @Suppress("DEPRECATION")
                 Shell.setDefaultBuilder(
                     Shell.Builder.create()
                         .setFlags(Shell.FLAG_MOUNT_MASTER)

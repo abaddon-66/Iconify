@@ -18,10 +18,11 @@ import com.drdisagree.iconify.common.Preferences.WEATHER_UPDATE_INTERVAL
 import com.drdisagree.iconify.common.Preferences.WEATHER_YANDEX_KEY
 import com.drdisagree.iconify.common.Resources.SHARED_XPREFERENCES
 import com.drdisagree.iconify.utils.weather.providers.METNorwayProvider
-import com.drdisagree.iconify.xposed.utils.XPrefs.Xprefs
 import com.drdisagree.iconify.utils.weather.providers.OpenMeteoProvider
 import com.drdisagree.iconify.utils.weather.providers.OpenWeatherMapProvider
 import com.drdisagree.iconify.utils.weather.providers.YandexProvider
+import com.drdisagree.iconify.xposed.utils.XPrefs.Xprefs
+import com.drdisagree.iconify.xposed.utils.XPrefs.XprefsIsInitialized
 
 object WeatherConfig {
 
@@ -35,7 +36,7 @@ object WeatherConfig {
 
     private fun getPrefs(context: Context): SharedPreferences {
         try {
-            if (Xprefs != null) return Xprefs as SharedPreferences
+            if (XprefsIsInitialized) return Xprefs
             return context.createDeviceProtectedStorageContext().getSharedPreferences(
                 SHARED_XPREFERENCES, MODE_PRIVATE
             )
@@ -68,10 +69,10 @@ object WeatherConfig {
     fun getProvider(context: Context): AbstractWeatherProvider {
         val provider = getPrefs(context).getString(WEATHER_PROVIDER, "0")
         return when (provider) {
-            "1" -> return OpenWeatherMapProvider(context)
-            "2" -> return YandexProvider(context)
-            "3" -> return METNorwayProvider(context)
-            else -> return OpenMeteoProvider(context)
+            "1" -> OpenWeatherMapProvider(context)
+            "2" -> YandexProvider(context)
+            "3" -> METNorwayProvider(context)
+            else -> OpenMeteoProvider(context)
         }
     }
 

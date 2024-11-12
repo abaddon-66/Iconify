@@ -18,6 +18,7 @@ import com.drdisagree.iconify.utils.OmniJawsClient
 import com.drdisagree.iconify.utils.weather.WeatherContentProvider
 import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.Locale
 
 class WeatherActivity : AppCompatActivity(), OmniJawsClient.OmniJawsObserver {
 
@@ -96,8 +97,8 @@ class WeatherActivity : AppCompatActivity(), OmniJawsClient.OmniJawsObserver {
         // Provider Info
         binding.currentProvider.text = mWeatherClient.weatherInfo!!.provider
         val format = if (DateFormat.is24HourFormat(this)) "HH:mm" else "hh:mm a"
-        val sdf = SimpleDateFormat(format)
-        binding.lastUpdate.setText(sdf.format(mWeatherClient.weatherInfo!!.timeStamp))
+        val sdf = SimpleDateFormat(format, Locale.getDefault())
+        binding.lastUpdate.text = sdf.format(mWeatherClient.weatherInfo!!.timeStamp)
     }
 
     private fun getWeatherCondition(): String {
@@ -212,6 +213,7 @@ class WeatherActivity : AppCompatActivity(), OmniJawsClient.OmniJawsObserver {
             return Color.parseColor(BACKGROUND_CARD_SPECTRUM[hourOfDay])
         }
 
+    @Suppress("deprecation")
     private fun updateHourColor() {
         window.decorView.setBackgroundColor(currentHourColor)
         window.navigationBarColor = currentHourColor

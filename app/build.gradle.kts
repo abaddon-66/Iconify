@@ -107,6 +107,15 @@ android {
     }
 }
 
+tasks.withType<JavaCompile>().configureEach {
+    options.compilerArgs.add("-Xlint:-deprecation")
+}
+
+gradle.taskGraph.whenReady {
+    gradle.startParameter.showStacktrace = ShowStacktrace.ALWAYS
+    gradle.startParameter.warningMode = WarningMode.Summary
+}
+
 dependencies {
     // Kotlin
     implementation(libs.androidx.core.ktx)

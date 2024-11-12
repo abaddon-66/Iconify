@@ -34,6 +34,7 @@ import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicReference
 
+@Suppress("deprecation")
 class WeatherWork(val mContext: Context, workerParams: WorkerParameters) :
     ListenableWorker(mContext, workerParams) {
 

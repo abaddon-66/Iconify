@@ -78,6 +78,7 @@ class SplashActivity : AppCompatActivity() {
 
         init {
             Shell.enableVerboseLogging = BuildConfig.DEBUG
+            @Suppress("DEPRECATION")
             if (Shell.getCachedShell() == null) {
                 Shell.setDefaultBuilder(
                     Shell.Builder.create()
