@@ -1,4 +1,4 @@
-### Contributors
+### Translators
 
 Thanks to these translators and proofreaders, this project exists:
 
