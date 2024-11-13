@@ -1,14 +1,13 @@
 package com.drdisagree.iconify.ui.models
 
-import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.view.View
+import com.drdisagree.iconify.Iconify.Companion.appContext
 
 class InfoModel {
 
-    var context: Context? = null
-    var icon = 0
+    var icon: Any = 0
     var layout = 0
     var title: String? = null
     var desc: String? = null
@@ -22,19 +21,21 @@ class InfoModel {
         this.layout = layout
     }
 
-    constructor(context: Context?, title: String?, desc: String?, url: String?, icon: Int) {
+    constructor(title: String?, desc: String?, url: String?, icon: Any) {
         this.title = title
         this.desc = desc
         this.icon = icon
-        this.context = context
-        onClickListener = View.OnClickListener {
-            val intent = Intent(Intent.ACTION_VIEW)
-            intent.data = Uri.parse(url)
-            context?.startActivity(intent)
+        this.onClickListener = View.OnClickListener {
+            appContext.startActivity(
+                Intent(Intent.ACTION_VIEW).apply {
+                    data = Uri.parse(url)
+                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                }
+            )
         }
     }
 
-    constructor(title: String?, desc: String?, onClickListener: View.OnClickListener?, icon: Int) {
+    constructor(title: String?, desc: String?, onClickListener: View.OnClickListener?, icon: Any) {
         this.title = title
         this.desc = desc
         this.icon = icon
