@@ -462,7 +462,7 @@ Thanks to these translators and proofreaders, this project exists:
       </td>
     </tr>
   </tbody>
-</table>
+</table><a href="https://crowdin.com/project/iconify" target="_blank">Translate in Crowdin 🚀</a>
 <!-- CROWDIN-CONTRIBUTORS-END -->
 
 We extend our gratitude to everyone who has contributed to this project. Your efforts are highly
