@@ -714,12 +714,12 @@
     <!-- Xposed Depth Wallpaper -->
     <string name="enable_depth_wallpaper_title">A mélységi háttérkép engedélyezése</string>
     <string name="enable_depth_wallpaper_desc">iOS-ban megismert mélységi háttérkép\n%s</string>
-    <string name="depth_wallpaper_ai_mode">AI Mode</string>
+    <string name="depth_wallpaper_ai_mode">AI-mód</string>
     <string name="depth_wallpaper_ai_mlkit">MLKit (Google)</string>
-    <string name="depth_wallpaper_ai_plugin">Plugin</string>
-    <string name="depth_wallpaper_ai_status">AI Status</string>
-    <string name="depth_wallpaper_ai_status_plugin_not_installed">AI Plugin not installed.\nTap to download</string>
-    <string name="depth_wallpaper_ai_status_plugin_installed">AI Plugin installed.\nTap to open</string>
+    <string name="depth_wallpaper_ai_plugin">Bővítmény</string>
+    <string name="depth_wallpaper_ai_status">AI-állapot</string>
+    <string name="depth_wallpaper_ai_status_plugin_not_installed">Az AI-bővítmény nincs telepítve.\nKattintson a letöltéshez</string>
+    <string name="depth_wallpaper_ai_status_plugin_installed">Az AI-bővítmény telepítésre került.\nIndításhoz érintse meg</string>
     <string name="enable_custom_depth_wallpaper_title">Egyedi képek</string>
     <string name="enable_custom_depth_wallpaper_desc">Az egyedi kép beállítása mint mélységi háttérkép</string>
     <string name="depth_wallpaper_on_aod_title">\'Mindig bekapcsolva\' (AOD) esetén is</string>
@@ -846,7 +846,7 @@
     <string name="info_tester_desc">Az alkalmazás teszteléséért.</string>
     <string name="info_betterqs_desc">A jobb Gyorsbeállítások engedélyezéséért.</string>
     <string name="info_binaries_desc">Androidon futtatható binárisokhoz.</string>
-    <string name="info_buttercup_desc">For some lockscreen clock styles.</string>
+    <string name="info_buttercup_desc">Némelyik záróképernyői órastílushoz.</string>
     <string name="section_title_contributors">Közreműködők</string>
     <string name="info_contributor_desc">A githubon való közreműködésért.</string>
     <string name="info_contributor_desc_2">A Telegramban való segítségért.</string>
