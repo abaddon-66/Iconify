@@ -29,6 +29,7 @@ jobs:
           image_size: 32
           min_words_contributed: 1
           files: ./docs/contributors.md
+          crowdin_project_link: 'https://crowdin.com/project/iconify'
         env:
           CROWDIN_PROJECT_ID: ${{ secrets.CROWDIN_PROJECT_ID }}
           CROWDIN_PERSONAL_TOKEN: ${{ secrets.CROWDIN_PERSONAL_TOKEN }}
