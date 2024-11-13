@@ -714,12 +714,12 @@
     <!-- Xposed Depth Wallpaper -->
     <string name="enable_depth_wallpaper_title">Увімкнути шпалери з ефектом глибини</string>
     <string name="enable_depth_wallpaper_desc">Показати шпалери з ефектом глибини як в iOS\n%s</string>
-    <string name="depth_wallpaper_ai_mode">AI Mode</string>
+    <string name="depth_wallpaper_ai_mode">Режим ШІ</string>
     <string name="depth_wallpaper_ai_mlkit">MLKit (Google)</string>
-    <string name="depth_wallpaper_ai_plugin">Plugin</string>
-    <string name="depth_wallpaper_ai_status">AI Status</string>
-    <string name="depth_wallpaper_ai_status_plugin_not_installed">AI Plugin not installed.\nTap to download</string>
-    <string name="depth_wallpaper_ai_status_plugin_installed">AI Plugin installed.\nTap to open</string>
+    <string name="depth_wallpaper_ai_plugin">Плагін</string>
+    <string name="depth_wallpaper_ai_status">Стан ШІ</string>
+    <string name="depth_wallpaper_ai_status_plugin_not_installed">Плагін ШІ не встановлено.\nНатисніть для завантаження</string>
+    <string name="depth_wallpaper_ai_status_plugin_installed">Плагін ШІ встановлено.\nНатисніть, щоби відкрити</string>
     <string name="enable_custom_depth_wallpaper_title">Власні зображення</string>
     <string name="enable_custom_depth_wallpaper_desc">Встановити власні зображення як шпалери з ефектом глибини</string>
     <string name="depth_wallpaper_on_aod_title">Показати на AOD</string>
@@ -1132,7 +1132,7 @@
     <string name="weather_provider_owm_key_message">Введіть свій ключ API OpenWeatherMap, щоб отримати дані про погоду.</string>
     <string name="yandex_api_key">API ключ Яндекса</string>
     <string name="weather_provider_yandex_key_title">Потрібен API ключ Яндекса</string>
-    <string name="weather_provider_yandex_key_message">Please enter your Yandex API key to fetch weather data.</string>
+    <string name="weather_provider_yandex_key_message">Уведіть свій API ключ Яндекса, щоб отримати дані про погоду.</string>
     <string name="weather_show_location">Показувати розташування</string>
     <string name="weather_show_location_summary">Показувати розташування перед значком</string>
     <string name="weather_show_condition">Показувати стан</string>
