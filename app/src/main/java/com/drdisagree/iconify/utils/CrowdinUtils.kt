@@ -1,14 +1,12 @@
 package com.drdisagree.iconify.utils
 
-import com.drdisagree.iconify.Iconify.Companion.appContext
 import com.drdisagree.iconify.ui.models.InfoModel
+import com.drdisagree.iconify.utils.FileUtils.readJsonFileFromAssets
 import org.json.JSONArray
-import java.io.BufferedReader
-import java.io.InputStreamReader
 
-fun parseContributors(): ArrayList<InfoModel> {
+fun parseTranslators(): ArrayList<InfoModel> {
     val contributorsList = ArrayList<InfoModel>()
-    val jsonStr = readJsonFileFromAssets("Misc/contributors.json")
+    val jsonStr = readJsonFileFromAssets("Misc/translators.json")
     val jsonArray = JSONArray(jsonStr)
 
     for (i in 0 until jsonArray.length()) {
@@ -30,16 +28,4 @@ fun parseContributors(): ArrayList<InfoModel> {
     }
 
     return contributorsList
-}
-
-fun readJsonFileFromAssets(fileName: String): String {
-    val stringBuilder = StringBuilder()
-    val inputStream = appContext.assets.open(fileName)
-    val bufferedReader = BufferedReader(InputStreamReader(inputStream))
-    var line: String?
-    while (bufferedReader.readLine().also { line = it } != null) {
-        stringBuilder.append(line)
-    }
-    bufferedReader.close()
-    return stringBuilder.toString()
 }

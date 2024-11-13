@@ -13,7 +13,7 @@ import com.drdisagree.iconify.ui.adapters.InfoAdapter
 import com.drdisagree.iconify.ui.base.BaseFragment
 import com.drdisagree.iconify.ui.models.InfoModel
 import com.drdisagree.iconify.ui.utils.ViewHelper.setHeader
-import com.drdisagree.iconify.utils.parseContributors
+import com.drdisagree.iconify.utils.parseTranslators
 
 class Credits : BaseFragment() {
 
@@ -277,7 +277,7 @@ class Credits : BaseFragment() {
     private fun initTranslatorsList(): InfoAdapter {
         return InfoAdapter(
             requireContext(),
-            parseContributors().also {
+            parseTranslators().also {
                 it.add(0, InfoModel(resources.getString(R.string.section_title_translators)))
             }
         )
