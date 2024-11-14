@@ -2,7 +2,7 @@
 
 This project exists thanks to the following contributors:
 
-<!-- readme: contributors,crowdin-bot/- -start -->
+<!-- readme: contributors,Mahmud0808/-,crowdin-bot/- -start -->
 <table>
 	<tbody>
 		<tr>
@@ -162,4 +162,4 @@ This project exists thanks to the following contributors:
 		</tr>
 	<tbody>
 </table>
-<!-- readme: contributors,crowdin-bot/- -end -->
+<!-- readme: contributors,Mahmud0808/-,crowdin-bot/- -end -->
