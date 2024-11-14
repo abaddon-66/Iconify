@@ -2,7 +2,7 @@
 
 This project exists thanks to the following contributors:
 
-<!-- readme: contributors,Mahmud0808/-,crowdin-bot/- -start -->
+<!-- readme: contributors,Mahmud0808/- ,crowdin-bot/- -start -->
 <table>
 	<tbody>
 		<tr>
@@ -147,7 +147,7 @@ This project exists thanks to the following contributors:
             </td>
             <td align="center">
                 <a href="https://github.com/SK00RUPA">
-                    <img src="https://private-avatars.githubusercontent.com/u/36867039?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTEiLCJleHAiOjE3MzE1NzY2MDAsIm5iZiI6MTczMTU3NTQwMCwicGF0aCI6Ii91LzM2ODY3MDM5In0.ttl-xSYmrJkEOTrJllUaXBK9p-OcIO0g6pgvvtShmJo&v=4" width="100;" alt="SK00RUPA"/>
+                    <img src="https://private-avatars.githubusercontent.com/u/36867039?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTEiLCJleHAiOjE3MzE1Nzc1MDAsIm5iZiI6MTczMTU3NjMwMCwicGF0aCI6Ii91LzM2ODY3MDM5In0.RPj6gnQy3MJoWhb2XD_Cq1TmxctY4bsFUQVXoT8ULXw&v=4" width="100;" alt="SK00RUPA"/>
                     <br />
                     <sub><b>SK00RUPA</b></sub>
                 </a>
@@ -162,4 +162,4 @@ This project exists thanks to the following contributors:
 		</tr>
 	<tbody>
 </table>
-<!-- readme: contributors,Mahmud0808/-,crowdin-bot/- -end -->
+<!-- readme: contributors,Mahmud0808/- ,crowdin-bot/- -end -->

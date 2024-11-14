@@ -11,7 +11,7 @@ permissions:
 
 jobs:
   contrib-readme-job:
-    name: A job to fetch contributors list
+    name: Fetch and update contributors list
     runs-on: ubuntu-latest
 
     steps:
@@ -26,6 +26,9 @@ jobs:
           collaborators: all
           columns_per_row: 6
           commit_message: "Update contributors.md"
+          committer_username: "Mahmud0808"
+          committer_email: "crazymahmud08@gmail.com"
+          pr_title_on_protected: "Update contributors list"
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
 
