@@ -47,28 +47,28 @@ This project exists thanks to the following contributors:
 		<tr>
             <td align="center">
                 <a href="https://github.com/Mahmud0808">
-                    <img src="https://private-avatars.githubusercontent.com/u/29881338?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTEiLCJleHAiOjE3MzE1NzU0NjAsIm5iZiI6MTczMTU3NDI2MCwicGF0aCI6Ii91LzI5ODgxMzM4In0._KUnvKvO-4ZHwWxtreKRtb_Q0jDKz7iJEAxANO5b60M&v=4" width="100;" alt="Mahmud0808"/>
+                    <img src="https://private-avatars.githubusercontent.com/u/29881338?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTEiLCJleHAiOjE3MzE1NzYzNjAsIm5iZiI6MTczMTU3NTE2MCwicGF0aCI6Ii91LzI5ODgxMzM4In0.e8DBKXoXNDSzIrPe4EfpIjCpWvUJxyw90Oqr1XJ9CY4&v=4" width="100;" alt="Mahmud0808"/>
                     <br />
                     <sub><b>DrDisagree</b></sub>
                 </a>
             </td>
             <td align="center">
                 <a href="https://github.com/DHD2280">
-                    <img src="https://private-avatars.githubusercontent.com/u/5488701?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTEiLCJleHAiOjE3MzE1NzU0MDAsIm5iZiI6MTczMTU3NDIwMCwicGF0aCI6Ii91LzU0ODg3MDEifQ.H_RyzRY3CJx8whftpmvo58f7ByvqtWC6qAt-QvODp9g&v=4" width="100;" alt="DHD2280"/>
+                    <img src="https://private-avatars.githubusercontent.com/u/5488701?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTEiLCJleHAiOjE3MzE1NzYzMDAsIm5iZiI6MTczMTU3NTEwMCwicGF0aCI6Ii91LzU0ODg3MDEifQ.CByNdTq3MK75v27BLrLvCwRAWw2tCoGS5jvM6CBoKMM&v=4" width="100;" alt="DHD2280"/>
                     <br />
                     <sub><b>Luigi</b></sub>
                 </a>
             </td>
             <td align="center">
                 <a href="https://github.com/crowdin-bot">
-                    <img src="https://private-avatars.githubusercontent.com/u/58779643?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTEiLCJleHAiOjE3MzE1NzUxMDAsIm5iZiI6MTczMTU3MzkwMCwicGF0aCI6Ii91LzU4Nzc5NjQzIn0.MjelJX6R1_hJhHx8zm8SJ1c1R0XOCaHIrVCIgvbUQ3Y&v=4" width="100;" alt="crowdin-bot"/>
+                    <img src="https://private-avatars.githubusercontent.com/u/58779643?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTEiLCJleHAiOjE3MzE1NzYwMDAsIm5iZiI6MTczMTU3NDgwMCwicGF0aCI6Ii91LzU4Nzc5NjQzIn0.LrOSE0ENfAYmvLkvJSFE8H29FL5hgxf-NMMXSbPf2Is&v=4" width="100;" alt="crowdin-bot"/>
                     <br />
                     <sub><b>Crowdin Bot</b></sub>
                 </a>
             </td>
             <td align="center">
                 <a href="https://github.com/B1ays">
-                    <img src="https://private-avatars.githubusercontent.com/u/108483082?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTEiLCJleHAiOjE3MzE1NzU0NjAsIm5iZiI6MTczMTU3NDI2MCwicGF0aCI6Ii91LzEwODQ4MzA4MiJ9.HSn7AOzZGKKzzlfDaS5ZPQ8YEXkyJp3bWO8wHgZUozI&v=4" width="100;" alt="B1ays"/>
+                    <img src="https://private-avatars.githubusercontent.com/u/108483082?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTEiLCJleHAiOjE3MzE1NzYzNjAsIm5iZiI6MTczMTU3NTE2MCwicGF0aCI6Ii91LzEwODQ4MzA4MiJ9.TN4rOpBTIiNFpRFpdU1ALoWk-4t0ULfuxobs0CS2AGY&v=4" width="100;" alt="B1ays"/>
                     <br />
                     <sub><b>B1ays</b></sub>
                 </a>
@@ -82,7 +82,7 @@ This project exists thanks to the following contributors:
             </td>
             <td align="center">
                 <a href="https://github.com/mrx7014">
-                    <img src="https://private-avatars.githubusercontent.com/u/90919499?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTEiLCJleHAiOjE3MzE1NzUwNDAsIm5iZiI6MTczMTU3Mzg0MCwicGF0aCI6Ii91LzkwOTE5NDk5In0.wpLiukFAtm3VQSKBrcyrQ-PQSxo5kHTlsjRDS_rEIws&v=4" width="100;" alt="mrx7014"/>
+                    <img src="https://private-avatars.githubusercontent.com/u/90919499?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTEiLCJleHAiOjE3MzE1NzU5NDAsIm5iZiI6MTczMTU3NDc0MCwicGF0aCI6Ii91LzkwOTE5NDk5In0.SaRkANFcNaOLuF7PqhXNwexsQeEtVtXX_V2tU6fsWdA&v=4" width="100;" alt="mrx7014"/>
                     <br />
                     <sub><b>MRX7014 | Octopus</b></sub>
                 </a>
@@ -91,28 +91,28 @@ This project exists thanks to the following contributors:
 		<tr>
             <td align="center">
                 <a href="https://github.com/Cccc-owo">
-                    <img src="https://private-avatars.githubusercontent.com/u/47687154?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTEiLCJleHAiOjE3MzE1NzUxNjAsIm5iZiI6MTczMTU3Mzk2MCwicGF0aCI6Ii91LzQ3Njg3MTU0In0.FN5isQkMRZesdANb0OjoKQ31lmYGYvTSjPHjqA3oxQs&v=4" width="100;" alt="Cccc-owo"/>
+                    <img src="https://private-avatars.githubusercontent.com/u/47687154?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTEiLCJleHAiOjE3MzE1NzYwNjAsIm5iZiI6MTczMTU3NDg2MCwicGF0aCI6Ii91LzQ3Njg3MTU0In0.F7MvqMIpZwiQ3hAGHqfbtX7rQxuaeK2ispHJHqFFDds&v=4" width="100;" alt="Cccc-owo"/>
                     <br />
                     <sub><b>Cccc_</b></sub>
                 </a>
             </td>
             <td align="center">
                 <a href="https://github.com/Displax">
-                    <img src="https://private-avatars.githubusercontent.com/u/16293419?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTEiLCJleHAiOjE3MzE1NzQ5ODAsIm5iZiI6MTczMTU3Mzc4MCwicGF0aCI6Ii91LzE2MjkzNDE5In0.d-6Md3k5cnzO_IrE3PKZKPGEbPNTtojoYR0dyeM_7oc&v=4" width="100;" alt="Displax"/>
+                    <img src="https://private-avatars.githubusercontent.com/u/16293419?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTEiLCJleHAiOjE3MzE1NzU4ODAsIm5iZiI6MTczMTU3NDY4MCwicGF0aCI6Ii91LzE2MjkzNDE5In0.kfCTTBDRSUvED4trEt2NPUVBRk3LyBqOJOMuSC1tpug&v=4" width="100;" alt="Displax"/>
                     <br />
                     <sub><b>Ilya Kushnir</b></sub>
                 </a>
             </td>
             <td align="center">
                 <a href="https://github.com/Azure-Helper">
-                    <img src="https://private-avatars.githubusercontent.com/u/103818282?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTEiLCJleHAiOjE3MzE1NzUyMjAsIm5iZiI6MTczMTU3NDAyMCwicGF0aCI6Ii91LzEwMzgxODI4MiJ9.veEoytd22_HbKT2QK_Sq1UBAgoBRgoMYQjnupMiHG_I&v=4" width="100;" alt="Azure-Helper"/>
+                    <img src="https://private-avatars.githubusercontent.com/u/103818282?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTEiLCJleHAiOjE3MzE1NzYxMjAsIm5iZiI6MTczMTU3NDkyMCwicGF0aCI6Ii91LzEwMzgxODI4MiJ9.6o9hlSIAEjf_ZJy1pPRvlZS23FD_xizbYDuErXTbkIk&v=4" width="100;" alt="Azure-Helper"/>
                     <br />
                     <sub><b>Azure-Helper</b></sub>
                 </a>
             </td>
             <td align="center">
                 <a href="https://github.com/Jvr2022">
-                    <img src="https://private-avatars.githubusercontent.com/u/109031036?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTEiLCJleHAiOjE3MzE1NzUyODAsIm5iZiI6MTczMTU3NDA4MCwicGF0aCI6Ii91LzEwOTAzMTAzNiJ9.s9xOVXHevbG4vi5Mxcjb--jtoU9oZu0qB4FC-24tyjs&v=4" width="100;" alt="Jvr2022"/>
+                    <img src="https://private-avatars.githubusercontent.com/u/109031036?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTEiLCJleHAiOjE3MzE1NzYxODAsIm5iZiI6MTczMTU3NDk4MCwicGF0aCI6Ii91LzEwOTAzMTAzNiJ9.HbiqMuwbhyy37ZZTTyyd6HMJGyryWSasIJ5_EOK8Dvk&v=4" width="100;" alt="Jvr2022"/>
                     <br />
                     <sub><b>Jvr</b></sub>
                 </a>
@@ -126,7 +126,7 @@ This project exists thanks to the following contributors:
             </td>
             <td align="center">
                 <a href="https://github.com/KaeruShi">
-                    <img src="https://private-avatars.githubusercontent.com/u/89345339?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTEiLCJleHAiOjE3MzE1NzUyMjAsIm5iZiI6MTczMTU3NDAyMCwicGF0aCI6Ii91Lzg5MzQ1MzM5In0._l1bZk2gcHNeFrLzYV1IaWIh0-O6Y8fNYfaFx6GIJpI&v=4" width="100;" alt="KaeruShi"/>
+                    <img src="https://private-avatars.githubusercontent.com/u/89345339?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTEiLCJleHAiOjE3MzE1NzYxMjAsIm5iZiI6MTczMTU3NDkyMCwicGF0aCI6Ii91Lzg5MzQ1MzM5In0.MsfzRLGjFuDVWBXaRQRX_b49sccwN2Oxne7zDloRslA&v=4" width="100;" alt="KaeruShi"/>
                     <br />
                     <sub><b>KaeruShi</b></sub>
                 </a>
@@ -135,28 +135,28 @@ This project exists thanks to the following contributors:
 		<tr>
             <td align="center">
                 <a href="https://github.com/luckkmaxx">
-                    <img src="https://private-avatars.githubusercontent.com/u/14180594?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTEiLCJleHAiOjE3MzE1NzU0MDAsIm5iZiI6MTczMTU3NDIwMCwicGF0aCI6Ii91LzE0MTgwNTk0In0._MsemvPJfLt2nrH9PdNQwMEalOC3M4V2Vpygg42ayoA&v=4" width="100;" alt="luckkmaxx"/>
+                    <img src="https://private-avatars.githubusercontent.com/u/14180594?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTEiLCJleHAiOjE3MzE1NzYzMDAsIm5iZiI6MTczMTU3NTEwMCwicGF0aCI6Ii91LzE0MTgwNTk0In0.GEFOB4COg1tdo-zY5zAb1lVqlARCo1ZhseoJs0xJ6ig&v=4" width="100;" alt="luckkmaxx"/>
                     <br />
                     <sub><b>luckkmaxx</b></sub>
                 </a>
             </td>
             <td align="center">
                 <a href="https://github.com/MXC48">
-                    <img src="https://private-avatars.githubusercontent.com/u/123580315?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTEiLCJleHAiOjE3MzE1NzUxNjAsIm5iZiI6MTczMTU3Mzk2MCwicGF0aCI6Ii91LzEyMzU4MDMxNSJ9.cmx-NH_v-YXJGDYqMkGlCBuBL7Vts7Qgd6-mePe4U8s&v=4" width="100;" alt="MXC48"/>
+                    <img src="https://private-avatars.githubusercontent.com/u/123580315?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTEiLCJleHAiOjE3MzE1NzYwNjAsIm5iZiI6MTczMTU3NDg2MCwicGF0aCI6Ii91LzEyMzU4MDMxNSJ9.zUFA-j4oDAxwmgtXKXLCkG0ufGTLaPoPBDwlftLSnss&v=4" width="100;" alt="MXC48"/>
                     <br />
                     <sub><b>MXC48</b></sub>
                 </a>
             </td>
             <td align="center">
                 <a href="https://github.com/H1mJT">
-                    <img src="https://private-avatars.githubusercontent.com/u/92359223?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTEiLCJleHAiOjE3MzE1NzUyMjAsIm5iZiI6MTczMTU3NDAyMCwicGF0aCI6Ii91LzkyMzU5MjIzIn0.flTeEX39cNpKcda7NP9rq_KzszDMRoT93uA6BbducJs&v=4" width="100;" alt="H1mJT"/>
+                    <img src="https://private-avatars.githubusercontent.com/u/92359223?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTEiLCJleHAiOjE3MzE1NzYxMjAsIm5iZiI6MTczMTU3NDkyMCwicGF0aCI6Ii91LzkyMzU5MjIzIn0.emAw4wQOHKgjtGDGEvVjlEYC7euoOUlqdcuT2WcbaYM&v=4" width="100;" alt="H1mJT"/>
                     <br />
                     <sub><b>Himjyoti Thakuria</b></sub>
                 </a>
             </td>
             <td align="center">
                 <a href="https://github.com/hndrk-themer">
-                    <img src="https://private-avatars.githubusercontent.com/u/84930289?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTEiLCJleHAiOjE3MzE1NzUwNDAsIm5iZiI6MTczMTU3Mzg0MCwicGF0aCI6Ii91Lzg0OTMwMjg5In0.9WAeR_cwDzSkI__SLPmMaV_gL4TkCPu-sNLqHtKnxzU&v=4" width="100;" alt="hndrk-themer"/>
+                    <img src="https://private-avatars.githubusercontent.com/u/84930289?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTEiLCJleHAiOjE3MzE1NzU5NDAsIm5iZiI6MTczMTU3NDc0MCwicGF0aCI6Ii91Lzg0OTMwMjg5In0.YT7VB8ITiRrbDQUR-5EQvzODET8Y9E44SLS1OvWFZuo&v=4" width="100;" alt="hndrk-themer"/>
                     <br />
                     <sub><b>hndrk-themer</b></sub>
                 </a>
@@ -170,7 +170,7 @@ This project exists thanks to the following contributors:
             </td>
             <td align="center">
                 <a href="https://github.com/armv7a">
-                    <img src="https://private-avatars.githubusercontent.com/u/147451408?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTEiLCJleHAiOjE3MzE1NzU1MjAsIm5iZiI6MTczMTU3NDMyMCwicGF0aCI6Ii91LzE0NzQ1MTQwOCJ9.nr3_p3blpXCTt-Y0KlknqU1hT4o3y5wXqMb4KmWd56Y&v=4" width="100;" alt="armv7a"/>
+                    <img src="https://private-avatars.githubusercontent.com/u/147451408?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTEiLCJleHAiOjE3MzE1NzY0MjAsIm5iZiI6MTczMTU3NTIyMCwicGF0aCI6Ii91LzE0NzQ1MTQwOCJ9.mB7pZGjuZLcMXQEWbEHXiDPTluqb3arCvFGEe-K_rPM&v=4" width="100;" alt="armv7a"/>
                     <br />
                     <sub><b>armv7a</b></sub>
                 </a>
@@ -179,14 +179,14 @@ This project exists thanks to the following contributors:
 		<tr>
             <td align="center">
                 <a href="https://github.com/HiFiiDev">
-                    <img src="https://private-avatars.githubusercontent.com/u/46557883?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTEiLCJleHAiOjE3MzE1NzUyODAsIm5iZiI6MTczMTU3NDA4MCwicGF0aCI6Ii91LzQ2NTU3ODgzIn0.-Z9e8XoJbqB5iFosn7N9ZO22KbOpK86fez9FvMhC4k8&v=4" width="100;" alt="HiFiiDev"/>
+                    <img src="https://private-avatars.githubusercontent.com/u/46557883?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTEiLCJleHAiOjE3MzE1NzYxODAsIm5iZiI6MTczMTU3NDk4MCwicGF0aCI6Ii91LzQ2NTU3ODgzIn0.WA2LsbpPokHL6ubWedS7WPBXkJuRh9xOoH0FdnyncdE&v=4" width="100;" alt="HiFiiDev"/>
                     <br />
                     <sub><b>Kyler</b></sub>
                 </a>
             </td>
             <td align="center">
                 <a href="https://github.com/IzzySoft">
-                    <img src="https://private-avatars.githubusercontent.com/u/6781438?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTEiLCJleHAiOjE3MzE1NzU0NjAsIm5iZiI6MTczMTU3NDI2MCwicGF0aCI6Ii91LzY3ODE0MzgifQ.N9EMQQ_FS9OU9K1LbFdFrMW9xr5sJNBTxE_LdrwraZM&v=4" width="100;" alt="IzzySoft"/>
+                    <img src="https://private-avatars.githubusercontent.com/u/6781438?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTEiLCJleHAiOjE3MzE1NzYzNjAsIm5iZiI6MTczMTU3NTE2MCwicGF0aCI6Ii91LzY3ODE0MzgifQ.ytUWCi2hWBVu5YXSHIviGkyX_GaLQfSQytm8bqkZHP0&v=4" width="100;" alt="IzzySoft"/>
                     <br />
                     <sub><b>Izzy</b></sub>
                 </a>
@@ -200,7 +200,7 @@ This project exists thanks to the following contributors:
             </td>
             <td align="center">
                 <a href="https://github.com/scrxpted7327">
-                    <img src="https://private-avatars.githubusercontent.com/u/80987982?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTEiLCJleHAiOjE3MzE1NzU0MDAsIm5iZiI6MTczMTU3NDIwMCwicGF0aCI6Ii91LzgwOTg3OTgyIn0.oxgg6tBYRDk0BBFx902myXbilDZmsbyjqz2uCXKs-wk&v=4" width="100;" alt="scrxpted7327"/>
+                    <img src="https://private-avatars.githubusercontent.com/u/80987982?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTEiLCJleHAiOjE3MzE1NzYzMDAsIm5iZiI6MTczMTU3NTEwMCwicGF0aCI6Ii91LzgwOTg3OTgyIn0.mHyQfWNYFOqyJ1gNcGfNr48HTbbttLfjJrVETyzMqkk&v=4" width="100;" alt="scrxpted7327"/>
                     <br />
                     <sub><b>scrxpted</b></sub>
                 </a>
