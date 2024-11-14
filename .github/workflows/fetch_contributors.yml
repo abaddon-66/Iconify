@@ -1,10 +1,10 @@
 name: Fetch Contributors
 
 on:
-  pull_request: # This will run the workflow on pull request events
+  pull_request:
     types:
       - closed
-  workflow_dispatch: # This will run the workflow on manual trigger
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -32,13 +32,41 @@ jobs:
         run: |
           printf '%s\n' $(curl "https://api.github.com/repos/Mahmud0808/Iconify/contributors") > ./app/src/main/assets/Misc/contributors.json
 
-      - name: Commit changes and push
+      - name: Create a new branch for changes
+        id: create_branch
+        run: |
+          BRANCH_NAME="update-contributors"
+          git checkout -b $BRANCH_NAME
+          echo "branch=$BRANCH_NAME" >> $GITHUB_ENV
+
+      - name: Commit changes and push to new branch
         uses: github-actions-x/commit@v2.9
         with:
           github-token: ${{ secrets.GH_TOKEN }}
-          push-branch: 'beta'
+          push-branch: ${{ env.branch }}
           commit-message: 'Update contributors list'
           force-add: 'true'
           files: app/src/main/assets/Misc/contributors.json docs/contributors.md
           name: Mahmud0808
           email: crazymahmud08@gmail.com
+
+      - name: Create pull request
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ secrets.GH_TOKEN }}
+          commit-message: 'Update contributors list'
+          branch: ${{ env.branch }}
+          base: beta
+          title: 'Update contributors list'
+          body: 'This pull request updates the contributors list.'
+          labels: 'auto-generated'
+
+      - name: Close self-created pull requests
+        if: github.actor == 'github-actions[bot]'
+        run: |
+          PR_NUMBER=$(gh pr list --search "Update contributors list" --json number --jq '.[0].number')
+          if [ -n "$PR_NUMBER" ]; then
+            gh pr close $PR_NUMBER
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
