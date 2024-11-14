@@ -30,17 +30,25 @@ jobs:
       - name: Save contributors in assets
         if: github.event_name == 'workflow_dispatch' || github.event.pull_request.merged == true
         run: |
-          curl "https://api.github.com/repos/Mahmud0808/Iconify/contributors" > ./app/src/main/assets/Misc/contributors.json
+          printf '%s\n' $(curl "https://api.github.com/repos/Mahmud0808/Iconify/contributors") > ./app/src/main/assets/Misc/contributors.json
 
       - name: Configure Git
         run: |
           git config --global user.name "Mahmud0808"
           git config --global user.email "crazymahmud08@gmail.com"
 
+      - name: Stash changes
+        run: |
+          git stash --include-untracked
+
       - name: Pull latest changes from beta
         run: |
           git checkout beta
           git pull origin beta
+
+      - name: Apply stashed changes
+        run: |
+          git stash pop
 
       - name: Commit changes and push
         uses: github-actions-x/commit@v2.9

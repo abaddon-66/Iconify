@@ -41,7 +41,7 @@
 
 This project exists thanks to the following contributors:
 
-<!-- readme: contributors -start -->
+<!-- readme: contributors,bots/- -start -->
 <table>
 	<tbody>
 		<tr>
@@ -208,4 +208,4 @@ This project exists thanks to the following contributors:
 		</tr>
 	<tbody>
 </table>
-<!-- readme: contributors -end -->
+<!-- readme: contributors,bots/- -end -->
