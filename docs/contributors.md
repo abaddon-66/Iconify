@@ -193,7 +193,7 @@ This project exists thanks to the following contributors:
             </td>
             <td align="center">
                 <a href="https://github.com/SK00RUPA">
-                    <img src="https://private-avatars.githubusercontent.com/u/36867039?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTEiLCJleHAiOjE3MzE1NzU3MDAsIm5iZiI6MTczMTU3NDUwMCwicGF0aCI6Ii91LzM2ODY3MDM5In0.ZomEgNK41VTfiBIOsMO1-MBYl_lgtxgN9DHcSPDhDtI&v=4" width="100;" alt="SK00RUPA"/>
+                    <img src="https://private-avatars.githubusercontent.com/u/36867039?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTEiLCJleHAiOjE3MzE1NzY2MDAsIm5iZiI6MTczMTU3NTQwMCwicGF0aCI6Ii91LzM2ODY3MDM5In0.ttl-xSYmrJkEOTrJllUaXBK9p-OcIO0g6pgvvtShmJo&v=4" width="100;" alt="SK00RUPA"/>
                     <br />
                     <sub><b>SK00RUPA</b></sub>
                 </a>
