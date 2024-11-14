@@ -42,4 +42,6 @@ jobs:
           commit-message: 'Update contributors.json'
           force-add: 'true'
           files: app/src/main/assets/Misc/contributors.json
+          name: Mahmud0808
+          email: crazymahmud08@gmail.com
           rebase: 'true'
