@@ -47,14 +47,14 @@ This project exists thanks to the following contributors:
 		<tr>
             <td align="center">
                 <a href="https://github.com/Mahmud0808">
-                    <img src="https://private-avatars.githubusercontent.com/u/29881338?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTEiLCJleHAiOjE3MzE1NzI3NjAsIm5iZiI6MTczMTU3MTU2MCwicGF0aCI6Ii91LzI5ODgxMzM4In0.qGDpEXz-tMSd9fNvRCZ4crEEP3oDEgBZPg8D-1ROryY&v=4" width="100;" alt="Mahmud0808"/>
+                    <img src="https://private-avatars.githubusercontent.com/u/29881338?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTEiLCJleHAiOjE3MzE1NzM2NjAsIm5iZiI6MTczMTU3MjQ2MCwicGF0aCI6Ii91LzI5ODgxMzM4In0.K42wSTrNdz9ucLJeRW-vOGmmG8QpPP1A90sqqBnhtwY&v=4" width="100;" alt="Mahmud0808"/>
                     <br />
                     <sub><b>DrDisagree</b></sub>
                 </a>
             </td>
             <td align="center">
                 <a href="https://github.com/DHD2280">
-                    <img src="https://private-avatars.githubusercontent.com/u/5488701?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTEiLCJleHAiOjE3MzE1NzI3MDAsIm5iZiI6MTczMTU3MTUwMCwicGF0aCI6Ii91LzU0ODg3MDEifQ.ikQF3yFbuki99Mi8Ju4TxmlRvXKeCiFgr1O3aiZmYNk&v=4" width="100;" alt="DHD2280"/>
+                    <img src="https://private-avatars.githubusercontent.com/u/5488701?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTEiLCJleHAiOjE3MzE1NzM2MDAsIm5iZiI6MTczMTU3MjQwMCwicGF0aCI6Ii91LzU0ODg3MDEifQ.lRC2L01VLNXwdQW21MHED_S85Hq-Hl5PvqyeZYtcbzE&v=4" width="100;" alt="DHD2280"/>
                     <br />
                     <sub><b>Luigi</b></sub>
                 </a>
@@ -68,7 +68,7 @@ This project exists thanks to the following contributors:
             </td>
             <td align="center">
                 <a href="https://github.com/B1ays">
-                    <img src="https://private-avatars.githubusercontent.com/u/108483082?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTEiLCJleHAiOjE3MzE1NzI3NjAsIm5iZiI6MTczMTU3MTU2MCwicGF0aCI6Ii91LzEwODQ4MzA4MiJ9.O1docMdsh5igqiBfGyMvCH8xf6CNN1bQcNcM-G_w1sI&v=4" width="100;" alt="B1ays"/>
+                    <img src="https://private-avatars.githubusercontent.com/u/108483082?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTEiLCJleHAiOjE3MzE1NzM2NjAsIm5iZiI6MTczMTU3MjQ2MCwicGF0aCI6Ii91LzEwODQ4MzA4MiJ9.3hdOpkchkLKrjv2ySc-5nBD2XXXag5BUl72LGM1OJ4U&v=4" width="100;" alt="B1ays"/>
                     <br />
                     <sub><b>B1ays</b></sub>
                 </a>
@@ -135,7 +135,7 @@ This project exists thanks to the following contributors:
 		<tr>
             <td align="center">
                 <a href="https://github.com/luckkmaxx">
-                    <img src="https://private-avatars.githubusercontent.com/u/14180594?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTEiLCJleHAiOjE3MzE1NzI3MDAsIm5iZiI6MTczMTU3MTUwMCwicGF0aCI6Ii91LzE0MTgwNTk0In0.bj8IF9fDuWkrlpvEvHv6NXfRt4oxw6oMc5xctb3vS1w&v=4" width="100;" alt="luckkmaxx"/>
+                    <img src="https://private-avatars.githubusercontent.com/u/14180594?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTEiLCJleHAiOjE3MzE1NzM2MDAsIm5iZiI6MTczMTU3MjQwMCwicGF0aCI6Ii91LzE0MTgwNTk0In0.LEioD-XiofGMde0fGD8Mz7hho2rzCMYISDdXvpNcdWU&v=4" width="100;" alt="luckkmaxx"/>
                     <br />
                     <sub><b>luckkmaxx</b></sub>
                 </a>
@@ -170,7 +170,7 @@ This project exists thanks to the following contributors:
             </td>
             <td align="center">
                 <a href="https://github.com/armv7a">
-                    <img src="https://private-avatars.githubusercontent.com/u/147451408?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTEiLCJleHAiOjE3MzE1NzI4MjAsIm5iZiI6MTczMTU3MTYyMCwicGF0aCI6Ii91LzE0NzQ1MTQwOCJ9.Sy20qMteNnle2MI5eP74K8Iz_g4wwtTMSWlcujG2Gng&v=4" width="100;" alt="armv7a"/>
+                    <img src="https://private-avatars.githubusercontent.com/u/147451408?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTEiLCJleHAiOjE3MzE1NzM3MjAsIm5iZiI6MTczMTU3MjUyMCwicGF0aCI6Ii91LzE0NzQ1MTQwOCJ9.uX2ridFRXAqMeFYmFMb2fIi4Q7oj6zpyhxbSel1HKj0&v=4" width="100;" alt="armv7a"/>
                     <br />
                     <sub><b>armv7a</b></sub>
                 </a>
@@ -186,21 +186,21 @@ This project exists thanks to the following contributors:
             </td>
             <td align="center">
                 <a href="https://github.com/IzzySoft">
-                    <img src="https://private-avatars.githubusercontent.com/u/6781438?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTEiLCJleHAiOjE3MzE1NzI3NjAsIm5iZiI6MTczMTU3MTU2MCwicGF0aCI6Ii91LzY3ODE0MzgifQ.8MW2RRS_1AD5eRPItQZHCPKYS51pyj9BMoskcUpRLyc&v=4" width="100;" alt="IzzySoft"/>
+                    <img src="https://private-avatars.githubusercontent.com/u/6781438?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTEiLCJleHAiOjE3MzE1NzM2NjAsIm5iZiI6MTczMTU3MjQ2MCwicGF0aCI6Ii91LzY3ODE0MzgifQ.ABLNCO_J7ObP7HUs7BHPsGgJyXktOXJIbHHCIR_3Cvg&v=4" width="100;" alt="IzzySoft"/>
                     <br />
                     <sub><b>Izzy</b></sub>
                 </a>
             </td>
             <td align="center">
                 <a href="https://github.com/SK00RUPA">
-                    <img src="https://private-avatars.githubusercontent.com/u/36867039?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTEiLCJleHAiOjE3MzE1NzMwMDAsIm5iZiI6MTczMTU3MTgwMCwicGF0aCI6Ii91LzM2ODY3MDM5In0.iSq-AvpwlHtk41XyHH0iIj9I7J7hf-cJSQl2RKz1c_Q&v=4" width="100;" alt="SK00RUPA"/>
+                    <img src="https://private-avatars.githubusercontent.com/u/36867039?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTEiLCJleHAiOjE3MzE1NzM5MDAsIm5iZiI6MTczMTU3MjcwMCwicGF0aCI6Ii91LzM2ODY3MDM5In0.75YSPtColq0oOJcvwEB8exvvK6wFCihwJt5HXU_Q2cc&v=4" width="100;" alt="SK00RUPA"/>
                     <br />
                     <sub><b>SK00RUPA</b></sub>
                 </a>
             </td>
             <td align="center">
                 <a href="https://github.com/scrxpted7327">
-                    <img src="https://private-avatars.githubusercontent.com/u/80987982?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTEiLCJleHAiOjE3MzE1NzI3MDAsIm5iZiI6MTczMTU3MTUwMCwicGF0aCI6Ii91LzgwOTg3OTgyIn0.Xq1F8byMv2E22_OqCxSw866QoE157ZtefejD2g4Ybfo&v=4" width="100;" alt="scrxpted7327"/>
+                    <img src="https://private-avatars.githubusercontent.com/u/80987982?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTEiLCJleHAiOjE3MzE1NzM2MDAsIm5iZiI6MTczMTU3MjQwMCwicGF0aCI6Ii91LzgwOTg3OTgyIn0.iMkxyA27c42IPFEWWz6Vcg2-9gDdQZ-6o4JjII8J6s8&v=4" width="100;" alt="scrxpted7327"/>
                     <br />
                     <sub><b>scrxpted</b></sub>
                 </a>
