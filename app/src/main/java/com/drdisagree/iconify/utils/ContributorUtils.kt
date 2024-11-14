@@ -25,14 +25,14 @@ fun parseContributors(): ArrayList<InfoModel> {
         if (excludedContributors.contains(name)) continue // Skip the excluded contributors
 
         val picture = jsonObject.getString("avatar_url")
-        val profileUrl = jsonObject.getString("html_url")
+        val commitsUrl = "https://github.com/Mahmud0808/Iconify/commits?author=$name"
         val contributions = jsonObject.getInt("contributions")
 
         contributorsList.add(
             InfoModel(
                 name,
                 appContextLocale.resources.getString(R.string.total_contributions, contributions),
-                profileUrl,
+                commitsUrl,
                 picture
             )
         )
