@@ -9,6 +9,11 @@ import org.json.JSONException
 
 @Throws(JSONException::class)
 fun parseContributors(): ArrayList<InfoModel> {
+    val excludedContributors = ArrayList<String>().apply {
+        add("Mahmud0808")
+        add("crowdin-bot")
+    }
+
     val contributorsList = ArrayList<InfoModel>()
     val jsonStr = readJsonFileFromAssets("Misc/contributors.json")
     val jsonArray = JSONArray(jsonStr)
@@ -17,7 +22,7 @@ fun parseContributors(): ArrayList<InfoModel> {
         val jsonObject = jsonArray.getJSONObject(i)
         val name = jsonObject.getString("login")
 
-        if (name == "Mahmud0808") continue // Skip the main developer
+        if (excludedContributors.contains(name)) continue // Skip the excluded contributors
 
         val picture = jsonObject.getString("avatar_url")
         val profileUrl = jsonObject.getString("html_url")

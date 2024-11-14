@@ -1,47 +1,8 @@
-### Special Thanks
-
-<!-- readme: substratum,siavash79,jairaj08,DanGLES3 -start -->
-<table>
-	<tbody>
-		<tr>
-            <td align="center">
-                <a href="https://github.com/substratum">
-                    <img src="https://private-avatars.githubusercontent.com/u/26038133?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTEiLCJleHAiOjE3MzE1NzI0NjAsIm5iZiI6MTczMTU3MTI2MCwicGF0aCI6Ii91LzI2MDM4MTMzIn0.gpFoT24GeissLqg4aMvK4-ri3rG6jy5qC2wyfTo7QKk&v=4" width="100;" alt="substratum"/>
-                    <br />
-                    <sub><b>substratum</b></sub>
-                </a>
-            </td>
-            <td align="center">
-                <a href="https://github.com/siavash79">
-                    <img src="https://private-avatars.githubusercontent.com/u/25217714?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTEiLCJleHAiOjE3MzE1NzMxMjAsIm5iZiI6MTczMTU3MTkyMCwicGF0aCI6Ii91LzI1MjE3NzE0In0.BR7WDOWZztLBQyN6EzjUSyxeKI91XGQKOeeAi54fjLs&v=4" width="100;" alt="siavash79"/>
-                    <br />
-                    <sub><b>Siavash</b></sub>
-                </a>
-            </td>
-            <td align="center">
-                <a href="https://github.com/jairaj08">
-                    <img src="https://private-avatars.githubusercontent.com/u/75478196?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTEiLCJleHAiOjE3MzE1NzMxODAsIm5iZiI6MTczMTU3MTk4MCwicGF0aCI6Ii91Lzc1NDc4MTk2In0.0PLvWxQyqcxDaTl-hJyg6og8veLWbFOqmmAdALQK2rk&v=4" width="100;" alt="jairaj08"/>
-                    <br />
-                    <sub><b>jairaj08</b></sub>
-                </a>
-            </td>
-            <td align="center">
-                <a href="https://github.com/dangles3">
-                    <img src="https://private-avatars.githubusercontent.com/u/32078304?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTEiLCJleHAiOjE3MzE1NzI3MDAsIm5iZiI6MTczMTU3MTUwMCwicGF0aCI6Ii91LzMyMDc4MzA0In0.eZo0aS-i7376rZ5NedBbWFeLgAaN19xZnZj5HoyiEp0&v=4" width="100;" alt="dangles3"/>
-                    <br />
-                    <sub><b>DanGLES3</b></sub>
-                </a>
-            </td>
-		</tr>
-	<tbody>
-</table>
-<!-- readme: substratum,siavash79,jairaj08,DanGLES3 -end -->
-
 ### Contributors
 
 This project exists thanks to the following contributors:
 
-<!-- readme: contributors,bots/- -start -->
+<!-- readme: contributors,crowdin-bot/- -start -->
 <table>
 	<tbody>
 		<tr>
@@ -208,4 +169,4 @@ This project exists thanks to the following contributors:
 		</tr>
 	<tbody>
 </table>
-<!-- readme: contributors,bots/- -end -->
+<!-- readme: contributors,crowdin-bot/- -end -->
