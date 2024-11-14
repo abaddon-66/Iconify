@@ -25,7 +25,7 @@ jobs:
           readme_path: "docs/contributors.md"
           collaborators: all
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
 
       - name: Save contributors in assets
         if: github.event_name == 'workflow_dispatch' || github.event.pull_request.merged == true
@@ -35,7 +35,7 @@ jobs:
       - name: Commit changes and push
         uses: github-actions-x/commit@v2.9
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.GH_TOKEN }}
           push-branch: 'beta'
           commit-message: 'Update contributors list'
           force-add: 'true'
