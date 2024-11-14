@@ -27,28 +27,20 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
 
+      - name: Debug - Show current contributors.json before update
+        run: |
+          echo "Contents of contributors.json before update:"
+          cat ./app/src/main/assets/Misc/contributors.json || echo "contributors.json does not exist"
+
       - name: Save contributors in assets
         if: github.event_name == 'workflow_dispatch' || github.event.pull_request.merged == true
         run: |
           printf '%s\n' $(curl "https://api.github.com/repos/Mahmud0808/Iconify/contributors") > ./app/src/main/assets/Misc/contributors.json
 
-      - name: Configure Git
+      - name: Debug - Show new contributors.json after update
         run: |
-          git config --global user.name "Mahmud0808"
-          git config --global user.email "crazymahmud08@gmail.com"
-
-      - name: Stash changes
-        run: |
-          git stash --include-untracked
-
-      - name: Pull latest changes from beta
-        run: |
-          git checkout beta
-          git pull origin beta
-
-      - name: Apply stashed changes
-        run: |
-          git stash pop
+          echo "Contents of contributors.json after update:"
+          cat ./app/src/main/assets/Misc/contributors.json
 
       - name: Commit changes and push
         uses: github-actions-x/commit@v2.9
