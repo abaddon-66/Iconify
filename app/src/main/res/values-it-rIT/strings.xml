@@ -850,6 +850,7 @@
     <string name="section_title_contributors">Collaboratori</string>
     <string name="info_contributor_desc">Per il contributo su github.</string>
     <string name="info_contributor_desc_2">Per assistermi su Telegram.</string>
+    <string name="total_contributions">Total Contributions: %d</string>
     <string name="section_title_translators">Traduttori</string>
     <string name="af_translation">Traduzione Africana.</string>
     <string name="ar_translation">Traduzione Araba.</string>
