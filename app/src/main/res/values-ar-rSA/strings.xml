@@ -850,6 +850,7 @@
     <string name="section_title_contributors">المساهمون</string>
     <string name="info_contributor_desc">للمساهمة على GitHub.</string>
     <string name="info_contributor_desc_2">لمساعدتي علي تيليجرام!</string>
+    <string name="total_contributions">Total Contributions: %d</string>
     <string name="section_title_translators">المترجمون</string>
     <string name="af_translation">الترجمة الأفريكانية.</string>
     <string name="ar_translation">الترجمة العربية.</string>

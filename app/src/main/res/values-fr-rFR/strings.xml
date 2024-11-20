@@ -850,6 +850,7 @@
     <string name="section_title_contributors">Contributeurs</string>
     <string name="info_contributor_desc">Pour avoir contribué sur Github.</string>
     <string name="info_contributor_desc_2">Pour m\'assister sur Telegram.</string>
+    <string name="total_contributions">Total Contributions: %d</string>
     <string name="section_title_translators">Traducteurs</string>
     <string name="af_translation">Afrikaans translation.</string>
     <string name="ar_translation">Traduction arabe.</string>
