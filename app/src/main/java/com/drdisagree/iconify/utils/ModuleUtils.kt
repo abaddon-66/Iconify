@@ -15,10 +15,12 @@ import com.drdisagree.iconify.common.Preferences.RESTART_SYSUI_AFTER_BOOT
 import com.drdisagree.iconify.common.References.ICONIFY_COLOR_ACCENT_PRIMARY
 import com.drdisagree.iconify.common.References.ICONIFY_COLOR_ACCENT_SECONDARY
 import com.drdisagree.iconify.common.Resources
+import com.drdisagree.iconify.common.Resources.MODULE_DIR
 import com.drdisagree.iconify.common.Resources.TEMP_DIR
 import com.drdisagree.iconify.common.Resources.TEMP_MODULE_DIR
 import com.drdisagree.iconify.config.RPrefs.getBoolean
 import com.drdisagree.iconify.config.RPrefs.getString
+import com.drdisagree.iconify.utils.RootUtils.setPermissions
 import com.drdisagree.iconify.utils.helper.BackupRestore.backupFiles
 import com.drdisagree.iconify.utils.helper.BinaryInstaller.symLinkBinaries
 import com.drdisagree.iconify.utils.overlay.FabricatedUtils
@@ -224,6 +226,7 @@ object ModuleUtils {
             result = Shell.cmd("/data/adb/ksud module install $modulePath").exec()
         } else if (RootUtils.isApatchInstalled) {
             result = Shell.cmd("apd module install $modulePath").exec()
+            setPermissions(755, MODULE_DIR)
         }
 
         if (result == null) {
