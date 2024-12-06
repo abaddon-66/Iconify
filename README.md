@@ -10,7 +10,6 @@
   <a href="https://telegram.me/IconifyOfficial"><img src="https://img.shields.io/badge/Telegram-5K+-2CA5E0?style=for-the-badge&logo=telegram&logoColor=white" alt="Telegram"></a>
 </p>
 <div align="center">
-  <a href="https://apt.izzysoft.de/fdroid/index/apk/com.drdisagree.iconify"><img src="https://gitlab.com/IzzyOnDroid/repo/-/raw/master/assets/IzzyOnDroid.png" width="30%"></a>
 
 # Iconify
 
