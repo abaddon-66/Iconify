@@ -118,6 +118,9 @@ class LockscreenClock(context: Context) : ModPack(context) {
             initSoundManager()
         }
     }
+    private var customFontEnabled: Boolean = false
+    private val customFontDirectory = Environment.getExternalStorageDirectory().toString() +
+            "/.iconify_files/lsclock_font.ttf"
 
     override fun updatePrefs(vararg key: String) {
         if (!XprefsIsInitialized) return
@@ -127,31 +130,33 @@ class LockscreenClock(context: Context) : ModPack(context) {
         Xprefs.apply {
             showLockscreenClock = getBoolean(LSCLOCK_SWITCH, false)
             showDepthWallpaper = isAndroid13OrBelow && getBoolean(DEPTH_WALLPAPER_SWITCH, false)
+            customFontEnabled = getBoolean(LSCLOCK_FONT_SWITCH, false)
         }
 
         resetStockClock()
 
         if (key.isNotEmpty() &&
-            (key[0] == LSCLOCK_SWITCH ||
-                    key[0] == LSCLOCK_COLOR_SWITCH ||
-                    key[0] == LSCLOCK_COLOR_CODE_ACCENT1 ||
-                    key[0] == LSCLOCK_COLOR_CODE_ACCENT2 ||
-                    key[0] == LSCLOCK_COLOR_CODE_ACCENT3 ||
-                    key[0] == LSCLOCK_COLOR_CODE_TEXT1 ||
-                    key[0] == LSCLOCK_COLOR_CODE_TEXT2 ||
-                    key[0] == LSCLOCK_STYLE ||
-                    key[0] == LSCLOCK_TOPMARGIN ||
-                    key[0] == LSCLOCK_BOTTOMMARGIN ||
-                    key[0] == LSCLOCK_FONT_LINEHEIGHT ||
-                    key[0] == LSCLOCK_FONT_SWITCH ||
-                    key[0] == LSCLOCK_FONT_TEXT_SCALING ||
-                    key[0] == LSCLOCK_USERNAME ||
-                    key[0] == LSCLOCK_DEVICENAME ||
-                    (isAndroid13OrBelow &&
-                            (key[0] == DEPTH_WALLPAPER_SWITCH ||
-                                    key[0] == DEPTH_WALLPAPER_FADE_ANIMATION)
-                            )
-                    )
+            (key[0] in setOf(
+                LSCLOCK_SWITCH,
+                LSCLOCK_COLOR_SWITCH,
+                LSCLOCK_COLOR_CODE_ACCENT1,
+                LSCLOCK_COLOR_CODE_ACCENT2,
+                LSCLOCK_COLOR_CODE_ACCENT3,
+                LSCLOCK_COLOR_CODE_TEXT1,
+                LSCLOCK_COLOR_CODE_TEXT2,
+                LSCLOCK_STYLE,
+                LSCLOCK_TOPMARGIN,
+                LSCLOCK_BOTTOMMARGIN,
+                LSCLOCK_FONT_LINEHEIGHT,
+                LSCLOCK_FONT_SWITCH,
+                LSCLOCK_FONT_TEXT_SCALING,
+                LSCLOCK_USERNAME,
+                LSCLOCK_DEVICENAME
+            ) || (isAndroid13OrBelow &&
+                    key[0] in setOf(
+                DEPTH_WALLPAPER_SWITCH,
+                DEPTH_WALLPAPER_FADE_ANIMATION
+            )))
         ) {
             updateClockView()
         }
@@ -416,10 +421,7 @@ class LockscreenClock(context: Context) : ModPack(context) {
         val bottomMargin: Int = Xprefs.getSliderInt(LSCLOCK_BOTTOMMARGIN, 40)
         val textScaleFactor: Float =
             (Xprefs.getSliderInt(LSCLOCK_FONT_TEXT_SCALING, 10) / 10.0).toFloat()
-        val customFont = Environment.getExternalStorageDirectory().toString() +
-                "/.iconify_files/lsclock_font.ttf"
         val lineHeight: Int = Xprefs.getSliderInt(LSCLOCK_FONT_LINEHEIGHT, 0)
-        val customFontEnabled: Boolean = Xprefs.getBoolean(LSCLOCK_FONT_SWITCH, false)
         val customColorEnabled: Boolean = Xprefs.getBoolean(LSCLOCK_COLOR_SWITCH, false)
         val customUserName: String = Xprefs.getString(LSCLOCK_USERNAME, "")!!
         val customDeviceName: String = Xprefs.getString(LSCLOCK_DEVICENAME, "")!!
@@ -463,8 +465,8 @@ class LockscreenClock(context: Context) : ModPack(context) {
             Color.BLACK
         )
         var typeface: Typeface? = null
-        if (customFontEnabled && File(customFont).exists()) {
-            typeface = Typeface.createFromFile(File(customFont))
+        if (customFontEnabled && File(customFontDirectory).exists()) {
+            typeface = Typeface.createFromFile(File(customFontDirectory))
         }
 
         setMargins(clockView, mContext, 0, topMargin, 0, bottomMargin)
@@ -616,7 +618,12 @@ class LockscreenClock(context: Context) : ModPack(context) {
                     appContext!!,
                     R.drawable.ic_volume_up
                 ),
-                iconSizePx = 38
+                iconSizePx = 38,
+                typeface = if (customFontEnabled && File(customFontDirectory).exists()) {
+                    Typeface.createFromFile(File(customFontDirectory))
+                } else {
+                    Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+                }
             )
         )
     }
@@ -642,7 +649,12 @@ class LockscreenClock(context: Context) : ModPack(context) {
                 ),
                 textInsideSizePx = (40 * textScaleFactor * reduceFactor).toInt(),
                 textBottom = "RAM",
-                textBottomSizePx = 28
+                textBottomSizePx = 28,
+                typeface = if (customFontEnabled && File(customFontDirectory).exists()) {
+                    Typeface.createFromFile(File(customFontDirectory))
+                } else {
+                    Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+                }
             )
         )
     }
