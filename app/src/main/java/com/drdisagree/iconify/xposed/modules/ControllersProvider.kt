@@ -361,61 +361,61 @@ class ControllersProvider(context: Context) : ModPack(context) {
     }
 
     fun registerMobileDataCallback(callback: OnMobileDataChanged) {
-        instance!!.mMobileDataChangedListeners.add(callback)
+        instance.mMobileDataChangedListeners.add(callback)
     }
 
     /** @noinspection unused
      */
     fun unRegisterMobileDataCallback(callback: OnMobileDataChanged?) {
-        instance!!.mMobileDataChangedListeners.remove(callback)
+        instance.mMobileDataChangedListeners.remove(callback)
     }
 
     fun registerWifiCallback(callback: OnWifiChanged) {
-        instance!!.mWifiChangedListeners.add(callback)
+        instance.mWifiChangedListeners.add(callback)
     }
 
     /** @noinspection unused
      */
     fun unRegisterWifiCallback(callback: OnWifiChanged?) {
-        instance!!.mWifiChangedListeners.remove(callback)
+        instance.mWifiChangedListeners.remove(callback)
     }
 
     fun registerBluetoothCallback(callback: OnBluetoothChanged) {
-        instance!!.mBluetoothChangedListeners.add(callback)
+        instance.mBluetoothChangedListeners.add(callback)
     }
 
     /** @noinspection unused
      */
     fun unRegisterBluetoothCallback(callback: OnBluetoothChanged?) {
-        instance!!.mBluetoothChangedListeners.remove(callback)
+        instance.mBluetoothChangedListeners.remove(callback)
     }
 
     fun registerTorchModeCallback(callback: OnTorchModeChanged) {
-        instance!!.mTorchModeChangedListeners.add(callback)
+        instance.mTorchModeChangedListeners.add(callback)
     }
 
     /** @noinspection unused
      */
     fun unRegisterTorchModeCallback(callback: OnTorchModeChanged?) {
-        instance!!.mTorchModeChangedListeners.remove(callback)
+        instance.mTorchModeChangedListeners.remove(callback)
     }
 
     fun registerDozingCallback(callback: OnDozingChanged) {
-        instance!!.mDozeChangedListeners.add(callback)
+        instance.mDozeChangedListeners.add(callback)
     }
 
     /** @noinspection unused */
     fun unRegisterDozingCallback(callback: OnDozingChanged?) {
-        instance!!.mDozeChangedListeners.remove(callback)
+        instance.mDozeChangedListeners.remove(callback)
     }
 
     fun registerHotspotCallback(callback: OnHotspotChanged) {
-        instance!!.mHotspotChangedListeners.add(callback)
+        instance.mHotspotChangedListeners.add(callback)
     }
 
     /** @noinspection unused */
     fun unRegisterHotspotCallback(callback: OnHotspotChanged?) {
-        instance!!.mHotspotChangedListeners.remove(callback)
+        instance.mHotspotChangedListeners.remove(callback)
     }
 
     private fun onSetMobileDataIndicators(mMobileDataIndicators: Any) {
@@ -493,7 +493,7 @@ class ControllersProvider(context: Context) : ModPack(context) {
     companion object {
         @SuppressLint("StaticFieldLeak")
         @Volatile
-        private var instance: ControllersProvider? = null
+        private lateinit var instance: ControllersProvider
 
         private val TAG: String = "Iconify - ${ControllersProvider::class.java.simpleName}: "
 
@@ -505,129 +505,171 @@ class ControllersProvider(context: Context) : ModPack(context) {
         var mWalletTile: Any? = null
 
         fun getInstance(): ControllersProvider {
-            return instance!!
+            return instance
         }
 
         fun showInternetDialog(view: View): Boolean {
-            if (instance == null) {
+            if (::instance.isInitialized.not()) {
                 log(TAG + "Instance is null")
                 return false
             }
-            if (instance!!.mCellularTile != null) {
-                if (isMethodAvailable(instance!!.mCellularTile, "handleClick", View::class.java)) {
-                    callMethod(instance!!.mCellularTile, "handleClick", view)
-                    return true
-                }
-            }
-            if (instance!!.mAccessPointController != null) {
-                if (isMethodAvailable(
-                        instance!!.mInternetDialogManager,
+
+            instance.mAccessPointController?.let { accessPointController ->
+                when {
+                    isMethodAvailable(
+                        instance.mInternetDialogManager,
                         "create",
                         Boolean::class.java,
                         Boolean::class.java,
                         Boolean::class.java,
                         View::class.java
-                    )
-                ) {
-                    callMethod(
-                        instance!!.mInternetDialogManager,
+                    ) -> {
+                        callMethod(
+                            instance.mInternetDialogManager,
+                            "create",
+                            true,
+                            callMethod(accessPointController, "canConfigMobileData"),
+                            callMethod(accessPointController, "canConfigWifi"),
+                            view
+                        )
+                    }
+
+                    isMethodAvailable(
+                        instance.mInternetDialogManager,
                         "create",
-                        true,
-                        callMethod(instance!!.mAccessPointController, "canConfigMobileData"),
-                        callMethod(instance!!.mAccessPointController, "canConfigWifi"),
-                        view
-                    )
-                    return true
-                } else if (isMethodAvailable(
-                        instance!!.mInternetDialogManager,
+                        Boolean::class.java,
+                        Boolean::class.java,
+                        Boolean::class.java,
+                        Any::class.java
+                    ) -> {
+                        callMethod(
+                            instance.mInternetDialogManager,
+                            "create",
+                            true,
+                            callMethod(accessPointController, "canConfigMobileData"),
+                            callMethod(accessPointController, "canConfigWifi"),
+                            null
+                        )
+                    }
+
+                    isMethodAvailable(
+                        instance.mInternetDialogManager,
                         "create",
                         View::class.java,
                         Boolean::class.java,
                         Boolean::class.java
-                    )
-                ) {
-                    callMethod(
-                        instance!!.mInternetDialogManager,
-                        "create",
-                        view,
-                        callMethod(instance!!.mAccessPointController, "canConfigMobileData"),
-                        callMethod(instance!!.mAccessPointController, "canConfigWifi")
-                    )
-                    return true
-                } else if (isMethodAvailable(
-                        instance!!.mInternetDialogFactory,
+                    ) -> {
+                        callMethod(
+                            instance.mInternetDialogManager,
+                            "create",
+                            view,
+                            callMethod(accessPointController, "canConfigMobileData"),
+                            callMethod(accessPointController, "canConfigWifi")
+                        )
+                    }
+
+                    isMethodAvailable(
+                        instance.mInternetDialogFactory,
                         "create",
                         Boolean::class.java,
                         Boolean::class.java,
                         View::class.java
-                    )
-                ) {
-                    callMethod(
-                        instance!!.mInternetDialogFactory,
-                        "create",
-                        callMethod(instance!!.mAccessPointController, "canConfigMobileData"),
-                        callMethod(instance!!.mAccessPointController, "canConfigWifi"),
-                        view
-                    )
-                    return true
-                } else {
-                    log(TAG + "No internet dialog available")
-                    return false
+                    ) -> {
+                        callMethod(
+                            instance.mInternetDialogFactory,
+                            "create",
+                            callMethod(accessPointController, "canConfigMobileData"),
+                            callMethod(accessPointController, "canConfigWifi"),
+                            view
+                        )
+                    }
+
+                    else -> {
+                        log(TAG + "No internet dialog available")
+                        return false
+                    }
+                }
+            } ?: run {
+                instance.mCellularTile?.let { cellularTile ->
+                    when {
+                        isMethodAvailable(
+                            cellularTile,
+                            "handleClick",
+                            View::class.java
+                        ) -> {
+                            callMethod(cellularTile, "handleClick", view)
+                        }
+
+                        else -> {
+                            log(TAG + "No internet tile available")
+                            return false
+                        }
+                    }
                 }
             }
-            return false
+
+            return true
         }
 
         fun showBluetoothDialog(context: Context, view: View): Boolean {
-            val btTileAvailable = instance?.mBluetoothTile != null
-            val btTileDialogAvailable = instance?.mBluetoothTileDialogViewModel != null
+            if (::instance.isInitialized.not()) {
+                log(TAG + "Instance is null")
+                return false
+            }
 
-            if (btTileDialogAvailable && isMethodAvailable(
-                    instance!!.mBluetoothTileDialogViewModel,
+            val btTileAvailable = instance.mBluetoothTile != null
+            val btTileDialogAvailable = instance.mBluetoothTileDialogViewModel != null
+
+            when {
+                btTileDialogAvailable && isMethodAvailable(
+                    instance.mBluetoothTileDialogViewModel,
                     "showDialog",
                     Context::class.java,
                     View::class.java
-                )
-            ) {
-                callMethod(
-                    instance!!.mBluetoothTileDialogViewModel,
-                    "showDialog",
-                    context,
-                    view
-                )
-                return true
-            } else if (btTileDialogAvailable && isMethodAvailable(
-                    instance!!.mBluetoothTileDialogViewModel,
+                ) -> {
+                    callMethod(
+                        instance.mBluetoothTileDialogViewModel,
+                        "showDialog",
+                        context,
+                        view
+                    )
+                }
+
+                btTileDialogAvailable && isMethodAvailable(
+                    instance.mBluetoothTileDialogViewModel,
                     "showDialog",
                     Context::class.java,
                     View::class.java,
                     Boolean::class.java
-                )
-            ) {
-                val isAutoOn = Settings.System.getInt(
-                    context.contentResolver,
-                    "qs_bt_auto_on", 0
-                ) == 1
-                callMethod(
-                    instance!!.mBluetoothTileDialogViewModel,
-                    "showDialog",
-                    context,
-                    view,
-                    isAutoOn
-                )
-                return true
-            } else if (btTileAvailable && isMethodAvailable(
-                    instance!!.mBluetoothTile,
+                ) -> {
+                    val isAutoOn = Settings.System.getInt(
+                        context.contentResolver,
+                        "qs_bt_auto_on", 0
+                    ) == 1
+                    callMethod(
+                        instance.mBluetoothTileDialogViewModel,
+                        "showDialog",
+                        context,
+                        view,
+                        isAutoOn
+                    )
+                }
+
+                btTileAvailable && isMethodAvailable(
+                    instance.mBluetoothTile,
                     "handleClick",
                     View::class.java
-                )
-            ) {
-                callMethod(instance!!.mBluetoothTile, "handleClick", view)
-                return true
-            } else {
-                log(TAG + "No bluetooth dialog available")
+                ) -> {
+                    callMethod(instance.mBluetoothTile, "handleClick", view)
+                }
+
+                else -> {
+                    log(TAG + "No bluetooth dialog available")
+                    return false
+                }
             }
-            return false
+
+            return true
         }
     }
 }
