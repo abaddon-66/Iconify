@@ -546,25 +546,6 @@ class ControllersProvider(context: Context) : ModPack(context) {
                     isMethodAvailable(
                         instance.mInternetDialogManager,
                         "create",
-                        Boolean::class.java,
-                        Boolean::class.java,
-                        Boolean::class.java,
-                        Any::class.java
-                    ) -> {
-                        callMethod(
-                            instance.mInternetDialogManager,
-                            "create",
-                            true,
-                            callMethod(accessPointController, "canConfigMobileData"),
-                            callMethod(accessPointController, "canConfigWifi"),
-                            null
-                        )
-                        return true
-                    }
-
-                    isMethodAvailable(
-                        instance.mInternetDialogManager,
-                        "create",
                         View::class.java,
                         Boolean::class.java,
                         Boolean::class.java
@@ -592,6 +573,23 @@ class ControllersProvider(context: Context) : ModPack(context) {
                             callMethod(accessPointController, "canConfigMobileData"),
                             callMethod(accessPointController, "canConfigWifi"),
                             view
+                        )
+                        return true
+                    }
+
+                    expandableClassAvailable && isMethodAvailable(
+                        instance.mInternetDialogManager,
+                        "create",
+                        Boolean::class.java,
+                        Boolean::class.java,
+                        instance.mExpandableClass!!
+                    ) -> {
+                        callMethod(
+                            instance.mInternetDialogManager,
+                            "create",
+                            callMethod(accessPointController, "canConfigMobileData"),
+                            callMethod(accessPointController, "canConfigWifi"),
+                            null
                         )
                         return true
                     }
