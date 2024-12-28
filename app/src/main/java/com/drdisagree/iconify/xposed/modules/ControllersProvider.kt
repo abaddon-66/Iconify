@@ -38,6 +38,8 @@ class ControllersProvider(context: Context) : ModPack(context) {
     private val mHotspotChangedListeners = ArrayList<OnHotspotChanged>()
     private val mDozeChangedListeners = ArrayList<OnDozingChanged>()
 
+    private var mExpandableClass: Class<*>? = null
+
     override fun updatePrefs(vararg key: String) {}
 
     override fun handleLoadPackage(loadPackageParam: XC_LoadPackage.LoadPackageParam) {
@@ -47,6 +49,10 @@ class ControllersProvider(context: Context) : ModPack(context) {
         // Network Callbacks
         val callbackHandler = findClassIfExists(
             "$SYSTEMUI_PACKAGE.statusbar.connectivity.CallbackHandler",
+            loadPackageParam.classLoader
+        )
+        mExpandableClass = findClassIfExists(
+            "$SYSTEMUI_PACKAGE.animation.Expandable",
             loadPackageParam.classLoader
         )
 
@@ -514,6 +520,8 @@ class ControllersProvider(context: Context) : ModPack(context) {
                 return false
             }
 
+            val expandableClassAvailable = instance.mExpandableClass != null
+
             instance.mAccessPointController?.let { accessPointController ->
                 when {
                     isMethodAvailable(
@@ -532,6 +540,7 @@ class ControllersProvider(context: Context) : ModPack(context) {
                             callMethod(accessPointController, "canConfigWifi"),
                             view
                         )
+                        return true
                     }
 
                     isMethodAvailable(
@@ -550,6 +559,7 @@ class ControllersProvider(context: Context) : ModPack(context) {
                             callMethod(accessPointController, "canConfigWifi"),
                             null
                         )
+                        return true
                     }
 
                     isMethodAvailable(
@@ -566,6 +576,7 @@ class ControllersProvider(context: Context) : ModPack(context) {
                             callMethod(accessPointController, "canConfigMobileData"),
                             callMethod(accessPointController, "canConfigWifi")
                         )
+                        return true
                     }
 
                     isMethodAvailable(
@@ -582,6 +593,26 @@ class ControllersProvider(context: Context) : ModPack(context) {
                             callMethod(accessPointController, "canConfigWifi"),
                             view
                         )
+                        return true
+                    }
+
+                    expandableClassAvailable && isMethodAvailable(
+                        instance.mInternetDialogManager,
+                        "create",
+                        Boolean::class.java,
+                        Boolean::class.java,
+                        Boolean::class.java,
+                        instance.mExpandableClass!!
+                    ) -> {
+                        callMethod(
+                            instance.mInternetDialogManager,
+                            "create",
+                            true,
+                            callMethod(accessPointController, "canConfigMobileData"),
+                            callMethod(accessPointController, "canConfigWifi"),
+                            null
+                        )
+                        return true
                     }
 
                     else -> {
@@ -598,6 +629,7 @@ class ControllersProvider(context: Context) : ModPack(context) {
                             View::class.java
                         ) -> {
                             callMethod(cellularTile, "handleClick", view)
+                            return true
                         }
 
                         else -> {
@@ -608,7 +640,7 @@ class ControllersProvider(context: Context) : ModPack(context) {
                 }
             }
 
-            return true
+            return false
         }
 
         fun showBluetoothDialog(context: Context, view: View): Boolean {
@@ -617,11 +649,10 @@ class ControllersProvider(context: Context) : ModPack(context) {
                 return false
             }
 
-            val btTileAvailable = instance.mBluetoothTile != null
-            val btTileDialogAvailable = instance.mBluetoothTileDialogViewModel != null
+            val expandableClassAvailable = instance.mExpandableClass != null
 
             when {
-                btTileDialogAvailable && isMethodAvailable(
+                isMethodAvailable(
                     instance.mBluetoothTileDialogViewModel,
                     "showDialog",
                     Context::class.java,
@@ -633,9 +664,10 @@ class ControllersProvider(context: Context) : ModPack(context) {
                         context,
                         view
                     )
+                    return true
                 }
 
-                btTileDialogAvailable && isMethodAvailable(
+                isMethodAvailable(
                     instance.mBluetoothTileDialogViewModel,
                     "showDialog",
                     Context::class.java,
@@ -653,14 +685,43 @@ class ControllersProvider(context: Context) : ModPack(context) {
                         view,
                         isAutoOn
                     )
+                    return true
                 }
 
-                btTileAvailable && isMethodAvailable(
+                expandableClassAvailable && isMethodAvailable(
+                    instance.mBluetoothTileDialogViewModel,
+                    "showDialog",
+                    instance.mExpandableClass!!
+                ) -> {
+                    // it's calling wrong callMethod() so we have to call it manually
+                    return try {
+                        instance.mBluetoothTileDialogViewModel!!::class.java.getMethod(
+                            "showDialog",
+                            instance.mExpandableClass!!
+                        ).invoke(instance.mBluetoothTileDialogViewModel!!, null)
+                        true
+                    } catch (e: Exception) {
+                        log(TAG + e)
+                        false
+                    }
+                }
+
+                isMethodAvailable(
                     instance.mBluetoothTile,
                     "handleClick",
                     View::class.java
                 ) -> {
                     callMethod(instance.mBluetoothTile, "handleClick", view)
+                    return true
+                }
+
+                expandableClassAvailable && isMethodAvailable(
+                    instance.mBluetoothTile,
+                    "handleClick",
+                    instance.mExpandableClass!!
+                ) -> {
+                    callMethod(instance.mBluetoothTile, "handleClick", null)
+                    return true
                 }
 
                 else -> {
@@ -668,8 +729,6 @@ class ControllersProvider(context: Context) : ModPack(context) {
                     return false
                 }
             }
-
-            return true
         }
     }
 }
