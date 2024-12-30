@@ -25,14 +25,13 @@ class XposedHook {
         }
 
         fun findClass(vararg classNames: String): Class<*>? {
+            if (::loadPackageParam.isInitialized.not()) {
+                throw IllegalStateException("XposedHook.init() must be called before XposedHook.findClass()")
+            }
+
             for (className in classNames) {
-                try {
-                    val clazz = XposedHelpers.findClass(className, loadPackageParam.classLoader)
-                    if (clazz != null) {
-                        return clazz
-                    }
-                } catch (ignored: Throwable) {
-                }
+                val clazz = XposedHelpers.findClassIfExists(className, loadPackageParam.classLoader)
+                if (clazz != null) return clazz
             }
 
             if (classNames.size == 1) {
