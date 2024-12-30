@@ -68,12 +68,11 @@ import com.drdisagree.iconify.xposed.modules.utils.ViewHelper.applyTextScalingRe
 import com.drdisagree.iconify.xposed.modules.utils.ViewHelper.findViewContainsTag
 import com.drdisagree.iconify.xposed.modules.utils.ViewHelper.findViewWithTagAndChangeColor
 import com.drdisagree.iconify.xposed.modules.utils.ViewHelper.setMargins
+import com.drdisagree.iconify.xposed.modules.utils.toolkit.XposedHook.Companion.findClass
+import com.drdisagree.iconify.xposed.modules.utils.toolkit.hookMethod
 import com.drdisagree.iconify.xposed.utils.XPrefs.Xprefs
 import com.drdisagree.iconify.xposed.utils.XPrefs.XprefsIsInitialized
-import de.robv.android.xposed.XC_MethodHook
-import de.robv.android.xposed.XposedBridge.hookAllMethods
 import de.robv.android.xposed.XposedBridge.log
-import de.robv.android.xposed.XposedHelpers.findClass
 import de.robv.android.xposed.XposedHelpers.getObjectField
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam
 import java.io.File
@@ -165,14 +164,12 @@ class LockscreenClock(context: Context) : ModPack(context) {
     override fun handleLoadPackage(loadPackageParam: LoadPackageParam) {
         initResources(mContext)
 
-        val keyguardStatusViewClass = findClass(
-            "com.android.keyguard.KeyguardStatusView",
-            loadPackageParam.classLoader
-        )
+        val keyguardStatusViewClass = findClass("com.android.keyguard.KeyguardStatusView")
 
-        hookAllMethods(keyguardStatusViewClass, "onFinishInflate", object : XC_MethodHook() {
-            override fun afterHookedMethod(param: MethodHookParam) {
-                if (!showLockscreenClock) return
+        keyguardStatusViewClass
+            .hookMethod("onFinishInflate")
+            .runAfter { param ->
+                if (!showLockscreenClock) return@runAfter
 
                 mStatusViewContainer = getObjectField(
                     param.thisObject,
@@ -207,16 +204,14 @@ class LockscreenClock(context: Context) : ModPack(context) {
 
                 registerClockUpdater()
             }
-        })
 
-        val keyguardBottomAreaViewClass = findClass(
-            "$SYSTEMUI_PACKAGE.statusbar.phone.KeyguardBottomAreaView",
-            loadPackageParam.classLoader
-        )
+        val keyguardBottomAreaViewClass =
+            findClass("$SYSTEMUI_PACKAGE.statusbar.phone.KeyguardBottomAreaView")
 
-        hookAllMethods(keyguardBottomAreaViewClass, "onFinishInflate", object : XC_MethodHook() {
-            override fun afterHookedMethod(param: MethodHookParam) {
-                if (!showLockscreenClock || !showDepthWallpaper) return
+        keyguardBottomAreaViewClass
+            .hookMethod("onFinishInflate")
+            .runAfter { param ->
+                if (!showLockscreenClock || !showDepthWallpaper) return@runAfter
 
                 val view = param.thisObject as View
                 val mIndicationArea = view.findViewById<ViewGroup>(
@@ -249,7 +244,6 @@ class LockscreenClock(context: Context) : ModPack(context) {
                 } catch (ignored: Throwable) {
                 }
             }
-        })
 
         try {
             val executor = Executors.newSingleThreadScheduledExecutor()
