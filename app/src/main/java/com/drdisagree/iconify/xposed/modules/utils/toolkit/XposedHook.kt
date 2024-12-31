@@ -24,7 +24,11 @@ class XposedHook {
             this.loadPackageParam = loadPackageParam
         }
 
-        fun findClass(vararg classNames: String): Class<*>? {
+        fun findClass(
+            vararg classNames: String,
+            logIfNotFound: Boolean = true,
+            throwException: Boolean = false
+        ): Class<*>? {
             if (::loadPackageParam.isInitialized.not()) {
                 throw IllegalStateException("XposedHook.init() must be called before XposedHook.findClass()")
             }
@@ -34,10 +38,18 @@ class XposedHook {
                 if (clazz != null) return clazz
             }
 
-            if (classNames.size == 1) {
-                XposedBridge.log(TAG + "Class not found: ${classNames[0]}")
-            } else {
-                XposedBridge.log(TAG + "None of the classes were found: ${classNames.joinToString()}")
+            if (throwException) {
+                if (classNames.size == 1) {
+                    throw Throwable("Class not found: ${classNames[0]}")
+                } else {
+                    throw Throwable("None of the classes were found: ${classNames.joinToString()}")
+                }
+            } else if (logIfNotFound) {
+                if (classNames.size == 1) {
+                    XposedBridge.log(TAG + "Class not found: ${classNames[0]}")
+                } else {
+                    XposedBridge.log(TAG + "None of the classes were found: ${classNames.joinToString()}")
+                }
             }
 
             return null
@@ -60,8 +72,29 @@ fun Class<*>?.hookMethodMatchPattern(methodNamePattern: String): MethodHookHelpe
 class MethodHookHelper(
     private val clazz: Class<*>?,
     private val methodNames: Array<out String>? = null,
-    private val isPattern: Boolean = false
+    private val isPattern: Boolean = false,
+    private val method: Method? = null
 ) {
+
+    constructor(
+        clazz: Class<*>?,
+        methodNames: Array<out String>? = null,
+        isPattern: Boolean = false
+    ) : this(
+        clazz,
+        methodNames,
+        isPattern,
+        null
+    )
+
+    constructor(
+        method: Method
+    ) : this(
+        null,
+        null,
+        false,
+        method
+    )
 
     private var parameterTypes: Array<Any?>? = null
     private var printError: Boolean = true
@@ -73,21 +106,21 @@ class MethodHookHelper(
     }
 
     fun run(callback: XC_MethodHook): MethodHookHelper {
-        if (clazz == null) return this
-
-        if (methodNames.isNullOrEmpty()) { // hooking constructor
+        if (method != null) { // hooking directly via Method instance
+            hookMethod(method, callback)
+        } else if (methodNames.isNullOrEmpty()) { // hooking constructor
             hookConstructor(callback)
         } else { // hooking method
-            for (methodName in methodNames) {
+            methodNames.forEach { methodName ->
                 if (isPattern) {
                     val pattern = Pattern.compile(methodName)
-                    clazz.declaredMethods.forEach { method ->
+                    clazz?.declaredMethods?.forEach { method ->
                         if (pattern.matcher(method.name).matches()) {
                             hookMethod(method, callback)
                         }
                     }
                 } else {
-                    clazz.declaredMethods.find { it.name == methodName }?.let { method ->
+                    clazz?.declaredMethods?.find { it.name == methodName }?.let { method ->
                         hookMethod(method, callback)
                     } ?: run {
                         if (printError && methodNames!!.size == 1) {
@@ -102,21 +135,21 @@ class MethodHookHelper(
     }
 
     fun runBefore(callback: (XC_MethodHook.MethodHookParam) -> Unit): MethodHookHelper {
-        if (clazz == null) return this
-
-        if (methodNames.isNullOrEmpty()) { // hooking constructor
+        if (method != null) { // hooking directly via Method instance
+            hookMethodBefore(method, callback)
+        } else if (methodNames.isNullOrEmpty()) { // hooking constructor
             hookConstructorBefore(callback)
         } else { // hooking method
-            for (methodName in methodNames) {
+            methodNames.forEach { methodName ->
                 if (isPattern) {
                     val pattern = Pattern.compile(methodName)
-                    clazz.declaredMethods.forEach { method ->
+                    clazz?.declaredMethods?.forEach { method ->
                         if (pattern.matcher(method.name).matches()) {
                             hookMethodBefore(method, callback)
                         }
                     }
                 } else {
-                    clazz.declaredMethods.find { it.name == methodName }?.let { method ->
+                    clazz?.declaredMethods?.find { it.name == methodName }?.let { method ->
                         hookMethodBefore(method, callback)
                     } ?: run {
                         if (printError && methodNames!!.size == 1) {
@@ -131,21 +164,21 @@ class MethodHookHelper(
     }
 
     fun runAfter(callback: (XC_MethodHook.MethodHookParam) -> Unit): MethodHookHelper {
-        if (clazz == null) return this
-
-        if (methodNames.isNullOrEmpty()) { // hooking constructor
+        if (method != null) { // hooking directly via Method instance
+            hookMethodAfter(method, callback)
+        } else if (methodNames.isNullOrEmpty()) { // hooking constructor
             hookConstructorAfter(callback)
         } else { // hooking method
-            for (methodName in methodNames) {
+            methodNames.forEach { methodName ->
                 if (isPattern) {
                     val pattern = Pattern.compile(methodName)
-                    clazz.declaredMethods.forEach { method ->
+                    clazz?.declaredMethods?.forEach { method ->
                         if (pattern.matcher(method.name).matches()) {
                             hookMethodAfter(method, callback)
                         }
                     }
                 } else {
-                    clazz.declaredMethods.find { it.name == methodName }?.let { method ->
+                    clazz?.declaredMethods?.find { it.name == methodName }?.let { method ->
                         hookMethodAfter(method, callback)
                     } ?: run {
                         if (printError && methodNames!!.size == 1) {
@@ -160,22 +193,24 @@ class MethodHookHelper(
     }
 
     fun replace(callback: (XC_MethodHook.MethodHookParam) -> Unit): MethodHookHelper {
-        if (clazz == null || methodNames.isNullOrEmpty()) return this
-
-        for (methodName in methodNames) {
-            if (isPattern) {
-                val pattern = Pattern.compile(methodName)
-                clazz.declaredMethods.forEach { method ->
-                    if (pattern.matcher(method.name).matches()) {
-                        hookMethodReplace(method, callback)
+        if (method != null) { // hooking directly via Method instance
+            hookMethodReplace(method, callback)
+        } else {
+            methodNames?.forEach { methodName ->
+                if (isPattern) {
+                    val pattern = Pattern.compile(methodName)
+                    clazz?.declaredMethods?.forEach { method ->
+                        if (pattern.matcher(method.name).matches()) {
+                            hookMethodReplace(method, callback)
+                        }
                     }
-                }
-            } else {
-                clazz.declaredMethods.find { it.name == methodName }?.let { method ->
-                    hookMethodReplace(method, callback)
-                } ?: run {
-                    if (printError && methodNames!!.size == 1) {
-                        XposedBridge.log(XposedHook.TAG + "Method not found: $methodName")
+                } else {
+                    clazz?.declaredMethods?.find { it.name == methodName }?.let { method ->
+                        hookMethodReplace(method, callback)
+                    } ?: run {
+                        if (printError && methodNames!!.size == 1) {
+                            XposedBridge.log(XposedHook.TAG + "Method not found: $methodName")
+                        }
                     }
                 }
             }
@@ -252,23 +287,31 @@ class MethodHookHelper(
         method: Method,
         callback: (XC_MethodHook.MethodHookParam) -> Unit
     ) {
-        if (parameterTypes.isNullOrEmpty()) {
-            hookAllMethods(clazz, method.name, object : XC_MethodHook() {
+        if (clazz == null) {
+            hookMethod(method, object : XC_MethodHook() {
                 override fun beforeHookedMethod(param: MethodHookParam) {
                     callback(param)
                 }
             })
         } else {
-            findAndHookMethod(
-                clazz,
-                method.name,
-                *parameterTypes!!,
-                object : XC_MethodHook() {
+            if (parameterTypes.isNullOrEmpty()) {
+                hookAllMethods(clazz, method.name, object : XC_MethodHook() {
                     override fun beforeHookedMethod(param: MethodHookParam) {
                         callback(param)
                     }
-                }
-            )
+                })
+            } else {
+                findAndHookMethod(
+                    clazz,
+                    method.name,
+                    *parameterTypes!!,
+                    object : XC_MethodHook() {
+                        override fun beforeHookedMethod(param: MethodHookParam) {
+                            callback(param)
+                        }
+                    }
+                )
+            }
         }
     }
 
@@ -276,23 +319,31 @@ class MethodHookHelper(
         method: Method,
         callback: (XC_MethodHook.MethodHookParam) -> Unit
     ) {
-        if (parameterTypes.isNullOrEmpty()) {
-            hookAllMethods(clazz, method.name, object : XC_MethodHook() {
+        if (clazz == null) {
+            hookMethod(method, object : XC_MethodHook() {
                 override fun afterHookedMethod(param: MethodHookParam) {
                     callback(param)
                 }
             })
         } else {
-            findAndHookMethod(
-                clazz,
-                method.name,
-                *parameterTypes!!,
-                object : XC_MethodHook() {
+            if (parameterTypes.isNullOrEmpty()) {
+                hookAllMethods(clazz, method.name, object : XC_MethodHook() {
                     override fun afterHookedMethod(param: MethodHookParam) {
                         callback(param)
                     }
-                }
-            )
+                })
+            } else {
+                findAndHookMethod(
+                    clazz,
+                    method.name,
+                    *parameterTypes!!,
+                    object : XC_MethodHook() {
+                        override fun afterHookedMethod(param: MethodHookParam) {
+                            callback(param)
+                        }
+                    }
+                )
+            }
         }
     }
 
@@ -300,25 +351,34 @@ class MethodHookHelper(
         method: Method,
         callback: (XC_MethodHook.MethodHookParam) -> Unit
     ) {
-        if (parameterTypes.isNullOrEmpty()) {
-            hookAllMethods(clazz, method.name, object : XC_MethodReplacement() {
+        if (clazz == null) {
+            hookMethod(method, object : XC_MethodReplacement() {
                 override fun replaceHookedMethod(param: MethodHookParam): Any? {
                     callback(param)
                     return null
                 }
             })
         } else {
-            findAndHookMethod(
-                clazz,
-                method.name,
-                *parameterTypes!!,
-                object : XC_MethodReplacement() {
+            if (parameterTypes.isNullOrEmpty()) {
+                hookAllMethods(clazz, method.name, object : XC_MethodReplacement() {
                     override fun replaceHookedMethod(param: MethodHookParam): Any? {
                         callback(param)
                         return null
                     }
-                }
-            )
+                })
+            } else {
+                findAndHookMethod(
+                    clazz,
+                    method.name,
+                    *parameterTypes!!,
+                    object : XC_MethodReplacement() {
+                        override fun replaceHookedMethod(param: MethodHookParam): Any? {
+                            callback(param)
+                            return null
+                        }
+                    }
+                )
+            }
         }
     }
 
@@ -329,6 +389,22 @@ class MethodHookHelper(
         printError = false
         return this
     }
+}
+
+fun Method.run(callback: XC_MethodHook): MethodHookHelper {
+    return MethodHookHelper(this).run(callback)
+}
+
+fun Method.runBefore(callback: (XC_MethodHook.MethodHookParam) -> Unit): MethodHookHelper {
+    return MethodHookHelper(this).runBefore(callback)
+}
+
+fun Method.runAfter(callback: (XC_MethodHook.MethodHookParam) -> Unit): MethodHookHelper {
+    return MethodHookHelper(this).runAfter(callback)
+}
+
+fun Method.replace(callback: (XC_MethodHook.MethodHookParam) -> Unit): MethodHookHelper {
+    return MethodHookHelper(this).replace(callback)
 }
 
 fun XResources.hookLayout(): LayoutHookHelper {
