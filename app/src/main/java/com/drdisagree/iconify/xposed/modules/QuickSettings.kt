@@ -39,12 +39,12 @@ import com.drdisagree.iconify.common.Preferences.QS_TEXT_FOLLOW_ACCENT
 import com.drdisagree.iconify.common.Preferences.QS_TOPMARGIN
 import com.drdisagree.iconify.common.Preferences.VERTICAL_QSTILE_SWITCH
 import com.drdisagree.iconify.xposed.ModPack
-import com.drdisagree.iconify.xposed.modules.utils.Helpers.isPixelVariant
 import com.drdisagree.iconify.xposed.modules.utils.ViewHelper.toPx
 import com.drdisagree.iconify.xposed.modules.utils.toolkit.XposedHook.Companion.findClass
 import com.drdisagree.iconify.xposed.modules.utils.toolkit.hookConstructor
 import com.drdisagree.iconify.xposed.modules.utils.toolkit.hookMethod
 import com.drdisagree.iconify.xposed.modules.utils.toolkit.hookMethodMatchPattern
+import com.drdisagree.iconify.xposed.modules.utils.isPixelVariant
 import com.drdisagree.iconify.xposed.utils.XPrefs.Xprefs
 import com.drdisagree.iconify.xposed.utils.XPrefs.XprefsIsInitialized
 import de.robv.android.xposed.XC_MethodHook
