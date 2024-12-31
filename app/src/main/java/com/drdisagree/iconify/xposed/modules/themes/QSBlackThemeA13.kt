@@ -68,11 +68,11 @@ class QSBlackThemeA13(context: Context) : ModPack(context) {
         val qsIconViewImplClass = findClass("$SYSTEMUI_PACKAGE.qs.tileimpl.QSIconViewImpl")
         val centralSurfacesImplClass = findClass(
             "$SYSTEMUI_PACKAGE.statusbar.phone.CentralSurfacesImpl",
-            logIfNotFound = false
+            suppressError = true
         )
         val clockClass = findClass(
             "$SYSTEMUI_PACKAGE.statusbar.policy.Clock",
-            logIfNotFound = false
+            suppressError = true
         )
         val quickStatusBarHeaderClass = findClass("$SYSTEMUI_PACKAGE.qs.QuickStatusBarHeader")
         val brightnessControllerClass =
@@ -81,7 +81,7 @@ class QSBlackThemeA13(context: Context) : ModPack(context) {
             findClass("$SYSTEMUI_PACKAGE.statusbar.policy.BrightnessMirrorController")
         val brightnessSliderControllerClass = findClass(
             "$SYSTEMUI_PACKAGE.settings.brightness.BrightnessSliderController",
-            logIfNotFound = false
+            suppressError = true
         )
 
         qsPanelControllerClass
@@ -111,7 +111,7 @@ class QSBlackThemeA13(context: Context) : ModPack(context) {
             val shadeHeaderControllerClass = findClass(
                 "$SYSTEMUI_PACKAGE.shade.ShadeHeaderController",
                 "$SYSTEMUI_PACKAGE.shade.LargeScreenShadeHeaderController",
-                logIfNotFound = false
+                suppressError = true
             )
             val qsContainerImplClass = findClass("$SYSTEMUI_PACKAGE.qs.QSContainerImpl")
 

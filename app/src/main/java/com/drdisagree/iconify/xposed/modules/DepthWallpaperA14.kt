@@ -177,13 +177,13 @@ class DepthWallpaperA14(context: Context) : ModPack(context) {
             findClass("$SYSTEMUI_PACKAGE.wallpapers.ImageWallpaper\$CanvasEngine")
         val centralSurfacesImplClass = findClass(
             "$SYSTEMUI_PACKAGE.statusbar.phone.CentralSurfacesImpl",
-            logIfNotFound = false
+            suppressError = true
         )
         val scrimControllerClass = findClass("$SYSTEMUI_PACKAGE.statusbar.phone.ScrimController")
         val scrimViewClass = findClass("$SYSTEMUI_PACKAGE.scrim.ScrimView")
         val aodBurnInLayerClass = findClass(
             "$SYSTEMUI_PACKAGE.keyguard.ui.view.layout.sections.AodBurnInLayer",
-            logIfNotFound = false
+            suppressError = true
         )
         val keyguardBottomAreaViewClass =
             findClass("$SYSTEMUI_PACKAGE.statusbar.phone.KeyguardBottomAreaView")

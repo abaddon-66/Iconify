@@ -26,7 +26,7 @@ class XposedHook {
 
         fun findClass(
             vararg classNames: String,
-            logIfNotFound: Boolean = true,
+            suppressError: Boolean = false,
             throwException: Boolean = false
         ): Class<*>? {
             if (::loadPackageParam.isInitialized.not()) {
@@ -44,7 +44,7 @@ class XposedHook {
                 } else {
                     throw Throwable("None of the classes were found: ${classNames.joinToString()}")
                 }
-            } else if (logIfNotFound) {
+            } else if (!suppressError) {
                 if (classNames.size == 1) {
                     XposedBridge.log(TAG + "Class not found: ${classNames[0]}")
                 } else {

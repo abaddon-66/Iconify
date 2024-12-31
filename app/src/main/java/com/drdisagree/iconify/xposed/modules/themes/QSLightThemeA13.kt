@@ -87,11 +87,11 @@ class QSLightThemeA13(context: Context) : ModPack(context) {
         val qsIconViewImplClass = findClass("$SYSTEMUI_PACKAGE.qs.tileimpl.QSIconViewImpl")
         val centralSurfacesImplClass = findClass(
             "$SYSTEMUI_PACKAGE.statusbar.phone.CentralSurfacesImpl",
-            logIfNotFound = false
+            suppressError = true
         )
         val clockClass = findClass(
             "$SYSTEMUI_PACKAGE.statusbar.policy.Clock",
-            logIfNotFound = false
+            suppressError = true
         )
         val quickStatusBarHeaderClass = findClass("$SYSTEMUI_PACKAGE.qs.QuickStatusBarHeader")
 

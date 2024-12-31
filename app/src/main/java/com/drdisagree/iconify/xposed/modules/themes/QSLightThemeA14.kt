@@ -90,7 +90,7 @@ class QSLightThemeA14(context: Context) : ModPack(context) {
         val qsIconViewImplClass = findClass("$SYSTEMUI_PACKAGE.qs.tileimpl.QSIconViewImpl")
         val centralSurfacesImplClass = findClass(
             "$SYSTEMUI_PACKAGE.statusbar.phone.CentralSurfacesImpl",
-            logIfNotFound = false
+            suppressError = true
         )
         val qsCustomizerClass = findClass("$SYSTEMUI_PACKAGE.qs.customize.QSCustomizer")
         val qsContainerImplClass = findClass("$SYSTEMUI_PACKAGE.qs.QSContainerImpl")
@@ -107,16 +107,16 @@ class QSLightThemeA14(context: Context) : ModPack(context) {
             findClass("$SYSTEMUI_PACKAGE.statusbar.policy.BrightnessMirrorController")
         val brightnessSliderControllerClass = findClass(
             "$SYSTEMUI_PACKAGE.settings.brightness.BrightnessSliderController",
-            logIfNotFound = false
+            suppressError = true
         )
         val quickStatusBarHeaderClass = findClass("$SYSTEMUI_PACKAGE.qs.QuickStatusBarHeader")
         val clockClass = findClass(
             "$SYSTEMUI_PACKAGE.statusbar.policy.Clock",
-            logIfNotFound = false
+            suppressError = true
         )
         val themeColorKtClass = findClass(
             "com.android.compose.theme.ColorKt",
-            logIfNotFound = false
+            suppressError = true
         )
         val expandableControllerImplClass =
             findClass("com.android.compose.animation.ExpandableControllerImpl")
@@ -220,11 +220,11 @@ class QSLightThemeA14(context: Context) : ModPack(context) {
         try { // A14 ap11 onwards - modern implementation of mobile icons
             val shadeCarrierGroupControllerClass = findClass(
                 "$SYSTEMUI_PACKAGE.shade.carrier.ShadeCarrierGroupController",
-                logIfNotFound = false
+                suppressError = true
             )
             val mobileIconBinderClass = findClass(
                 "$SYSTEMUI_PACKAGE.statusbar.pipeline.mobile.ui.binder.MobileIconBinder",
-                logIfNotFound = false
+                suppressError = true
             )
 
             hookAllConstructors(shadeCarrierGroupControllerClass, object : XC_MethodHook() {
@@ -674,7 +674,7 @@ class QSLightThemeA14(context: Context) : ModPack(context) {
         try { // Compose implementation of QS Footer actions
             val graphicsColorKtClass = findClass(
                 "androidx.compose.ui.graphics.ColorKt",
-                logIfNotFound = false
+                suppressError = true
             )
 
             hookAllConstructors(expandableControllerImplClass, object : XC_MethodHook() {

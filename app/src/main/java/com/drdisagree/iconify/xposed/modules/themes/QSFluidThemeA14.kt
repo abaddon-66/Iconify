@@ -97,7 +97,7 @@ class QSFluidThemeA14(context: Context) : ModPack(context) {
         )
         val centralSurfacesImplClass = findClass(
             "$SYSTEMUI_PACKAGE.statusbar.phone.CentralSurfacesImpl",
-            logIfNotFound = false
+            suppressError = true
         )
         val notificationExpandButtonClass =
             findClass("com.android.internal.widget.NotificationExpandButton")
@@ -109,13 +109,13 @@ class QSFluidThemeA14(context: Context) : ModPack(context) {
             findClass("$SYSTEMUI_PACKAGE.statusbar.policy.BrightnessMirrorController")
         val brightnessSliderControllerClass = findClass(
             "$SYSTEMUI_PACKAGE.settings.brightness.BrightnessSliderController",
-            logIfNotFound = false
+            suppressError = true
         )
         val activatableNotificationViewClass =
             findClass("$SYSTEMUI_PACKAGE.statusbar.notification.row.ActivatableNotificationView")
         val themeColorKtClass = findClass(
             "com.android.compose.theme.ColorKt",
-            logIfNotFound = false
+            suppressError = true
         )
         val footerActionsViewModelClass =
             findClass("$SYSTEMUI_PACKAGE.qs.footer.ui.viewmodel.FooterActionsViewModel")
@@ -325,7 +325,7 @@ class QSFluidThemeA14(context: Context) : ModPack(context) {
         try { // Compose implementation of QS Footer actions
             val graphicsColorKtClass = findClass(
                 "androidx.compose.ui.graphics.ColorKt",
-                logIfNotFound = false
+                suppressError = true
             )
 
             hookAllMethods(themeColorKtClass, "colorAttr", object : XC_MethodHook() {

@@ -96,7 +96,7 @@ class QSFluidThemeA13(context: Context) : ModPack(context) {
         val footerViewClass = findClass("$SYSTEMUI_PACKAGE.statusbar.notification.row.FooterView")
         val centralSurfacesImplClass = findClass(
             "$SYSTEMUI_PACKAGE.statusbar.phone.CentralSurfacesImpl",
-            logIfNotFound = false
+            suppressError = true
         )
         val notificationExpandButtonClass =
             findClass("com.android.internal.widget.NotificationExpandButton")
@@ -108,7 +108,7 @@ class QSFluidThemeA13(context: Context) : ModPack(context) {
             findClass("$SYSTEMUI_PACKAGE.statusbar.policy.BrightnessMirrorController")
         val brightnessSliderControllerClass = findClass(
             "$SYSTEMUI_PACKAGE.settings.brightness.BrightnessSliderController",
-            logIfNotFound = false
+            suppressError = true
         )
         val activatableNotificationViewClass =
             findClass("$SYSTEMUI_PACKAGE.statusbar.notification.row.ActivatableNotificationView")

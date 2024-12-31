@@ -515,7 +515,7 @@ class QuickSettings(context: Context) : ModPack(context) {
             findClass("$SYSTEMUI_PACKAGE.statusbar.policy.BrightnessMirrorController")
         val brightnessSliderControllerClass = findClass(
             "$SYSTEMUI_PACKAGE.settings.brightness.BrightnessSliderController",
-            logIfNotFound = false
+            suppressError = true
         )
 
         brightnessControllerClass
