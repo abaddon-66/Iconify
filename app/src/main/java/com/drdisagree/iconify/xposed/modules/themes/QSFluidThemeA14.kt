@@ -29,10 +29,12 @@ import com.drdisagree.iconify.common.Preferences.FLUID_POWERMENU_TRANSPARENCY
 import com.drdisagree.iconify.common.Preferences.FLUID_QSPANEL
 import com.drdisagree.iconify.xposed.HookRes
 import com.drdisagree.iconify.xposed.ModPack
-import com.drdisagree.iconify.xposed.modules.views.RoundedCornerProgressDrawable
 import com.drdisagree.iconify.xposed.modules.utils.SettingsLibUtils
 import com.drdisagree.iconify.xposed.modules.utils.ViewHelper.toPx
 import com.drdisagree.iconify.xposed.modules.utils.toolkit.XposedHook.Companion.findClass
+import com.drdisagree.iconify.xposed.modules.utils.toolkit.hookConstructor
+import com.drdisagree.iconify.xposed.modules.utils.toolkit.hookMethod
+import com.drdisagree.iconify.xposed.modules.views.RoundedCornerProgressDrawable
 import com.drdisagree.iconify.xposed.utils.SystemUtils
 import com.drdisagree.iconify.xposed.utils.XPrefs.Xprefs
 import com.drdisagree.iconify.xposed.utils.XPrefs.XprefsIsInitialized
@@ -41,8 +43,6 @@ import de.robv.android.xposed.XposedBridge.hookAllConstructors
 import de.robv.android.xposed.XposedBridge.hookAllMethods
 import de.robv.android.xposed.XposedBridge.log
 import de.robv.android.xposed.XposedHelpers.callStaticMethod
-
-
 import de.robv.android.xposed.XposedHelpers.getIntField
 import de.robv.android.xposed.XposedHelpers.getObjectField
 import de.robv.android.xposed.XposedHelpers.setObjectField
@@ -55,14 +55,14 @@ class QSFluidThemeA14(context: Context) : ModPack(context) {
 
     private var wasDark: Boolean = SystemUtils.isDarkMode
     private var mSlider: SeekBar? = null
-    var colorActive = mContext.resources.getColor(
+    private var colorActive = mContext.resources.getColor(
         mContext.resources.getIdentifier(
             "android:color/system_accent1_400",
             "color",
             mContext.packageName
         ), mContext.theme
     )
-    var colorInactive = SettingsLibUtils.getColorAttrDefaultColor(
+    private var colorInactive = SettingsLibUtils.getColorAttrDefaultColor(
         mContext,
         mContext.resources.getIdentifier(
             "offStateColor",
@@ -70,8 +70,8 @@ class QSFluidThemeA14(context: Context) : ModPack(context) {
             mContext.packageName
         )
     )
-    var colorActiveAlpha = changeAlpha(colorActive, ACTIVE_ALPHA)
-    var colorInactiveAlpha = changeAlpha(colorInactive, INACTIVE_ALPHA)
+    private var colorActiveAlpha = changeAlpha(colorActive, ACTIVE_ALPHA)
+    private var colorInactiveAlpha = changeAlpha(colorInactive, INACTIVE_ALPHA)
 
     override fun updatePrefs(vararg key: String) {
         if (!XprefsIsInitialized) return
@@ -95,8 +95,10 @@ class QSFluidThemeA14(context: Context) : ModPack(context) {
             "$SYSTEMUI_PACKAGE.statusbar.notification.footer.ui.view.FooterView",
             "$SYSTEMUI_PACKAGE.statusbar.notification.row.FooterView"
         )
-        val centralSurfacesImplClass =
-            findClass("$SYSTEMUI_PACKAGE.statusbar.phone.CentralSurfacesImpl")
+        val centralSurfacesImplClass = findClass(
+            "$SYSTEMUI_PACKAGE.statusbar.phone.CentralSurfacesImpl",
+            logIfNotFound = false
+        )
         val notificationExpandButtonClass =
             findClass("com.android.internal.widget.NotificationExpandButton")
         val brightnessSliderViewClass =
@@ -105,36 +107,33 @@ class QSFluidThemeA14(context: Context) : ModPack(context) {
             findClass("$SYSTEMUI_PACKAGE.settings.brightness.BrightnessController")
         val brightnessMirrorControllerClass =
             findClass("$SYSTEMUI_PACKAGE.statusbar.policy.BrightnessMirrorController")
-        val brightnessSliderControllerClass =
-            findClass("$SYSTEMUI_PACKAGE.settings.brightness.BrightnessSliderController")
+        val brightnessSliderControllerClass = findClass(
+            "$SYSTEMUI_PACKAGE.settings.brightness.BrightnessSliderController",
+            logIfNotFound = false
+        )
         val activatableNotificationViewClass =
             findClass("$SYSTEMUI_PACKAGE.statusbar.notification.row.ActivatableNotificationView")
-        val themeColorKtClass = findClass("com.android.compose.theme.ColorKt")
+        val themeColorKtClass = findClass(
+            "com.android.compose.theme.ColorKt",
+            logIfNotFound = false
+        )
         val footerActionsViewModelClass =
             findClass("$SYSTEMUI_PACKAGE.qs.footer.ui.viewmodel.FooterActionsViewModel")
         val footerActionsViewBinderClass =
             findClass("$SYSTEMUI_PACKAGE.qs.footer.ui.binder.FooterActionsViewBinder")
 
         // Initialize resources and colors
-        hookAllMethods(qsTileViewImplClass, "init", object : XC_MethodHook() {
-            override fun beforeHookedMethod(param: MethodHookParam) {
-                initResources()
-            }
-        })
+        qsTileViewImplClass
+            .hookMethod("init")
+            .runBefore { initResources() }
 
-        if (centralSurfacesImplClass != null) {
-            hookAllConstructors(centralSurfacesImplClass, object : XC_MethodHook() {
-                override fun beforeHookedMethod(param: MethodHookParam) {
-                    initResources()
-                }
-            })
+        centralSurfacesImplClass
+            .hookConstructor()
+            .runBefore { initResources() }
 
-            hookAllMethods(centralSurfacesImplClass, "updateTheme", object : XC_MethodHook() {
-                override fun beforeHookedMethod(param: MethodHookParam) {
-                    initResources()
-                }
-            })
-        }
+        centralSurfacesImplClass
+            .hookMethod("updateTheme")
+            .runBefore { initResources() }
 
         hookAllConstructors(qsTileViewImplClass, object : XC_MethodHook() {
             override fun afterHookedMethod(param: MethodHookParam) {
@@ -324,7 +323,10 @@ class QSFluidThemeA14(context: Context) : ModPack(context) {
         }
 
         try { // Compose implementation of QS Footer actions
-            val graphicsColorKtClass = findClass("androidx.compose.ui.graphics.ColorKt")
+            val graphicsColorKtClass = findClass(
+                "androidx.compose.ui.graphics.ColorKt",
+                logIfNotFound = false
+            )
 
             hookAllMethods(themeColorKtClass, "colorAttr", object : XC_MethodHook() {
                 override fun beforeHookedMethod(param: MethodHookParam) {

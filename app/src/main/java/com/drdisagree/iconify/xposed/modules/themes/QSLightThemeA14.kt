@@ -88,8 +88,10 @@ class QSLightThemeA14(context: Context) : ModPack(context) {
         val qsPanelControllerClass = findClass("$SYSTEMUI_PACKAGE.qs.QSPanelController")
         val scrimStateEnum = findClass("$SYSTEMUI_PACKAGE.statusbar.phone.ScrimState")!!
         val qsIconViewImplClass = findClass("$SYSTEMUI_PACKAGE.qs.tileimpl.QSIconViewImpl")
-        val centralSurfacesImplClass =
-            findClass("$SYSTEMUI_PACKAGE.statusbar.phone.CentralSurfacesImpl")
+        val centralSurfacesImplClass = findClass(
+            "$SYSTEMUI_PACKAGE.statusbar.phone.CentralSurfacesImpl",
+            logIfNotFound = false
+        )
         val qsCustomizerClass = findClass("$SYSTEMUI_PACKAGE.qs.customize.QSCustomizer")
         val qsContainerImplClass = findClass("$SYSTEMUI_PACKAGE.qs.QSContainerImpl")
         val shadeCarrierClass = findClass("$SYSTEMUI_PACKAGE.shade.carrier.ShadeCarrier")
@@ -103,11 +105,19 @@ class QSLightThemeA14(context: Context) : ModPack(context) {
             findClass("$SYSTEMUI_PACKAGE.settings.brightness.BrightnessController")
         val brightnessMirrorControllerClass =
             findClass("$SYSTEMUI_PACKAGE.statusbar.policy.BrightnessMirrorController")
-        val brightnessSliderControllerClass =
-            findClass("$SYSTEMUI_PACKAGE.settings.brightness.BrightnessSliderController")
+        val brightnessSliderControllerClass = findClass(
+            "$SYSTEMUI_PACKAGE.settings.brightness.BrightnessSliderController",
+            logIfNotFound = false
+        )
         val quickStatusBarHeaderClass = findClass("$SYSTEMUI_PACKAGE.qs.QuickStatusBarHeader")
-        val clockClass = findClass("$SYSTEMUI_PACKAGE.statusbar.policy.Clock")
-        val themeColorKtClass = findClass("com.android.compose.theme.ColorKt")
+        val clockClass = findClass(
+            "$SYSTEMUI_PACKAGE.statusbar.policy.Clock",
+            logIfNotFound = false
+        )
+        val themeColorKtClass = findClass(
+            "com.android.compose.theme.ColorKt",
+            logIfNotFound = false
+        )
         val expandableControllerImplClass =
             findClass("com.android.compose.animation.ExpandableControllerImpl")
         val footerActionsViewModelClass =
@@ -208,10 +218,14 @@ class QSLightThemeA14(context: Context) : ModPack(context) {
         })
 
         try { // A14 ap11 onwards - modern implementation of mobile icons
-            val shadeCarrierGroupControllerClass =
-                findClass("$SYSTEMUI_PACKAGE.shade.carrier.ShadeCarrierGroupController")
-            val mobileIconBinderClass =
-                findClass("$SYSTEMUI_PACKAGE.statusbar.pipeline.mobile.ui.binder.MobileIconBinder")
+            val shadeCarrierGroupControllerClass = findClass(
+                "$SYSTEMUI_PACKAGE.shade.carrier.ShadeCarrierGroupController",
+                logIfNotFound = false
+            )
+            val mobileIconBinderClass = findClass(
+                "$SYSTEMUI_PACKAGE.statusbar.pipeline.mobile.ui.binder.MobileIconBinder",
+                logIfNotFound = false
+            )
 
             hookAllConstructors(shadeCarrierGroupControllerClass, object : XC_MethodHook() {
                 override fun afterHookedMethod(param: MethodHookParam) {
@@ -658,7 +672,10 @@ class QSLightThemeA14(context: Context) : ModPack(context) {
         }
 
         try { // Compose implementation of QS Footer actions
-            val graphicsColorKtClass = findClass("androidx.compose.ui.graphics.ColorKt")
+            val graphicsColorKtClass = findClass(
+                "androidx.compose.ui.graphics.ColorKt",
+                logIfNotFound = false
+            )
 
             hookAllConstructors(expandableControllerImplClass, object : XC_MethodHook() {
                 override fun beforeHookedMethod(param: MethodHookParam) {
@@ -842,7 +859,7 @@ class QSLightThemeA14(context: Context) : ModPack(context) {
         try {
             val constants: Array<out Any>? = scrimStateEnum.enumConstants
             if (constants != null) {
-                for (constant in constants) {
+                constants.forEach { constant ->
                     when (constant.toString()) {
                         "KEYGUARD" -> hookAllMethods(
                             constant.javaClass,

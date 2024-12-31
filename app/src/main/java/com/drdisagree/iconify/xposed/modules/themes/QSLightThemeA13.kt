@@ -85,9 +85,14 @@ class QSLightThemeA13(context: Context) : ModPack(context) {
             findClass("com.android.settingslib.applications.InterestingConfigChanges")!!
         val scrimStateEnum = findClass("$SYSTEMUI_PACKAGE.statusbar.phone.ScrimState")!!
         val qsIconViewImplClass = findClass("$SYSTEMUI_PACKAGE.qs.tileimpl.QSIconViewImpl")
-        val centralSurfacesImplClass =
-            findClass("$SYSTEMUI_PACKAGE.statusbar.phone.CentralSurfacesImpl")
-        val clockClass = findClass("$SYSTEMUI_PACKAGE.statusbar.policy.Clock")
+        val centralSurfacesImplClass = findClass(
+            "$SYSTEMUI_PACKAGE.statusbar.phone.CentralSurfacesImpl",
+            logIfNotFound = false
+        )
+        val clockClass = findClass(
+            "$SYSTEMUI_PACKAGE.statusbar.policy.Clock",
+            logIfNotFound = false
+        )
         val quickStatusBarHeaderClass = findClass("$SYSTEMUI_PACKAGE.qs.QuickStatusBarHeader")
 
         try {
@@ -533,7 +538,7 @@ class QSLightThemeA13(context: Context) : ModPack(context) {
         try {
             val constants: Array<out Any>? = scrimStateEnum.enumConstants
             if (constants != null) {
-                for (constant in constants) {
+                constants.forEach { constant ->
                     when (constant.toString()) {
                         "KEYGUARD" -> hookAllMethods(
                             constant.javaClass,
