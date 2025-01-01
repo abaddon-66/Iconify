@@ -493,6 +493,7 @@ class QSLightThemeA14(context: Context) : ModPack(context) {
         // White QS Clock bug
         clockClass
             .hookMethod("onColorsChanged")
+            .suppressError()
             .runAfter {
                 if (!lightQSHeaderEnabled || isDark) return@runAfter
 
@@ -903,6 +904,7 @@ class QSLightThemeA14(context: Context) : ModPack(context) {
 
                     constant.javaClass
                         .hookMethod("getBehindTint")
+                        .suppressError()
                         .runBefore { param ->
                             if (!lightQSHeaderEnabled) return@runBefore
 

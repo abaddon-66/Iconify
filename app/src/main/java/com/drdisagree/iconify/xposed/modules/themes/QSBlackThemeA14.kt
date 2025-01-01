@@ -491,6 +491,7 @@ class QSBlackThemeA14(context: Context) : ModPack(context) {
         // Black QS Clock bug
         clockClass
             .hookMethod("onColorsChanged")
+            .suppressError()
             .runAfter {
                 if (!blackQSHeaderEnabled) return@runAfter
 
@@ -905,6 +906,7 @@ class QSBlackThemeA14(context: Context) : ModPack(context) {
 
                     constant.javaClass
                         .hookMethod("getBehindTint")
+                        .suppressError()
                         .runBefore { param ->
                             if (!blackQSHeaderEnabled) return@runBefore
 

@@ -13,7 +13,10 @@ class SettingsLibUtils(context: Context) : ModPack(context) {
     override fun updatePrefs(vararg key: String) {}
 
     override fun handleLoadPackage(loadPackageParam: LoadPackageParam) {
-        UtilsClass = findClass("com.android.settingslib.Utils")
+        UtilsClass = findClass(
+            "com.android.settingslib.Utils",
+            suppressError = true
+        )
     }
 
     companion object {

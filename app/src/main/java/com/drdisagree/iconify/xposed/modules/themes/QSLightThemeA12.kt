@@ -250,6 +250,7 @@ class QSLightThemeA12(context: Context) : ModPack(context) {
 
                     constant.javaClass
                         .hookMethod("getBehindTint")
+                        .suppressError()
                         .runAfter { param ->
                             if (!lightQSHeaderEnabled) return@runAfter
 
