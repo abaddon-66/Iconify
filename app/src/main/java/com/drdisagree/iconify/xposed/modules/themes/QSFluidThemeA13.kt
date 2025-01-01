@@ -98,8 +98,10 @@ class QSFluidThemeA13(context: Context) : ModPack(context) {
             "$SYSTEMUI_PACKAGE.statusbar.phone.CentralSurfacesImpl",
             suppressError = true
         )
-        val notificationExpandButtonClass =
-            findClass("com.android.internal.widget.NotificationExpandButton")
+        val notificationExpandButtonClass = findClass(
+            "com.android.internal.widget.NotificationExpandButton",
+            suppressError = true
+        )
         val brightnessSliderViewClass =
             findClass("$SYSTEMUI_PACKAGE.settings.brightness.BrightnessSliderView")
         val brightnessControllerClass =
@@ -214,6 +216,7 @@ class QSFluidThemeA13(context: Context) : ModPack(context) {
 
         qsContainerImplClass
             .hookMethod("updateResources")
+            .suppressError()
             .runAfter { param ->
                 if (!fluidQsThemeEnabled) return@runAfter
 

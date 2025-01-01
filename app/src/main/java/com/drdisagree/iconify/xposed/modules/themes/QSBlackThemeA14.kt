@@ -86,10 +86,14 @@ class QSBlackThemeA14(context: Context) : ModPack(context) {
         val interestingConfigChangesClass =
             findClass("com.android.settingslib.applications.InterestingConfigChanges")!!
         val batteryStatusChipClass = findClass("$SYSTEMUI_PACKAGE.statusbar.BatteryStatusChip")
-        val textButtonViewHolderClass =
-            findClass("$SYSTEMUI_PACKAGE.qs.footer.ui.binder.TextButtonViewHolder")
-        val numberButtonViewHolderClass =
-            findClass("$SYSTEMUI_PACKAGE.qs.footer.ui.binder.NumberButtonViewHolder")
+        val textButtonViewHolderClass = findClass(
+            "$SYSTEMUI_PACKAGE.qs.footer.ui.binder.TextButtonViewHolder",
+            suppressError = true
+        )
+        val numberButtonViewHolderClass = findClass(
+            "$SYSTEMUI_PACKAGE.qs.footer.ui.binder.NumberButtonViewHolder",
+            suppressError = true
+        )
         val qsFooterViewClass = findClass("$SYSTEMUI_PACKAGE.qs.QSFooterView")
         val brightnessControllerClass =
             findClass("$SYSTEMUI_PACKAGE.settings.brightness.BrightnessController")
@@ -168,11 +172,7 @@ class QSBlackThemeA14(context: Context) : ModPack(context) {
                             "onUiModeChanged",
                             "onThemeChanged"
                         )
-                        .run(object : XC_MethodHook() {
-                            override fun afterHookedMethod(param: MethodHookParam) {
-                                setHeaderComponentsColor(mView, iconManager, batteryIcon)
-                            }
-                        })
+                        .runAfter { setHeaderComponentsColor(mView, iconManager, batteryIcon) }
 
                     setHeaderComponentsColor(mView, iconManager, batteryIcon)
                 } catch (throwable: Throwable) {
@@ -209,6 +209,7 @@ class QSBlackThemeA14(context: Context) : ModPack(context) {
 
         qsContainerImplClass
             .hookMethod("updateResources")
+            .suppressError()
             .runAfter { param ->
                 if (!blackQSHeaderEnabled) return@runAfter
 
@@ -491,13 +492,9 @@ class QSBlackThemeA14(context: Context) : ModPack(context) {
         clockClass
             .hookMethod("onColorsChanged")
             .runAfter {
-                if (blackQSHeaderEnabled && mClockViewQSHeader != null) {
-                    try {
-                        (mClockViewQSHeader as TextView).setTextColor(Color.WHITE)
-                    } catch (throwable: Throwable) {
-                        log(TAG + throwable)
-                    }
-                }
+                if (!blackQSHeaderEnabled) return@runAfter
+
+                (mClockViewQSHeader as? TextView)?.setTextColor(Color.WHITE)
             }
 
         centralSurfacesImplClass
@@ -592,6 +589,7 @@ class QSBlackThemeA14(context: Context) : ModPack(context) {
 
         qsContainerImplClass
             .hookMethod("updateResources")
+            .suppressError()
             .runAfter { param ->
                 if (!blackQSHeaderEnabled) return@runAfter
 

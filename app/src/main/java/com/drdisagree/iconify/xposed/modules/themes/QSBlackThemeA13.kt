@@ -310,13 +310,9 @@ class QSBlackThemeA13(context: Context) : ModPack(context) {
         clockClass
             .hookMethod("onColorsChanged")
             .runAfter {
-                if (blackQSHeaderEnabled && mClockViewQSHeader != null) {
-                    try {
-                        (mClockViewQSHeader as TextView).setTextColor(Color.WHITE)
-                    } catch (throwable: Throwable) {
-                        log(TAG + throwable)
-                    }
-                }
+                if (!blackQSHeaderEnabled) return@runAfter
+
+                (mClockViewQSHeader as? TextView)?.setTextColor(Color.WHITE)
             }
 
         centralSurfacesImplClass

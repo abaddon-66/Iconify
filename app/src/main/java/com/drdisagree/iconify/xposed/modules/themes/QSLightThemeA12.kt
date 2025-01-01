@@ -90,10 +90,8 @@ class QSLightThemeA12(context: Context) : ModPack(context) {
                 if (!dualToneQSEnabled) return@runAfter
 
                 try {
-                    val mScrimBehind =
-                        getObjectField(param.thisObject, "mScrimBehind")
-                    val mBlankScreen =
-                        getObjectField(param.thisObject, "mBlankScreen") as Boolean
+                    val mScrimBehind = getObjectField(param.thisObject, "mScrimBehind")
+                    val mBlankScreen = getObjectField(param.thisObject, "mBlankScreen") as Boolean
                     val alpha = callMethod(mScrimBehind, "getViewAlpha") as Float
                     val animateBehindScrim = alpha != 0f && !mBlankScreen
 
