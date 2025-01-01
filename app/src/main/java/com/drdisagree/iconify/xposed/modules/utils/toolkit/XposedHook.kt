@@ -124,7 +124,7 @@ class MethodHookHelper(
                         hookMethod(method, callback)
                     } ?: run {
                         if (printError && methodNames!!.size == 1) {
-                            XposedBridge.log(XposedHook.TAG + "Method not found: $methodName")
+                            XposedBridge.log(XposedHook.TAG + "Method not found: $methodName${if (clazz?.simpleName != null) " in ${clazz.simpleName}" else ""}")
                         }
                     }
                 }
@@ -153,7 +153,7 @@ class MethodHookHelper(
                         hookMethodBefore(method, callback)
                     } ?: run {
                         if (printError && methodNames!!.size == 1) {
-                            XposedBridge.log(XposedHook.TAG + "Method not found: $methodName")
+                            XposedBridge.log(XposedHook.TAG + "Method not found: $methodName${if (clazz?.simpleName != null) " in ${clazz.simpleName}" else ""}")
                         }
                     }
                 }
@@ -182,7 +182,7 @@ class MethodHookHelper(
                         hookMethodAfter(method, callback)
                     } ?: run {
                         if (printError && methodNames!!.size == 1) {
-                            XposedBridge.log(XposedHook.TAG + "Method not found: $methodName")
+                            XposedBridge.log(XposedHook.TAG + "Method not found: $methodName${if (clazz?.simpleName != null) " in ${clazz.simpleName}" else ""}")
                         }
                     }
                 }
@@ -209,7 +209,7 @@ class MethodHookHelper(
                         hookMethodReplace(method, callback)
                     } ?: run {
                         if (printError && methodNames!!.size == 1) {
-                            XposedBridge.log(XposedHook.TAG + "Method not found: $methodName")
+                            XposedBridge.log(XposedHook.TAG + "Method not found: $methodName${if (clazz?.simpleName != null) " in ${clazz.simpleName}" else ""}")
                         }
                     }
                 }
