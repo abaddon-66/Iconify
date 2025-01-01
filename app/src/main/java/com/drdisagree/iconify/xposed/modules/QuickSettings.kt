@@ -450,6 +450,7 @@ class QuickSettings(context: Context) : ModPack(context) {
 
         qsContainerImplClass
             .hookMethod("updateResources")
+            .suppressError()
             .runAfter { param ->
                 if (!qsTextAlwaysWhite && !qsTextFollowAccent) return@runAfter
 
