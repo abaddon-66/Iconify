@@ -5,6 +5,7 @@ import com.drdisagree.iconify.common.Const.PIXEL_LAUNCHER_PACKAGE
 import com.drdisagree.iconify.common.Const.SYSTEMUI_PACKAGE
 import com.drdisagree.iconify.xposed.modules.BackgroundChip
 import com.drdisagree.iconify.xposed.modules.BatteryStyleManager
+import com.drdisagree.iconify.xposed.modules.ColorizeNotification
 import com.drdisagree.iconify.xposed.modules.ControllersProvider
 import com.drdisagree.iconify.xposed.modules.DepthWallpaper
 import com.drdisagree.iconify.xposed.modules.DepthWallpaperA14
@@ -52,7 +53,8 @@ object EntryList {
         QuickSettings::class.java,
         Statusbar::class.java,
         BatteryStyleManager::class.java,
-        VolumePanel::class.java
+        VolumePanel::class.java,
+        ColorizeNotification::class.java
     )
 
     private val systemUiAndroid12ModPacks = listOf(

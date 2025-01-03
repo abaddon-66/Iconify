@@ -35,6 +35,13 @@
                 app:summaryText="@string/hide_data_disabled_icon_desc"
                 app:titleText="@string/hide_data_disabled_icon_title" />
 
+            <com.drdisagree.iconify.ui.widgets.SwitchWidget
+                android:id="@+id/colorize_notification_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:summaryText="@string/colorize_notification_view_desc"
+                app:titleText="@string/colorize_notification_view_title" />
+
             <com.drdisagree.iconify.ui.widgets.SliderWidget
                 android:id="@+id/op_qs_gap_expanded"
                 android:layout_width="match_parent"
