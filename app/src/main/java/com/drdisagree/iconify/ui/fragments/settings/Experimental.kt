@@ -19,7 +19,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import com.drdisagree.iconify.R
-import com.drdisagree.iconify.common.Preferences.COLORED_NOTIFICATION_VIEW_SWITCH
 import com.drdisagree.iconify.common.Preferences.HEADER_IMAGE_OVERLAP
 import com.drdisagree.iconify.common.Preferences.HIDE_DATA_DISABLED_ICON
 import com.drdisagree.iconify.common.Preferences.OP_QS_HEADER_GAP_EXPANDED
@@ -79,18 +78,6 @@ class Experimental : BaseFragment() {
         binding.hideDataDisabledIcon.isSwitchChecked = getBoolean(HIDE_DATA_DISABLED_ICON, false)
         binding.hideDataDisabledIcon.setSwitchChangeListener { _: CompoundButton?, isChecked: Boolean ->
             putBoolean(HIDE_DATA_DISABLED_ICON, isChecked)
-        }
-
-        // Header image overlap
-        binding.colorizeNotificationView.isSwitchChecked =
-            getBoolean(COLORED_NOTIFICATION_VIEW_SWITCH, false)
-        binding.colorizeNotificationView.setSwitchChangeListener { _: CompoundButton?, isChecked: Boolean ->
-            putBoolean(COLORED_NOTIFICATION_VIEW_SWITCH, isChecked)
-
-            MainActivity.showOrHidePendingActionButton(
-                activityBinding = (requireActivity() as MainActivity).binding,
-                requiresSystemUiRestart = true
-            )
         }
 
         // OP QS Header Gap Expanded
