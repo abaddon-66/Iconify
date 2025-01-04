@@ -11,6 +11,7 @@ import android.graphics.drawable.Drawable
 import android.os.Handler
 import android.os.Looper
 import android.view.View
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.RemoteViews
 import android.widget.TextView
@@ -18,6 +19,7 @@ import androidx.core.graphics.ColorUtils
 import androidx.core.graphics.drawable.DrawableCompat
 import com.drdisagree.iconify.common.Const.FRAMEWORK_PACKAGE
 import com.drdisagree.iconify.common.Const.SYSTEMUI_PACKAGE
+import com.drdisagree.iconify.common.Preferences.COLORED_NOTIFICATION_ICON_SWITCH
 import com.drdisagree.iconify.common.Preferences.COLORED_NOTIFICATION_VIEW_SWITCH
 import com.drdisagree.iconify.xposed.ModPack
 import com.drdisagree.iconify.xposed.modules.utils.toolkit.XposedHook.Companion.findClass
@@ -41,6 +43,7 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam
 class ColorizeNotification(context: Context) : ModPack(context) {
 
     private var coloredNotificationView = false
+    private var coloredNotificationIcon = false
     private var titleResId = 0
     private var subTextResId = 0
     private var schemeStyle: Any = "TONAL_SPOT"
@@ -50,6 +53,7 @@ class ColorizeNotification(context: Context) : ModPack(context) {
 
         Xprefs.apply {
             coloredNotificationView = getBoolean(COLORED_NOTIFICATION_VIEW_SWITCH, false)
+            coloredNotificationIcon = getBoolean(COLORED_NOTIFICATION_ICON_SWITCH, false)
         }
     }
 
@@ -66,6 +70,8 @@ class ColorizeNotification(context: Context) : ModPack(context) {
             findClass("$SYSTEMUI_PACKAGE.statusbar.notification.row.NotificationContentView")
         val notificationContentInflaterClass =
             findClass("$SYSTEMUI_PACKAGE.statusbar.notification.row.NotificationContentInflater")
+        val notificationHeaderViewWrapperClass =
+            findClass("$SYSTEMUI_PACKAGE.statusbar.notification.row.wrapper.NotificationHeaderViewWrapper")
 
         val styles: Array<out Any> = monetStyleClass.getEnumConstants()!!
         for (style in styles) {
@@ -408,5 +414,42 @@ class ColorizeNotification(context: Context) : ModPack(context) {
                     initializeNotificationColors(mN, builder)
                 }
         }
+
+        notificationHeaderViewWrapperClass
+            .hookMethod("onContentUpdated")
+            .runAfter { param ->
+                if (!coloredNotificationIcon) return@runAfter
+
+                val row = param.args[0]
+                val notifyEntries = callMethod(row, "getEntry")
+                val notifySbn = callMethod(notifyEntries, "getSbn")
+                val notification = callMethod(notifySbn, "getNotification") as Notification
+                val pkgName = callMethod(notifySbn, "getPackageName") as? String ?: return@runAfter
+                val appIcon: Drawable = try {
+                    mContext.packageManager.getApplicationIcon(pkgName)
+                } catch (ignored: Throwable) {
+                    return@runAfter
+                }
+                val mIcon = getFieldSilently(param.thisObject, "mIcon") as ImageView
+                val mWorkProfileImage =
+                    getFieldSilently(param.thisObject, "mWorkProfileImage") as? ImageView
+                val mImageTransformStateIconTag = mContext.resources.getIdentifier(
+                    "image_icon_tag",
+                    "id",
+                    SYSTEMUI_PACKAGE
+                )
+
+                if (mWorkProfileImage != null) {
+                    mIcon.setImageDrawable(appIcon);
+                    mWorkProfileImage.setImageIcon(notification.smallIcon);
+                    // The work profile image is always the same
+                    // Lets just set the icon tag for it not to animate
+                    mWorkProfileImage.setTag(
+                        mImageTransformStateIconTag,
+                        notification.smallIcon
+                    )
+                }
+                mIcon.setTag(mImageTransformStateIconTag, notification.smallIcon);
+            }
     }
 }

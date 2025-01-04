@@ -25,6 +25,20 @@
     </com.drdisagree.iconify.ui.preferences.PreferenceCategory>
 
     <com.drdisagree.iconify.ui.preferences.PreferenceCategory
+        android:key="xposedQuickSettingsNotifications"
+        android:title="@string/section_title_notifications"
+        app:iconSpaceReserved="false"
+        search:ignore="true">
+
+        <com.drdisagree.iconify.ui.preferences.SwitchPreference
+            android:key="xposed_colorednotificationicon"
+            android:summary="@string/colored_qs_notification_desc"
+            android:title="@string/colored_qs_notification_title"
+            app:iconSpaceReserved="false" />
+
+    </com.drdisagree.iconify.ui.preferences.PreferenceCategory>
+
+    <com.drdisagree.iconify.ui.preferences.PreferenceCategory
         android:key="xposedQuickSettingsQsMargin"
         android:title="@string/section_title_qs_margin"
         app:iconSpaceReserved="false"
