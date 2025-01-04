@@ -25,6 +25,7 @@ import com.drdisagree.iconify.xposed.modules.ThemeChange
 import com.drdisagree.iconify.xposed.modules.VolumePanel
 import com.drdisagree.iconify.xposed.modules.themes.QSBlackThemeA13
 import com.drdisagree.iconify.xposed.modules.themes.QSBlackThemeA14
+import com.drdisagree.iconify.xposed.modules.themes.QSBlackThemeA15
 import com.drdisagree.iconify.xposed.modules.themes.QSFluidThemeA13
 import com.drdisagree.iconify.xposed.modules.themes.QSFluidThemeA14
 import com.drdisagree.iconify.xposed.modules.themes.QSLightThemeA12
@@ -86,7 +87,7 @@ object EntryList {
     private val systemUiAndroid15ModPacks = listOf(
         DepthWallpaperA14::class.java,
         QSFluidThemeA14::class.java,
-        QSBlackThemeA14::class.java,
+        QSBlackThemeA15::class.java,
         QSLightThemeA15::class.java,
         HeaderClockA14::class.java,
         OpQsHeader::class.java
