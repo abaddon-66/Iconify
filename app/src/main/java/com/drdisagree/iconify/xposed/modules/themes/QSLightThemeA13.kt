@@ -329,21 +329,6 @@ class QSLightThemeA13(context: Context) : ModPack(context) {
         }
 
         qsIconViewImplClass
-            .hookMethod("updateIcon")
-            .runAfter { param ->
-                if (!lightQSHeaderEnabled || isDark ||
-                    getIntField(param.args[1], "state") != Tile.STATE_ACTIVE
-                ) return@runAfter
-
-                try {
-                    (param.args[0] as ImageView).imageTintList =
-                        ColorStateList.valueOf(colorInactive!!)
-                } catch (throwable: Throwable) {
-                    log(TAG + throwable)
-                }
-            }
-
-        qsIconViewImplClass
             .hookMethod("setIcon")
             .runBefore { param ->
                 if (!lightQSHeaderEnabled || isDark) return@runBefore

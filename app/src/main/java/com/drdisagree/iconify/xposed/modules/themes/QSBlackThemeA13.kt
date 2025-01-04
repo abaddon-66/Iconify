@@ -257,22 +257,6 @@ class QSBlackThemeA13(context: Context) : ModPack(context) {
             }
 
         qsIconViewImplClass
-            .hookMethod("updateIcon")
-            .runAfter { param ->
-                if (!blackQSHeaderEnabled) return@runAfter
-
-                try {
-                    if (getIntField(param.args[1], "state") == Tile.STATE_ACTIVE
-                    ) {
-                        (param.args[0] as ImageView).imageTintList =
-                            ColorStateList.valueOf(colorText!!)
-                    }
-                } catch (throwable: Throwable) {
-                    log(TAG + throwable)
-                }
-            }
-
-        qsIconViewImplClass
             .hookMethod("setIcon")
             .runBefore { param ->
                 if (!blackQSHeaderEnabled) return@runBefore
@@ -401,7 +385,7 @@ class QSBlackThemeA13(context: Context) : ModPack(context) {
         qsIconViewImplClass
             .hookMethod("updateIcon")
             .runAfter { param ->
-                if (qsTextAlwaysWhite || qsTextFollowAccent) return@runAfter
+                if (!blackQSHeaderEnabled || qsTextAlwaysWhite || qsTextFollowAccent) return@runAfter
 
                 val (isDisabledState: Boolean,
                     isActiveState: Boolean) = Utils.getTileState(param)
