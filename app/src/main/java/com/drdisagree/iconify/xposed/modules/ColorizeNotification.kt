@@ -444,8 +444,16 @@ class ColorizeNotification(context: Context) : ModPack(context) {
                 if (!coloredNotificationIcon) return@runAfter
 
                 val row = param.args[0]
-                val notifyEntries = callMethod(row, "getEntry")
-                val notifySbn = callMethod(notifyEntries, "getSbn")
+                val notifyEntries = try {
+                    callMethod(row, "getEntry")
+                } catch (ignored: Throwable) {
+                    getObjectField(row, "mEntry")
+                }
+                val notifySbn = try {
+                    callMethod(notifyEntries, "getSbn")
+                } catch (ignored: Throwable) {
+                    getObjectField(notifyEntries, "mSbn")
+                }
                 val notification = callMethod(notifySbn, "getNotification") as Notification
                 val pkgName = callMethod(notifySbn, "getPackageName") as? String ?: return@runAfter
                 val appIcon: Drawable = try {
