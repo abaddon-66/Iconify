@@ -42,6 +42,13 @@
             android:title="@string/colorize_notification_view_title"
             app:iconSpaceReserved="false" />
 
+        <com.drdisagree.iconify.ui.preferences.SwitchPreference
+            android:dependency="xposed_colorednotificationview"
+            android:key="xposed_colorednotificationalternative"
+            android:summary="@string/colorize_notification_alternative_color_generation_desc"
+            android:title="@string/colorize_notification_alternative_color_generation_title"
+            app:iconSpaceReserved="false" />
+
     </com.drdisagree.iconify.ui.preferences.PreferenceCategory>
 
     <com.drdisagree.iconify.ui.preferences.PreferenceCategory

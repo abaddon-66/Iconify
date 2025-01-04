@@ -2,6 +2,7 @@ package com.drdisagree.iconify.ui.fragments.xposed
 
 import android.os.Bundle
 import com.drdisagree.iconify.R
+import com.drdisagree.iconify.common.Preferences.COLORED_NOTIFICATION_ALTERNATIVE_SWITCH
 import com.drdisagree.iconify.common.Preferences.COLORED_NOTIFICATION_ICON_SWITCH
 import com.drdisagree.iconify.common.Preferences.COLORED_NOTIFICATION_VIEW_SWITCH
 import com.drdisagree.iconify.common.Preferences.CUSTOM_QS_MARGIN
@@ -48,7 +49,8 @@ class QuickSettings : ControlledPreferenceFragmentCompat() {
             HIDE_QS_ON_LOCKSCREEN,
             HIDE_QS_SILENT_TEXT,
             COLORED_NOTIFICATION_ICON_SWITCH,
-            COLORED_NOTIFICATION_VIEW_SWITCH -> {
+            COLORED_NOTIFICATION_VIEW_SWITCH,
+            COLORED_NOTIFICATION_ALTERNATIVE_SWITCH -> {
                 MainActivity.showOrHidePendingActionButton(
                     activityBinding = (requireActivity() as MainActivity).binding,
                     requiresSystemUiRestart = true

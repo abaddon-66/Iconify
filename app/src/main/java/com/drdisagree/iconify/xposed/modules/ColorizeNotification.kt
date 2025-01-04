@@ -5,7 +5,10 @@ import android.app.Notification
 import android.app.WallpaperColors
 import android.content.Context
 import android.content.pm.ApplicationInfo
+import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.os.Handler
@@ -19,8 +22,11 @@ import androidx.core.graphics.ColorUtils
 import androidx.core.graphics.drawable.DrawableCompat
 import com.drdisagree.iconify.common.Const.FRAMEWORK_PACKAGE
 import com.drdisagree.iconify.common.Const.SYSTEMUI_PACKAGE
+import com.drdisagree.iconify.common.Preferences.COLORED_NOTIFICATION_ALTERNATIVE_SWITCH
 import com.drdisagree.iconify.common.Preferences.COLORED_NOTIFICATION_ICON_SWITCH
 import com.drdisagree.iconify.common.Preferences.COLORED_NOTIFICATION_VIEW_SWITCH
+import com.drdisagree.iconify.utils.color.monet.quantize.QuantizerCelebi
+import com.drdisagree.iconify.utils.color.monet.score.Score
 import com.drdisagree.iconify.xposed.ModPack
 import com.drdisagree.iconify.xposed.modules.utils.toolkit.XposedHook.Companion.findClass
 import com.drdisagree.iconify.xposed.modules.utils.toolkit.getAnyField
@@ -42,8 +48,9 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam
 @Suppress("deprecation", "UNCHECKED_CAST")
 class ColorizeNotification(context: Context) : ModPack(context) {
 
-    private var coloredNotificationView = false
     private var coloredNotificationIcon = false
+    private var coloredNotificationView = false
+    private var coloredNotificationAlternativeColor = false
     private var titleResId = 0
     private var subTextResId = 0
     private var schemeStyle: Any = "TONAL_SPOT"
@@ -52,8 +59,10 @@ class ColorizeNotification(context: Context) : ModPack(context) {
         if (!XprefsIsInitialized) return
 
         Xprefs.apply {
-            coloredNotificationView = getBoolean(COLORED_NOTIFICATION_VIEW_SWITCH, false)
             coloredNotificationIcon = getBoolean(COLORED_NOTIFICATION_ICON_SWITCH, false)
+            coloredNotificationView = getBoolean(COLORED_NOTIFICATION_VIEW_SWITCH, false)
+            coloredNotificationAlternativeColor =
+                getBoolean(COLORED_NOTIFICATION_ALTERNATIVE_SWITCH, false)
         }
     }
 
@@ -255,25 +264,39 @@ class ColorizeNotification(context: Context) : ModPack(context) {
 
             if (pkgName == FRAMEWORK_PACKAGE) return
 
+            val fallbackColor = mContext.resources.getColor(
+                mContext.resources.getIdentifier(
+                    "android:color/system_accent1_600",
+                    "color",
+                    mContext.packageName
+                ), mContext.theme
+            )
+
             val packageManager = packageContext.packageManager
             val notifyIcon = try {
                 packageManager.getApplicationIcon(pkgName)
             } catch (ignored: Throwable) {
-                ColorDrawable(
-                    mContext.resources.getColor(
-                        mContext.resources.getIdentifier(
-                            "android:color/system_accent1_600",
-                            "color",
-                            mContext.packageName
-                        ), mContext.theme
-                    )
-                )
+                ColorDrawable(fallbackColor)
             }
 
             callMethod(builder, "makeNotificationGroupHeader")
 
-            val wallpaperColors = WallpaperColors.fromDrawable(notifyIcon)
-            var primaryColor = wallpaperColors.primaryColor.toArgb()
+            val wallpaperColors: WallpaperColors?
+            var primaryColor: Int?
+
+            if (!coloredNotificationAlternativeColor) { // Use WallpaperColors to get the primary color
+                wallpaperColors = WallpaperColors.fromDrawable(notifyIcon)
+                primaryColor = wallpaperColors.primaryColor.toArgb()
+            } else { // Use Monet Score and Quantizer to get the primary color
+                val bitmap = notifyIcon.drawableToBitmap()
+                val width = bitmap.width
+                val height = bitmap.height
+                val pixels = IntArray(width * height)
+                bitmap.getPixels(pixels, 0, width, 0, 0, width, height)
+                primaryColor = Score.score(QuantizerCelebi.quantize(pixels, 25)).firstOrNull()
+                    ?: fallbackColor
+                wallpaperColors = WallpaperColors.fromDrawable(ColorDrawable(primaryColor))
+            }
 
             if (Color.luminance(primaryColor) > 0.9) {
                 wallpaperColors.secondaryColor?.let {
@@ -451,5 +474,21 @@ class ColorizeNotification(context: Context) : ModPack(context) {
                 }
                 mIcon.setTag(mImageTransformStateIconTag, notification.smallIcon);
             }
+    }
+
+    private fun Drawable.drawableToBitmap(): Bitmap {
+        return if (this is BitmapDrawable && bitmap != null) {
+            bitmap
+        } else {
+            val bitmap = Bitmap.createBitmap(
+                intrinsicWidth.coerceAtLeast(1),
+                intrinsicHeight.coerceAtLeast(1),
+                Bitmap.Config.ARGB_8888
+            )
+            val canvas = Canvas(bitmap)
+            setBounds(0, 0, canvas.width, canvas.height)
+            draw(canvas)
+            bitmap
+        }
     }
 }

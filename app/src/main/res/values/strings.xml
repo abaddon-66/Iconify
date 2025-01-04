@@ -948,6 +948,8 @@
     <string name="hide_data_disabled_icon_desc">Hide data disabled indicator</string>
     <string name="colorize_notification_view_title">Colorize Notification View</string>
     <string name="colorize_notification_view_desc">Make notification view same color as app icon</string>
+    <string name="colorize_notification_alternative_color_generation_title">Alternative Color Generation</string>
+    <string name="colorize_notification_alternative_color_generation_desc">Use monet score and quantizer to extract color</string>
 
     <!-- Bottom Navigation -->
     <string name="navbar_home">Home</string>
