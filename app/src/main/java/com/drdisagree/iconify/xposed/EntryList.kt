@@ -30,6 +30,7 @@ import com.drdisagree.iconify.xposed.modules.themes.QSFluidThemeA14
 import com.drdisagree.iconify.xposed.modules.themes.QSLightThemeA12
 import com.drdisagree.iconify.xposed.modules.themes.QSLightThemeA13
 import com.drdisagree.iconify.xposed.modules.themes.QSLightThemeA14
+import com.drdisagree.iconify.xposed.modules.themes.QSLightThemeA15
 import com.drdisagree.iconify.xposed.modules.utils.SettingsLibUtils
 import com.drdisagree.iconify.xposed.utils.HookCheck
 
@@ -82,6 +83,15 @@ object EntryList {
         OpQsHeader::class.java
     )
 
+    private val systemUiAndroid15ModPacks = listOf(
+        DepthWallpaperA14::class.java,
+        QSFluidThemeA14::class.java,
+        QSBlackThemeA14::class.java,
+        QSLightThemeA15::class.java,
+        HeaderClockA14::class.java,
+        OpQsHeader::class.java
+    )
+
     private val pixelLauncherModPacks = listOf(
         IconUpdater::class.java
     )
@@ -97,7 +107,11 @@ object EntryList {
                     modPacks.addAll(systemUICommonModPacks)
 
                     when {
-                        Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE -> { // Android 14+
+                        Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM -> { // android 15+
+                            modPacks.addAll(systemUiAndroid15ModPacks)
+                        }
+
+                        Build.VERSION.SDK_INT == Build.VERSION_CODES.UPSIDE_DOWN_CAKE -> { // Android 14
                             modPacks.addAll(systemUiAndroid14ModPacks)
                         }
 
