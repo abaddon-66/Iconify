@@ -10,6 +10,8 @@ import de.robv.android.xposed.XposedBridge.hookMethod
 import de.robv.android.xposed.XposedHelpers
 import de.robv.android.xposed.XposedHelpers.findAndHookConstructor
 import de.robv.android.xposed.XposedHelpers.findAndHookMethod
+import de.robv.android.xposed.XposedHelpers.getObjectField
+import de.robv.android.xposed.XposedHelpers.getStaticObjectField
 import de.robv.android.xposed.callbacks.XC_LayoutInflated
 import de.robv.android.xposed.callbacks.XC_LoadPackage
 import java.lang.reflect.Method
@@ -461,4 +463,42 @@ class LayoutHookHelper(private val xResources: XResources) {
         printError = false
         return this
     }
+}
+
+fun getFieldSilently(obj: Any, fieldName: String): Any? {
+    return try {
+        getObjectField(obj, fieldName)
+    } catch (ignored: Throwable) {
+        null
+    }
+}
+
+fun getStaticFieldSilently(clazz: Class<*>, fieldName: String): Any? {
+    return try {
+        getStaticObjectField(clazz, fieldName)
+    } catch (ignored: Throwable) {
+        null
+    }
+}
+
+fun getAnyField(obj: Any, vararg fieldNames: String): Any? {
+    fieldNames.forEach { fieldName ->
+        try {
+            return getObjectField(obj, fieldName)
+        } catch (ignored: Throwable) {
+        }
+    }
+
+    throw NoSuchFieldError("Field not found: ${fieldNames.joinToString()}")
+}
+
+fun getAnyStaticField(clazz: Class<*>, vararg fieldNames: String): Any? {
+    fieldNames.forEach { fieldName ->
+        try {
+            return getStaticObjectField(clazz, fieldName)
+        } catch (ignored: Throwable) {
+        }
+    }
+
+    throw NoSuchFieldError("Field not found: ${fieldNames.joinToString()}")
 }

@@ -7,13 +7,24 @@ import java.util.regex.Pattern
 fun isMethodAvailable(
     target: Any?,
     methodName: String,
-    vararg parameterTypes: Class<*>
+    vararg parameterTypes: Class<*>?
 ): Boolean {
     if (target == null) return false
 
-    return try {
-        target::class.java.getMethod(methodName, *parameterTypes)
+    if (target is Class<*>) return if (parameterTypes.isEmpty()) {
+        target.declaredMethods.any { it.name == methodName }
+    } else {
+        target.getMethod(methodName, *parameterTypes)
         true
+    }
+
+    return try {
+        if (parameterTypes.isEmpty()) {
+            target::class.java.declaredMethods.any { it.name == methodName }
+        } else {
+            target::class.java.getMethod(methodName, *parameterTypes)
+            true
+        }
     } catch (ignored: NoSuchMethodException) {
         false
     }
@@ -29,7 +40,7 @@ fun isFieldAvailable(clazz: Class<*>, fieldName: String): Boolean {
 }
 
 fun findMethod(clazz: Class<*>, namePattern: String): Method? {
-    val methods: Array<Method> = clazz.methods
+    val methods: Array<Method> = clazz.declaredMethods
 
     for (method in methods) {
         if (Pattern.matches(namePattern, method.name)) {
@@ -42,7 +53,7 @@ fun findMethod(clazz: Class<*>, namePattern: String): Method? {
 
 fun findMethods(clazz: Class<*>, namePattern: String): Set<Method> {
     val result: MutableSet<Method> = ArraySet()
-    val methods: Array<Method> = clazz.methods
+    val methods: Array<Method> = clazz.declaredMethods
 
     for (method in methods) {
         if (Pattern.matches(namePattern, method.name)) {

@@ -1,5 +1,6 @@
 package com.drdisagree.iconify.xposed.modules
 
+import android.annotation.SuppressLint
 import android.app.Notification
 import android.app.WallpaperColors
 import android.content.Context
@@ -20,8 +21,11 @@ import com.drdisagree.iconify.common.Const.SYSTEMUI_PACKAGE
 import com.drdisagree.iconify.common.Preferences.COLORED_NOTIFICATION_VIEW_SWITCH
 import com.drdisagree.iconify.xposed.ModPack
 import com.drdisagree.iconify.xposed.modules.utils.toolkit.XposedHook.Companion.findClass
+import com.drdisagree.iconify.xposed.modules.utils.toolkit.getAnyField
+import com.drdisagree.iconify.xposed.modules.utils.toolkit.getFieldSilently
 import com.drdisagree.iconify.xposed.modules.utils.toolkit.hookConstructor
 import com.drdisagree.iconify.xposed.modules.utils.toolkit.hookMethod
+import com.drdisagree.iconify.xposed.modules.utils.toolkit.isMethodAvailable
 import com.drdisagree.iconify.xposed.utils.XPrefs.Xprefs
 import com.drdisagree.iconify.xposed.utils.XPrefs.XprefsIsInitialized
 import de.robv.android.xposed.XposedHelpers.callMethod
@@ -32,7 +36,8 @@ import de.robv.android.xposed.XposedHelpers.setAdditionalInstanceField
 import de.robv.android.xposed.XposedHelpers.setObjectField
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam
 
-
+@SuppressLint("DiscouragedApi")
+@Suppress("deprecation", "UNCHECKED_CAST")
 class ColorizeNotification(context: Context) : ModPack(context) {
 
     private var coloredNotificationView = false
@@ -111,7 +116,7 @@ class ColorizeNotification(context: Context) : ModPack(context) {
             .runAfter { param ->
                 if (!coloredNotificationView) return@runAfter
 
-                val mEntry = getObjectField(param.thisObject, "mEntry") ?: return@runAfter
+                val mEntry = getFieldSilently(param.thisObject, "mEntry") ?: return@runAfter
 
                 val mSbn = getObjectField(mEntry, "mSbn")
                 val notification = callMethod(mSbn, "getNotification") as Notification
@@ -127,10 +132,12 @@ class ColorizeNotification(context: Context) : ModPack(context) {
                 )
                 if (mNotifyBackgroundColor != null) {
                     var bgColor = mNotifyBackgroundColor as Int
-                    val mCurrentBackgroundTint = callMethod(
-                        param.thisObject,
-                        "getCurrentBackgroundTint"
-                    ) as Int
+                    val mCurrentBackgroundTint = try {
+                        callMethod(param.thisObject, "getCurrentBackgroundTint")
+                    } catch (ignore: Throwable) {
+                        getObjectField(param.thisObject, "mCurrentBackgroundTint")
+                    } as Int
+
                     if (mCurrentBackgroundTint != bgColor) {
                         bgColor = Color.argb(
                             255,
@@ -139,6 +146,11 @@ class ColorizeNotification(context: Context) : ModPack(context) {
                             Color.blue(bgColor)
                         )
                         callMethod(param.thisObject, "setBackgroundTintColor", bgColor)
+
+                        try {
+                            setObjectField(param.thisObject, "mCurrentBackgroundTint", bgColor)
+                        } catch (ignored: Throwable) {
+                        }
 
                         val notificationBackgroundView = getObjectField(
                             param.thisObject,
@@ -190,10 +202,12 @@ class ColorizeNotification(context: Context) : ModPack(context) {
             .runAfter { param ->
                 if (!coloredNotificationView) return@runAfter
 
+                if (param.thisObject == null) return@runAfter
+
                 val mEntry =
-                    getObjectField(param.thisObject, "mNotificationEntry") ?: return@runAfter
+                    getFieldSilently(param.thisObject, "mNotificationEntry") ?: return@runAfter
                 val singleLineView =
-                    getObjectField(param.thisObject, "mSingleLineView") ?: return@runAfter
+                    getFieldSilently(param.thisObject, "mSingleLineView") ?: return@runAfter
 
                 val mSbn = getObjectField(mEntry, "mSbn")
                 val mN = callMethod(mSbn, "getNotification") as Notification
@@ -220,150 +234,179 @@ class ColorizeNotification(context: Context) : ModPack(context) {
                 }
             }
 
-        @Suppress("deprecation", "DiscouragedApi", "UNCHECKED_CAST")
-        notificationContentInflaterClass
-            .hookMethod("createRemoteViews")
-            .runBefore { param ->
-                if (!coloredNotificationView) return@runBefore
+        fun initializeNotificationColors(
+            mN: Notification,
+            builder: Notification.Builder,
+            packageContext: Context = mContext
+        ) {
+            if (callMethod(mN, "isColorized") as Boolean) return
+            if (callMethod(mN, "isMediaNotification") as Boolean) return
 
-                val builder = param.args[1] as Notification.Builder
-                val mN = getObjectField(builder, "mN") as Notification
+            val applicationInfo =
+                mN.extras.getParcelable<ApplicationInfo>("android.appInfo")
+                    ?: return
+            val pkgName = applicationInfo.packageName
 
-                if (callMethod(mN, "isColorized") as Boolean) return@runBefore
-                if (callMethod(mN, "isMediaNotification") as Boolean) return@runBefore
+            if (pkgName == FRAMEWORK_PACKAGE) return
 
-                val applicationInfo = mN.extras.getParcelable<ApplicationInfo>("android.appInfo")
-                    ?: return@runBefore
-                val packageContext = param.args[5] as Context
-                val pkgName = applicationInfo.packageName
-
-                if (pkgName == FRAMEWORK_PACKAGE) return@runBefore
-
-                val packageManager = packageContext.packageManager
-                val notifyIcon = try {
-                    packageManager.getApplicationIcon(pkgName)
-                } catch (ignored: Throwable) {
-                    ColorDrawable(
-                        mContext.resources.getColor(
-                            mContext.resources.getIdentifier(
-                                "android:color/system_accent1_600",
-                                "color",
-                                mContext.packageName
-                            ), mContext.theme
-                        )
+            val packageManager = packageContext.packageManager
+            val notifyIcon = try {
+                packageManager.getApplicationIcon(pkgName)
+            } catch (ignored: Throwable) {
+                ColorDrawable(
+                    mContext.resources.getColor(
+                        mContext.resources.getIdentifier(
+                            "android:color/system_accent1_600",
+                            "color",
+                            mContext.packageName
+                        ), mContext.theme
                     )
-                }
-
-                callMethod(builder, "makeNotificationGroupHeader")
-
-                val wallpaperColors = WallpaperColors.fromDrawable(notifyIcon)
-                var primaryColor = wallpaperColors.primaryColor.toArgb()
-
-                if (Color.luminance(primaryColor) > 0.9) {
-                    wallpaperColors.secondaryColor?.let {
-                        primaryColor = it.toArgb()
-                    }
-                }
-
-                val darkTheme = packageContext.resources.configuration.isNightModeActive
-                val colorScheme = try {
-                    newInstance(
-                        colorSchemeClass,
-                        primaryColor,
-                        darkTheme,
-                        schemeStyle
-                    )
-                } catch (ignored: NoSuchMethodError) {
-                    newInstance(
-                        colorSchemeClass,
-                        wallpaperColors,
-                        darkTheme,
-                        schemeStyle
-                    )
-                }
-
-                val paletteAccent1 = getObjectField(colorScheme, "accent1")
-                val paletteNeutral1 = getObjectField(colorScheme, "neutral1")
-                val paletteNeutral2 = getObjectField(colorScheme, "neutral2")
-
-                val accent1 = getObjectField(paletteAccent1, "allShades") as List<Int>
-                val neutral1 = getObjectField(paletteNeutral1, "allShades") as List<Int>
-                val neutral2 = getObjectField(paletteNeutral2, "allShades") as List<Int>
-
-                val bgColor = accent1[if (darkTheme) 9 else 2]
-                val mParams = getObjectField(builder, "mParams")
-
-                callMethod(mParams, "reset")
-                callMethod(builder, "getColors", mParams)
-
-                val mColors = getObjectField(builder, "mColors")
-                val mProtectionColor = ColorUtils.blendARGB(neutral1[1], bgColor, 0.7f)
-                val mPrimaryTextColor = neutral1[if (darkTheme) 1 else 10]
-                val mSecondaryTextColor = neutral2[if (darkTheme) 3 else 8]
-
-                setObjectField(mColors, "mProtectionColor", mProtectionColor)
-                setAdditionalInstanceField(mN, "mProtectionColor", mProtectionColor)
-                setObjectField(mColors, "mPrimaryTextColor", mPrimaryTextColor)
-                setAdditionalInstanceField(mN, "mPrimaryTextColor", mPrimaryTextColor)
-                setObjectField(mColors, "mSecondaryTextColor", mSecondaryTextColor)
-                setAdditionalInstanceField(mN, "mSecondaryTextColor", mSecondaryTextColor)
-                setAdditionalInstanceField(mN, "mNotifyBackgroundColor", bgColor)
+                )
             }
-            .runAfter { param ->
-                if (!coloredNotificationView) return@runAfter
 
-                val builder = param.args[1] as Notification.Builder
-                val notification: Notification = builder.notification
+            callMethod(builder, "makeNotificationGroupHeader")
 
-                if (callMethod(
-                        notification,
-                        "isMediaNotification"
-                    ) as Boolean
-                ) return@runAfter
+            val wallpaperColors = WallpaperColors.fromDrawable(notifyIcon)
+            var primaryColor = wallpaperColors.primaryColor.toArgb()
 
-                val inflationProgress: Any = param.result
-                val mContext = param.args[5] as Context
-
-                if (titleResId == 0) {
-                    titleResId = mContext.resources.getIdentifier(
-                        "title",
-                        "id",
-                        SYSTEMUI_PACKAGE
-                    )
-                    subTextResId = mContext.resources.getIdentifier(
-                        "text",
-                        "id",
-                        SYSTEMUI_PACKAGE
-                    )
-                }
-
-                listOf(
-                    "newPublicView",
-                    "newContentView",
-                    "newExpandedView",
-                    "newHeadsUpView"
-                ).forEach { contentType ->
-                    val baseContent = getObjectField(inflationProgress, contentType) as? RemoteViews
-
-                    if (baseContent != null &&
-                        getAdditionalInstanceField(notification, "mPrimaryTextColor") != null
-                    ) {
-                        baseContent.setTextColor(
-                            titleResId,
-                            getAdditionalInstanceField(
-                                notification,
-                                "mPrimaryTextColor"
-                            ) as Int
-                        )
-                        baseContent.setTextColor(
-                            subTextResId,
-                            getAdditionalInstanceField(
-                                notification,
-                                "mSecondaryTextColor"
-                            ) as Int
-                        )
-                    }
+            if (Color.luminance(primaryColor) > 0.9) {
+                wallpaperColors.secondaryColor?.let {
+                    primaryColor = it.toArgb()
                 }
             }
+
+            val darkTheme = packageContext.resources.configuration.isNightModeActive
+            val colorScheme = try {
+                newInstance(
+                    colorSchemeClass,
+                    primaryColor,
+                    darkTheme,
+                    schemeStyle
+                )
+            } catch (ignored: NoSuchMethodError) {
+                newInstance(
+                    colorSchemeClass,
+                    wallpaperColors,
+                    darkTheme,
+                    schemeStyle
+                )
+            }
+
+            val paletteAccent1 = getAnyField(colorScheme, "accent1", "mAccent1")
+            val paletteNeutral1 = getAnyField(colorScheme, "neutral1", "mNeutral1")
+            val paletteNeutral2 = getAnyField(colorScheme, "neutral2", "mNeutral2")
+
+            val accent1 = getObjectField(paletteAccent1, "allShades") as List<Int>
+            val neutral1 = getObjectField(paletteNeutral1, "allShades") as List<Int>
+            val neutral2 = getObjectField(paletteNeutral2, "allShades") as List<Int>
+
+            val bgColor = accent1[if (darkTheme) 9 else 2]
+            val mParams = getObjectField(builder, "mParams")
+
+            callMethod(mParams, "reset")
+            callMethod(builder, "getColors", mParams)
+
+            val mColors = getObjectField(builder, "mColors")
+            val mProtectionColor = ColorUtils.blendARGB(neutral1[1], bgColor, 0.8f)
+            val mPrimaryTextColor = neutral1[if (darkTheme) 1 else 10]
+            val mSecondaryTextColor = neutral2[if (darkTheme) 3 else 8]
+
+            setObjectField(mColors, "mProtectionColor", mProtectionColor)
+            setAdditionalInstanceField(mN, "mProtectionColor", mProtectionColor)
+            setObjectField(mColors, "mPrimaryTextColor", mPrimaryTextColor)
+            setAdditionalInstanceField(mN, "mPrimaryTextColor", mPrimaryTextColor)
+            setObjectField(mColors, "mSecondaryTextColor", mSecondaryTextColor)
+            setAdditionalInstanceField(mN, "mSecondaryTextColor", mSecondaryTextColor)
+            setAdditionalInstanceField(mN, "mNotifyBackgroundColor", bgColor)
+        }
+
+        fun setNotificationTextColor(
+            notification: Notification,
+            inflationProgress: Any,
+            packageContext: Context = mContext
+        ) {
+            if (titleResId == 0) {
+                titleResId = packageContext.resources.getIdentifier(
+                    "title",
+                    "id",
+                    SYSTEMUI_PACKAGE
+                )
+                subTextResId = packageContext.resources.getIdentifier(
+                    "text",
+                    "id",
+                    SYSTEMUI_PACKAGE
+                )
+            }
+
+            listOf(
+                "newPublicView",
+                "newContentView",
+                "newExpandedView",
+                "newHeadsUpView"
+            ).forEach { contentType ->
+                val baseContent = getObjectField(inflationProgress, contentType) as? RemoteViews
+
+                if (baseContent != null &&
+                    getAdditionalInstanceField(notification, "mPrimaryTextColor") != null
+                ) {
+                    baseContent.setTextColor(
+                        titleResId,
+                        getAdditionalInstanceField(
+                            notification,
+                            "mPrimaryTextColor"
+                        ) as Int
+                    )
+                    baseContent.setTextColor(
+                        subTextResId,
+                        getAdditionalInstanceField(
+                            notification,
+                            "mSecondaryTextColor"
+                        ) as Int
+                    )
+                }
+            }
+        }
+
+        if (isMethodAvailable(notificationContentInflaterClass, "createRemoteViews")) {
+            notificationContentInflaterClass
+                .hookMethod("createRemoteViews")
+                .runBefore { param ->
+                    if (!coloredNotificationView) return@runBefore
+
+                    val builder = param.args[1] as Notification.Builder
+                    val mN = getObjectField(builder, "mN") as Notification
+                    val mContext = param.args[5] as Context
+
+                    initializeNotificationColors(mN, builder, mContext)
+                }
+                .runAfter { param ->
+                    if (!coloredNotificationView) return@runAfter
+
+                    val builder = param.args[1] as Notification.Builder
+                    val notification: Notification = builder.notification
+
+                    if (callMethod(
+                            notification,
+                            "isMediaNotification"
+                        ) as Boolean
+                    ) return@runAfter
+
+                    val inflationProgress: Any = param.result
+                    val mContext = param.args[5] as Context
+
+                    setNotificationTextColor(notification, inflationProgress, mContext)
+                }
+        } else {
+            findClass("android.app.Notification\$Builder")
+                .hookMethod("recoverBuilder")
+                .runAfter { param ->
+                    if (!coloredNotificationView) return@runAfter
+
+                    val builder = param.result as Notification.Builder
+                    val mN = getObjectField(builder, "mN") as Notification
+
+                    initializeNotificationColors(mN, builder)
+                }
+        }
     }
 }
