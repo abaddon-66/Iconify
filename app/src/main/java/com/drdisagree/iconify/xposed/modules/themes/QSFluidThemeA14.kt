@@ -120,8 +120,10 @@ class QSFluidThemeA14(context: Context) : ModPack(context) {
         )
         val footerActionsViewModelClass =
             findClass("$SYSTEMUI_PACKAGE.qs.footer.ui.viewmodel.FooterActionsViewModel")
-        val footerActionsViewBinderClass =
-            findClass("$SYSTEMUI_PACKAGE.qs.footer.ui.binder.FooterActionsViewBinder")
+        val footerActionsViewBinderClass = findClass(
+            "$SYSTEMUI_PACKAGE.qs.footer.ui.binder.FooterActionsViewBinder",
+            suppressError = true
+        )
 
         // Initialize resources and colors
         qsTileViewImplClass
@@ -189,7 +191,7 @@ class QSFluidThemeA14(context: Context) : ModPack(context) {
 
         // QS icon color
         qsIconViewImplClass
-            .hookMethod("getIconColorForState")
+            .hookMethod("getIconColorForState", "getColor")
             .runBefore { param ->
                 if (!fluidQsThemeEnabled) return@runBefore
 
@@ -396,6 +398,7 @@ class QSFluidThemeA14(context: Context) : ModPack(context) {
 
         footerActionsViewBinderClass
             .hookMethod("bindButton")
+            .suppressError()
             .runAfter { param ->
                 if (!fluidQsThemeEnabled) return@runAfter
 
@@ -405,6 +408,7 @@ class QSFluidThemeA14(context: Context) : ModPack(context) {
 
         footerActionsViewBinderClass
             .hookMethod("bind")
+            .suppressError()
             .runAfter { param ->
                 if (!fluidQsThemeEnabled) return@runAfter
 
@@ -449,6 +453,7 @@ class QSFluidThemeA14(context: Context) : ModPack(context) {
 
         brightnessControllerClass
             .hookMethod("updateIcon")
+            .suppressError()
             .runAfter { param ->
                 if (!fluidQsThemeEnabled) return@runAfter
 
@@ -512,6 +517,7 @@ class QSFluidThemeA14(context: Context) : ModPack(context) {
 
         brightnessMirrorControllerClass
             .hookMethod("updateIcon")
+            .suppressError()
             .runAfter { param ->
                 if (!fluidQsThemeEnabled) return@runAfter
 
@@ -678,6 +684,7 @@ class QSFluidThemeA14(context: Context) : ModPack(context) {
 
         qsTileViewImplClass
             .hookMethod("updateResources")
+            .suppressError()
             .runBefore { param ->
                 if (!fluidQsThemeEnabled) return@runBefore
 

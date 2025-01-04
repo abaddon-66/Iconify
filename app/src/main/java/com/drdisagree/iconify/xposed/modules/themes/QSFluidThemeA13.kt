@@ -168,7 +168,7 @@ class QSFluidThemeA13(context: Context) : ModPack(context) {
 
         // QS icon color
         qsIconViewImplClass
-            .hookMethod("getIconColorForState")
+            .hookMethod("getIconColorForState", "getColor")
             .runBefore { param ->
                 if (!fluidQsThemeEnabled) return@runBefore
 
@@ -534,6 +534,7 @@ class QSFluidThemeA13(context: Context) : ModPack(context) {
 
         qsTileViewImplClass
             .hookMethod("updateResources")
+            .suppressError()
             .runBefore { param ->
                 if (!fluidQsThemeEnabled) return@runBefore
 

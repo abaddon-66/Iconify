@@ -331,6 +331,7 @@ class BatteryStyleManager(context: Context) : ModPack(context) {
 
         batteryControllerImplClass
             .hookMethod("fireBatteryUnknownStateChanged")
+            .suppressError()
             .runAfter {
                 if (!customBatteryEnabled) return@runAfter
 

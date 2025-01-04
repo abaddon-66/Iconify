@@ -12,15 +12,12 @@ import com.drdisagree.iconify.xposed.ModPack
 import com.drdisagree.iconify.xposed.modules.utils.toolkit.XposedHook.Companion.findClass
 import com.drdisagree.iconify.xposed.modules.utils.toolkit.hookConstructor
 import com.drdisagree.iconify.xposed.modules.utils.toolkit.hookMethod
-import com.drdisagree.iconify.xposed.modules.utils.toolkit.runAfter
 import com.drdisagree.iconify.xposed.utils.SystemUtils
 import com.drdisagree.iconify.xposed.utils.XPrefs.Xprefs
 import com.drdisagree.iconify.xposed.utils.XPrefs.XprefsIsInitialized
 import de.robv.android.xposed.XposedBridge.log
 import de.robv.android.xposed.XposedHelpers.callMethod
 import de.robv.android.xposed.XposedHelpers.callStaticMethod
-import de.robv.android.xposed.XposedHelpers.findMethodExact
-import de.robv.android.xposed.XposedHelpers.findMethodExactIfExists
 import de.robv.android.xposed.XposedHelpers.getObjectField
 import de.robv.android.xposed.XposedHelpers.setObjectField
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam
@@ -65,8 +62,6 @@ class QSLightThemeA12(context: Context) : ModPack(context) {
         val interestingConfigChangesClass =
             findClass("com.android.settingslib.applications.InterestingConfigChanges")!!
         val scrimStateEnum = findClass("$SYSTEMUI_PACKAGE.statusbar.phone.ScrimState")!!
-        val applyStateMethod = findMethodExactIfExists(scrimControllerClass, "applyStateToAlpha")
-            ?: findMethodExact(scrimControllerClass, "applyState", null)
 
         try {
             mBehindColors = gradientColorsClass.getDeclaredConstructor().newInstance()
@@ -167,20 +162,22 @@ class QSLightThemeA12(context: Context) : ModPack(context) {
                 }
             }
 
-        applyStateMethod.runAfter { param ->
-            if (!lightQSHeaderEnabled) return@runAfter
+        scrimControllerClass
+            .hookMethod("applyStateToAlpha", "applyState")
+            .runAfter { param ->
+                if (!lightQSHeaderEnabled) return@runAfter
 
-            try {
-                val mClipsQsScrim =
-                    getObjectField(param.thisObject, "mClipsQsScrim") as Boolean
+                try {
+                    val mClipsQsScrim =
+                        getObjectField(param.thisObject, "mClipsQsScrim") as Boolean
 
-                if (mClipsQsScrim) {
-                    setObjectField(param.thisObject, "mBehindTint", Color.TRANSPARENT)
+                    if (mClipsQsScrim) {
+                        setObjectField(param.thisObject, "mBehindTint", Color.TRANSPARENT)
+                    }
+                } catch (throwable: Throwable) {
+                    log(TAG + throwable)
                 }
-            } catch (throwable: Throwable) {
-                log(TAG + throwable)
             }
-        }
 
         val constants: Array<out Any> = scrimStateEnum.enumConstants ?: arrayOf()
         constants.forEach { constant ->

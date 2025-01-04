@@ -385,6 +385,7 @@ class QuickSettings(context: Context) : ModPack(context) {
 
         qsTileViewImplClass
             .hookMethod("updateResources")
+            .suppressError()
             .run(removeQsTileTint)
 
         qsTileViewImplClass
@@ -430,7 +431,7 @@ class QuickSettings(context: Context) : ModPack(context) {
         val qsIconViewImplClass = findClass("$SYSTEMUI_PACKAGE.qs.tileimpl.QSIconViewImpl")
 
         qsIconViewImplClass
-            .hookMethod("getIconColorForState")
+            .hookMethod("getIconColorForState", "getColor")
             .runBefore { param ->
                 if (isQsIconLabelStateActive(param, 1)) {
                     param.result = qsIconLabelColor

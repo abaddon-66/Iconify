@@ -23,6 +23,7 @@ import com.drdisagree.iconify.xposed.modules.utils.SettingsLibUtils.Companion.ge
 import com.drdisagree.iconify.xposed.modules.utils.toolkit.XposedHook.Companion.findClass
 import com.drdisagree.iconify.xposed.modules.utils.toolkit.hookConstructor
 import com.drdisagree.iconify.xposed.modules.utils.toolkit.hookMethod
+import com.drdisagree.iconify.xposed.modules.utils.toolkit.hookMethodMatchPattern
 import com.drdisagree.iconify.xposed.utils.SystemUtils
 import com.drdisagree.iconify.xposed.utils.XPrefs.Xprefs
 import com.drdisagree.iconify.xposed.utils.XPrefs.XprefsIsInitialized
@@ -385,7 +386,7 @@ class QSLightThemeA13(context: Context) : ModPack(context) {
             }
 
         qsIconViewImplClass
-            .hookMethod("getIconColorForState")
+            .hookMethod("getIconColorForState", "getColor")
             .runBefore { param ->
                 if (!lightQSHeaderEnabled || isDark) return@runBefore
 
@@ -493,7 +494,7 @@ class QSLightThemeA13(context: Context) : ModPack(context) {
             }
 
         scrimControllerClass
-            .hookMethod("applyState")
+            .hookMethodMatchPattern("applyState.*")
             .runAfter { param ->
                 if (!lightQSHeaderEnabled) return@runAfter
 

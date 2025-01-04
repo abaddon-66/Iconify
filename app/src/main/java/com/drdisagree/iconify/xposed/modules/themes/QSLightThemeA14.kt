@@ -25,6 +25,7 @@ import com.drdisagree.iconify.xposed.modules.utils.SettingsLibUtils.Companion.ge
 import com.drdisagree.iconify.xposed.modules.utils.toolkit.XposedHook.Companion.findClass
 import com.drdisagree.iconify.xposed.modules.utils.toolkit.hookConstructor
 import com.drdisagree.iconify.xposed.modules.utils.toolkit.hookMethod
+import com.drdisagree.iconify.xposed.modules.utils.toolkit.hookMethodMatchPattern
 import com.drdisagree.iconify.xposed.utils.SystemUtils
 import com.drdisagree.iconify.xposed.utils.XPrefs.Xprefs
 import com.drdisagree.iconify.xposed.utils.XPrefs.XprefsIsInitialized
@@ -126,8 +127,10 @@ class QSLightThemeA14(context: Context) : ModPack(context) {
             findClass("com.android.compose.animation.ExpandableControllerImpl")
         val footerActionsViewModelClass =
             findClass("$SYSTEMUI_PACKAGE.qs.footer.ui.viewmodel.FooterActionsViewModel")
-        val footerActionsViewBinderClass =
-            findClass("$SYSTEMUI_PACKAGE.qs.footer.ui.binder.FooterActionsViewBinder")
+        val footerActionsViewBinderClass = findClass(
+            "$SYSTEMUI_PACKAGE.qs.footer.ui.binder.FooterActionsViewBinder",
+            suppressError = true
+        )
         val shadeHeaderControllerClass = findClass(
             "$SYSTEMUI_PACKAGE.shade.ShadeHeaderController",
             "$SYSTEMUI_PACKAGE.shade.LargeScreenShadeHeaderController",
@@ -391,6 +394,7 @@ class QSLightThemeA14(context: Context) : ModPack(context) {
         // Auto Brightness Icon Color
         brightnessControllerClass
             .hookMethod("updateIcon")
+            .suppressError()
             .runAfter { param ->
                 if (!lightQSHeaderEnabled || isDark) return@runAfter
 
@@ -424,6 +428,7 @@ class QSLightThemeA14(context: Context) : ModPack(context) {
 
         brightnessMirrorControllerClass
             .hookMethod("updateIcon")
+            .suppressError()
             .runAfter { param ->
                 if (!lightQSHeaderEnabled || isDark) return@runAfter
 
@@ -547,7 +552,7 @@ class QSLightThemeA14(context: Context) : ModPack(context) {
             }
 
         qsIconViewImplClass
-            .hookMethod("getIconColorForState")
+            .hookMethod("getIconColorForState", "getColor")
             .runBefore { param ->
                 if (!lightQSHeaderEnabled || isDark) return@runBefore
 
@@ -716,6 +721,7 @@ class QSLightThemeA14(context: Context) : ModPack(context) {
 
         footerActionsViewBinderClass
             .hookMethod("bind")
+            .suppressError()
             .runAfter { param ->
                 if (!lightQSHeaderEnabled || isDark) return@runAfter
 
@@ -793,7 +799,7 @@ class QSLightThemeA14(context: Context) : ModPack(context) {
             }
 
         scrimControllerClass
-            .hookMethod("applyState")
+            .hookMethodMatchPattern("applyState.*")
             .runAfter { param ->
                 if (!lightQSHeaderEnabled) return@runAfter
 
