@@ -308,6 +308,7 @@ object PrefsHelper {
 
             HEADER_CLOCK_EXPANSION_Y -> Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE
 
+            "xposedOthers",
             "xposedOthersStatusIcons",
             FIXED_STATUS_ICONS_SWITCH -> Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU
 
