@@ -329,7 +329,7 @@ class ColorizeNotification(context: Context) : ModPack(context) {
             val neutral1 = getObjectField(paletteNeutral1, "allShades") as List<Int>
             val neutral2 = getObjectField(paletteNeutral2, "allShades") as List<Int>
 
-            val bgColor = accent1[if (darkTheme) 9 else 2]
+            val bgColor = accent1[if (darkTheme) 10 else 2]
             val mParams = getObjectField(builder, "mParams")
 
             callMethod(mParams, "reset")
@@ -337,8 +337,8 @@ class ColorizeNotification(context: Context) : ModPack(context) {
 
             val mColors = getObjectField(builder, "mColors")
             val mProtectionColor = ColorUtils.blendARGB(neutral1[1], bgColor, 0.8f)
-            val mPrimaryTextColor = neutral1[if (darkTheme) 1 else 10]
-            val mSecondaryTextColor = neutral2[if (darkTheme) 3 else 8]
+            val mPrimaryTextColor = neutral1[if (darkTheme) 1 else 11]
+            val mSecondaryTextColor = neutral2[if (darkTheme) 2 else 10]
 
             setObjectField(mColors, "mProtectionColor", mProtectionColor)
             setAdditionalInstanceField(mN, "mProtectionColor", mProtectionColor)
@@ -356,12 +356,12 @@ class ColorizeNotification(context: Context) : ModPack(context) {
         ) {
             if (titleResId == 0) {
                 titleResId = packageContext.resources.getIdentifier(
-                    "title",
+                    "notification_title",
                     "id",
                     SYSTEMUI_PACKAGE
                 )
                 subTextResId = packageContext.resources.getIdentifier(
-                    "text",
+                    "notification_text",
                     "id",
                     SYSTEMUI_PACKAGE
                 )
@@ -375,7 +375,7 @@ class ColorizeNotification(context: Context) : ModPack(context) {
             ).forEach { contentType ->
                 val baseContent = getObjectField(inflationProgress, contentType) as? RemoteViews
 
-                if (baseContent != null &&
+                if (baseContent != null && titleResId != 0 &&
                     getAdditionalInstanceField(notification, "mPrimaryTextColor") != null
                 ) {
                     baseContent.setTextColor(
