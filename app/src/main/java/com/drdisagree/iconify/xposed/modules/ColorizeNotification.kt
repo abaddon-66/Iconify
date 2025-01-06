@@ -108,21 +108,24 @@ class ColorizeNotification(context: Context) : ModPack(context) {
                     callMethod(builder, "getColors", mParams)
 
                     val mColors = getObjectField(builder, "mColors")
-                    setObjectField(
-                        mColors,
+
+                    listOf(
                         "mProtectionColor",
-                        getAdditionalInstanceField(mN, "mProtectionColor")
-                    )
-                    setObjectField(
-                        mColors,
                         "mPrimaryTextColor",
-                        getAdditionalInstanceField(mN, "mPrimaryTextColor")
-                    )
-                    setObjectField(
-                        mColors,
                         "mSecondaryTextColor",
-                        getAdditionalInstanceField(mN, "mSecondaryTextColor")
-                    )
+                        "mPrimaryAccentColor",
+                        "mSecondaryAccentColor",
+                        "mTertiaryAccentColor",
+                        "mOnTertiaryAccentTextColor",
+                        "mTertiaryFixedDimAccentColor",
+                        "mOnTertiaryFixedAccentTextColor"
+                    ).forEach { fieldName ->
+                        setObjectField(
+                            mColors,
+                            fieldName,
+                            getAdditionalInstanceField(mN, fieldName)
+                        )
+                    }
                 }
             }
 
@@ -322,31 +325,55 @@ class ColorizeNotification(context: Context) : ModPack(context) {
             }
 
             val paletteAccent1 = getAnyField(colorScheme, "accent1", "mAccent1")
+            val paletteAccent2 = getAnyField(colorScheme, "accent2", "mAccent2")
+            val paletteAccent3 = getAnyField(colorScheme, "accent3", "mAccent3")
             val paletteNeutral1 = getAnyField(colorScheme, "neutral1", "mNeutral1")
             val paletteNeutral2 = getAnyField(colorScheme, "neutral2", "mNeutral2")
 
             val accent1 = getObjectField(paletteAccent1, "allShades") as List<Int>
+            val accent2 = getObjectField(paletteAccent2, "allShades") as List<Int>
+            val accent3 = getObjectField(paletteAccent3, "allShades") as List<Int>
             val neutral1 = getObjectField(paletteNeutral1, "allShades") as List<Int>
             val neutral2 = getObjectField(paletteNeutral2, "allShades") as List<Int>
 
             val bgColor = accent1[if (darkTheme) 10 else 2]
+            val bgColorInverse = (if (darkTheme) 0xFFFFFFFF else 0xFF000000).toInt()
             val mParams = getObjectField(builder, "mParams")
 
             callMethod(mParams, "reset")
             callMethod(builder, "getColors", mParams)
 
             val mColors = getObjectField(builder, "mColors")
-            val mProtectionColor = ColorUtils.blendARGB(neutral1[1], bgColor, 0.8f)
+            val mProtectionColor = ColorUtils.blendARGB(bgColor, bgColorInverse, 0.15f)
             val mPrimaryTextColor = neutral1[if (darkTheme) 1 else 11]
             val mSecondaryTextColor = neutral2[if (darkTheme) 2 else 10]
+            val mPrimaryAccentColor = accent1[if (darkTheme) 3 else 8]
+            val mSecondaryAccentColor = accent2[if (darkTheme) 3 else 8]
+            val mTertiaryAccentColor = accent3[if (darkTheme) 3 else 8]
+            val mOnTertiaryAccentTextColor = accent3[if (darkTheme) 10 else 1]
+            val mTertiaryFixedDimAccentColor = accent3[4]
+            val mOnTertiaryFixedAccentTextColor = accent3[10]
 
-            setObjectField(mColors, "mProtectionColor", mProtectionColor)
-            setAdditionalInstanceField(mN, "mProtectionColor", mProtectionColor)
-            setObjectField(mColors, "mPrimaryTextColor", mPrimaryTextColor)
-            setAdditionalInstanceField(mN, "mPrimaryTextColor", mPrimaryTextColor)
-            setObjectField(mColors, "mSecondaryTextColor", mSecondaryTextColor)
-            setAdditionalInstanceField(mN, "mSecondaryTextColor", mSecondaryTextColor)
-            setAdditionalInstanceField(mN, "mNotifyBackgroundColor", bgColor)
+            mapOf(
+                "mBackgroundColor" to bgColor,
+                "mProtectionColor" to mProtectionColor,
+                "mPrimaryTextColor" to mPrimaryTextColor,
+                "mSecondaryTextColor" to mSecondaryTextColor,
+                "mPrimaryAccentColor" to mPrimaryAccentColor,
+                "mSecondaryAccentColor" to mSecondaryAccentColor,
+                "mTertiaryAccentColor" to mTertiaryAccentColor,
+                "mOnTertiaryAccentTextColor" to mOnTertiaryAccentTextColor,
+                "mTertiaryFixedDimAccentColor" to mTertiaryFixedDimAccentColor,
+                "mOnTertiaryFixedAccentTextColor" to mOnTertiaryFixedAccentTextColor
+            ).forEach { (fieldName, value) ->
+                setObjectField(mColors, fieldName, value)
+
+                if (fieldName == "mBackgroundColor") {
+                    setAdditionalInstanceField(mN, "mNotifyBackgroundColor", value)
+                } else {
+                    setAdditionalInstanceField(mN, fieldName, value)
+                }
+            }
         }
 
         fun setNotificationTextColor(
