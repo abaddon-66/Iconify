@@ -17,6 +17,7 @@ import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.MarginLayoutParams
+import android.view.ViewGroup.TEXT_ALIGNMENT_CENTER
 import android.view.ViewTreeObserver.OnDrawListener
 import android.widget.Button
 import android.widget.ImageView
@@ -136,12 +137,12 @@ class QuickSettings(context: Context) : ModPack(context) {
                     (getObjectField(
                         mParam,
                         "label"
-                    ) as TextView).gravity = Gravity.CENTER_HORIZONTAL
+                    ) as TextView).textAlignment = TEXT_ALIGNMENT_CENTER
 
                     (getObjectField(
                         mParam,
                         "secondaryLabel"
-                    ) as TextView).gravity = Gravity.CENTER_HORIZONTAL
+                    ) as TextView).textAlignment = TEXT_ALIGNMENT_CENTER
 
                     (getObjectField(
                         mParam,
@@ -892,9 +893,11 @@ class QuickSettings(context: Context) : ModPack(context) {
             )
         )
 
-        tile.setPadding(padding, padding, padding, padding)
-        tile.gravity = Gravity.CENTER
-        tile.orientation = LinearLayout.VERTICAL
+        tile.apply {
+            setPadding(padding, padding, padding, padding)
+            gravity = Gravity.CENTER
+            orientation = LinearLayout.VERTICAL
+        }
 
         if (!isHideLabelActive) {
             try {
@@ -913,10 +916,15 @@ class QuickSettings(context: Context) : ModPack(context) {
         }
 
         if (param != null) {
-            (getObjectField(param, "label") as TextView).gravity = Gravity.CENTER_HORIZONTAL
+            (getObjectField(
+                param,
+                "label"
+            ) as TextView).textAlignment = TEXT_ALIGNMENT_CENTER
 
-            (getObjectField(param, "secondaryLabel") as TextView).gravity =
-                Gravity.CENTER_HORIZONTAL
+            (getObjectField(
+                param,
+                "secondaryLabel"
+            ) as TextView).textAlignment = TEXT_ALIGNMENT_CENTER
         }
     }
 
