@@ -537,6 +537,7 @@ class QuickSettings(context: Context) : ModPack(context) {
 
         brightnessControllerClass
             .hookMethod("updateIcon")
+            .suppressError()
             .runAfter { param ->
                 if (!qsTextAlwaysWhite && !qsTextFollowAccent) return@runAfter
 
@@ -575,6 +576,7 @@ class QuickSettings(context: Context) : ModPack(context) {
 
         brightnessMirrorControllerClass
             .hookMethod("updateIcon")
+            .suppressError()
             .runAfter { param ->
                 if (!qsTextAlwaysWhite && !qsTextFollowAccent) return@runAfter
 
