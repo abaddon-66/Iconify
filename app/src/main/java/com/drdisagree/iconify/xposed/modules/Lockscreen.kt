@@ -57,8 +57,7 @@ class Lockscreen(context: Context) : ModPack(context) {
     }
 
     private fun isLockScreenWallpaper(canvasEngine: Any): Boolean {
-        val wallpaperFlag = callMethod(canvasEngine, "getWallpaperFlags") as Int
-        return wallpaperFlag and WallpaperManager.FLAG_LOCK == WallpaperManager.FLAG_LOCK
+        return callMethod(canvasEngine, "getWallpaperFlags") as Int == WallpaperManager.FLAG_LOCK
     }
 
     companion object {
