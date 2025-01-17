@@ -9,7 +9,6 @@ import com.drdisagree.iconify.xposed.modules.ColorizeNotification
 import com.drdisagree.iconify.xposed.modules.ControllersProvider
 import com.drdisagree.iconify.xposed.modules.DepthWallpaper
 import com.drdisagree.iconify.xposed.modules.DepthWallpaperA14
-import com.drdisagree.iconify.xposed.modules.DozeMod
 import com.drdisagree.iconify.xposed.modules.HeaderClock
 import com.drdisagree.iconify.xposed.modules.HeaderClockA14
 import com.drdisagree.iconify.xposed.modules.HeaderImage
