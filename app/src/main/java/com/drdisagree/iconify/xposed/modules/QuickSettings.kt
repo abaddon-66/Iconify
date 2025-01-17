@@ -434,7 +434,9 @@ class QuickSettings(context: Context) : ModPack(context) {
         qsIconViewImplClass
             .hookMethod("getIconColorForState", "getColor")
             .runBefore { param ->
-                if (isQsIconLabelStateActive(param, 1)) {
+                val stateIndex = if (param.args.size > 1) 1 else 0
+
+                if (isQsIconLabelStateActive(param, stateIndex)) {
                     param.result = qsIconLabelColor
                 }
             }
@@ -442,7 +444,9 @@ class QuickSettings(context: Context) : ModPack(context) {
         qsIconViewImplClass
             .hookMethod("updateIcon")
             .runAfter { param ->
-                if (isQsIconLabelStateActive(param, 1)) {
+                val stateIndex = if (param.args.size > 1) 1 else 0
+
+                if (isQsIconLabelStateActive(param, stateIndex)) {
                     val mIcon = param.args[0] as ImageView
                     mIcon.imageTintList = ColorStateList.valueOf(qsIconLabelColor)
                 }
