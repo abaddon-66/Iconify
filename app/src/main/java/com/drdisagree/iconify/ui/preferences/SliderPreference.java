@@ -54,6 +54,7 @@ public class SliderPreference extends Preference {
     private String valueFormat;
     private final float outputScale;
     private final boolean isDecimalFormat;
+    private final boolean showDefault;
     private String decimalFormat = "#.#";
 
     boolean updateConstantly, showValueLabel;
@@ -85,6 +86,7 @@ public class SliderPreference extends Preference {
             decimalFormat = "#.#"; // Default decimal format
         }
         outputScale = a.getFloat(R.styleable.SliderPreference_outputScale, 1f);
+        showDefault = a.getBoolean(R.styleable.SliderPreference_showDefault, false);
         String defaultValStr = a.getString(androidx.preference.R.styleable.Preference_defaultValue);
 
         if (valueFormat == null) valueFormat = "";
@@ -187,7 +189,7 @@ public class SliderPreference extends Preference {
             }
 
             String result;
-            if (!defaultValue.isEmpty() && Objects.equals(defaultValue.get(0), sliderValue)) {
+            if (showDefault && !defaultValue.isEmpty() && Objects.equals(defaultValue.get(0), sliderValue)) {
                 result = getContext().getString(
                         R.string.opt_selected3,
                         formattedValue,
