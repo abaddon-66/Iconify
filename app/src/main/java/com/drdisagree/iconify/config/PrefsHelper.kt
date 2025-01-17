@@ -86,6 +86,8 @@ import com.drdisagree.iconify.common.Preferences.HEADER_CLOCK_LANDSCAPE_SWITCH
 import com.drdisagree.iconify.common.Preferences.HIDE_QSLABEL_SWITCH
 import com.drdisagree.iconify.common.Preferences.LIGHT_QSPANEL
 import com.drdisagree.iconify.common.Preferences.LOCKSCREEN_SHADE_SWITCH
+import com.drdisagree.iconify.common.Preferences.LOCKSCREEN_WALLPAPER_BLUR
+import com.drdisagree.iconify.common.Preferences.LOCKSCREEN_WALLPAPER_BLUR_RADIUS
 import com.drdisagree.iconify.common.Preferences.LOCKSCREEN_WIDGETS_BIG_ACTIVE
 import com.drdisagree.iconify.common.Preferences.LOCKSCREEN_WIDGETS_BIG_ICON_ACTIVE
 import com.drdisagree.iconify.common.Preferences.LOCKSCREEN_WIDGETS_BIG_ICON_INACTIVE
@@ -303,6 +305,8 @@ object PrefsHelper {
 
             COLORED_NOTIFICATION_ALTERNATIVE_SWITCH ->
                 getBoolean(COLORED_NOTIFICATION_VIEW_SWITCH, false)
+
+            LOCKSCREEN_WALLPAPER_BLUR_RADIUS -> getBoolean(LOCKSCREEN_WALLPAPER_BLUR, false)
 
             else -> true
         }
