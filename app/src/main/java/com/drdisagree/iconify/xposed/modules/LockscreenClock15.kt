@@ -61,6 +61,7 @@ import com.drdisagree.iconify.xposed.modules.utils.MyConstraintSet.Companion.cle
 import com.drdisagree.iconify.xposed.modules.utils.MyConstraintSet.Companion.clone
 import com.drdisagree.iconify.xposed.modules.utils.MyConstraintSet.Companion.connect
 import com.drdisagree.iconify.xposed.modules.utils.MyConstraintSet.Companion.constraintSetInstance
+import com.drdisagree.iconify.xposed.modules.utils.MyConstraintSet.Companion.createBarrier
 import com.drdisagree.iconify.xposed.modules.utils.TimeUtils
 import com.drdisagree.iconify.xposed.modules.utils.TimeUtils.isSecurityPatchAfter
 import com.drdisagree.iconify.xposed.modules.utils.ViewHelper.applyFontRecursively
@@ -76,11 +77,14 @@ import com.drdisagree.iconify.xposed.modules.views.ArcProgressWidget.generateBit
 import com.drdisagree.iconify.xposed.utils.XPrefs.Xprefs
 import com.drdisagree.iconify.xposed.utils.XPrefs.XprefsIsInitialized
 import de.robv.android.xposed.XposedBridge.log
+import de.robv.android.xposed.XposedHelpers.callMethod
+import de.robv.android.xposed.XposedHelpers.callStaticMethod
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam
 import java.io.File
 import java.util.Calendar
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
+import kotlin.math.max
 
 @SuppressLint("DiscouragedApi")
 class LockscreenClock15(context: Context) : ModPack(context) {
@@ -119,7 +123,6 @@ class LockscreenClock15(context: Context) : ModPack(context) {
             initSoundManager()
         }
     }
-    private var currentClockLayout: View? = null
     private var mAccentColor1 = 0
     private var mAccentColor2 = 0
     private var mAccentColor3 = 0
@@ -267,30 +270,142 @@ class LockscreenClock15(context: Context) : ModPack(context) {
         val defaultNotificationStackScrollLayoutSectionClass =
             findClass("$SYSTEMUI_PACKAGE.keyguard.ui.view.layout.sections.DefaultNotificationStackScrollLayoutSection")
 
-        val notificationContainerId = mContext.resources.getIdentifier(
-            "nssl_placeholder",
-            "id",
-            mContext.packageName
-        )
-
         defaultNotificationStackScrollLayoutSectionClass
-            .hookMethod("applyConstraints")
-            .runAfter { param2 ->
-                val constraintSet = param2.args[0]
+            .hookConstructor()
+            .runAfter { param ->
+                if (!showLockscreenClock) return@runAfter
 
-                currentClockLayout?.let { clockView ->
-                    constraintSet.clear(
-                        notificationContainerId,
-                        ConstraintSet.TOP
-                    )
-                    constraintSet.connect(
-                        notificationContainerId,
-                        ConstraintSet.TOP,
-                        clockView.id,
-                        ConstraintSet.BOTTOM,
-                        mContext.toPx(bottomMargin)
-                    )
-                }
+                val context = param.args[0] as Context
+                val res = context.resources
+                val largeScreenHeaderHelperLazy = param.args[5]
+
+                defaultNotificationStackScrollLayoutSectionClass
+                    .hookMethod("applyConstraints")
+                    .replace { param2 ->
+                        val constraintSet = param2.args[0]
+
+                        val bottomMargin = res.getDimensionPixelSize(
+                            res.getIdentifier(
+                                "keyguard_status_view_bottom_margin",
+                                "dimen",
+                                context.packageName
+                            )
+                        )
+                        val useLargeScreenHeader = res.getBoolean(
+                            res.getIdentifier(
+                                "config_use_large_screen_shade_header",
+                                "bool",
+                                context.packageName
+                            )
+                        )
+                        val marginTopLargeScreen = try {
+                            callMethod(
+                                callMethod(largeScreenHeaderHelperLazy, "get"),
+                                "getLargeScreenHeaderHeight"
+                            ) as Int
+                        } catch (ignored: Throwable) {
+                            val systemBarUtilsClass =
+                                findClass("com.android.internal.policy.SystemBarUtils")
+
+                            val defaultHeight = res.getDimensionPixelSize(
+                                res.getIdentifier(
+                                    "large_screen_shade_header_height",
+                                    "dimen",
+                                    context.packageName
+                                )
+                            )
+                            val statusBarHeight = callStaticMethod(
+                                systemBarUtilsClass,
+                                "getStatusBarHeight",
+                                context
+                            ) as Int
+
+                            max(defaultHeight, statusBarHeight)
+                        }
+                        val notificationContainerId = res.getIdentifier(
+                            "nssl_placeholder",
+                            "id",
+                            context.packageName
+                        )
+                        val notificationContainerBarrierBottomId = res.getIdentifier(
+                            "nssl_placeholder_barrier_bottom",
+                            "id",
+                            context.packageName
+                        )
+                        val smartspaceBarrierBottomId = res.getIdentifier(
+                            "smart_space_barrier_bottom",
+                            "id",
+                            context.packageName
+                        )
+                        val clockView = mClockViewContainer?.findViewWithTag<View?>(
+                            ICONIFY_LOCKSCREEN_CLOCK_TAG
+                        )
+
+                        constraintSet.clear(notificationContainerId, ConstraintSet.TOP)
+                        if (clockView != null) {
+                            constraintSet.connect(
+                                notificationContainerId,
+                                ConstraintSet.TOP,
+                                clockView.id,
+                                ConstraintSet.BOTTOM,
+                                mContext.toPx(bottomMargin)
+                            )
+                        } else {
+                            constraintSet.connect(
+                                notificationContainerId,
+                                ConstraintSet.TOP,
+                                smartspaceBarrierBottomId,
+                                ConstraintSet.BOTTOM,
+                                bottomMargin +
+                                        if (useLargeScreenHeader) {
+                                            marginTopLargeScreen
+                                        } else {
+                                            0
+                                        }
+                            )
+                        }
+
+                        constraintSet.clear(notificationContainerId, ConstraintSet.START)
+                        constraintSet.connect(
+                            notificationContainerId,
+                            ConstraintSet.START,
+                            ConstraintSet.PARENT_ID,
+                            ConstraintSet.START
+                        )
+
+                        constraintSet.clear(notificationContainerId, ConstraintSet.END)
+                        constraintSet.connect(
+                            notificationContainerId,
+                            ConstraintSet.END,
+                            ConstraintSet.PARENT_ID,
+                            ConstraintSet.END
+                        )
+
+                        constraintSet.clear(notificationContainerBarrierBottomId, ConstraintSet.END)
+                        constraintSet.createBarrier(
+                            notificationContainerBarrierBottomId,
+                            ConstraintSet.RIGHT,
+                            0,
+                            res.getIdentifier(
+                                "keyguard_indication_area",
+                                "dimen",
+                                context.packageName
+                            ),
+                            res.getIdentifier(
+                                "ambient_indication_container",
+                                "dimen",
+                                context.packageName
+                            )
+                        )
+
+                        constraintSet.clear(notificationContainerId, ConstraintSet.BOTTOM)
+                        constraintSet.connect(
+                            notificationContainerId,
+                            ConstraintSet.BOTTOM,
+                            notificationContainerBarrierBottomId,
+                            ConstraintSet.TOP
+                        )
+                    }
             }
 
         val aodNotificationIconsSectionClass =
@@ -309,7 +424,11 @@ class LockscreenClock15(context: Context) : ModPack(context) {
 
                 val constraintSet = param.args[0]
 
-                currentClockLayout?.let { clockView ->
+                val clockView = mClockViewContainer?.findViewWithTag<View?>(
+                    ICONIFY_LOCKSCREEN_CLOCK_TAG
+                )
+
+                if (clockView != null) {
                     constraintSet.clear(
                         aodNotificationContainerId,
                         ConstraintSet.TOP
@@ -318,7 +437,8 @@ class LockscreenClock15(context: Context) : ModPack(context) {
                         aodNotificationContainerId,
                         ConstraintSet.TOP,
                         clockView.id,
-                        ConstraintSet.BOTTOM
+                        ConstraintSet.BOTTOM,
+                        mContext.toPx(bottomMargin)
                     )
                 }
             }
@@ -389,10 +509,7 @@ class LockscreenClock15(context: Context) : ModPack(context) {
     }
 
     private fun updateClockView() {
-        if (mClockViewContainer == null) {
-            currentClockLayout = null
-            return
-        }
+        if (mClockViewContainer == null) return
 
         val currentTime = System.currentTimeMillis()
         val isClockAdded =
@@ -413,9 +530,7 @@ class LockscreenClock15(context: Context) : ModPack(context) {
             )
         }
 
-        currentClockLayout = clockViewLayout
-
-        currentClockLayout?.apply {
+        clockViewLayout?.apply {
             tag = ICONIFY_LOCKSCREEN_CLOCK_TAG
             id = View.generateViewId()
 
@@ -431,7 +546,7 @@ class LockscreenClock15(context: Context) : ModPack(context) {
 
     private val clockViewLayout: View?
         get() {
-            if (appContext == null || !XprefsIsInitialized || !showLockscreenClock) return null
+            if (appContext == null || !XprefsIsInitialized) return null
 
             return LayoutInflater.from(appContext).inflate(
                 appContext!!.resources.getIdentifier(
