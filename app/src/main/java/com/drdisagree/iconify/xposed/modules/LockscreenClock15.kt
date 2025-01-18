@@ -78,11 +78,13 @@ import com.drdisagree.iconify.xposed.utils.XPrefs.Xprefs
 import com.drdisagree.iconify.xposed.utils.XPrefs.XprefsIsInitialized
 import de.robv.android.xposed.XposedBridge.log
 import de.robv.android.xposed.XposedHelpers.callMethod
+import de.robv.android.xposed.XposedHelpers.callStaticMethod
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam
 import java.io.File
 import java.util.Calendar
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
+import kotlin.math.max
 
 @SuppressLint("DiscouragedApi")
 class LockscreenClock15(context: Context) : ModPack(context) {
@@ -296,10 +298,30 @@ class LockscreenClock15(context: Context) : ModPack(context) {
                                 context.packageName
                             )
                         )
-                        val marginTopLargeScreen = callMethod(
-                            callMethod(largeScreenHeaderHelperLazy, "get"),
-                            "getLargeScreenHeaderHeight"
-                        ) as Int
+                        val marginTopLargeScreen = try {
+                            callMethod(
+                                callMethod(largeScreenHeaderHelperLazy, "get"),
+                                "getLargeScreenHeaderHeight"
+                            ) as Int
+                        } catch (ignored: Throwable) {
+                            val systemBarUtilsClass =
+                                findClass("com.android.internal.policy.SystemBarUtils")
+
+                            val defaultHeight = res.getDimensionPixelSize(
+                                res.getIdentifier(
+                                    "large_screen_shade_header_height",
+                                    "dimen",
+                                    context.packageName
+                                )
+                            )
+                            val statusBarHeight = callStaticMethod(
+                                systemBarUtilsClass,
+                                "getStatusBarHeight",
+                                context
+                            ) as Int
+
+                            max(defaultHeight, statusBarHeight)
+                        }
                         val notificationContainerId = res.getIdentifier(
                             "nssl_placeholder",
                             "id",
