@@ -27,7 +27,6 @@ import com.drdisagree.iconify.ui.fragments.tweaks.ColorEngine
 import com.drdisagree.iconify.ui.fragments.tweaks.ColoredBattery
 import com.drdisagree.iconify.ui.fragments.tweaks.MediaPlayer
 import com.drdisagree.iconify.ui.fragments.tweaks.Miscellaneous
-import com.drdisagree.iconify.ui.fragments.tweaks.MonetEngine
 import com.drdisagree.iconify.ui.fragments.tweaks.NavigationBar
 import com.drdisagree.iconify.ui.fragments.tweaks.QsIconLabel
 import com.drdisagree.iconify.ui.fragments.tweaks.QsPanelMargin
@@ -82,7 +81,6 @@ fun isInGroup(fragment: Fragment, group: FragmentGroup): Boolean {
             fragment is Tweaks ||
                     fragment is ColorEngine ||
                     fragment is BasicColors ||
-                    fragment is MonetEngine ||
                     fragment is UiRoundness ||
                     fragment is QsRowColumn ||
                     fragment is QsIconLabel ||

@@ -20,6 +20,9 @@ object Const {
         SETTINGS_PACKAGE
     )
 
+    // 3rd party packages
+    const val COLORBLENDR_PACKAGE = "com.drdisagree.colorblendr"
+
     // Github repo
     const val GITHUB_REPO = "https://github.com/Mahmud0808/Iconify"
 
@@ -35,6 +38,9 @@ object Const {
 
     // Parse changelogs
     const val CHANGELOG_URL = "https://api.github.com/repos/Mahmud0808/Iconify/releases/tags/v"
+
+    // ColorBlender URL
+    const val COLORBLENDR_URL = "https://github.com/Mahmud0808/ColorBlendr"
 
     // Fragment variables
     const val TRANSITION_DELAY = 120

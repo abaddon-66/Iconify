@@ -84,6 +84,16 @@ object AppUtils {
         }
     }
 
+    fun launchAppThrowError(activity: Activity, packageName: String) {
+        val launchIntent = appContext.packageManager.getLaunchIntentForPackage(packageName)
+
+        if (launchIntent != null) {
+            activity.startActivity(launchIntent)
+        } else {
+            throw Exception("App not found $packageName")
+        }
+    }
+
     fun openUrl(activity: Activity, url: String) {
         try {
             activity.startActivity(
