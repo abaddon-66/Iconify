@@ -1,16 +1,28 @@
 package com.drdisagree.iconify.xposed.modules
 
+import android.annotation.SuppressLint
 import android.app.WallpaperManager
 import android.content.Context
+import android.content.res.XResources
 import android.graphics.Bitmap
 import android.os.Build
+import android.os.Handler
+import android.os.Looper
+import android.view.View
+import android.view.View.OnAttachStateChangeListener
+import android.view.ViewGroup
 import com.drdisagree.iconify.common.Const.SYSTEMUI_PACKAGE
+import com.drdisagree.iconify.common.Preferences.HIDE_LOCKSCREEN_LOCK_ICON
 import com.drdisagree.iconify.common.Preferences.LOCKSCREEN_WALLPAPER_BLUR
 import com.drdisagree.iconify.common.Preferences.LOCKSCREEN_WALLPAPER_BLUR_RADIUS
+import com.drdisagree.iconify.xposed.HookRes.Companion.resParams
 import com.drdisagree.iconify.xposed.ModPack
 import com.drdisagree.iconify.xposed.modules.utils.TimeUtils.isSecurityPatchAfter
 import com.drdisagree.iconify.xposed.modules.utils.ViewHelper.applyBlur
 import com.drdisagree.iconify.xposed.modules.utils.toolkit.XposedHook.Companion.findClass
+import com.drdisagree.iconify.xposed.modules.utils.toolkit.dumpChildViews
+import com.drdisagree.iconify.xposed.modules.utils.toolkit.hookConstructor
+import com.drdisagree.iconify.xposed.modules.utils.toolkit.hookLayout
 import com.drdisagree.iconify.xposed.modules.utils.toolkit.hookMethod
 import com.drdisagree.iconify.xposed.utils.XPrefs.Xprefs
 import com.drdisagree.iconify.xposed.utils.XPrefs.XprefsIsInitialized
@@ -22,6 +34,7 @@ class Lockscreen(context: Context) : ModPack(context) {
 
     private var wallpaperBlurEnabled = false
     private var wallpaperBlurRadius = 25
+    private var hideLockscreenLockIcon = false
 
     override fun updatePrefs(vararg key: String) {
         if (!XprefsIsInitialized) return
@@ -29,11 +42,17 @@ class Lockscreen(context: Context) : ModPack(context) {
         Xprefs.apply {
             wallpaperBlurEnabled = getBoolean(LOCKSCREEN_WALLPAPER_BLUR, false)
             wallpaperBlurRadius = getSliderInt(LOCKSCREEN_WALLPAPER_BLUR_RADIUS, 25)
+            hideLockscreenLockIcon = getBoolean(HIDE_LOCKSCREEN_LOCK_ICON, false)
+        }
+
+        when (key.firstOrNull()) {
+            HIDE_LOCKSCREEN_LOCK_ICON -> hideLockscreenLockIcon()
         }
     }
 
     override fun handleLoadPackage(loadPackageParam: LoadPackageParam) {
         blurredWallpaper()
+        hideLockscreenLockIcon()
     }
 
     private fun blurredWallpaper() {
@@ -60,6 +79,85 @@ class Lockscreen(context: Context) : ModPack(context) {
                     param.args[0] = bitmap.applyBlur(displayContext, wallpaperBlurRadius.toFloat())
                 }
             }
+    }
+
+    @SuppressLint("DiscouragedApi")
+    private fun hideLockscreenLockIcon() {
+        if (!isComposeLockscreen) {
+            val xResources: XResources = resParams[SYSTEMUI_PACKAGE]?.res ?: return
+
+            xResources
+                .hookLayout()
+                .packageName(SYSTEMUI_PACKAGE)
+                .resource("layout", "status_bar_expanded")
+                .suppressError()
+                .run { liparam ->
+                    liparam.view.findViewById<View>(
+                        liparam.res.getIdentifier(
+                            "lock_icon_view",
+                            "id",
+                            mContext.packageName
+                        )
+                    ).apply {
+                        if (!hideLockscreenLockIcon) return@apply
+
+                        layoutParams.height = 0
+                        layoutParams.width = 0
+                        visibility = View.GONE
+                        viewTreeObserver.addOnDrawListener {
+                            visibility = View.GONE
+                        }
+                        requestLayout()
+                    }
+                }
+        } else {
+            val aodBurnInLayerClass =
+                findClass("$SYSTEMUI_PACKAGE.keyguard.ui.view.layout.sections.AodBurnInLayer")
+
+            aodBurnInLayerClass
+                .hookConstructor()
+                .runAfter { param ->
+                    if (!hideLockscreenLockIcon) return@runAfter
+
+                    val entryV = param.thisObject as View
+
+                    entryV.addOnAttachStateChangeListener(object : OnAttachStateChangeListener {
+                        override fun onViewAttachedToWindow(v: View) {
+                            Handler(Looper.getMainLooper()).postDelayed({
+                                if (!hideLockscreenLockIcon) return@postDelayed
+
+                                val rootView = entryV.parent as ViewGroup
+                                dumpChildViews(mContext, rootView)
+
+                                listOf(
+                                    "device_entry_icon_bg",
+                                    "device_entry_icon_fg"
+                                ).map { resourceName ->
+                                    rootView.findViewById<View?>(
+                                        mContext.resources.getIdentifier(
+                                            resourceName,
+                                            "id",
+                                            mContext.packageName
+                                        )
+                                    )
+                                }.forEach { view ->
+                                    view?.apply {
+                                        viewTreeObserver?.addOnDrawListener {
+                                            apply {
+                                                layoutParams.height = 0
+                                                layoutParams.width = 0
+                                                visibility = View.INVISIBLE
+                                            }
+                                        }
+                                    }
+                                }
+                            }, 1000)
+                        }
+
+                        override fun onViewDetachedFromWindow(v: View) {}
+                    })
+                }
+        }
     }
 
     companion object {

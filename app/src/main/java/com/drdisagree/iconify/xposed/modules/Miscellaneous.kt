@@ -17,7 +17,6 @@ import com.drdisagree.iconify.common.Preferences.FIXED_STATUS_ICONS_SWITCH
 import com.drdisagree.iconify.common.Preferences.FIXED_STATUS_ICONS_TOPMARGIN
 import com.drdisagree.iconify.common.Preferences.HEADER_CLOCK_SWITCH
 import com.drdisagree.iconify.common.Preferences.HIDE_DATA_DISABLED_ICON
-import com.drdisagree.iconify.common.Preferences.HIDE_LOCKSCREEN_LOCK_ICON
 import com.drdisagree.iconify.common.Preferences.HIDE_STATUS_ICONS_SWITCH
 import com.drdisagree.iconify.common.Preferences.QSPANEL_HIDE_CARRIER
 import com.drdisagree.iconify.xposed.HookRes.Companion.resParams
@@ -38,7 +37,6 @@ class Miscellaneous(context: Context) : ModPack(context) {
     private var hideQsCarrierGroup = false
     private var hideStatusIcons = false
     private var fixedStatusIcons = false
-    private var hideLockscreenLockIcon = false
     private var hideDataDisabledIcon = false
     private var sideMarginStatusIcons = 0
     private var topMarginStatusIcons = 8
@@ -56,7 +54,6 @@ class Miscellaneous(context: Context) : ModPack(context) {
             fixedStatusIcons = getBoolean(FIXED_STATUS_ICONS_SWITCH, false)
             topMarginStatusIcons = getSliderInt(FIXED_STATUS_ICONS_TOPMARGIN, 8)
             sideMarginStatusIcons = getSliderInt(FIXED_STATUS_ICONS_SIDEMARGIN, 0)
-            hideLockscreenLockIcon = getBoolean(HIDE_LOCKSCREEN_LOCK_ICON, false)
             hideDataDisabledIcon = getBoolean(HIDE_DATA_DISABLED_ICON, false)
             showHeaderClockA14 = getBoolean(HEADER_CLOCK_SWITCH, false) &&
                     Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE
@@ -80,10 +77,6 @@ class Miscellaneous(context: Context) : ModPack(context) {
                     fixedStatusIconsA12()
                 }
 
-                if (it == HIDE_LOCKSCREEN_LOCK_ICON) {
-                    hideLockscreenLockIcon()
-                }
-
                 if (it == HIDE_DATA_DISABLED_ICON &&
                     mobileSignalControllerParam != null
                 ) {
@@ -98,7 +91,6 @@ class Miscellaneous(context: Context) : ModPack(context) {
         hideQSCarrierGroup()
         hideStatusIcons()
         fixedStatusIconsA12()
-        hideLockscreenLockIcon()
         hideDataDisabledIcon()
     }
 
@@ -626,35 +618,6 @@ class Miscellaneous(context: Context) : ModPack(context) {
                         privacyContainer.addView(statusIconContainer)
                     }
                 } catch (ignored: Throwable) {
-                }
-            }
-    }
-
-    private fun hideLockscreenLockIcon() {
-        val xResources: XResources = resParams[SYSTEMUI_PACKAGE]?.res ?: return
-
-        xResources
-            .hookLayout()
-            .packageName(SYSTEMUI_PACKAGE)
-            .resource("layout", "status_bar_expanded")
-            .suppressError()
-            .run { liparam ->
-                liparam.view.findViewById<View>(
-                    liparam.res.getIdentifier(
-                        "lock_icon_view",
-                        "id",
-                        mContext.packageName
-                    )
-                ).apply {
-                    if (!hideLockscreenLockIcon) return@apply
-
-                    layoutParams.height = 0
-                    layoutParams.width = 0
-                    visibility = View.GONE
-                    viewTreeObserver.addOnDrawListener {
-                        visibility = View.GONE
-                    }
-                    requestLayout()
                 }
             }
     }
