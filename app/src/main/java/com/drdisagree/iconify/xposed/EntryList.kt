@@ -15,7 +15,7 @@ import com.drdisagree.iconify.xposed.modules.HeaderImage
 import com.drdisagree.iconify.xposed.modules.IconUpdater
 import com.drdisagree.iconify.xposed.modules.Lockscreen
 import com.drdisagree.iconify.xposed.modules.LockscreenClock
-import com.drdisagree.iconify.xposed.modules.LockscreenClock15
+import com.drdisagree.iconify.xposed.modules.LockscreenClockA15
 import com.drdisagree.iconify.xposed.modules.LockscreenWeather
 import com.drdisagree.iconify.xposed.modules.LockscreenWidgets
 import com.drdisagree.iconify.xposed.modules.Miscellaneous
@@ -35,6 +35,7 @@ import com.drdisagree.iconify.xposed.modules.themes.QSLightThemeA12
 import com.drdisagree.iconify.xposed.modules.themes.QSLightThemeA13
 import com.drdisagree.iconify.xposed.modules.themes.QSLightThemeA14
 import com.drdisagree.iconify.xposed.modules.themes.QSLightThemeA15
+import com.drdisagree.iconify.xposed.modules.utils.MyConstraintSet
 import com.drdisagree.iconify.xposed.modules.utils.SettingsLibUtils
 import com.drdisagree.iconify.xposed.utils.HookCheck
 
@@ -46,6 +47,7 @@ object EntryList {
     )
 
     private val systemUICommonModPacks = listOf(
+        MyConstraintSet::class.java,
         ControllersProvider::class.java,
         ThemeChange::class.java,
         BackgroundChip::class.java,
@@ -94,7 +96,7 @@ object EntryList {
         QSBlackThemeA15::class.java,
         QSLightThemeA15::class.java,
         HeaderClockA14::class.java,
-        LockscreenClock15::class.java,
+        LockscreenClockA15::class.java,
         OpQsHeader::class.java
     )
 

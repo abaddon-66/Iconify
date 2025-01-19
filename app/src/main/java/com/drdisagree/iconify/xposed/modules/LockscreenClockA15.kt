@@ -36,6 +36,7 @@ import com.drdisagree.iconify.R
 import com.drdisagree.iconify.common.Const.RESET_LOCKSCREEN_CLOCK_COMMAND
 import com.drdisagree.iconify.common.Const.SYSTEMUI_PACKAGE
 import com.drdisagree.iconify.common.Preferences.DEPTH_WALLPAPER_SWITCH
+import com.drdisagree.iconify.common.Preferences.ICONIFY_DEPTH_WALLPAPER_FOREGROUND_TAG
 import com.drdisagree.iconify.common.Preferences.ICONIFY_LOCKSCREEN_CLOCK_TAG
 import com.drdisagree.iconify.common.Preferences.LSCLOCK_BOTTOMMARGIN
 import com.drdisagree.iconify.common.Preferences.LSCLOCK_COLOR_CODE_ACCENT1
@@ -56,18 +57,18 @@ import com.drdisagree.iconify.common.Resources.LOCKSCREEN_CLOCK_LAYOUT
 import com.drdisagree.iconify.utils.TextUtils
 import com.drdisagree.iconify.xposed.HookEntry.Companion.enqueueProxyCommand
 import com.drdisagree.iconify.xposed.ModPack
+import com.drdisagree.iconify.xposed.modules.Lockscreen.Companion.isComposeLockscreen
 import com.drdisagree.iconify.xposed.modules.utils.MyConstraintSet.Companion.applyTo
 import com.drdisagree.iconify.xposed.modules.utils.MyConstraintSet.Companion.clear
 import com.drdisagree.iconify.xposed.modules.utils.MyConstraintSet.Companion.clone
 import com.drdisagree.iconify.xposed.modules.utils.MyConstraintSet.Companion.connect
 import com.drdisagree.iconify.xposed.modules.utils.MyConstraintSet.Companion.constraintSetInstance
-import com.drdisagree.iconify.xposed.modules.utils.MyConstraintSet.Companion.createBarrier
 import com.drdisagree.iconify.xposed.modules.utils.TimeUtils
-import com.drdisagree.iconify.xposed.modules.utils.TimeUtils.isSecurityPatchAfter
 import com.drdisagree.iconify.xposed.modules.utils.ViewHelper.applyFontRecursively
 import com.drdisagree.iconify.xposed.modules.utils.ViewHelper.applyTextMarginRecursively
 import com.drdisagree.iconify.xposed.modules.utils.ViewHelper.applyTextScalingRecursively
 import com.drdisagree.iconify.xposed.modules.utils.ViewHelper.findViewContainsTag
+import com.drdisagree.iconify.xposed.modules.utils.ViewHelper.findViewIdContainsTag
 import com.drdisagree.iconify.xposed.modules.utils.ViewHelper.findViewWithTagAndChangeColor
 import com.drdisagree.iconify.xposed.modules.utils.ViewHelper.toPx
 import com.drdisagree.iconify.xposed.modules.utils.toolkit.XposedHook.Companion.findClass
@@ -78,19 +79,16 @@ import com.drdisagree.iconify.xposed.utils.XPrefs.Xprefs
 import com.drdisagree.iconify.xposed.utils.XPrefs.XprefsIsInitialized
 import de.robv.android.xposed.XposedBridge.log
 import de.robv.android.xposed.XposedHelpers.callMethod
-import de.robv.android.xposed.XposedHelpers.callStaticMethod
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam
 import java.io.File
-import java.util.Calendar
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
-import kotlin.math.max
 
 @SuppressLint("DiscouragedApi")
-class LockscreenClock15(context: Context) : ModPack(context) {
+class LockscreenClockA15(context: Context) : ModPack(context) {
 
     private var showLockscreenClock = false
-    private var showDepthWallpaper = false // was used in android 13 and below
+    private var showDepthWallpaper = false
     private var mClockViewContainer: ViewGroup? = null
     private var mUserManager: UserManager? = null
     private var mAudioManager: AudioManager? = null
@@ -105,6 +103,24 @@ class LockscreenClock15(context: Context) : ModPack(context) {
     private var mBatteryPercentage = 1
     private var mVolumeLevelArcProgress: ImageView? = null
     private var mRamUsageArcProgress: ImageView? = null
+    private var mAccentColor1 = 0
+    private var mAccentColor2 = 0
+    private var mAccentColor3 = 0
+    private var mTextColor1 = 0
+    private var mTextColor2 = 0
+    private var clockStyle = 0
+    private var topMargin = 100
+    private var bottomMargin = 40
+    private var textScaleFactor = 1f
+    private var lineHeight = 0
+    private var customColorEnabled = false
+    private var customUserName = ""
+    private var customDeviceName = ""
+    private var customFontEnabled = false
+    private var customTypeface: Typeface? = null
+    private val customFontDirectory =
+        "${Environment.getExternalStorageDirectory()}/.iconify_files/lsclock_font.ttf"
+
     private val mBatteryReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             if (intent.action != null && intent.action == Intent.ACTION_BATTERY_CHANGED) {
@@ -123,23 +139,22 @@ class LockscreenClock15(context: Context) : ModPack(context) {
             initSoundManager()
         }
     }
-    private var mAccentColor1 = 0
-    private var mAccentColor2 = 0
-    private var mAccentColor3 = 0
-    private var mTextColor1 = 0
-    private var mTextColor2 = 0
-    private var clockStyle = 0
-    private var topMargin = 100
-    private var bottomMargin = 40
-    private var textScaleFactor = 1f
-    private var lineHeight = 0
-    private var customColorEnabled = false
-    private var customUserName = ""
-    private var customDeviceName = ""
-    private var customFontEnabled = false
-    private var customTypeface: Typeface? = null
-    private val customFontDirectory =
-        "${Environment.getExternalStorageDirectory()}/.iconify_files/lsclock_font.ttf"
+    private val mThemeChangeCallback: ThemeChange.OnThemeChangedListener =
+        object : ThemeChange.OnThemeChangedListener {
+            override fun onThemeChanged() {
+                loadColors()
+                updateClockView()
+            }
+        }
+    private val timeChangedReceiver: BroadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            Handler(Looper.getMainLooper()).post { updateClockView() }
+        }
+    }
+
+    init {
+        ThemeChange.getInstance().registerThemeChangedCallback(mThemeChangeCallback)
+    }
 
     override fun updatePrefs(vararg key: String) {
         if (!XprefsIsInitialized || !isComposeLockscreen) return
@@ -159,39 +174,6 @@ class LockscreenClock15(context: Context) : ModPack(context) {
             if (customFontEnabled && File(customFontDirectory).exists()) {
                 customTypeface = Typeface.createFromFile(File(customFontDirectory))
             }
-
-            mAccentColor1 = getInt(
-                LSCLOCK_COLOR_CODE_ACCENT1,
-                mContext.resources.getColor(
-                    mContext.resources.getIdentifier(
-                        "android:color/system_accent1_300",
-                        "color",
-                        mContext.packageName
-                    ), mContext.theme
-                )
-            )
-            mAccentColor2 = getInt(
-                LSCLOCK_COLOR_CODE_ACCENT2,
-                mContext.resources.getColor(
-                    mContext.resources.getIdentifier(
-                        "android:color/system_accent2_300",
-                        "color",
-                        mContext.packageName
-                    ), mContext.theme
-                )
-            )
-            mAccentColor3 = getInt(
-                LSCLOCK_COLOR_CODE_ACCENT3,
-                mContext.resources.getColor(
-                    mContext.resources.getIdentifier(
-                        "android:color/system_accent3_300",
-                        "color",
-                        mContext.packageName
-                    ), mContext.theme
-                )
-            )
-            mTextColor1 = getInt(LSCLOCK_COLOR_CODE_TEXT1, Color.WHITE)
-            mTextColor2 = getInt(LSCLOCK_COLOR_CODE_TEXT2, Color.BLACK)
         }
 
         resetStockClock()
@@ -200,11 +182,6 @@ class LockscreenClock15(context: Context) : ModPack(context) {
             in setOf(
                 LSCLOCK_SWITCH,
                 LSCLOCK_COLOR_SWITCH,
-                LSCLOCK_COLOR_CODE_ACCENT1,
-                LSCLOCK_COLOR_CODE_ACCENT2,
-                LSCLOCK_COLOR_CODE_ACCENT3,
-                LSCLOCK_COLOR_CODE_TEXT1,
-                LSCLOCK_COLOR_CODE_TEXT2,
                 LSCLOCK_STYLE,
                 LSCLOCK_TOPMARGIN,
                 LSCLOCK_BOTTOMMARGIN,
@@ -215,6 +192,17 @@ class LockscreenClock15(context: Context) : ModPack(context) {
                 LSCLOCK_DEVICENAME,
                 DEPTH_WALLPAPER_SWITCH
             ) -> updateClockView()
+
+            in setOf(
+                LSCLOCK_COLOR_CODE_ACCENT1,
+                LSCLOCK_COLOR_CODE_ACCENT2,
+                LSCLOCK_COLOR_CODE_ACCENT3,
+                LSCLOCK_COLOR_CODE_TEXT1,
+                LSCLOCK_COLOR_CODE_TEXT2
+            ) -> {
+                loadColors()
+                updateClockView()
+            }
         }
     }
 
@@ -263,149 +251,44 @@ class LockscreenClock15(context: Context) : ModPack(context) {
                         }, 1000)
                     }
 
-                    override fun onViewDetachedFromWindow(v: View) {}
+                    override fun onViewDetachedFromWindow(v: View) {
+                        unregisterClockUpdater()
+                    }
                 })
             }
 
         val defaultNotificationStackScrollLayoutSectionClass =
             findClass("$SYSTEMUI_PACKAGE.keyguard.ui.view.layout.sections.DefaultNotificationStackScrollLayoutSection")
 
+        val notificationContainerId = mContext.resources.getIdentifier(
+            "nssl_placeholder",
+            "id",
+            mContext.packageName
+        )
+
         defaultNotificationStackScrollLayoutSectionClass
-            .hookConstructor()
+            .hookMethod("applyConstraints")
             .runAfter { param ->
                 if (!showLockscreenClock) return@runAfter
 
-                val context = param.args[0] as Context
-                val res = context.resources
-                val largeScreenHeaderHelperLazy = param.args[5]
+                val constraintSet = param.args[0]
+                val clockView = mClockViewContainer?.findViewWithTag<View?>(
+                    ICONIFY_LOCKSCREEN_CLOCK_TAG
+                )
 
-                defaultNotificationStackScrollLayoutSectionClass
-                    .hookMethod("applyConstraints")
-                    .replace { param2 ->
-                        val constraintSet = param2.args[0]
-
-                        val bottomMargin = res.getDimensionPixelSize(
-                            res.getIdentifier(
-                                "keyguard_status_view_bottom_margin",
-                                "dimen",
-                                context.packageName
-                            )
-                        )
-                        val useLargeScreenHeader = res.getBoolean(
-                            res.getIdentifier(
-                                "config_use_large_screen_shade_header",
-                                "bool",
-                                context.packageName
-                            )
-                        )
-                        val marginTopLargeScreen = try {
-                            callMethod(
-                                callMethod(largeScreenHeaderHelperLazy, "get"),
-                                "getLargeScreenHeaderHeight"
-                            ) as Int
-                        } catch (ignored: Throwable) {
-                            val systemBarUtilsClass =
-                                findClass("com.android.internal.policy.SystemBarUtils")
-
-                            val defaultHeight = res.getDimensionPixelSize(
-                                res.getIdentifier(
-                                    "large_screen_shade_header_height",
-                                    "dimen",
-                                    context.packageName
-                                )
-                            )
-                            val statusBarHeight = callStaticMethod(
-                                systemBarUtilsClass,
-                                "getStatusBarHeight",
-                                context
-                            ) as Int
-
-                            max(defaultHeight, statusBarHeight)
-                        }
-                        val notificationContainerId = res.getIdentifier(
-                            "nssl_placeholder",
-                            "id",
-                            context.packageName
-                        )
-                        val notificationContainerBarrierBottomId = res.getIdentifier(
-                            "nssl_placeholder_barrier_bottom",
-                            "id",
-                            context.packageName
-                        )
-                        val smartspaceBarrierBottomId = res.getIdentifier(
-                            "smart_space_barrier_bottom",
-                            "id",
-                            context.packageName
-                        )
-                        val clockView = mClockViewContainer?.findViewWithTag<View?>(
-                            ICONIFY_LOCKSCREEN_CLOCK_TAG
-                        )
-
-                        constraintSet.clear(notificationContainerId, ConstraintSet.TOP)
-                        if (clockView != null) {
-                            constraintSet.connect(
-                                notificationContainerId,
-                                ConstraintSet.TOP,
-                                clockView.id,
-                                ConstraintSet.BOTTOM,
-                                mContext.toPx(bottomMargin)
-                            )
-                        } else {
-                            constraintSet.connect(
-                                notificationContainerId,
-                                ConstraintSet.TOP,
-                                smartspaceBarrierBottomId,
-                                ConstraintSet.BOTTOM,
-                                bottomMargin +
-                                        if (useLargeScreenHeader) {
-                                            marginTopLargeScreen
-                                        } else {
-                                            0
-                                        }
-                            )
-                        }
-
-                        constraintSet.clear(notificationContainerId, ConstraintSet.START)
-                        constraintSet.connect(
-                            notificationContainerId,
-                            ConstraintSet.START,
-                            ConstraintSet.PARENT_ID,
-                            ConstraintSet.START
-                        )
-
-                        constraintSet.clear(notificationContainerId, ConstraintSet.END)
-                        constraintSet.connect(
-                            notificationContainerId,
-                            ConstraintSet.END,
-                            ConstraintSet.PARENT_ID,
-                            ConstraintSet.END
-                        )
-
-                        constraintSet.clear(notificationContainerBarrierBottomId, ConstraintSet.END)
-                        constraintSet.createBarrier(
-                            notificationContainerBarrierBottomId,
-                            ConstraintSet.RIGHT,
-                            0,
-                            res.getIdentifier(
-                                "keyguard_indication_area",
-                                "dimen",
-                                context.packageName
-                            ),
-                            res.getIdentifier(
-                                "ambient_indication_container",
-                                "dimen",
-                                context.packageName
-                            )
-                        )
-
-                        constraintSet.clear(notificationContainerId, ConstraintSet.BOTTOM)
-                        constraintSet.connect(
-                            notificationContainerId,
-                            ConstraintSet.BOTTOM,
-                            notificationContainerBarrierBottomId,
-                            ConstraintSet.TOP
-                        )
-                    }
+                if (clockView != null) {
+                    constraintSet.clear(
+                        notificationContainerId,
+                        ConstraintSet.TOP
+                    )
+                    constraintSet.connect(
+                        notificationContainerId,
+                        ConstraintSet.TOP,
+                        clockView.id,
+                        ConstraintSet.BOTTOM,
+                        mContext.toPx(bottomMargin)
+                    )
+                }
             }
 
         val aodNotificationIconsSectionClass =
@@ -423,7 +306,6 @@ class LockscreenClock15(context: Context) : ModPack(context) {
                 if (!showLockscreenClock) return@runAfter
 
                 val constraintSet = param.args[0]
-
                 val clockView = mClockViewContainer?.findViewWithTag<View?>(
                     ICONIFY_LOCKSCREEN_CLOCK_TAG
                 )
@@ -438,9 +320,34 @@ class LockscreenClock15(context: Context) : ModPack(context) {
                         ConstraintSet.TOP,
                         clockView.id,
                         ConstraintSet.BOTTOM,
-                        mContext.toPx(bottomMargin)
+                        mContext.resources.getDimensionPixelSize(
+                            mContext.resources.getIdentifier(
+                                "keyguard_status_view_bottom_margin",
+                                "dimen",
+                                mContext.packageName
+                            )
+                        )
                     )
                 }
+            }
+
+        val smartspaceMoveTransitionClass =
+            findClass("$SYSTEMUI_PACKAGE.keyguard.ui.view.layout.sections.transitions.ClockSizeTransition\$SmartspaceMoveTransition")
+
+        smartspaceMoveTransitionClass
+            .hookConstructor()
+            .runAfter { param ->
+                if (!showLockscreenClock) return@runAfter
+
+                callMethod(
+                    param.thisObject,
+                    "removeTarget",
+                    mContext.resources.getIdentifier(
+                        "aod_notification_icon_container",
+                        "id",
+                        mContext.packageName
+                    )
+                )
             }
 
         try {
@@ -486,6 +393,8 @@ class LockscreenClock15(context: Context) : ModPack(context) {
             )
         } catch (ignored: Exception) {
         }
+
+        loadColors()
     }
 
     // Broadcast receiver for updating clock
@@ -497,15 +406,17 @@ class LockscreenClock15(context: Context) : ModPack(context) {
             addAction(Intent.ACTION_LOCALE_CHANGED)
         }
 
-        val timeChangedReceiver: BroadcastReceiver = object : BroadcastReceiver() {
-            override fun onReceive(context: Context, intent: Intent) {
-                Handler(Looper.getMainLooper()).post { updateClockView() }
-            }
-        }
-
         mContext.registerReceiver(timeChangedReceiver, filter)
 
         updateClockView()
+    }
+
+    private fun unregisterClockUpdater() {
+        try {
+            mContext.unregisterReceiver(timeChangedReceiver)
+        } catch (ignored: Throwable) {
+            // receiver was never registered
+        }
     }
 
     private fun updateClockView() {
@@ -530,12 +441,20 @@ class LockscreenClock15(context: Context) : ModPack(context) {
             )
         }
 
+        val idx = if (showDepthWallpaper) {
+            val tempIdx =
+                mClockViewContainer!!.findViewIdContainsTag(ICONIFY_DEPTH_WALLPAPER_FOREGROUND_TAG)
+            if (tempIdx == -1) 0 else tempIdx
+        } else {
+            0
+        }
+
         clockViewLayout?.apply {
             tag = ICONIFY_LOCKSCREEN_CLOCK_TAG
             id = View.generateViewId()
 
             (parent as? ViewGroup)?.removeView(this)
-            mClockViewContainer!!.addView(this, 0)
+            mClockViewContainer!!.addView(this, idx)
             layoutParams.width = 0
 
             modifyClockView(this)
@@ -691,7 +610,10 @@ class LockscreenClock15(context: Context) : ModPack(context) {
 
             // Connect notification container below clock
             if (notificationContainerId != 0) {
-                constraintSet.clear(notificationContainerId, ConstraintSet.TOP)
+                constraintSet.clear(
+                    notificationContainerId,
+                    ConstraintSet.TOP
+                )
                 constraintSet.connect(
                     notificationContainerId,
                     ConstraintSet.TOP,
@@ -703,7 +625,10 @@ class LockscreenClock15(context: Context) : ModPack(context) {
 
             // Connect aod notification icon container below clock
             if (aodNotificationIconContainerId != 0) {
-                constraintSet.clear(aodNotificationIconContainerId, ConstraintSet.TOP)
+                constraintSet.clear(
+                    aodNotificationIconContainerId,
+                    ConstraintSet.TOP
+                )
                 constraintSet.connect(
                     aodNotificationIconContainerId,
                     ConstraintSet.TOP,
@@ -714,6 +639,51 @@ class LockscreenClock15(context: Context) : ModPack(context) {
             }
 
             constraintSet.applyTo(mClockViewContainer!!)
+        }
+    }
+
+    private fun loadColors() {
+        if (!XprefsIsInitialized || !isComposeLockscreen) return
+
+        Xprefs.apply {
+            mAccentColor1 = getInt(
+                LSCLOCK_COLOR_CODE_ACCENT1,
+                mContext.resources.getColor(
+                    mContext.resources.getIdentifier(
+                        "android:color/system_accent1_300",
+                        "color",
+                        mContext.packageName
+                    ), mContext.theme
+                )
+            )
+            mAccentColor2 = getInt(
+                LSCLOCK_COLOR_CODE_ACCENT2,
+                mContext.resources.getColor(
+                    mContext.resources.getIdentifier(
+                        "android:color/system_accent2_300",
+                        "color",
+                        mContext.packageName
+                    ), mContext.theme
+                )
+            )
+            mAccentColor3 = getInt(
+                LSCLOCK_COLOR_CODE_ACCENT3,
+                mContext.resources.getColor(
+                    mContext.resources.getIdentifier(
+                        "android:color/system_accent3_300",
+                        "color",
+                        mContext.packageName
+                    ), mContext.theme
+                )
+            )
+            mTextColor1 = getInt(
+                LSCLOCK_COLOR_CODE_TEXT1,
+                Color.WHITE
+            )
+            mTextColor2 = getInt(
+                LSCLOCK_COLOR_CODE_TEXT2,
+                Color.BLACK
+            )
         }
     }
 
@@ -891,15 +861,8 @@ class LockscreenClock15(context: Context) : ModPack(context) {
     }
 
     companion object {
-        private val TAG = "Iconify - ${LockscreenClock15::class.java.simpleName}: "
+        private val TAG = "Iconify - ${LockscreenClockA15::class.java.simpleName}: "
         private var lastUpdated = System.currentTimeMillis()
         private const val THRESHOLD_TIME: Long = 500 // milliseconds
-
-        val isComposeLockscreen = findClass(
-            "$SYSTEMUI_PACKAGE.keyguard.ui.view.layout.sections.AodBurnInLayer",
-            suppressError = true
-        ) != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM && isSecurityPatchAfter(
-            Calendar.getInstance().apply { set(2024, Calendar.NOVEMBER, 30) }
-        )
     }
 }

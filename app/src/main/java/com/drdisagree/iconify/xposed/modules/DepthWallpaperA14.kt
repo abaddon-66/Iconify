@@ -37,10 +37,16 @@ import com.drdisagree.iconify.common.Preferences.DEPTH_WALLPAPER_CHANGED
 import com.drdisagree.iconify.common.Preferences.DEPTH_WALLPAPER_FOREGROUND_ALPHA
 import com.drdisagree.iconify.common.Preferences.DEPTH_WALLPAPER_ON_AOD
 import com.drdisagree.iconify.common.Preferences.DEPTH_WALLPAPER_SWITCH
+import com.drdisagree.iconify.common.Preferences.ICONIFY_DEPTH_WALLPAPER_BACKGROUND_TAG
+import com.drdisagree.iconify.common.Preferences.ICONIFY_DEPTH_WALLPAPER_FOREGROUND_TAG
+import com.drdisagree.iconify.common.Preferences.ICONIFY_LOCKSCREEN_CLOCK_TAG
 import com.drdisagree.iconify.common.Preferences.LOCKSCREEN_SHADE_SWITCH
+import com.drdisagree.iconify.common.Preferences.LSCLOCK_SWITCH
 import com.drdisagree.iconify.xposed.HookEntry.Companion.enqueueProxyCommand
 import com.drdisagree.iconify.xposed.HookRes.Companion.modRes
 import com.drdisagree.iconify.xposed.ModPack
+import com.drdisagree.iconify.xposed.modules.Lockscreen.Companion.isComposeLockscreen
+import com.drdisagree.iconify.xposed.modules.utils.ViewHelper.findViewIdContainsTag
 import com.drdisagree.iconify.xposed.modules.utils.toolkit.XposedHook.Companion.findClass
 import com.drdisagree.iconify.xposed.modules.utils.toolkit.hookConstructor
 import com.drdisagree.iconify.xposed.modules.utils.toolkit.hookMethod
@@ -64,6 +70,7 @@ import kotlin.math.max
 class DepthWallpaperA14(context: Context) : ModPack(context) {
 
     private var showDepthWallpaper = false
+    private var showLockscreenClock = false
     private var showCustomImages = false
     private var foregroundAlpha = 1.0f
     private var mScrimController: Any? = null
@@ -90,6 +97,7 @@ class DepthWallpaperA14(context: Context) : ModPack(context) {
 
         Xprefs.apply {
             showDepthWallpaper = getBoolean(DEPTH_WALLPAPER_SWITCH, false)
+            showLockscreenClock = getBoolean(LSCLOCK_SWITCH, false)
             showCustomImages = getBoolean(CUSTOM_DEPTH_WALLPAPER_SWITCH, false)
             foregroundAlpha = getSliderInt(DEPTH_WALLPAPER_FOREGROUND_ALPHA, 80) / 100.0f
             showOnAOD = getBoolean(DEPTH_WALLPAPER_ON_AOD, true)
@@ -220,9 +228,20 @@ class DepthWallpaperA14(context: Context) : ModPack(context) {
                             )
 
                             rootView.apply {
-                                reAddView(mWallpaperForeground, 0)
-                                reAddView(largeClockView, 0)
-                                reAddView(smallClockView, 0)
+                                val idx = if (showLockscreenClock && isComposeLockscreen) {
+                                    val tempIdx =
+                                        findViewIdContainsTag(ICONIFY_LOCKSCREEN_CLOCK_TAG)
+                                    if (tempIdx == -1) 0 else tempIdx + 1
+                                } else {
+                                    0
+                                }
+
+                                reAddView(mWallpaperForeground, idx)
+
+                                if (!showLockscreenClock) {
+                                    reAddView(largeClockView, 0)
+                                    reAddView(smallClockView, 0)
+                                }
                             }
                         }, 1000)
                     }
@@ -286,8 +305,15 @@ class DepthWallpaperA14(context: Context) : ModPack(context) {
                     createLayers()
                 }
 
+                val idx = if (showLockscreenClock && isComposeLockscreen) {
+                    val tempIdx = targetView.findViewIdContainsTag(ICONIFY_LOCKSCREEN_CLOCK_TAG)
+                    if (tempIdx == -1) 1 else tempIdx + 1
+                } else {
+                    1
+                }
+
                 rootView.reAddView(mWallpaperBackground, 0)
-                targetView.reAddView(mWallpaperForeground, 1)
+                targetView.reAddView(mWallpaperForeground, idx)
             }
 
         centralSurfacesImplClass
@@ -527,8 +553,12 @@ class DepthWallpaperA14(context: Context) : ModPack(context) {
     }
 
     private fun createLayers() {
-        mWallpaperForeground = FrameLayout(mContext)
-        mWallpaperBackground = FrameLayout(mContext)
+        mWallpaperForeground = FrameLayout(mContext).apply {
+            tag = ICONIFY_DEPTH_WALLPAPER_FOREGROUND_TAG
+        }
+        mWallpaperBackground = FrameLayout(mContext).apply {
+            tag = ICONIFY_DEPTH_WALLPAPER_BACKGROUND_TAG
+        }
         mWallpaperDimmingOverlay = FrameLayout(mContext)
         mWallpaperBitmapContainer = FrameLayout(mContext)
 

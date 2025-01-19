@@ -3,10 +3,12 @@ package com.drdisagree.iconify.xposed.modules
 import android.app.WallpaperManager
 import android.content.Context
 import android.graphics.Bitmap
+import android.os.Build
 import com.drdisagree.iconify.common.Const.SYSTEMUI_PACKAGE
 import com.drdisagree.iconify.common.Preferences.LOCKSCREEN_WALLPAPER_BLUR
 import com.drdisagree.iconify.common.Preferences.LOCKSCREEN_WALLPAPER_BLUR_RADIUS
 import com.drdisagree.iconify.xposed.ModPack
+import com.drdisagree.iconify.xposed.modules.utils.TimeUtils.isSecurityPatchAfter
 import com.drdisagree.iconify.xposed.modules.utils.ViewHelper.applyBlur
 import com.drdisagree.iconify.xposed.modules.utils.toolkit.XposedHook.Companion.findClass
 import com.drdisagree.iconify.xposed.modules.utils.toolkit.hookMethod
@@ -14,6 +16,7 @@ import com.drdisagree.iconify.xposed.utils.XPrefs.Xprefs
 import com.drdisagree.iconify.xposed.utils.XPrefs.XprefsIsInitialized
 import de.robv.android.xposed.XposedHelpers.callMethod
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam
+import java.util.Calendar
 
 class Lockscreen(context: Context) : ModPack(context) {
 
@@ -42,7 +45,10 @@ class Lockscreen(context: Context) : ModPack(context) {
             .parameters(Bitmap::class.java)
             .runBefore { param ->
                 val canvasEngine = param.thisObject
-                val isLockscreenWallpaper = isLockScreenWallpaper(canvasEngine)
+                val isLockscreenWallpaper = callMethod(
+                    canvasEngine,
+                    "getWallpaperFlags"
+                ) as Int == WallpaperManager.FLAG_LOCK
 
                 if (wallpaperBlurEnabled && wallpaperBlurRadius > 0 && isLockscreenWallpaper) {
                     val bitmap = param.args[0] as Bitmap
@@ -56,11 +62,14 @@ class Lockscreen(context: Context) : ModPack(context) {
             }
     }
 
-    private fun isLockScreenWallpaper(canvasEngine: Any): Boolean {
-        return callMethod(canvasEngine, "getWallpaperFlags") as Int == WallpaperManager.FLAG_LOCK
-    }
-
     companion object {
         private val TAG = "Iconify - ${Lockscreen::class.java.simpleName}: "
+
+        val isComposeLockscreen = findClass(
+            "$SYSTEMUI_PACKAGE.keyguard.ui.view.layout.sections.AodBurnInLayer",
+            suppressError = true
+        ) != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM && isSecurityPatchAfter(
+            Calendar.getInstance().apply { set(2024, Calendar.NOVEMBER, 30) }
+        )
     }
 }

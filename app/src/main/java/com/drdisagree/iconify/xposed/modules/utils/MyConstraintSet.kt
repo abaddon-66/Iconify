@@ -2,6 +2,7 @@ package com.drdisagree.iconify.xposed.modules.utils
 
 import android.content.Context
 import android.view.View
+import androidx.constraintlayout.widget.ConstraintSet
 import com.drdisagree.iconify.xposed.ModPack
 import com.drdisagree.iconify.xposed.modules.utils.toolkit.XposedHook.Companion.findClass
 import de.robv.android.xposed.XposedHelpers.callMethod
@@ -14,6 +15,7 @@ class MyConstraintSet(context: Context) : ModPack(context) {
 
     override fun handleLoadPackage(loadPackageParam: LoadPackageParam) {
         ConstraintSetClass = findClass("androidx.constraintlayout.widget.ConstraintSet")
+            ?: ConstraintSet::class.java
     }
 
     companion object {
@@ -45,6 +47,18 @@ class MyConstraintSet(context: Context) : ModPack(context) {
 
         fun Any.setMargin(viewId: Int, anchor: Int, value: Int) {
             callMethod(this, "setMargin", viewId, anchor, value)
+        }
+
+        fun Any.setGoneMargin(viewId: Int, anchor: Int, value: Int) {
+            callMethod(this, "setGoneMargin", viewId, anchor, value)
+        }
+
+        fun Any.setVisibility(viewId: Int, visibility: Int) {
+            callMethod(this, "setVisibility", viewId, visibility)
+        }
+
+        fun Any.constrainHeight(viewId: Int, height: Int) {
+            callMethod(this, "constrainHeight", viewId, height)
         }
 
         fun Any.createBarrier(id: Int, direction: Int, margin: Int, vararg referenced: Int) {
