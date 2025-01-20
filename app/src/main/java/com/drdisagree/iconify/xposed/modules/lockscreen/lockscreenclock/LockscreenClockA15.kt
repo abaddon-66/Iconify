@@ -6,7 +6,6 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.Typeface
@@ -97,7 +96,6 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
     private var mUserManager: UserManager? = null
     private var mAudioManager: AudioManager? = null
     private var mActivityManager: ActivityManager? = null
-    private var appContext: Context? = null
     private var mBatteryStatusView: TextView? = null
     private var mBatteryLevelView: TextView? = null
     private var mVolumeLevelView: TextView? = null
@@ -425,14 +423,6 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
     }
 
     private fun initResources(context: Context) {
-        try {
-            appContext = context.createPackageContext(
-                BuildConfig.APPLICATION_ID,
-                Context.CONTEXT_IGNORE_SECURITY
-            )
-        } catch (ignored: PackageManager.NameNotFoundException) {
-        }
-
         Handler(Looper.getMainLooper()).post {
             mUserManager = context.getSystemService(Context.USER_SERVICE) as UserManager
         }
@@ -526,7 +516,7 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
             if (appContext == null || !XprefsIsInitialized) return null
 
             return LayoutInflater.from(appContext).inflate(
-                appContext!!.resources.getIdentifier(
+                appContext.resources.getIdentifier(
                     LOCKSCREEN_CLOCK_LAYOUT + clockStyle,
                     "layout",
                     BuildConfig.APPLICATION_ID
@@ -772,7 +762,7 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
 
         if (mBatteryLevelView != null) {
             mBatteryLevelView!!.text =
-                appContext!!.resources.getString(R.string.percentage_text, mBatteryPercentage)
+                appContext.resources.getString(R.string.percentage_text, mBatteryPercentage)
         }
 
         initRamUsage()
@@ -789,19 +779,19 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
         mVolumeProgress?.progress = volPercent
 
         mVolumeLevelView?.text =
-            appContext!!.resources.getString(R.string.percentage_text, volPercent)
+            appContext.resources.getString(R.string.percentage_text, volPercent)
 
         mVolumeLevelArcProgress?.setImageBitmap(
             generateBitmap(
                 context = mContext,
                 percentage = volPercent,
-                textInside = appContext!!.resources.getString(
+                textInside = appContext.resources.getString(
                     R.string.percentage_text,
                     volPercent
                 ),
                 textInsideSizePx = (40 * textScaleFactor * reduceFactor).toInt(),
                 iconDrawable = ContextCompat.getDrawable(
-                    appContext!!,
+                    appContext,
                     R.drawable.ic_volume_up
                 ),
                 iconSizePx = 38,
@@ -829,7 +819,7 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
             generateBitmap(
                 context = mContext,
                 percentage = usedMemoryPercentage,
-                textInside = appContext!!.resources.getString(
+                textInside = appContext.resources.getString(
                     R.string.percentage_text,
                     usedMemoryPercentage
                 ),
@@ -855,15 +845,15 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
             val username = mUserManager!!.userName
 
             return if (username.isNotEmpty()) mUserManager!!.userName
-            else appContext!!.resources.getString(R.string.default_user_name)
+            else appContext.resources.getString(R.string.default_user_name)
         }
 
     private val userImage: Drawable?
         get() = if (mUserManager == null) {
             ResourcesCompat.getDrawable(
-                appContext!!.resources,
+                appContext.resources,
                 R.drawable.default_avatar,
-                appContext!!.theme
+                appContext.theme
             )
         } else try {
             val getUserIconMethod = mUserManager!!.javaClass
@@ -878,9 +868,9 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
             }
 
             ResourcesCompat.getDrawable(
-                appContext!!.resources,
+                appContext.resources,
                 R.drawable.default_avatar,
-                appContext!!.theme
+                appContext.theme
             )
         }
 

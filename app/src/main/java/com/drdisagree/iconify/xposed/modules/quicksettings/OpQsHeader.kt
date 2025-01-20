@@ -5,7 +5,6 @@ import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothManager
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.content.res.Resources
 import android.graphics.Bitmap
@@ -52,7 +51,6 @@ import androidx.core.graphics.ColorUtils
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.graphics.drawable.toBitmap
 import androidx.palette.graphics.Palette
-import com.drdisagree.iconify.BuildConfig
 import com.drdisagree.iconify.common.Const.FRAMEWORK_PACKAGE
 import com.drdisagree.iconify.common.Const.SYSTEMUI_PACKAGE
 import com.drdisagree.iconify.common.Preferences.ICONIFY_QS_HEADER_CONTAINER_SHADE_TAG
@@ -161,7 +159,6 @@ class OpQsHeader(context: Context) : ModPack(context) {
     private var mBluetoothEnabled = false
 
     // Misc
-    private lateinit var appContext: Context
     private var mHandler: Handler = Handler(Looper.getMainLooper())
     private val artworkExtractorScope = CoroutineScope(Dispatchers.IO + Job())
     private var mMediaUpdater = CoroutineScope(Dispatchers.Main)
@@ -2082,14 +2079,6 @@ class OpQsHeader(context: Context) : ModPack(context) {
     }
 
     private fun initResources() {
-        try {
-            appContext = mContext.createPackageContext(
-                BuildConfig.APPLICATION_ID,
-                Context.CONTEXT_IGNORE_SECURITY
-            )
-        } catch (ignored: PackageManager.NameNotFoundException) {
-        }
-
         mContext.apply {
             colorAccent = getColorAttrDefaultColor(
                 this,

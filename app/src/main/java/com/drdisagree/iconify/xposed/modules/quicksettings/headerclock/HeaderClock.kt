@@ -5,7 +5,6 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.content.res.XResources
 import android.graphics.Bitmap
@@ -81,7 +80,6 @@ import java.util.concurrent.TimeUnit
 @SuppressLint("DiscouragedApi")
 class HeaderClock(context: Context) : ModPack(context) {
 
-    private var appContext: Context? = null
     private var showHeaderClock = false
     private var centeredClockView = false
     private var hideLandscapeHeaderClock = true
@@ -295,14 +293,6 @@ class HeaderClock(context: Context) : ModPack(context) {
     }
 
     private fun initResources(context: Context) {
-        try {
-            appContext = context.createPackageContext(
-                BuildConfig.APPLICATION_ID,
-                Context.CONTEXT_IGNORE_SECURITY
-            )
-        } catch (ignored: PackageManager.NameNotFoundException) {
-        }
-
         Handler(Looper.getMainLooper()).post {
             mUserManager = context.getSystemService(Context.USER_SERVICE) as UserManager
         }
@@ -457,13 +447,13 @@ class HeaderClock(context: Context) : ModPack(context) {
 
     private val clockView: View?
         get() {
-            if (appContext == null || !XprefsIsInitialized) return null
+            if (!XprefsIsInitialized) return null
 
             val inflater = LayoutInflater.from(appContext)
             val clockStyle: Int = Xprefs.getInt(HEADER_CLOCK_STYLE, 0)
 
             return inflater.inflate(
-                appContext!!.resources.getIdentifier(
+                appContext.resources.getIdentifier(
                     Resources.HEADER_CLOCK_LAYOUT + clockStyle,
                     "layout",
                     BuildConfig.APPLICATION_ID
@@ -587,9 +577,9 @@ class HeaderClock(context: Context) : ModPack(context) {
     private val userImage: Drawable?
         get() = if (mUserManager == null) {
             ResourcesCompat.getDrawable(
-                appContext!!.resources,
+                appContext.resources,
                 R.drawable.default_avatar,
-                appContext!!.theme
+                appContext.theme
             )
         } else try {
             val getUserIconMethod =
@@ -604,9 +594,9 @@ class HeaderClock(context: Context) : ModPack(context) {
             }
 
             ResourcesCompat.getDrawable(
-                appContext!!.resources,
+                appContext.resources,
                 R.drawable.default_avatar,
-                appContext!!.theme
+                appContext.theme
             )
         }
 
