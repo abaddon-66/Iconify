@@ -448,4 +448,21 @@ object ViewHelper {
 
         return result
     }
+
+    fun View?.hideView() {
+        if (this == null) return
+
+        fun hide() {
+            apply {
+                layoutParams.height = 0
+                layoutParams.width = 0
+                visibility = View.INVISIBLE
+            }
+        }
+
+        hide()
+        viewTreeObserver?.addOnDrawListener {
+            hide()
+        }
+    }
 }

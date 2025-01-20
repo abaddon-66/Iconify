@@ -61,6 +61,10 @@ class MyConstraintSet(context: Context) : ModPack(context) {
             callMethod(this, "constrainHeight", viewId, height)
         }
 
+        fun Any.constrainWidth(viewId: Int, height: Int) {
+            callMethod(this, "constrainWidth", viewId, height)
+        }
+
         fun Any.createBarrier(id: Int, direction: Int, margin: Int, vararg referenced: Int) {
             val method = this::class.java.getDeclaredMethod(
                 "createBarrier",

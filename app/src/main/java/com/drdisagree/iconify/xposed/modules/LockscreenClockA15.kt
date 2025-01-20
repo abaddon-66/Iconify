@@ -62,7 +62,10 @@ import com.drdisagree.iconify.xposed.modules.utils.MyConstraintSet.Companion.app
 import com.drdisagree.iconify.xposed.modules.utils.MyConstraintSet.Companion.clear
 import com.drdisagree.iconify.xposed.modules.utils.MyConstraintSet.Companion.clone
 import com.drdisagree.iconify.xposed.modules.utils.MyConstraintSet.Companion.connect
+import com.drdisagree.iconify.xposed.modules.utils.MyConstraintSet.Companion.constrainHeight
+import com.drdisagree.iconify.xposed.modules.utils.MyConstraintSet.Companion.constrainWidth
 import com.drdisagree.iconify.xposed.modules.utils.MyConstraintSet.Companion.constraintSetInstance
+import com.drdisagree.iconify.xposed.modules.utils.MyConstraintSet.Companion.setVisibility
 import com.drdisagree.iconify.xposed.modules.utils.TimeUtils
 import com.drdisagree.iconify.xposed.modules.utils.ViewHelper.applyFontRecursively
 import com.drdisagree.iconify.xposed.modules.utils.ViewHelper.applyTextMarginRecursively
@@ -70,6 +73,7 @@ import com.drdisagree.iconify.xposed.modules.utils.ViewHelper.applyTextScalingRe
 import com.drdisagree.iconify.xposed.modules.utils.ViewHelper.findViewContainsTag
 import com.drdisagree.iconify.xposed.modules.utils.ViewHelper.findViewIdContainsTag
 import com.drdisagree.iconify.xposed.modules.utils.ViewHelper.findViewWithTagAndChangeColor
+import com.drdisagree.iconify.xposed.modules.utils.ViewHelper.hideView
 import com.drdisagree.iconify.xposed.modules.utils.ViewHelper.toPx
 import com.drdisagree.iconify.xposed.modules.utils.toolkit.XposedHook.Companion.findClass
 import com.drdisagree.iconify.xposed.modules.utils.toolkit.hookConstructor
@@ -78,7 +82,6 @@ import com.drdisagree.iconify.xposed.modules.views.ArcProgressWidget.generateBit
 import com.drdisagree.iconify.xposed.utils.XPrefs.Xprefs
 import com.drdisagree.iconify.xposed.utils.XPrefs.XprefsIsInitialized
 import de.robv.android.xposed.XposedBridge.log
-import de.robv.android.xposed.XposedHelpers.callMethod
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam
 import java.io.File
 import java.util.concurrent.Executors
@@ -236,15 +239,18 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
                                 "lockscreen_clock_view",
                                 "lockscreen_clock_view_large"
                             ).map { resourceName ->
-                                rootView.findViewById<View?>(
-                                    mContext.resources.getIdentifier(
-                                        resourceName,
-                                        "id",
-                                        mContext.packageName
-                                    )
+                                val resourceId = mContext.resources.getIdentifier(
+                                    resourceName,
+                                    "id",
+                                    mContext.packageName
                                 )
+                                if (resourceId != -1) {
+                                    rootView.findViewById<View?>(resourceId)
+                                } else {
+                                    null
+                                }
                             }.forEach { view ->
-                                view.hide()
+                                view?.hideView()
                             }
 
                             registerClockUpdater()
@@ -331,23 +337,74 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
                 }
             }
 
-        val smartspaceMoveTransitionClass =
-            findClass("$SYSTEMUI_PACKAGE.keyguard.ui.view.layout.sections.transitions.ClockSizeTransition\$SmartspaceMoveTransition")
+        val smartspaceSectionClass =
+            findClass("$SYSTEMUI_PACKAGE.keyguard.ui.view.layout.sections.SmartspaceSection")
 
-        smartspaceMoveTransitionClass
-            .hookConstructor()
+        smartspaceSectionClass
+            .hookMethod("applyConstraints")
             .runAfter { param ->
                 if (!showLockscreenClock) return@runAfter
 
-                callMethod(
-                    param.thisObject,
-                    "removeTarget",
-                    mContext.resources.getIdentifier(
-                        "aod_notification_icon_container",
-                        "id",
-                        mContext.packageName
-                    )
+                val constraintSet = param.args[0]
+
+                val smartspaceViewIdNames = listOf(
+                    "bc_smartspace_view",
+                    "date_smartspace_view"
                 )
+
+                val bcSmartSpaceViewId = mContext.resources.getIdentifier(
+                    smartspaceViewIdNames[0],
+                    "id",
+                    mContext.packageName
+                )
+
+                val dateSmartSpaceViewId = mContext.resources.getIdentifier(
+                    smartspaceViewIdNames[1],
+                    "id",
+                    mContext.packageName
+                )
+
+                val smartspaceViewIds = listOf(
+                    bcSmartSpaceViewId,
+                    dateSmartSpaceViewId
+                )
+
+                // Connect bc smartspace to bottom of date smartspace
+                constraintSet.clear(
+                    bcSmartSpaceViewId,
+                    ConstraintSet.TOP
+                )
+                constraintSet.connect(
+                    bcSmartSpaceViewId,
+                    ConstraintSet.TOP,
+                    dateSmartSpaceViewId,
+                    ConstraintSet.BOTTOM
+                )
+
+                val clockView = mClockViewContainer?.findViewWithTag<View?>(
+                    ICONIFY_LOCKSCREEN_CLOCK_TAG
+                )
+
+                // Connect date smartspace to bottom of clock view
+                if (clockView != null) {
+                    constraintSet.clear(
+                        dateSmartSpaceViewId,
+                        ConstraintSet.TOP
+                    )
+                    constraintSet.connect(
+                        dateSmartSpaceViewId,
+                        ConstraintSet.TOP,
+                        clockView.id,
+                        ConstraintSet.BOTTOM
+                    )
+                }
+
+                // Hide smartspace views
+                smartspaceViewIds.forEach { viewId ->
+                    constraintSet.constrainHeight(viewId, 0)
+                    constraintSet.constrainWidth(viewId, 0)
+                    constraintSet.setVisibility(viewId, ConstraintSet.INVISIBLE)
+                }
             }
 
         try {
@@ -830,18 +887,6 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
         if (showLockscreenClock) {
             enqueueProxyCommand { proxy ->
                 proxy.runCommand(RESET_LOCKSCREEN_CLOCK_COMMAND)
-            }
-        }
-    }
-
-    private fun View?.hide() {
-        if (this == null) return
-
-        viewTreeObserver?.addOnDrawListener {
-            apply {
-                layoutParams.height = 0
-                layoutParams.width = 0
-                visibility = View.INVISIBLE
             }
         }
     }
