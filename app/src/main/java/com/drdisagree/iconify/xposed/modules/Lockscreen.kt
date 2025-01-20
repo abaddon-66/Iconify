@@ -19,8 +19,8 @@ import com.drdisagree.iconify.xposed.HookRes.Companion.resParams
 import com.drdisagree.iconify.xposed.ModPack
 import com.drdisagree.iconify.xposed.modules.utils.TimeUtils.isSecurityPatchAfter
 import com.drdisagree.iconify.xposed.modules.utils.ViewHelper.applyBlur
+import com.drdisagree.iconify.xposed.modules.utils.ViewHelper.hideView
 import com.drdisagree.iconify.xposed.modules.utils.toolkit.XposedHook.Companion.findClass
-import com.drdisagree.iconify.xposed.modules.utils.toolkit.dumpChildViews
 import com.drdisagree.iconify.xposed.modules.utils.toolkit.hookConstructor
 import com.drdisagree.iconify.xposed.modules.utils.toolkit.hookLayout
 import com.drdisagree.iconify.xposed.modules.utils.toolkit.hookMethod
@@ -127,29 +127,23 @@ class Lockscreen(context: Context) : ModPack(context) {
                                 if (!hideLockscreenLockIcon) return@postDelayed
 
                                 val rootView = entryV.parent as ViewGroup
-                                dumpChildViews(mContext, rootView)
 
                                 listOf(
                                     "device_entry_icon_bg",
                                     "device_entry_icon_fg"
                                 ).map { resourceName ->
-                                    rootView.findViewById<View?>(
-                                        mContext.resources.getIdentifier(
-                                            resourceName,
-                                            "id",
-                                            mContext.packageName
-                                        )
+                                    val resourceId = mContext.resources.getIdentifier(
+                                        resourceName,
+                                        "id",
+                                        mContext.packageName
                                     )
-                                }.forEach { view ->
-                                    view?.apply {
-                                        viewTreeObserver?.addOnDrawListener {
-                                            apply {
-                                                layoutParams.height = 0
-                                                layoutParams.width = 0
-                                                visibility = View.INVISIBLE
-                                            }
-                                        }
+                                    if (resourceId != -1) {
+                                        rootView.findViewById<View?>(resourceId)
+                                    } else {
+                                        null
                                     }
+                                }.forEach { view ->
+                                    view?.hideView()
                                 }
                             }, 1000)
                         }
