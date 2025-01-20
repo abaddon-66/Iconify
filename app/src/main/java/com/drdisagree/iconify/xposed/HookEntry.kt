@@ -13,8 +13,8 @@ import com.drdisagree.iconify.BuildConfig
 import com.drdisagree.iconify.IRootProviderProxy
 import com.drdisagree.iconify.R
 import com.drdisagree.iconify.common.Const.FRAMEWORK_PACKAGE
-import com.drdisagree.iconify.xposed.modules.utils.toolkit.XposedHook.Companion.findClass
-import com.drdisagree.iconify.xposed.modules.utils.toolkit.hookMethod
+import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.XposedHook.Companion.findClass
+import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookMethod
 import com.drdisagree.iconify.xposed.utils.BootLoopProtector
 import com.drdisagree.iconify.xposed.utils.SystemUtils
 import com.drdisagree.iconify.xposed.utils.XPrefs

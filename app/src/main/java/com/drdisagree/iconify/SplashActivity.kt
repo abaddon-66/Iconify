@@ -16,7 +16,7 @@ import com.drdisagree.iconify.utils.ModuleUtils
 import com.drdisagree.iconify.utils.RootUtils
 import com.drdisagree.iconify.utils.SystemUtils
 import com.drdisagree.iconify.utils.overlay.OverlayUtils
-import com.drdisagree.iconify.xposed.modules.utils.BitmapSubjectSegmenter
+import com.drdisagree.iconify.xposed.modules.extras.utils.BitmapSubjectSegmenter
 import com.google.android.material.color.DynamicColors
 import com.topjohnwu.superuser.Shell
 
