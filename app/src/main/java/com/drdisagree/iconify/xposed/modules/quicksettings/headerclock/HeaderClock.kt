@@ -657,7 +657,4 @@ class HeaderClock(context: Context) : ModPack(context) {
 
         mActivityStarter.callMethod("postStartActivityDismissingKeyguard", intent, 0)
     }
-
-    companion object {
-    }
 }

@@ -437,7 +437,4 @@ class Statusbar(context: Context) : ModPack(context) {
             }
         }
     }
-
-    companion object {
-    }
 }

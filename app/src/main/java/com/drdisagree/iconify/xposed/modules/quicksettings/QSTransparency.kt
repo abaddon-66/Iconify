@@ -241,7 +241,4 @@ class QSTransparency(context: Context) : ModPack(context) {
                 }
             }
     }
-
-    companion object {
-    }
 }

@@ -895,7 +895,4 @@ class QuickSettings(context: Context) : ModPack(context) {
             ) as TextView).textAlignment = TEXT_ALIGNMENT_CENTER
         }
     }
-
-    companion object {
-    }
 }

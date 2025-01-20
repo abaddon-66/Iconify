@@ -63,7 +63,4 @@ class IconUpdater(context: Context) : ModPack(context) {
                     }
             }
     }
-
-    companion object {
-    }
 }

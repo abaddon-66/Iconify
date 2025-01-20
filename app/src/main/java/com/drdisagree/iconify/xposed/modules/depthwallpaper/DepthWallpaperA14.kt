@@ -729,7 +729,4 @@ class DepthWallpaperA14(context: Context) : ModPack(context) {
             addView(view, index)
         }
     }
-
-    companion object {
-    }
 }

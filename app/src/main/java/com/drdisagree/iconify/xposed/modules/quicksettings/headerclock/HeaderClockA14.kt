@@ -1051,7 +1051,4 @@ class HeaderClockA14(context: Context) : ModPack(context) {
         } catch (ignored: Throwable) {
         }
     }
-
-    companion object {
-    }
 }
