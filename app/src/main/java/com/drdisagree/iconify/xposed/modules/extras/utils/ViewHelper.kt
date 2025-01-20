@@ -458,7 +458,7 @@ object ViewHelper {
         }
 
         hide()
-        viewTreeObserver?.addOnDrawListener {
+        viewTreeObserver?.addOnGlobalLayoutListener {
             hide()
         }
     }
