@@ -631,6 +631,5 @@ class DepthWallpaper(context: Context) : ModPack(context) {
     }
 
     companion object {
-        private val TAG = "Iconify - ${DepthWallpaper::class.java.simpleName}: "
-    }
+        }
 }

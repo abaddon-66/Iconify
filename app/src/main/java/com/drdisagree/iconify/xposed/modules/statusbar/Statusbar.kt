@@ -32,11 +32,11 @@ import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.callMethod
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.getField
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.getFieldSilently
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookMethod
+import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.log
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.setField
 import com.drdisagree.iconify.xposed.utils.XPrefs.Xprefs
 import com.drdisagree.iconify.xposed.utils.XPrefs.XprefsIsInitialized
 import de.robv.android.xposed.XC_MethodHook
-import de.robv.android.xposed.XposedBridge.log
 import de.robv.android.xposed.XposedHelpers.callStaticMethod
 import de.robv.android.xposed.callbacks.XC_InitPackageResources.InitPackageResourcesParam
 import de.robv.android.xposed.callbacks.XC_LayoutInflated
@@ -213,7 +213,7 @@ class Statusbar(context: Context) : ModPack(context) {
                 icon.callMethod("updateIconColor")
             }
         } catch (ignored: Throwable) {
-            log(TAG + ignored)
+            log(this@Statusbar, ignored)
         }
     }
 
@@ -439,6 +439,5 @@ class Statusbar(context: Context) : ModPack(context) {
     }
 
     companion object {
-        private val TAG = "Iconify - ${Statusbar::class.java.simpleName}: "
     }
 }

@@ -20,11 +20,11 @@ import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.getField
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookConstructor
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookMethod
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookMethodMatchPattern
+import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.log
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.setField
 import com.drdisagree.iconify.xposed.utils.SystemUtils
 import com.drdisagree.iconify.xposed.utils.XPrefs.Xprefs
 import com.drdisagree.iconify.xposed.utils.XPrefs.XprefsIsInitialized
-import de.robv.android.xposed.XposedBridge.log
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam
 
 @SuppressLint("DiscouragedApi")
@@ -101,7 +101,7 @@ class QSBlackThemeA13(context: Context) : ModPack(context) {
                             (param.thisObject.getField("mNumberContainer") as View)
                                 .background.setTint(colorText!!)
                         } catch (throwable: Throwable) {
-                            log(TAG + throwable)
+                            log(this@QSBlackThemeA13, throwable)
                         }
                     }
                 }
@@ -136,7 +136,7 @@ class QSBlackThemeA13(context: Context) : ModPack(context) {
 
                         setHeaderComponentsColor(mView, iconManager, batteryIcon)
                     } catch (throwable: Throwable) {
-                        log(TAG + throwable)
+                        log(this@QSBlackThemeA13, throwable)
                     }
                 }
 
@@ -167,7 +167,7 @@ class QSBlackThemeA13(context: Context) : ModPack(context) {
 
                         icon.imageTintList = ColorStateList.valueOf(Color.WHITE)
                     } catch (throwable: Throwable) {
-                        log(TAG + throwable)
+                        log(this@QSBlackThemeA13, throwable)
                     }
                 }
         }
@@ -183,7 +183,7 @@ class QSBlackThemeA13(context: Context) : ModPack(context) {
                         param.result = colorText
                     }
                 } catch (throwable: Throwable) {
-                    log(TAG + throwable)
+                    log(this@QSBlackThemeA13, throwable)
                 }
             }
 
@@ -198,7 +198,7 @@ class QSBlackThemeA13(context: Context) : ModPack(context) {
                         param.result = colorText
                     }
                 } catch (throwable: Throwable) {
-                    log(TAG + throwable)
+                    log(this@QSBlackThemeA13, throwable)
                 }
             }
 
@@ -213,7 +213,7 @@ class QSBlackThemeA13(context: Context) : ModPack(context) {
                     (param.thisObject.getField("mIcon") as ImageView).imageTintList =
                         ColorStateList.valueOf(colorText!!)
                 } catch (throwable: Throwable) {
-                    log(TAG + throwable)
+                    log(this@QSBlackThemeA13, throwable)
                 }
             }
 
@@ -232,7 +232,7 @@ class QSBlackThemeA13(context: Context) : ModPack(context) {
                         ) as ImageView).imageTintList =
                             ColorStateList.valueOf(colorText!!)
                     } catch (throwable1: Throwable) {
-                        log(TAG + throwable1)
+                        log(this@QSBlackThemeA13, throwable1)
                     }
                 }
             }
@@ -247,7 +247,7 @@ class QSBlackThemeA13(context: Context) : ModPack(context) {
                     (param.thisObject.getField("mIcon") as ImageView).imageTintList =
                         ColorStateList.valueOf(colorText!!)
                 } catch (throwable: Throwable) {
-                    log(TAG + throwable)
+                    log(this@QSBlackThemeA13, throwable)
                 }
             }
 
@@ -263,7 +263,7 @@ class QSBlackThemeA13(context: Context) : ModPack(context) {
                         param.thisObject.setField("mTint", colorText)
                     }
                 } catch (throwable: Throwable) {
-                    log(TAG + throwable)
+                    log(this@QSBlackThemeA13, throwable)
                 }
             }
 
@@ -281,7 +281,7 @@ class QSBlackThemeA13(context: Context) : ModPack(context) {
                     try {
                         (mClockViewQSHeader as TextView).setTextColor(Color.WHITE)
                     } catch (throwable: Throwable) {
-                        log(TAG + throwable)
+                        log(this@QSBlackThemeA13, throwable)
                     }
                 }
             }
@@ -353,7 +353,7 @@ class QSBlackThemeA13(context: Context) : ModPack(context) {
                     )
                     chevron.imageTintList = ColorStateList.valueOf(colorText!!)
                 } catch (throwable: Throwable) {
-                    log(TAG + throwable)
+                    log(this@QSBlackThemeA13, throwable)
                 }
             }
 
@@ -397,7 +397,7 @@ class QSBlackThemeA13(context: Context) : ModPack(context) {
         try {
             mBehindColors = gradientColorsClass.getDeclaredConstructor().newInstance()
         } catch (throwable: Throwable) {
-            log(TAG + throwable)
+            log(this@QSBlackThemeA13, throwable)
         }
 
         scrimControllerClass
@@ -417,7 +417,7 @@ class QSBlackThemeA13(context: Context) : ModPack(context) {
                         animateBehindScrim
                     )
                 } catch (throwable: Throwable) {
-                    log(TAG + throwable)
+                    log(this@QSBlackThemeA13, throwable)
                 }
             }
 
@@ -460,7 +460,7 @@ class QSBlackThemeA13(context: Context) : ModPack(context) {
                         contrast > 4.5
                     )
                 } catch (throwable: Throwable) {
-                    log(TAG + throwable)
+                    log(this@QSBlackThemeA13, throwable)
                 }
             }
 
@@ -476,7 +476,7 @@ class QSBlackThemeA13(context: Context) : ModPack(context) {
                         param.thisObject.setField("mBehindTint", Color.BLACK)
                     }
                 } catch (throwable: Throwable) {
-                    log(TAG + throwable)
+                    log(this@QSBlackThemeA13, throwable)
                 }
             }
 
@@ -605,7 +605,7 @@ class QSBlackThemeA13(context: Context) : ModPack(context) {
                         ).newInstance(0x40000000 or 0x0004 or 0x0100 or -0x80000000 or 0x0200)
                     )
                 } catch (throwable: Throwable) {
-                    log(TAG + throwable)
+                    log(this@QSBlackThemeA13, throwable)
                 }
             }
     }
@@ -635,7 +635,7 @@ class QSBlackThemeA13(context: Context) : ModPack(context) {
                 ) * 0.8f
             ) shl 24)
         } catch (throwable: Throwable) {
-            log(TAG + throwable)
+            log(this@QSBlackThemeA13, throwable)
         }
     }
 
@@ -701,12 +701,11 @@ class QSBlackThemeA13(context: Context) : ModPack(context) {
 
             batteryIcon.callMethod("updateColors", textColor, textColor, textColor)
         } catch (throwable: Throwable) {
-            log(TAG + throwable)
+            log(this@QSBlackThemeA13, throwable)
         }
     }
 
     companion object {
-        private val TAG = "Iconify - ${QSBlackThemeA13::class.java.simpleName}: "
         private var blackQSHeaderEnabled = false
     }
 }

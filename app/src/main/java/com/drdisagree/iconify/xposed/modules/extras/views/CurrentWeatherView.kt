@@ -23,7 +23,7 @@ import com.drdisagree.iconify.xposed.HookRes.Companion.modRes
 import com.drdisagree.iconify.xposed.modules.extras.callbacks.ThemeChange
 import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.findViewContainsTag
 import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.findViewWithTagAndChangeColor
-import de.robv.android.xposed.XposedBridge.log
+import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.log
 import java.util.Locale
 import java.util.function.Consumer
 
@@ -170,7 +170,7 @@ class CurrentWeatherView(context: Context, name: String) : LinearLayout(context)
 
     override fun weatherError(errorReason: Int) {
         // Show only Disabled and Permission errors
-        log(TAG + "weatherError " + errorReason)
+        log(this@CurrentWeatherView, "weatherError: $errorReason")
         if (errorReason == OmniJawsClient.EXTRA_ERROR_DISABLED) {
             mWeatherInfo = null
         }
@@ -251,7 +251,7 @@ class CurrentWeatherView(context: Context, name: String) : LinearLayout(context)
                 mWindLayout!!.visibility = if (mShowWeatherWind) VISIBLE else GONE
             }
         } catch (e: Exception) {
-            log(TAG + "Weather query failed" + e.message)
+            log(this@CurrentWeatherView, "Weather query failed" + e.message)
             Log.e(TAG, "Weather query failed", e)
         }
     }

@@ -10,7 +10,7 @@ import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.XposedHook.Com
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.callMethod
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookConstructor
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookMethod
-import de.robv.android.xposed.XposedBridge.log
+import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.log
 import de.robv.android.xposed.XposedHelpers.callStaticMethod
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam
 
@@ -58,13 +58,12 @@ class IconUpdater(context: Context) : ModPack(context) {
                                 }
                             }
                         } catch (throwable: Throwable) {
-                            log(TAG + throwable)
+                            log(this@IconUpdater, throwable)
                         }
                     }
             }
     }
 
     companion object {
-        private val TAG = "Iconify - ${IconUpdater::class.java.simpleName}: "
     }
 }

@@ -3,7 +3,6 @@ package com.drdisagree.iconify.xposed.modules.extras.utils.toolkit
 import android.content.res.XResources
 import de.robv.android.xposed.XC_MethodHook
 import de.robv.android.xposed.XC_MethodReplacement
-import de.robv.android.xposed.XposedBridge
 import de.robv.android.xposed.XposedBridge.hookAllConstructors
 import de.robv.android.xposed.XposedBridge.hookAllMethods
 import de.robv.android.xposed.XposedBridge.hookMethod
@@ -18,8 +17,6 @@ import java.util.regex.Pattern
 
 class XposedHook {
     companion object {
-        val TAG =
-            "Iconify - ${XposedHook::class.java.simpleName}: "
         lateinit var loadPackageParam: XC_LoadPackage.LoadPackageParam
 
         fun init(loadPackageParam: XC_LoadPackage.LoadPackageParam) {
@@ -52,9 +49,9 @@ class XposedHook {
                 }
             } else if (!suppressError) {
                 if (classNames.size == 1) {
-                    XposedBridge.log(TAG + "Class not found: ${classNames[0]}")
+                    log(XposedHook, "Class not found: ${classNames[0]}")
                 } else {
-                    XposedBridge.log(TAG + "None of the classes were found: ${classNames.joinToString()}")
+                    log(XposedHook, "None of the classes were found: ${classNames.joinToString()}")
                 }
             }
 
@@ -137,7 +134,10 @@ class MethodHookHelper(
                         hookMethod(method, callback)
                     } ?: run {
                         if (printError && methodNames!!.size == 1) {
-                            XposedBridge.log(XposedHook.TAG + "Method not found: $methodName${if (clazz?.simpleName != null) " in ${clazz.simpleName}" else ""}")
+                            log(
+                                XposedHook,
+                                "Method not found: $methodName${if (clazz?.simpleName != null) " in ${clazz.simpleName}" else ""}"
+                            )
                         }
                     }
                 }
@@ -166,7 +166,10 @@ class MethodHookHelper(
                         hookMethodBefore(method, callback)
                     } ?: run {
                         if (printError && methodNames!!.size == 1) {
-                            XposedBridge.log(XposedHook.TAG + "Method not found: $methodName${if (clazz?.simpleName != null) " in ${clazz.simpleName}" else ""}")
+                            log(
+                                XposedHook,
+                                "Method not found: $methodName${if (clazz?.simpleName != null) " in ${clazz.simpleName}" else ""}"
+                            )
                         }
                     }
                 }
@@ -195,7 +198,10 @@ class MethodHookHelper(
                         hookMethodAfter(method, callback)
                     } ?: run {
                         if (printError && methodNames!!.size == 1) {
-                            XposedBridge.log(XposedHook.TAG + "Method not found: $methodName${if (clazz?.simpleName != null) " in ${clazz.simpleName}" else ""}")
+                            log(
+                                XposedHook,
+                                "Method not found: $methodName${if (clazz?.simpleName != null) " in ${clazz.simpleName}" else ""}"
+                            )
                         }
                     }
                 }
@@ -222,7 +228,10 @@ class MethodHookHelper(
                         hookMethodReplace(method, callback)
                     } ?: run {
                         if (printError && methodNames!!.size == 1) {
-                            XposedBridge.log(XposedHook.TAG + "Method not found: $methodName${if (clazz?.simpleName != null) " in ${clazz.simpleName}" else ""}")
+                            log(
+                                XposedHook,
+                                "Method not found: $methodName${if (clazz?.simpleName != null) " in ${clazz.simpleName}" else ""}"
+                            )
                         }
                     }
                 }
@@ -467,7 +476,7 @@ class LayoutHookHelper(private val xResources: XResources) {
             )
         } catch (throwable: Throwable) {
             if (printError) {
-                XposedBridge.log(XposedHook.TAG + throwable)
+                log(XposedHook, throwable)
             }
         }
 

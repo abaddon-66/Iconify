@@ -51,10 +51,10 @@ import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.callMethod
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.getField
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookConstructor
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookMethod
+import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.log
 import com.drdisagree.iconify.xposed.modules.lockscreen.Lockscreen.Companion.isComposeLockscreen
 import com.drdisagree.iconify.xposed.utils.XPrefs.Xprefs
 import com.drdisagree.iconify.xposed.utils.XPrefs.XprefsIsInitialized
-import de.robv.android.xposed.XposedBridge.log
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam
 import java.io.ByteArrayOutputStream
 import java.io.File
@@ -143,7 +143,7 @@ class DepthWallpaperA14(context: Context) : ModPack(context) {
 
                         ACTION_EXTRACT_FAILURE -> {
                             mWallpaperForegroundCacheValid = false
-                            log("Subject extraction failed\n${intent.getStringExtra("error")}")
+                            log(this@DepthWallpaperA14, "Subject extraction failed\n${intent.getStringExtra("error")}")
 
                             Handler(Looper.getMainLooper()).post {
                                 Toast.makeText(
@@ -394,7 +394,7 @@ class DepthWallpaperA14(context: Context) : ModPack(context) {
                             out.flush()
                             out.close()
                         } catch (throwable: IOException) {
-                            log(TAG + throwable)
+                            log(this@DepthWallpaperA14, throwable)
                         }
 
                         if (!mLayersCreated) {
@@ -731,6 +731,5 @@ class DepthWallpaperA14(context: Context) : ModPack(context) {
     }
 
     companion object {
-        private val TAG = "Iconify - ${DepthWallpaperA14::class.java.simpleName}: "
     }
 }

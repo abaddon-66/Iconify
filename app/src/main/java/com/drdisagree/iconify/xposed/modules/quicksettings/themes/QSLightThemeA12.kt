@@ -14,11 +14,11 @@ import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.callMethod
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.getField
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookConstructor
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookMethod
+import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.log
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.setField
 import com.drdisagree.iconify.xposed.utils.SystemUtils
 import com.drdisagree.iconify.xposed.utils.XPrefs.Xprefs
 import com.drdisagree.iconify.xposed.utils.XPrefs.XprefsIsInitialized
-import de.robv.android.xposed.XposedBridge.log
 import de.robv.android.xposed.XposedHelpers.callStaticMethod
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam
 
@@ -66,7 +66,7 @@ class QSLightThemeA12(context: Context) : ModPack(context) {
         try {
             mBehindColors = gradientColorsClass.getDeclaredConstructor().newInstance()
         } catch (throwable: Throwable) {
-            log(TAG + throwable)
+            log(this@QSLightThemeA12, throwable)
         }
 
         scrimControllerClass
@@ -75,7 +75,7 @@ class QSLightThemeA12(context: Context) : ModPack(context) {
                 try {
                     mBehindColors = gradientColorsClass.getDeclaredConstructor().newInstance()
                 } catch (throwable: Throwable) {
-                    log(TAG + throwable)
+                    log(this@QSLightThemeA12, throwable)
                 }
             }
 
@@ -96,7 +96,7 @@ class QSLightThemeA12(context: Context) : ModPack(context) {
                         animateBehindScrim
                     )
                 } catch (throwable: Throwable) {
-                    log(TAG + throwable)
+                    log(this@QSLightThemeA12, throwable)
                 }
             }
 
@@ -136,7 +136,7 @@ class QSLightThemeA12(context: Context) : ModPack(context) {
 
                     mBehindColors.callMethod("setSupportsDarkText", contrast > 4.5)
                 } catch (throwable: Throwable) {
-                    log(TAG + throwable)
+                    log(this@QSLightThemeA12, throwable)
                 }
             }
 
@@ -156,7 +156,7 @@ class QSLightThemeA12(context: Context) : ModPack(context) {
 
                     param.thisObject.setField("iconColor", iconColor)
                 } catch (throwable: Throwable) {
-                    log(TAG + throwable)
+                    log(this@QSLightThemeA12, throwable)
                 }
             }
 
@@ -173,7 +173,7 @@ class QSLightThemeA12(context: Context) : ModPack(context) {
                         param.thisObject.setField("mBehindTint", Color.TRANSPARENT)
                     }
                 } catch (throwable: Throwable) {
-                    log(TAG + throwable)
+                    log(this@QSLightThemeA12, throwable)
                 }
             }
 
@@ -281,7 +281,7 @@ class QSLightThemeA12(context: Context) : ModPack(context) {
                         ).newInstance(0x40000000 or 0x0004 or 0x0100 or -0x80000000 or 0x0200)
                     )
                 } catch (throwable: Throwable) {
-                    log(TAG + throwable)
+                    log(this@QSLightThemeA12, throwable)
                 }
             }
 
@@ -320,7 +320,6 @@ class QSLightThemeA12(context: Context) : ModPack(context) {
     }
 
     companion object {
-        private val TAG = "Iconify - ${QSLightThemeA12::class.java.simpleName}: "
         private var lightQSHeaderEnabled = false
         private var dualToneQSEnabled = false
     }

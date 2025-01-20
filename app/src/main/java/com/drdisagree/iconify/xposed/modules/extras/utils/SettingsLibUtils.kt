@@ -4,7 +4,7 @@ import android.content.Context
 import android.content.res.ColorStateList
 import com.drdisagree.iconify.xposed.ModPack
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.XposedHook.Companion.findClass
-import de.robv.android.xposed.XposedBridge.log
+import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.log
 import de.robv.android.xposed.XposedHelpers.callStaticMethod
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam
 
@@ -20,7 +20,6 @@ class SettingsLibUtils(context: Context) : ModPack(context) {
     }
 
     companion object {
-        private val TAG = "Iconify - ${SettingsLibUtils::class.java.simpleName}: "
         private var UtilsClass: Class<*>? = null
 
         fun getColorAttr(resID: Int, context: Context): ColorStateList {
@@ -107,7 +106,7 @@ class SettingsLibUtils(context: Context) : ModPack(context) {
                                 context
                             ) as Int
                         } catch (throwable: Throwable) {
-                            log(TAG + throwable)
+                            log(SettingsLibUtils, throwable)
                             defValue
                         }
                     }
@@ -138,7 +137,7 @@ class SettingsLibUtils(context: Context) : ModPack(context) {
                         resID
                     ) as ColorStateList
                 } catch (throwable: Throwable) {
-                    log(TAG + throwable)
+                    log(SettingsLibUtils, throwable)
                     ColorStateList.valueOf(0)
                 }
             }

@@ -567,6 +567,5 @@ class Miscellaneous(context: Context) : ModPack(context) {
     }
 
     companion object {
-        private val TAG = "Iconify - ${Miscellaneous::class.java.simpleName}: "
-    }
+        }
 }

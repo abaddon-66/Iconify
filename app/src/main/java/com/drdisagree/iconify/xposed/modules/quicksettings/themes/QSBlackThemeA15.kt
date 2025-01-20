@@ -1,6 +1,5 @@
 package com.drdisagree.iconify.xposed.modules.quicksettings.themes
 
-
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.ColorStateList
@@ -27,12 +26,12 @@ import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.getField
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookConstructor
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookMethod
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookMethodMatchPattern
+import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.log
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.setField
 import com.drdisagree.iconify.xposed.utils.SystemUtils
 import com.drdisagree.iconify.xposed.utils.XPrefs.Xprefs
 import com.drdisagree.iconify.xposed.utils.XPrefs.XprefsIsInitialized
 import de.robv.android.xposed.XC_MethodHook
-import de.robv.android.xposed.XposedBridge.log
 import de.robv.android.xposed.XposedHelpers.callStaticMethod
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam
 
@@ -229,7 +228,7 @@ class QSBlackThemeA15(context: Context) : ModPack(context) {
 
                     setHeaderComponentsColor(mView, iconManager, batteryIcon)
                 } catch (throwable: Throwable) {
-                    log(TAG + throwable)
+                    log(this@QSBlackThemeA15, throwable)
                 }
             }
 
@@ -387,7 +386,7 @@ class QSBlackThemeA15(context: Context) : ModPack(context) {
                         param.result = colorText
                     }
                 } catch (throwable: Throwable) {
-                    log(TAG + throwable)
+                    log(this@QSBlackThemeA15, throwable)
                 }
             }
 
@@ -403,7 +402,7 @@ class QSBlackThemeA15(context: Context) : ModPack(context) {
                         param.result = colorText
                     }
                 } catch (throwable: Throwable) {
-                    log(TAG + throwable)
+                    log(this@QSBlackThemeA15, throwable)
                 }
             }
 
@@ -424,7 +423,7 @@ class QSBlackThemeA15(context: Context) : ModPack(context) {
 
                     mIcon.imageTintList = ColorStateList.valueOf(iconColor)
                 } catch (throwable: Throwable) {
-                    log(TAG + throwable)
+                    log(this@QSBlackThemeA15, throwable)
                 }
             }
 
@@ -457,7 +456,7 @@ class QSBlackThemeA15(context: Context) : ModPack(context) {
                     val mIcon = param.thisObject.getField("mIcon") as ImageView
                     mIcon.imageTintList = ColorStateList.valueOf(colorText!!)
                 } catch (throwable: Throwable) {
-                    log(TAG + throwable)
+                    log(this@QSBlackThemeA15, throwable)
                 }
             }
 
@@ -473,7 +472,7 @@ class QSBlackThemeA15(context: Context) : ModPack(context) {
                         param.thisObject.setField("mTint", colorText)
                     }
                 } catch (throwable: Throwable) {
-                    log(TAG + throwable)
+                    log(this@QSBlackThemeA15, throwable)
                 }
             }
 
@@ -490,7 +489,7 @@ class QSBlackThemeA15(context: Context) : ModPack(context) {
                     try {
                         (mClockViewQSHeader as TextView).setTextColor(Color.WHITE)
                     } catch (throwable: Throwable) {
-                        log(TAG + throwable)
+                        log(this@QSBlackThemeA15, throwable)
                     }
                 }
             }
@@ -591,7 +590,7 @@ class QSBlackThemeA15(context: Context) : ModPack(context) {
                     )
                     chevron.imageTintList = ColorStateList.valueOf(colorText!!)
                 } catch (throwable: Throwable) {
-                    log(TAG + throwable)
+                    log(this@QSBlackThemeA15, throwable)
                 }
             }
 
@@ -758,14 +757,14 @@ class QSBlackThemeA15(context: Context) : ModPack(context) {
                         readonlyStateFlowInstance
                     )
                 } catch (throwable: Throwable) {
-                    log(TAG + throwable)
+                    log(this@QSBlackThemeA15, throwable)
                 }
             }
 
         try {
             mBehindColors = gradientColorsClass.getDeclaredConstructor().newInstance()
         } catch (throwable: Throwable) {
-            log(TAG + throwable)
+            log(this@QSBlackThemeA15, throwable)
         }
 
         scrimControllerClass
@@ -785,7 +784,7 @@ class QSBlackThemeA15(context: Context) : ModPack(context) {
                         animateBehindScrim
                     )
                 } catch (throwable: Throwable) {
-                    log(TAG + throwable)
+                    log(this@QSBlackThemeA15, throwable)
                 }
             }
 
@@ -825,7 +824,7 @@ class QSBlackThemeA15(context: Context) : ModPack(context) {
 
                     mBehindColors.callMethod("setSupportsDarkText", contrast > 4.5)
                 } catch (throwable: Throwable) {
-                    log(TAG + throwable)
+                    log(this@QSBlackThemeA15, throwable)
                 }
             }
 
@@ -841,7 +840,7 @@ class QSBlackThemeA15(context: Context) : ModPack(context) {
                         param.thisObject.setField("mBehindTint", Color.BLACK)
                     }
                 } catch (throwable: Throwable) {
-                    log(TAG + throwable)
+                    log(this@QSBlackThemeA15, throwable)
                 }
             }
 
@@ -975,7 +974,7 @@ class QSBlackThemeA15(context: Context) : ModPack(context) {
                         ).newInstance(0x40000000 or 0x0004 or 0x0100 or -0x80000000 or 0x0200)
                     )
                 } catch (throwable: Throwable) {
-                    log(TAG + throwable)
+                    log(this@QSBlackThemeA15, throwable)
                 }
             }
     }
@@ -1021,7 +1020,7 @@ class QSBlackThemeA15(context: Context) : ModPack(context) {
                 ) * 0.8f
             ) shl 24)
         } catch (throwable: Throwable) {
-            log(TAG + throwable)
+            log(this@QSBlackThemeA15, throwable)
         }
     }
 
@@ -1102,7 +1101,7 @@ class QSBlackThemeA15(context: Context) : ModPack(context) {
 
             batteryIcon.callMethod("updateColors", textColor, textColor, textColor)
         } catch (throwable: Throwable) {
-            log(TAG + throwable)
+            log(this@QSBlackThemeA15, throwable)
         }
     }
 
@@ -1173,7 +1172,6 @@ class QSBlackThemeA15(context: Context) : ModPack(context) {
     }
 
     companion object {
-        private val TAG = "Iconify - ${QSBlackThemeA15::class.java.simpleName}: "
         private var blackQSHeaderEnabled = false
         private const val PM_LITE_BACKGROUND_CODE = 1
     }

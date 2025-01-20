@@ -216,6 +216,5 @@ class VolumePanel(context: Context) : ModPack(context) {
     }
 
     companion object {
-        private val TAG = "Iconify - ${VolumePanel::class.java.simpleName}: "
-    }
+        }
 }

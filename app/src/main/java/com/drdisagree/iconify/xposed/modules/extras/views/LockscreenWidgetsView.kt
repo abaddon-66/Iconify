@@ -51,9 +51,9 @@ import com.drdisagree.iconify.xposed.modules.extras.utils.ActivityLauncherUtils
 import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.toPx
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.callMethod
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.getField
+import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.log
 import com.drdisagree.iconify.xposed.modules.lockscreen.LockscreenWidgets.Companion.LaunchableImageView
 import com.drdisagree.iconify.xposed.modules.lockscreen.LockscreenWidgets.Companion.LaunchableLinearLayout
-import de.robv.android.xposed.XposedBridge.log
 import java.lang.reflect.Method
 import java.util.Locale
 import kotlin.math.abs
@@ -1117,7 +1117,7 @@ class LockscreenWidgetsView(context: Context, activityStarter: Any?) :
             updateTorchButtonState()
             vibrate(1)
         } catch (e: Exception) {
-            log(TAG + "toggleFlashlight error: " + e.message)
+            log(this@LockscreenWidgetsView, "toggleFlashlight error: " + e.message)
         }
     }
 
@@ -1189,7 +1189,7 @@ class LockscreenWidgetsView(context: Context, activityStarter: Any?) :
                 // Safely handle the return value
                 return if (result is Boolean) result else false
             } catch (e: Exception) {
-                log(TAG + "isMobileDataEnabled error: " + e.message)
+                log(this@LockscreenWidgetsView, "isMobileDataEnabled error: " + e.message)
                 return false
             }
         }
@@ -1311,7 +1311,7 @@ class LockscreenWidgetsView(context: Context, activityStarter: Any?) :
         try {
             mCameraId = mCameraManager.cameraIdList[0]
         } catch (e: Throwable) {
-            log(TAG + "mCameraId error: " + e.message)
+            log(this@LockscreenWidgetsView, "mCameraId error: " + e.message)
         }
 
         val container = LinearLayout(context)
@@ -1580,7 +1580,7 @@ class LockscreenWidgetsView(context: Context, activityStarter: Any?) :
                 method.invoke(wifiManager) as Int
             return actualState == HOTSPOT_ENABLED
         } catch (t: Throwable) {
-            log(TAG + "isHotspotEnabled error: " + t.message)
+            log(this@LockscreenWidgetsView, "isHotspotEnabled error: " + t.message)
         }
         return false
     }
@@ -1596,7 +1596,7 @@ class LockscreenWidgetsView(context: Context, activityStarter: Any?) :
                 }
             }
         } catch (t: Throwable) {
-            log(TAG + "getHotspotSSID error: " + t.message)
+            log(this@LockscreenWidgetsView, "getHotspotSSID error: " + t.message)
         }
         return ""
     }
@@ -1729,7 +1729,7 @@ class LockscreenWidgetsView(context: Context, activityStarter: Any?) :
                 TORCH_INACTIVE -> getDrawable(TORCH_A12, FRAMEWORK_PACKAGE)
 
                 else -> {
-                    log(TAG + "getDrawable $drawableRes from $pkg error $t")
+                    log(this@LockscreenWidgetsView, "getDrawable $drawableRes from $pkg error $t")
                     return null
                 }
             }
@@ -1766,7 +1766,7 @@ class LockscreenWidgetsView(context: Context, activityStarter: Any?) :
                 }
             }
 
-            log(TAG + "getString $stringRes from $pkg error $t")
+            log(this@LockscreenWidgetsView, "getString $stringRes from $pkg error $t")
             return ""
         }
     }
@@ -1812,8 +1812,6 @@ class LockscreenWidgetsView(context: Context, activityStarter: Any?) :
     }
 
     companion object {
-        private val TAG = "Iconify - ${LockscreenWidgetsView::class.java.simpleName}: "
-
         const val HOTSPOT_ENABLED = 13
 
         const val BT_ICON: String = "qs_bluetooth_icon_on"

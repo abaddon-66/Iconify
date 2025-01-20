@@ -35,10 +35,10 @@ import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.XposedHook.Com
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.callMethod
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.getField
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookMethod
+import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.log
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.setField
 import com.drdisagree.iconify.xposed.utils.XPrefs.Xprefs
 import com.drdisagree.iconify.xposed.utils.XPrefs.XprefsIsInitialized
-import de.robv.android.xposed.XposedBridge.log
 import de.robv.android.xposed.XposedHelpers.callMethod
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam
 import java.io.File
@@ -249,7 +249,7 @@ class HeaderImage(context: Context) : ModPack(context) {
             }
 
             else -> {
-                log(TAG + "Invalid layoutParams: $layoutParams")
+                log(this@HeaderImage, "Invalid layoutParams: $layoutParams")
             }
         }
 
@@ -301,6 +301,5 @@ class HeaderImage(context: Context) : ModPack(context) {
     }
 
     companion object {
-        private val TAG = "Iconify - ${HeaderImage::class.java.simpleName}: "
-    }
+        }
 }

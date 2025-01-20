@@ -137,13 +137,13 @@ import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.getFieldSilent
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookConstructor
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookMethod
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookMethodMatchPattern
+import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.log
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.setExtraField
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.setField
 import com.drdisagree.iconify.xposed.utils.XPrefs.Xprefs
 import com.drdisagree.iconify.xposed.utils.XPrefs.XprefsIsInitialized
 import de.robv.android.xposed.XC_MethodHook
 import de.robv.android.xposed.XC_MethodHook.MethodHookParam
-import de.robv.android.xposed.XposedBridge.log
 import de.robv.android.xposed.XposedHelpers.getBooleanField
 import de.robv.android.xposed.XposedHelpers.setStaticIntField
 import de.robv.android.xposed.callbacks.XC_InitPackageResources.InitPackageResourcesParam
@@ -528,7 +528,7 @@ class BatteryStyleManager(context: Context) : ModPack(context) {
                         updateBatteryResources(param)
                     }
                 } catch (throwable: Throwable) {
-                    log(TAG + throwable)
+                    log(this@BatteryStyleManager, throwable)
                 }
             }
 
@@ -658,7 +658,7 @@ class BatteryStyleManager(context: Context) : ModPack(context) {
             scaleBatteryMeterViews(batteryIcon)
         } catch (ignored: NoSuchFieldError) {
         } catch (throwable: Throwable) {
-            log(TAG + throwable)
+            log(this@BatteryStyleManager, throwable)
         }
     }
 
@@ -711,7 +711,7 @@ class BatteryStyleManager(context: Context) : ModPack(context) {
         try {
             mIsIncompatibleCharging = thisObject.getField("mIsIncompatibleCharging") as Boolean
         } catch (throwable: Throwable) {
-            log(TAG + throwable)
+            log(this@BatteryStyleManager, throwable)
         }
 
         return mCharging && !mIsIncompatibleCharging
@@ -1251,12 +1251,11 @@ class BatteryStyleManager(context: Context) : ModPack(context) {
             mBatteryIconView.setLayoutParams(scaledLayoutParams)
             mBatteryIconView.setVisibility(if (mHideBattery) View.GONE else View.VISIBLE)
         } catch (throwable: Throwable) {
-            log(TAG + throwable)
+            log(this@BatteryStyleManager, throwable)
         }
     }
 
     companion object {
-        private val TAG = "Iconify - ${BatteryStyleManager::class.java.simpleName}: "
         private val batteryViews = ArrayList<View>()
         private var mBatteryStyle = 0
         private var mShowPercentInside = false

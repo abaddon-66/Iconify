@@ -151,8 +151,6 @@ class Lockscreen(context: Context) : ModPack(context) {
     }
 
     companion object {
-        private val TAG = "Iconify - ${Lockscreen::class.java.simpleName}: "
-
         val isComposeLockscreen = findClass(
             "$SYSTEMUI_PACKAGE.keyguard.ui.view.layout.sections.AodBurnInLayer",
             suppressError = true

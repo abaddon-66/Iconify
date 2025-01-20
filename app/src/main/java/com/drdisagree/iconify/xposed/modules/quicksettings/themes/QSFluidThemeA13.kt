@@ -35,13 +35,13 @@ import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.getField
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.getFieldSilently
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookConstructor
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookMethod
+import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.log
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.setField
 import com.drdisagree.iconify.xposed.modules.extras.views.RoundedCornerProgressDrawable
 import com.drdisagree.iconify.xposed.utils.SystemUtils
 import com.drdisagree.iconify.xposed.utils.XPrefs.Xprefs
 import com.drdisagree.iconify.xposed.utils.XPrefs.XprefsIsInitialized
 import de.robv.android.xposed.XC_MethodHook
-import de.robv.android.xposed.XposedBridge.log
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam
 import kotlin.math.max
 import kotlin.math.min
@@ -162,7 +162,7 @@ class QSFluidThemeA13(context: Context) : ModPack(context) {
                         }
                     }
                 } catch (throwable: Throwable) {
-                    log(TAG + throwable)
+                    log(this@QSFluidThemeA13, throwable)
                 }
             }
 
@@ -323,7 +323,7 @@ class QSFluidThemeA13(context: Context) : ModPack(context) {
                     } catch (ignored: Throwable) {
                     }
                 } catch (throwable: Throwable) {
-                    log(TAG + throwable)
+                    log(this@QSFluidThemeA13, throwable)
                 }
             }
 
@@ -340,7 +340,7 @@ class QSFluidThemeA13(context: Context) : ModPack(context) {
                     (param.thisObject.getField("mIcon") as ImageView).backgroundTintList =
                         ColorStateList.valueOf(colorActiveAlpha[0])
                 } catch (throwable: Throwable) {
-                    log(TAG + throwable)
+                    log(this@QSFluidThemeA13, throwable)
                 }
             }
 
@@ -386,7 +386,7 @@ class QSFluidThemeA13(context: Context) : ModPack(context) {
                     (param.thisObject.getField("mIcon") as ImageView).backgroundTintList =
                         ColorStateList.valueOf(colorActiveAlpha[0])
                 } catch (throwable: Throwable) {
-                    log(TAG + throwable)
+                    log(this@QSFluidThemeA13, throwable)
                 }
             }
 
@@ -402,7 +402,7 @@ class QSFluidThemeA13(context: Context) : ModPack(context) {
 
                     mBrightnessMirror.background.alpha = (INACTIVE_ALPHA * 255).toInt()
                 } catch (throwable: Throwable) {
-                    log(TAG + throwable)
+                    log(this@QSFluidThemeA13, throwable)
                 }
             }
 
@@ -429,7 +429,7 @@ class QSFluidThemeA13(context: Context) : ModPack(context) {
                         param.result = colorActive[0]
                     }
                 } catch (throwable: Throwable) {
-                    log(TAG + throwable)
+                    log(this@QSFluidThemeA13, throwable)
                 }
             }
 
@@ -444,7 +444,7 @@ class QSFluidThemeA13(context: Context) : ModPack(context) {
                         param.result = colorActive[0]
                     }
                 } catch (throwable: Throwable) {
-                    log(TAG + throwable)
+                    log(this@QSFluidThemeA13, throwable)
                 }
             }
 
@@ -494,7 +494,7 @@ class QSFluidThemeA13(context: Context) : ModPack(context) {
                         colorActive[0]
                     )
                 } catch (throwable: Throwable) {
-                    log(TAG + throwable)
+                    log(this@QSFluidThemeA13, throwable)
                 }
 
                 try {
@@ -521,7 +521,7 @@ class QSFluidThemeA13(context: Context) : ModPack(context) {
                         }
                     }
                 } catch (throwable: Throwable) {
-                    log(TAG + throwable)
+                    log(this@QSFluidThemeA13, throwable)
                 }
             }
 
@@ -571,7 +571,7 @@ class QSFluidThemeA13(context: Context) : ModPack(context) {
                         colorActive[0]
                     )
                 } catch (throwable: Throwable) {
-                    log(TAG + throwable)
+                    log(this@QSFluidThemeA13, throwable)
                 }
             }
 
@@ -849,7 +849,6 @@ class QSFluidThemeA13(context: Context) : ModPack(context) {
     }
 
     companion object {
-        private val TAG = "Iconify - ${QSFluidThemeA13::class.java.simpleName}: "
         private const val ACTIVE_ALPHA = 0.2f
         private const val INACTIVE_ALPHA = ACTIVE_ALPHA + 0.2f
         private const val UNAVAILABLE_ALPHA = INACTIVE_ALPHA - 0.1f

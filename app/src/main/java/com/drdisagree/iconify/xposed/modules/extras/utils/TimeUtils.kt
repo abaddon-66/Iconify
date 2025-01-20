@@ -7,8 +7,7 @@ import android.text.TextWatcher
 import android.text.format.DateFormat
 import android.widget.TextClock
 import android.widget.TextView
-import de.robv.android.xposed.XposedBridge
-import de.robv.android.xposed.XposedBridge.log
+import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.log
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -16,7 +15,6 @@ import java.util.Locale
 
 object TimeUtils {
 
-    private val TAG = "Iconify - ${TimeUtils::class.java.simpleName}: "
     private val numbers = arrayOf(
         "Zero",
         "One",
@@ -101,7 +99,7 @@ object TimeUtils {
                 euDateFormat.format(currentDate)
             }
         } catch (throwable: Throwable) {
-            XposedBridge.log(TAG + throwable)
+            log(this@TimeUtils, throwable)
         }
         return SimpleDateFormat(usFormat, Locale.getDefault()).format(Date())
     }
@@ -163,7 +161,7 @@ object TimeUtils {
             val securityPatchDate = dateFormat.parse(securityPatch)
             (securityPatchDate != null && (securityPatchDate < targetDate.time))
         } catch (e: Exception) {
-            log(TAG + "Error parsing security patch date\n$e")
+            log(this@TimeUtils, "Error parsing security patch date\n$e")
             false
         }
     }
@@ -176,7 +174,7 @@ object TimeUtils {
             val securityPatchDate = dateFormat.parse(securityPatch)
             (securityPatchDate != null && (securityPatchDate > targetDate.time))
         } catch (e: Exception) {
-            log(TAG + "Error parsing security patch date\n$e")
+            log(this@TimeUtils, "Error parsing security patch date\n$e")
             false
         }
     }

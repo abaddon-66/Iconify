@@ -25,12 +25,9 @@ import android.widget.ProgressBar
 import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
-import de.robv.android.xposed.XposedBridge
-
+import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.log
 
 object ViewHelper {
-
-    private val TAG = "Iconify - ${ViewHelper::class.java.simpleName}: "
 
     fun setMargins(viewGroup: Any, context: Context, left: Int, top: Int, right: Int, bottom: Int) {
         when (viewGroup) {
@@ -74,7 +71,7 @@ object ViewHelper {
 
                     else -> {
                         if (layoutParams != null) {
-                            XposedBridge.log("Unsupported type: $layoutParams")
+                            log(this@ViewHelper, "Unsupported type: $layoutParams")
                         }
                     }
                 }
@@ -282,7 +279,7 @@ object ViewHelper {
             }
 
             else -> {
-                XposedBridge.log(TAG + "Invalid params: $params")
+                log(this@ViewHelper, "Invalid params: $params")
             }
         }
     }

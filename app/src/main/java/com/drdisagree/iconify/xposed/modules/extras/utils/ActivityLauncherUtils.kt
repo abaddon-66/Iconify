@@ -12,7 +12,7 @@ import com.drdisagree.iconify.BuildConfig
 import com.drdisagree.iconify.R
 import com.drdisagree.iconify.xposed.HookRes.Companion.modRes
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.callMethod
-import de.robv.android.xposed.XposedBridge.log
+import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.log
 
 class ActivityLauncherUtils(private val mContext: Context, private val mActivityStarter: Any?) {
     private val mPackageManager: PackageManager = mContext.packageManager
@@ -22,7 +22,7 @@ class ActivityLauncherUtils(private val mContext: Context, private val mActivity
             mPackageManager.queryIntentActivities(launchIntent!!, PackageManager.MATCH_DEFAULT_ONLY)
         if (apps.isNotEmpty()) {
             if (mActivityStarter == null) {
-                log("ActivityStarter is null")
+                log(this@ActivityLauncherUtils, "ActivityStarter is null")
                 return
             }
             mActivityStarter.callMethod("startActivity", launchIntent, true)
@@ -34,7 +34,7 @@ class ActivityLauncherUtils(private val mContext: Context, private val mActivity
     fun launchApp(launchIntent: Intent?, fromQs: Boolean = false) {
         if (launchIntent == null) return
         if (mActivityStarter == null) {
-            log("ActivityStarter is null")
+            log(this@ActivityLauncherUtils, "ActivityStarter is null")
             return
         }
         mActivityStarter.callMethod(
@@ -109,7 +109,7 @@ class ActivityLauncherUtils(private val mContext: Context, private val mActivity
             )
         )
         if (mActivityStarter == null) {
-            log("ActivityStarter is null")
+            log(this@ActivityLauncherUtils, "ActivityStarter is null")
             return
         }
         mActivityStarter.callMethod(

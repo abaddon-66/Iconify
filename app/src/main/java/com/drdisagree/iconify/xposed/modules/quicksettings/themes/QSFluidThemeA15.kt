@@ -38,13 +38,13 @@ import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.getFieldSilent
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookConstructor
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookMethod
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookMethodMatchPattern
+import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.log
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.setField
 import com.drdisagree.iconify.xposed.modules.extras.views.RoundedCornerProgressDrawable
 import com.drdisagree.iconify.xposed.utils.SystemUtils
 import com.drdisagree.iconify.xposed.utils.XPrefs.Xprefs
 import com.drdisagree.iconify.xposed.utils.XPrefs.XprefsIsInitialized
 import de.robv.android.xposed.XC_MethodHook
-import de.robv.android.xposed.XposedBridge.log
 import de.robv.android.xposed.XposedHelpers.callStaticMethod
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam
 import kotlin.math.max
@@ -238,7 +238,7 @@ class QSFluidThemeA15(context: Context) : ModPack(context) {
                         }
                     }
                 } catch (throwable: Throwable) {
-                    log(TAG + throwable)
+                    log(this@QSFluidThemeA15, throwable)
                 }
             }
 
@@ -440,7 +440,7 @@ class QSFluidThemeA15(context: Context) : ModPack(context) {
                         readonlyStateFlowInstance
                     )
                 } catch (throwable: Throwable) {
-                    log(TAG + throwable)
+                    log(this@QSFluidThemeA15, throwable)
                 }
             }
 
@@ -475,7 +475,7 @@ class QSFluidThemeA15(context: Context) : ModPack(context) {
                     } catch (ignored: Throwable) {
                     }
                 } catch (throwable: Throwable) {
-                    log(TAG + throwable)
+                    log(this@QSFluidThemeA15, throwable)
                 }
             }
 
@@ -498,7 +498,7 @@ class QSFluidThemeA15(context: Context) : ModPack(context) {
                         colorActiveAlpha
                     )
                 } catch (throwable: Throwable) {
-                    log(TAG + throwable)
+                    log(this@QSFluidThemeA15, throwable)
                 }
             }
 
@@ -556,7 +556,7 @@ class QSFluidThemeA15(context: Context) : ModPack(context) {
                         colorActiveAlpha
                     )
                 } catch (throwable: Throwable) {
-                    log(TAG + throwable)
+                    log(this@QSFluidThemeA15, throwable)
                 }
             }
 
@@ -571,7 +571,7 @@ class QSFluidThemeA15(context: Context) : ModPack(context) {
                     ) as FrameLayout
                     mBrightnessMirror.background.alpha = (INACTIVE_ALPHA * 255).toInt()
                 } catch (throwable: Throwable) {
-                    log(TAG + throwable)
+                    log(this@QSFluidThemeA15, throwable)
                 }
             }
 
@@ -598,7 +598,7 @@ class QSFluidThemeA15(context: Context) : ModPack(context) {
                         param.result = colorActive
                     }
                 } catch (throwable: Throwable) {
-                    log(TAG + throwable)
+                    log(this@QSFluidThemeA15, throwable)
                 }
             }
 
@@ -613,7 +613,7 @@ class QSFluidThemeA15(context: Context) : ModPack(context) {
                         param.result = colorActive
                     }
                 } catch (throwable: Throwable) {
-                    log(TAG + throwable)
+                    log(this@QSFluidThemeA15, throwable)
                 }
             }
 
@@ -658,7 +658,7 @@ class QSFluidThemeA15(context: Context) : ModPack(context) {
                     param.thisObject.setField("colorLabelActive", colorActive)
                     param.thisObject.setField("colorSecondaryLabelActive", colorActive)
                 } catch (throwable: Throwable) {
-                    log(TAG + throwable)
+                    log(this@QSFluidThemeA15, throwable)
                 }
 
                 try {
@@ -685,7 +685,7 @@ class QSFluidThemeA15(context: Context) : ModPack(context) {
                         }
                     }
                 } catch (throwable: Throwable) {
-                    log(TAG + throwable)
+                    log(this@QSFluidThemeA15, throwable)
                 }
             }
 
@@ -736,7 +736,7 @@ class QSFluidThemeA15(context: Context) : ModPack(context) {
                         colorActive
                     )
                 } catch (throwable: Throwable) {
-                    log(TAG + throwable)
+                    log(this@QSFluidThemeA15, throwable)
                 }
             }
 
@@ -787,7 +787,7 @@ class QSFluidThemeA15(context: Context) : ModPack(context) {
                     mManageButton.background?.alpha = (INACTIVE_ALPHA * 255).toInt()
                     mClearAllButton.background?.alpha = (INACTIVE_ALPHA * 255).toInt()
                 } catch (throwable: Throwable) {
-                    log(TAG + throwable)
+                    log(this@QSFluidThemeA15, throwable)
                 }
             }
         }
@@ -978,7 +978,6 @@ class QSFluidThemeA15(context: Context) : ModPack(context) {
     }
 
     companion object {
-        private val TAG = "Iconify - ${QSFluidThemeA15::class.java.simpleName}: "
         private const val ACTIVE_ALPHA = 0.2f
         private const val INACTIVE_ALPHA = 0.4f
         private const val UNAVAILABLE_ALPHA = 0.3f

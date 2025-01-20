@@ -50,13 +50,13 @@ import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.getFieldSilent
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookConstructor
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookMethod
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookMethodMatchPattern
+import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.log
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.setField
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.setFieldSilently
 import com.drdisagree.iconify.xposed.utils.XPrefs.Xprefs
 import com.drdisagree.iconify.xposed.utils.XPrefs.XprefsIsInitialized
 import de.robv.android.xposed.XC_MethodHook
 import de.robv.android.xposed.XC_MethodHook.MethodHookParam
-import de.robv.android.xposed.XposedBridge.log
 import de.robv.android.xposed.XposedHelpers.callStaticMethod
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam
 
@@ -206,7 +206,7 @@ class QuickSettings(context: Context) : ModPack(context) {
                         ) as TextView).textSize
                     }
                 } catch (throwable: Throwable) {
-                    log(TAG + throwable)
+                    log(this@QuickSettings, throwable)
                 }
             }
 
@@ -306,7 +306,7 @@ class QuickSettings(context: Context) : ModPack(context) {
                                 qqsLP
                             )
                     } catch (throwable: Throwable) {
-                        log(TAG + throwable)
+                        log(this@QuickSettings, throwable)
                     }
                 }
             }
@@ -355,7 +355,7 @@ class QuickSettings(context: Context) : ModPack(context) {
                         Color.TRANSPARENT
                     )
                 } catch (throwable: Throwable) {
-                    log(TAG + throwable)
+                    log(this@QuickSettings, throwable)
                 }
             }
         }
@@ -522,7 +522,7 @@ class QuickSettings(context: Context) : ModPack(context) {
                     (param.thisObject.getField("mIcon") as ImageView).imageTintList =
                         ColorStateList.valueOf(color)
                 } catch (throwable: Throwable) {
-                    log(TAG + throwable)
+                    log(this@QuickSettings, throwable)
                 }
             }
 
@@ -559,7 +559,7 @@ class QuickSettings(context: Context) : ModPack(context) {
                     (param.thisObject.getField("mIcon") as ImageView).imageTintList =
                         ColorStateList.valueOf(color)
                 } catch (throwable: Throwable) {
-                    log(TAG + throwable)
+                    log(this@QuickSettings, throwable)
                 }
             }
     }
@@ -737,7 +737,7 @@ class QuickSettings(context: Context) : ModPack(context) {
                 )
 
                 if (mKeyguardStateController == null) {
-                    log(TAG + "mKeyguardStateController is null")
+                    log(this@QuickSettings, "mKeyguardStateController is null")
                 }
             }
 
@@ -780,7 +780,7 @@ class QuickSettings(context: Context) : ModPack(context) {
                 try {
                     param.args[stateIndex] as Boolean
                 } catch (throwable2: Throwable) {
-                    log(TAG + throwable2)
+                    log(this@QuickSettings, throwable2)
                     false
                 }
             }
@@ -881,7 +881,7 @@ class QuickSettings(context: Context) : ModPack(context) {
                     "labelContainer"
                 ) as LinearLayout).layoutParams as MarginLayoutParams).topMargin = mContext.toPx(2)
             } catch (throwable: Throwable) {
-                log(TAG + throwable)
+                log(this@QuickSettings, throwable)
             }
         }
 
@@ -897,6 +897,5 @@ class QuickSettings(context: Context) : ModPack(context) {
     }
 
     companion object {
-        private val TAG = "Iconify - ${QuickSettings::class.java.simpleName}: "
     }
 }

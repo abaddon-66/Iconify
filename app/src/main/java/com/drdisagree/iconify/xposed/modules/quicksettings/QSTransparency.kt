@@ -18,10 +18,10 @@ import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.callMethod
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.getField
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookConstructor
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookMethod
+import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.log
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.setField
 import com.drdisagree.iconify.xposed.utils.XPrefs.Xprefs
 import com.drdisagree.iconify.xposed.utils.XPrefs.XprefsIsInitialized
-import de.robv.android.xposed.XposedBridge.log
 import de.robv.android.xposed.XposedHelpers.findField
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam
 
@@ -169,7 +169,7 @@ class QSTransparency(context: Context) : ModPack(context) {
                         readonlyStateFlowInstance
                     )
                 } catch (throwable: Throwable) {
-                    log(TAG + throwable)
+                    log(this@QSTransparency, throwable)
                 }
             }
 
@@ -237,12 +237,11 @@ class QSTransparency(context: Context) : ModPack(context) {
                         param.result = blurRadius
                     }
                 } catch (throwable: Throwable) {
-                    log(TAG + throwable)
+                    log(this@QSTransparency, throwable)
                 }
             }
     }
 
     companion object {
-        private val TAG = "Iconify - ${QSTransparency::class.java.simpleName}: "
     }
 }

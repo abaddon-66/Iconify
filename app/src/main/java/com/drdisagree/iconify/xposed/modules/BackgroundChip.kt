@@ -83,11 +83,11 @@ import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.getField
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.getStaticField
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookLayout
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookMethod
+import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.log
 import com.drdisagree.iconify.xposed.modules.extras.views.ChipDrawable
 import com.drdisagree.iconify.xposed.modules.extras.views.ChipDrawable.GradientDirection.Companion.toIndex
 import com.drdisagree.iconify.xposed.utils.XPrefs.Xprefs
 import com.drdisagree.iconify.xposed.utils.XPrefs.XprefsIsInitialized
-import de.robv.android.xposed.XposedBridge.log
 import de.robv.android.xposed.XposedHelpers.callStaticMethod
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam
 
@@ -323,7 +323,7 @@ class BackgroundChip(context: Context) : ModPack(context) {
                             Gravity.START or Gravity.CENTER
                         statusBarStartSideExceptHeadsUp.requestLayout()
                     } catch (throwable: Throwable) {
-                        log(TAG + throwable)
+                        log(this@BackgroundChip, throwable)
                     }
                 }
             }
@@ -441,7 +441,7 @@ class BackgroundChip(context: Context) : ModPack(context) {
                     mContext.toPx(sideMarginStatusIcons)
                 )
             } catch (throwable: Throwable) {
-                log(TAG + throwable)
+                log(this@BackgroundChip, throwable)
             }
         }
 
@@ -593,7 +593,7 @@ class BackgroundChip(context: Context) : ModPack(context) {
 
                     setStatusIconsBackgroundChip(statusIconContainer)
                 } catch (throwable: Throwable) {
-                    log(TAG + throwable)
+                    log(this@BackgroundChip, throwable)
                 }
             }
 
@@ -626,7 +626,7 @@ class BackgroundChip(context: Context) : ModPack(context) {
                         setStatusIconsBackgroundChip(statusIconContainer)
                     }
                 } catch (throwable: Throwable) {
-                    log(TAG + throwable)
+                    log(this@BackgroundChip, throwable)
                 }
             }
     }
@@ -794,6 +794,5 @@ class BackgroundChip(context: Context) : ModPack(context) {
     }
 
     companion object {
-        private val TAG = "Iconify - ${BackgroundChip::class.java.simpleName}: "
-    }
+        }
 }

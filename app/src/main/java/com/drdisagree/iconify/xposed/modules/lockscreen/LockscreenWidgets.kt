@@ -39,10 +39,10 @@ import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.XposedHook.Com
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.getField
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookConstructor
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookMethod
+import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.log
 import com.drdisagree.iconify.xposed.modules.extras.views.LockscreenWidgetsView
 import com.drdisagree.iconify.xposed.utils.XPrefs.Xprefs
 import com.drdisagree.iconify.xposed.utils.XPrefs.XprefsIsInitialized
-import de.robv.android.xposed.XposedBridge.log
 import de.robv.android.xposed.callbacks.XC_LoadPackage
 
 class LockscreenWidgets(context: Context) : ModPack(context) {
@@ -215,7 +215,7 @@ class LockscreenWidgets(context: Context) : ModPack(context) {
                 try {
                     mActivityStarter = param.thisObject.getField("activityStarter")
                 } catch (t: Throwable) {
-                    log(TAG + "Failed to get ActivityStarter")
+                    log(this@LockscreenWidgets, "Failed to get ActivityStarter")
                 }
                 setActivityStarter()
             }
@@ -232,7 +232,7 @@ class LockscreenWidgets(context: Context) : ModPack(context) {
                         "mStatusViewContainer"
                     ) as ViewGroup
                 } catch (t: Throwable) {
-                    log(TAG + "Failed to get mStatusViewContainer")
+                    log(this@LockscreenWidgets, "Failed to get mStatusViewContainer")
                 }
 
                 placeWidgets()
@@ -248,7 +248,7 @@ class LockscreenWidgets(context: Context) : ModPack(context) {
                 try {
                     mStatusArea = param.thisObject.getField("mStatusArea") as ViewGroup
                 } catch (t: Throwable) {
-                    log(TAG + "Failed to get mStatusArea")
+                    log(this@LockscreenWidgets, "Failed to get mStatusArea")
                 }
 
                 placeWidgets()
@@ -356,8 +356,6 @@ class LockscreenWidgets(context: Context) : ModPack(context) {
     }
 
     companion object {
-        private val TAG = "Iconify - ${LockscreenWidgets::class.java.simpleName}: "
-
         var LaunchableImageView: Class<*>? = null
         var LaunchableLinearLayout: Class<*>? = null
     }

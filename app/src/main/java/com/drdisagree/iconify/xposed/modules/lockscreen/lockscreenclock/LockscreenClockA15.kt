@@ -78,11 +78,11 @@ import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.toPx
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.XposedHook.Companion.findClass
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookConstructor
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookMethod
+import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.log
 import com.drdisagree.iconify.xposed.modules.extras.views.ArcProgressWidget.generateBitmap
 import com.drdisagree.iconify.xposed.modules.lockscreen.Lockscreen.Companion.isComposeLockscreen
 import com.drdisagree.iconify.xposed.utils.XPrefs.Xprefs
 import com.drdisagree.iconify.xposed.utils.XPrefs.XprefsIsInitialized
-import de.robv.android.xposed.XposedBridge.log
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam
 import java.io.File
 import java.util.concurrent.Executors
@@ -874,7 +874,7 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
             BitmapDrawable(mContext.resources, bitmapUserIcon)
         } catch (throwable: Throwable) {
             if (throwable !is NullPointerException) {
-                log(TAG + throwable)
+                log(this@LockscreenClockA15, throwable)
             }
 
             ResourcesCompat.getDrawable(
@@ -907,7 +907,6 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
     }
 
     companion object {
-        private val TAG = "Iconify - ${LockscreenClockA15::class.java.simpleName}: "
         private var lastUpdated = System.currentTimeMillis()
         private const val THRESHOLD_TIME: Long = 500 // milliseconds
     }

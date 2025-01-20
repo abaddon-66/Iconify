@@ -13,7 +13,7 @@ import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.getFieldSilent
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookConstructor
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookMethod
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.isMethodAvailable
-import de.robv.android.xposed.XposedBridge.log
+import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.log
 import de.robv.android.xposed.callbacks.XC_LoadPackage
 
 class ControllersProvider(context: Context) : ModPack(context) {
@@ -331,8 +331,6 @@ class ControllersProvider(context: Context) : ModPack(context) {
         @Volatile
         private lateinit var instance: ControllersProvider
 
-        private val TAG: String = "Iconify - ${ControllersProvider::class.java.simpleName}: "
-
         var mBluetoothController: Any? = null
         var mHotspotController: Any? = null
 
@@ -346,7 +344,7 @@ class ControllersProvider(context: Context) : ModPack(context) {
 
         fun showInternetDialog(view: View): Boolean {
             if (Companion::instance.isInitialized.not()) {
-                log(TAG + "Instance is null")
+                log(ControllersProvider, "Instance is null")
                 return false
             }
 
@@ -439,7 +437,7 @@ class ControllersProvider(context: Context) : ModPack(context) {
                     }
 
                     else -> {
-                        log(TAG + "No internet dialog available")
+                        log(ControllersProvider, "No internet dialog available")
                         return false
                     }
                 }
@@ -456,7 +454,7 @@ class ControllersProvider(context: Context) : ModPack(context) {
                         }
 
                         else -> {
-                            log(TAG + "No internet tile available")
+                            log(ControllersProvider, "No internet tile available")
                             return false
                         }
                     }
@@ -468,7 +466,7 @@ class ControllersProvider(context: Context) : ModPack(context) {
 
         fun showBluetoothDialog(context: Context, view: View): Boolean {
             if (Companion::instance.isInitialized.not()) {
-                log(TAG + "Instance is null")
+                log(ControllersProvider, "Instance is null")
                 return false
             }
 
@@ -522,7 +520,7 @@ class ControllersProvider(context: Context) : ModPack(context) {
                         ).invoke(instance.mBluetoothTileDialogViewModel!!, null)
                         true
                     } catch (e: Exception) {
-                        log(TAG + e)
+                        log(ControllersProvider, e)
                         false
                     }
                 }
@@ -546,7 +544,7 @@ class ControllersProvider(context: Context) : ModPack(context) {
                 }
 
                 else -> {
-                    log(TAG + "No bluetooth dialog available")
+                    log(ControllersProvider, "No bluetooth dialog available")
                     return false
                 }
             }

@@ -84,6 +84,7 @@ import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.getFieldSilent
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookConstructor
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookMethod
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.isMethodAvailable
+import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.log
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.setField
 import com.drdisagree.iconify.xposed.modules.extras.views.MediaPlayerPagerAdapter
 import com.drdisagree.iconify.xposed.modules.extras.views.OpQsHeaderView
@@ -92,7 +93,6 @@ import com.drdisagree.iconify.xposed.modules.extras.views.OpQsMediaPlayerView.Co
 import com.drdisagree.iconify.xposed.utils.XPrefs.Xprefs
 import com.drdisagree.iconify.xposed.utils.XPrefs.XprefsIsInitialized
 import de.robv.android.xposed.XC_MethodHook
-import de.robv.android.xposed.XposedBridge.log
 import de.robv.android.xposed.XposedHelpers.callStaticMethod
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam
 import kotlinx.coroutines.CoroutineScope
@@ -2017,10 +2017,10 @@ class OpQsHeader(context: Context) : ModPack(context) {
                     null
                 )
             } else {
-                log(TAG + "No method available to create MediaOutputDialog")
+                log(this@OpQsHeader, "No method available to create MediaOutputDialog")
             }
         } else {
-            log(TAG + "MediaOutputDialogFactory is not available")
+            log(this@OpQsHeader, "MediaOutputDialogFactory is not available")
         }
     }
 
@@ -2179,8 +2179,6 @@ class OpQsHeader(context: Context) : ModPack(context) {
         get() = mContext.resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
 
     companion object {
-        private val TAG = "Iconify - ${OpQsHeader::class.java.simpleName}: "
-
         var launchableImageView: Class<*>? = null
         var launchableLinearLayout: Class<*>? = null
     }

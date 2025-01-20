@@ -2,7 +2,6 @@ package com.drdisagree.iconify.xposed.modules.extras.utils
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.util.Log
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
@@ -12,13 +11,11 @@ import android.widget.RelativeLayout
 import android.widget.TextView
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.callMethod
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.getField
+import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.log
 import de.robv.android.xposed.XC_MethodHook
-import de.robv.android.xposed.XposedBridge.log
 
 @SuppressLint("DiscouragedApi")
 object StatusBarClock {
-
-    private val TAG = "Iconify - ${StatusBarClock::class.java.simpleName}: "
 
     fun getLeftClockView(mContext: Context, param: XC_MethodHook.MethodHookParam) = try {
         param.thisObject.getField("mClockView") as View
@@ -47,7 +44,7 @@ object StatusBarClock {
                         null
                     }
                 } catch (throwable4: Throwable) {
-                    log(TAG + throwable4)
+                    log(this@StatusBarClock, throwable4)
                     null
                 }
             }
@@ -157,18 +154,18 @@ object StatusBarClock {
                     }
 
                     else -> {
-                        Log.w(
-                            "$TAG LayoutParamsCheck",
-                            "Unsupported gravity type for RelativeLayout: $gravity"
+                        log(
+                            this@StatusBarClock,
+                            "LayoutParamsCheck - Unsupported gravity type for RelativeLayout: $gravity"
                         )
                     }
                 }
             }
 
             else -> {
-                Log.w(
-                    "$TAG LayoutParamsCheck",
-                    "Unknown LayoutParams type: ${layoutParams.javaClass.name}"
+                log(
+                    this@StatusBarClock,
+                    "LayoutParamsCheck - Unknown LayoutParams type: ${layoutParams.javaClass.name}"
                 )
             }
         }
