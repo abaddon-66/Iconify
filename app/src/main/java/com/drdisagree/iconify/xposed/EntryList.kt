@@ -13,11 +13,12 @@ import com.drdisagree.iconify.xposed.modules.extras.utils.MyConstraintSet
 import com.drdisagree.iconify.xposed.modules.extras.utils.SettingsLibUtils
 import com.drdisagree.iconify.xposed.modules.launcher.IconUpdater
 import com.drdisagree.iconify.xposed.modules.lockscreen.Lockscreen
-import com.drdisagree.iconify.xposed.modules.lockscreen.LockscreenWidgets
 import com.drdisagree.iconify.xposed.modules.lockscreen.clock.LockscreenClock
 import com.drdisagree.iconify.xposed.modules.lockscreen.clock.LockscreenClockA15
 import com.drdisagree.iconify.xposed.modules.lockscreen.weather.LockscreenWeather
 import com.drdisagree.iconify.xposed.modules.lockscreen.weather.LockscreenWeatherA15
+import com.drdisagree.iconify.xposed.modules.lockscreen.widgets.LockscreenWidgets
+import com.drdisagree.iconify.xposed.modules.lockscreen.widgets.LockscreenWidgetsA15
 import com.drdisagree.iconify.xposed.modules.misc.Miscellaneous
 import com.drdisagree.iconify.xposed.modules.quicksettings.ColorizeNotification
 import com.drdisagree.iconify.xposed.modules.quicksettings.HeaderImage
@@ -99,6 +100,7 @@ object EntryList {
         HeaderClockA14::class.java,
         LockscreenClockA15::class.java,
         LockscreenWeatherA15::class.java,
+        LockscreenWidgetsA15::class.java,
         OpQsHeader::class.java
     )
 

@@ -38,6 +38,7 @@ import com.drdisagree.iconify.common.Const.SYSTEMUI_PACKAGE
 import com.drdisagree.iconify.common.Preferences.DEPTH_WALLPAPER_SWITCH
 import com.drdisagree.iconify.common.Preferences.ICONIFY_DEPTH_WALLPAPER_FOREGROUND_TAG
 import com.drdisagree.iconify.common.Preferences.ICONIFY_LOCKSCREEN_CLOCK_TAG
+import com.drdisagree.iconify.common.Preferences.LOCKSCREEN_WIDGETS_ENABLED
 import com.drdisagree.iconify.common.Preferences.LSCLOCK_BOTTOMMARGIN
 import com.drdisagree.iconify.common.Preferences.LSCLOCK_COLOR_CODE_ACCENT1
 import com.drdisagree.iconify.common.Preferences.LSCLOCK_COLOR_CODE_ACCENT2
@@ -53,6 +54,7 @@ import com.drdisagree.iconify.common.Preferences.LSCLOCK_STYLE
 import com.drdisagree.iconify.common.Preferences.LSCLOCK_SWITCH
 import com.drdisagree.iconify.common.Preferences.LSCLOCK_TOPMARGIN
 import com.drdisagree.iconify.common.Preferences.LSCLOCK_USERNAME
+import com.drdisagree.iconify.common.Preferences.WEATHER_SWITCH
 import com.drdisagree.iconify.common.Resources.LOCKSCREEN_CLOCK_LAYOUT
 import com.drdisagree.iconify.utils.TextUtils
 import com.drdisagree.iconify.xposed.HookEntry.Companion.enqueueProxyCommand
@@ -93,6 +95,8 @@ import java.util.concurrent.TimeUnit
 class LockscreenClockA15(context: Context) : ModPack(context) {
 
     private var showLockscreenClock = false
+    private var weatherEnabled = false
+    private var widgetsEnabled = false
     private var showDepthWallpaper = false
     private var mLockscreenRootView: ViewGroup? = null
     private var mUserManager: UserManager? = null
@@ -165,6 +169,8 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
 
         Xprefs.apply {
             showLockscreenClock = getBoolean(LSCLOCK_SWITCH, false)
+            weatherEnabled = getBoolean(WEATHER_SWITCH, false)
+            widgetsEnabled = getBoolean(LOCKSCREEN_WIDGETS_ENABLED, false)
             showDepthWallpaper = getBoolean(DEPTH_WALLPAPER_SWITCH, false)
             clockStyle = getInt(LSCLOCK_STYLE, 0)
             topMargin = getSliderInt(LSCLOCK_TOPMARGIN, 100)
@@ -283,7 +289,7 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
                     ICONIFY_LOCKSCREEN_CLOCK_TAG
                 )
 
-                if (clockView != null) {
+                if (clockView != null && !weatherEnabled && !widgetsEnabled) {
                     constraintSet.clear(
                         notificationContainerId,
                         ConstraintSet.TOP
@@ -511,7 +517,7 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
             initSoundManager()
             initBatteryStatus()
 
-            // Clock placed, now inflate weather
+            // Clock placed, now inflate weather or widgets
             val broadcast = Intent(ACTION_LS_CLOCK_INFLATED)
             broadcast.setFlags(Intent.FLAG_RECEIVER_FOREGROUND)
             Thread { mContext.sendBroadcast(broadcast) }.start()
@@ -664,7 +670,7 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
             )
 
             // Connect notification container below clock
-            if (notificationContainerId != 0) {
+            if (notificationContainerId != 0 && !weatherEnabled && !widgetsEnabled) {
                 constraintSet.clear(
                     notificationContainerId,
                     ConstraintSet.TOP
@@ -679,7 +685,7 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
             }
 
             // Connect aod notification icon container below clock
-            if (aodNotificationIconContainerId != 0) {
+            if (aodNotificationIconContainerId != 0 && !weatherEnabled) {
                 constraintSet.clear(
                     aodNotificationIconContainerId,
                     ConstraintSet.TOP

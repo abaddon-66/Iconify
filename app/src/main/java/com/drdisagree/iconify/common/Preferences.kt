@@ -141,6 +141,7 @@ object Preferences {
     const val LOCKSCREEN_WIDGETS_SMALL_ICON_ACTIVE: String = "lockscreen_widgets_small_icon_active"
     const val LOCKSCREEN_WIDGETS_SMALL_ICON_INACTIVE: String =
         "lockscreen_widgets_small_icon_inactive"
+    const val LOCKSCREEN_WIDGETS_TOP_MARGIN: String = "lockscreen_widgets_top_margin"
     const val LOCKSCREEN_WIDGETS_BOTTOM_MARGIN: String = "lockscreen_widgets_bottom_margin"
     const val LOCKSCREEN_WIDGETS_SCALE: String = "lockscreen_widgets_scale"
     const val FIXED_STATUS_ICONS_SWITCH = "xposed_fixedstatusicons"
@@ -227,6 +228,8 @@ object Preferences {
     // Xposed view tags
     const val ICONIFY_HEADER_CLOCK_TAG = "iconify_header_clock"
     const val ICONIFY_LOCKSCREEN_CLOCK_TAG = "iconify_lockscreen_clock"
+    const val ICONIFY_LOCKSCREEN_WEATHER_TAG = "iconify_lockscreen_weather"
+    const val ICONIFY_LOCKSCREEN_WIDGET_TAG = "iconify_lockscreen_widget"
     const val ICONIFY_DEPTH_WALLPAPER_TAG = "iconify_depth_wallpaper"
     const val ICONIFY_DEPTH_WALLPAPER_FOREGROUND_TAG = "iconify_depth_wallpaper_foreground"
     const val ICONIFY_DEPTH_WALLPAPER_BACKGROUND_TAG = "iconify_depth_wallpaper_background"

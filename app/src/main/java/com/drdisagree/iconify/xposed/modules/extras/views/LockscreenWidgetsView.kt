@@ -52,8 +52,8 @@ import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.toPx
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.callMethod
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.getField
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.log
-import com.drdisagree.iconify.xposed.modules.lockscreen.LockscreenWidgets.Companion.LaunchableImageView
-import com.drdisagree.iconify.xposed.modules.lockscreen.LockscreenWidgets.Companion.LaunchableLinearLayout
+import com.drdisagree.iconify.xposed.modules.lockscreen.widgets.LockscreenWidgets.Companion.LaunchableImageView
+import com.drdisagree.iconify.xposed.modules.lockscreen.widgets.LockscreenWidgets.Companion.LaunchableLinearLayout
 import java.lang.reflect.Method
 import java.util.Locale
 import kotlin.math.abs

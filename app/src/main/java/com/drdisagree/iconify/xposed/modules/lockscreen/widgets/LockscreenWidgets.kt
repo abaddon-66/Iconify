@@ -1,4 +1,4 @@
-package com.drdisagree.iconify.xposed.modules.lockscreen
+package com.drdisagree.iconify.xposed.modules.lockscreen.widgets
 
 import android.annotation.SuppressLint
 import android.content.BroadcastReceiver
@@ -31,6 +31,7 @@ import com.drdisagree.iconify.common.Preferences.LOCKSCREEN_WIDGETS_SMALL_ACTIVE
 import com.drdisagree.iconify.common.Preferences.LOCKSCREEN_WIDGETS_SMALL_ICON_ACTIVE
 import com.drdisagree.iconify.common.Preferences.LOCKSCREEN_WIDGETS_SMALL_ICON_INACTIVE
 import com.drdisagree.iconify.common.Preferences.LOCKSCREEN_WIDGETS_SMALL_INACTIVE
+import com.drdisagree.iconify.common.Preferences.LOCKSCREEN_WIDGETS_TOP_MARGIN
 import com.drdisagree.iconify.common.Preferences.LSCLOCK_SWITCH
 import com.drdisagree.iconify.common.Preferences.WEATHER_SWITCH
 import com.drdisagree.iconify.xposed.ModPack
@@ -41,6 +42,7 @@ import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookConstructo
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookMethod
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.log
 import com.drdisagree.iconify.xposed.modules.extras.views.LockscreenWidgetsView
+import com.drdisagree.iconify.xposed.modules.lockscreen.Lockscreen.Companion.isComposeLockscreen
 import com.drdisagree.iconify.xposed.utils.XPrefs.Xprefs
 import com.drdisagree.iconify.xposed.utils.XPrefs.XprefsIsInitialized
 import de.robv.android.xposed.callbacks.XC_LoadPackage
@@ -84,6 +86,7 @@ class LockscreenWidgets(context: Context) : ModPack(context) {
     private var mDeviceName = ""
     private var mMainWidgets: String = ""
     private var mExtraWidgets: String = ""
+    private var mTopMargin = 0
     private var mBottomMargin = 0
     private var mWidgetsScale = 1.0f
 
@@ -100,7 +103,7 @@ class LockscreenWidgets(context: Context) : ModPack(context) {
     }
 
     override fun updatePrefs(vararg key: String) {
-        if (!XprefsIsInitialized) return
+        if (!XprefsIsInitialized || isComposeLockscreen) return
 
         Xprefs.apply {
             // Ls custom clock
@@ -130,50 +133,52 @@ class LockscreenWidgets(context: Context) : ModPack(context) {
             mBigIconInactiveColor = getInt(LOCKSCREEN_WIDGETS_BIG_ICON_INACTIVE, Color.WHITE)
             mSmallIconActiveColor = getInt(LOCKSCREEN_WIDGETS_SMALL_ICON_ACTIVE, Color.BLACK)
             mSmallIconInactiveColor = getInt(LOCKSCREEN_WIDGETS_SMALL_ICON_INACTIVE, Color.WHITE)
+            mTopMargin = getSliderInt(LOCKSCREEN_WIDGETS_TOP_MARGIN, 0)
             mBottomMargin = getSliderInt(LOCKSCREEN_WIDGETS_BOTTOM_MARGIN, 0)
             mWidgetsScale = getSliderFloat(LOCKSCREEN_WIDGETS_SCALE, 1.0f)
         }
 
-        if (key.isNotEmpty()) {
-            if (key[0] == LOCKSCREEN_WIDGETS_ENABLED ||
-                key[0] == LOCKSCREEN_WIDGETS_DEVICE_WIDGET ||
-                key[0] == LOCKSCREEN_WIDGETS ||
-                key[0] == LOCKSCREEN_WIDGETS_EXTRAS
-            ) {
-                updateLockscreenWidgets()
-            }
-            if (key[0] == LOCKSCREEN_WIDGETS_DEVICE_WIDGET_CUSTOM_COLOR_SWITCH ||
-                key[0] == LOCKSCREEN_WIDGETS_DEVICE_WIDGET_LINEAR_COLOR ||
-                key[0] == LOCKSCREEN_WIDGETS_DEVICE_WIDGET_CIRCULAR_COLOR ||
-                key[0] == LOCKSCREEN_WIDGETS_DEVICE_WIDGET_TEXT_COLOR ||
-                key[0] == LOCKSCREEN_WIDGETS_DEVICE_WIDGET_DEVICE
-            ) {
-                updateLsDeviceWidget()
-            }
-            if (key[0] == LOCKSCREEN_WIDGETS_CUSTOM_COLOR ||
-                key[0] == LOCKSCREEN_WIDGETS_BIG_ACTIVE ||
-                key[0] == LOCKSCREEN_WIDGETS_BIG_INACTIVE ||
-                key[0] == LOCKSCREEN_WIDGETS_SMALL_ACTIVE ||
-                key[0] == LOCKSCREEN_WIDGETS_SMALL_INACTIVE ||
-                key[0] == LOCKSCREEN_WIDGETS_BIG_ICON_ACTIVE ||
-                key[0] == LOCKSCREEN_WIDGETS_BIG_ICON_INACTIVE ||
-                key[0] == LOCKSCREEN_WIDGETS_SMALL_ICON_ACTIVE ||
-                key[0] == LOCKSCREEN_WIDGETS_SMALL_ICON_INACTIVE
-            ) {
-                updateLockscreenWidgetsColors()
-            }
-            if (key[0] == LOCKSCREEN_WIDGETS_BOTTOM_MARGIN) {
-                updateMargins()
-            }
-            if (key[0] == LOCKSCREEN_WIDGETS_SCALE) {
-                updateLockscreenWidgetsScale()
-            }
-        }
+        when (key.firstOrNull()) {
+            in setOf(
+                LOCKSCREEN_WIDGETS_ENABLED,
+                LOCKSCREEN_WIDGETS_DEVICE_WIDGET,
+                LOCKSCREEN_WIDGETS,
+                LOCKSCREEN_WIDGETS_EXTRAS
+            ) -> updateLockscreenWidgets()
 
+            in setOf(
+                LOCKSCREEN_WIDGETS_DEVICE_WIDGET_CUSTOM_COLOR_SWITCH,
+                LOCKSCREEN_WIDGETS_DEVICE_WIDGET_LINEAR_COLOR,
+                LOCKSCREEN_WIDGETS_DEVICE_WIDGET_CIRCULAR_COLOR,
+                LOCKSCREEN_WIDGETS_DEVICE_WIDGET_TEXT_COLOR,
+                LOCKSCREEN_WIDGETS_DEVICE_WIDGET_DEVICE
+            ) -> updateLsDeviceWidget()
+
+            in setOf(
+                LOCKSCREEN_WIDGETS_CUSTOM_COLOR,
+                LOCKSCREEN_WIDGETS_BIG_ACTIVE,
+                LOCKSCREEN_WIDGETS_BIG_INACTIVE,
+                LOCKSCREEN_WIDGETS_SMALL_ACTIVE,
+                LOCKSCREEN_WIDGETS_SMALL_INACTIVE,
+                LOCKSCREEN_WIDGETS_BIG_ICON_ACTIVE,
+                LOCKSCREEN_WIDGETS_BIG_ICON_INACTIVE,
+                LOCKSCREEN_WIDGETS_SMALL_ICON_ACTIVE,
+                LOCKSCREEN_WIDGETS_SMALL_ICON_INACTIVE
+            ) -> updateLockscreenWidgetsColors()
+
+            in setOf(
+                LOCKSCREEN_WIDGETS_TOP_MARGIN,
+                LOCKSCREEN_WIDGETS_BOTTOM_MARGIN
+            ) -> updateMargins()
+
+            LOCKSCREEN_WIDGETS_SCALE -> updateLockscreenWidgetsScale()
+        }
     }
 
     @SuppressLint("UnspecifiedRegisterReceiverFlag")
     override fun handleLoadPackage(loadPackageParam: XC_LoadPackage.LoadPackageParam) {
+        if (isComposeLockscreen) return
+
         // Receiver to handle weather inflated
         if (!mBroadcastRegistered) {
             val intentFilter = IntentFilter()
@@ -271,7 +276,7 @@ class LockscreenWidgets(context: Context) : ModPack(context) {
     }
 
     private fun placeWidgets() {
-        if (!mWidgetsEnabled) return
+        if (!mWidgetsEnabled || isComposeLockscreen) return
         if (mStatusViewContainer == null || mStatusArea == null) return
         if (lsWeather && !lsWeatherInflated) return
         try {
@@ -334,7 +339,7 @@ class LockscreenWidgets(context: Context) : ModPack(context) {
             mWidgetsContainer,
             mContext,
             0,
-            0,
+            mTopMargin,
             0,
             mBottomMargin
         )
