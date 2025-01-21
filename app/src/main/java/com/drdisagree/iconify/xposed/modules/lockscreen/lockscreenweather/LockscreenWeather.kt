@@ -1,4 +1,4 @@
-package com.drdisagree.iconify.xposed.modules.lockscreen
+package com.drdisagree.iconify.xposed.modules.lockscreen.lockscreenweather
 
 import android.content.Context
 import android.content.Intent
@@ -30,6 +30,7 @@ import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.XposedHook.Com
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.getField
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookMethod
 import com.drdisagree.iconify.xposed.modules.extras.views.CurrentWeatherView
+import com.drdisagree.iconify.xposed.modules.lockscreen.Lockscreen.Companion.isComposeLockscreen
 import com.drdisagree.iconify.xposed.utils.XPrefs.Xprefs
 import com.drdisagree.iconify.xposed.utils.XPrefs.XprefsIsInitialized
 import de.robv.android.xposed.callbacks.XC_LoadPackage
@@ -56,7 +57,7 @@ class LockscreenWeather(context: Context) : ModPack(context) {
     private var mStatusArea: ViewGroup? = null
 
     override fun updatePrefs(vararg key: String) {
-        if (!XprefsIsInitialized) return
+        if (!XprefsIsInitialized || isComposeLockscreen) return
 
         Xprefs.apply {
             customLockscreenClock = getBoolean(LSCLOCK_SWITCH, false)
@@ -96,6 +97,8 @@ class LockscreenWeather(context: Context) : ModPack(context) {
     }
 
     override fun handleLoadPackage(loadPackageParam: XC_LoadPackage.LoadPackageParam) {
+        if (isComposeLockscreen) return
+
         mWeatherContainer = LinearLayout(mContext)
         mWeatherContainer.layoutParams = LinearLayout.LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT,
@@ -129,6 +132,8 @@ class LockscreenWeather(context: Context) : ModPack(context) {
     }
 
     private fun placeWeatherView() {
+        if (isComposeLockscreen) return
+
         try {
             val currentWeatherView: CurrentWeatherView = CurrentWeatherView.getInstance(
                 mContext,
@@ -155,30 +160,6 @@ class LockscreenWeather(context: Context) : ModPack(context) {
             broadcast.setFlags(Intent.FLAG_RECEIVER_FOREGROUND)
             Thread { mContext.sendBroadcast(broadcast) }.start()
         } catch (ignored: Throwable) {
-        }
-    }
-
-    private fun updateMargins() {
-        setMargins(
-            mWeatherContainer,
-            mContext,
-            mSideMargin,
-            mTopMargin,
-            mSideMargin,
-            mBottomMargin
-        )
-
-        mWeatherContainer.gravity = if (mCenterWeather) {
-            Gravity.CENTER_HORIZONTAL
-        } else {
-            Gravity.START
-        }
-        (mWeatherContainer.getChildAt(0) as LinearLayout?)?.children?.forEach {
-            (it as LinearLayout).gravity = if (mCenterWeather) {
-                Gravity.CENTER_HORIZONTAL
-            } else {
-                Gravity.START or Gravity.CENTER_VERTICAL
-            }
         }
     }
 
@@ -212,8 +193,34 @@ class LockscreenWeather(context: Context) : ModPack(context) {
         updateMargins()
     }
 
+    private fun updateMargins() {
+        setMargins(
+            mWeatherContainer,
+            mContext,
+            mSideMargin,
+            mTopMargin,
+            mSideMargin,
+            mBottomMargin
+        )
+
+        mWeatherContainer.gravity = if (mCenterWeather) {
+            Gravity.CENTER_HORIZONTAL
+        } else {
+            Gravity.START
+        }
+        (mWeatherContainer.getChildAt(0) as LinearLayout?)?.children?.forEach {
+            (it as LinearLayout).gravity = if (mCenterWeather) {
+                Gravity.CENTER_HORIZONTAL
+            } else {
+                Gravity.START or Gravity.CENTER_VERTICAL
+            }
+        }
+    }
+
     private fun updateWeatherView() {
-        refreshWeatherView(CurrentWeatherView.getInstance(LOCKSCREEN_WEATHER))
+        if (!isComposeLockscreen) {
+            refreshWeatherView(CurrentWeatherView.getInstance(LOCKSCREEN_WEATHER))
+        }
     }
 
     companion object {

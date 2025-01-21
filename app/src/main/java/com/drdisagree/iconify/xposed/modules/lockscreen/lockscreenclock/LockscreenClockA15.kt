@@ -32,6 +32,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import com.drdisagree.iconify.BuildConfig
 import com.drdisagree.iconify.R
+import com.drdisagree.iconify.common.Const.ACTION_LS_CLOCK_INFLATED
 import com.drdisagree.iconify.common.Const.RESET_LOCKSCREEN_CLOCK_COMMAND
 import com.drdisagree.iconify.common.Const.SYSTEMUI_PACKAGE
 import com.drdisagree.iconify.common.Preferences.DEPTH_WALLPAPER_SWITCH
@@ -69,6 +70,7 @@ import com.drdisagree.iconify.xposed.modules.extras.utils.TimeUtils
 import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.applyFontRecursively
 import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.applyTextMarginRecursively
 import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.applyTextScalingRecursively
+import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.assignIdsToViews
 import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.findViewContainsTag
 import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.findViewIdContainsTag
 import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.findViewWithTagAndChangeColor
@@ -508,12 +510,17 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
             modifyClockView(this)
             initSoundManager()
             initBatteryStatus()
+
+            // Clock placed, now inflate weather
+            val broadcast = Intent(ACTION_LS_CLOCK_INFLATED)
+            broadcast.setFlags(Intent.FLAG_RECEIVER_FOREGROUND)
+            Thread { mContext.sendBroadcast(broadcast) }.start()
         }
     }
 
     private val clockViewLayout: View?
         get() {
-            if (appContext == null || !XprefsIsInitialized) return null
+            if (!XprefsIsInitialized) return null
 
             return LayoutInflater.from(appContext).inflate(
                 appContext.resources.getIdentifier(
@@ -878,20 +885,6 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
         if (showLockscreenClock) {
             enqueueProxyCommand { proxy ->
                 proxy.runCommand(RESET_LOCKSCREEN_CLOCK_COMMAND)
-            }
-        }
-    }
-
-    private fun assignIdsToViews(container: ViewGroup) {
-        for (i in 0 until container.childCount) {
-            val child = container.getChildAt(i)
-
-            if (child is ViewGroup) {
-                assignIdsToViews(child)
-            }
-
-            if (child.id == View.NO_ID) {
-                child.id = View.generateViewId()
             }
         }
     }

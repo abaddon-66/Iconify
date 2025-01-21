@@ -462,4 +462,18 @@ object ViewHelper {
             hide()
         }
     }
+
+    fun assignIdsToViews(container: ViewGroup) {
+        for (i in 0 until container.childCount) {
+            val child = container.getChildAt(i)
+
+            if (child is ViewGroup) {
+                assignIdsToViews(child)
+            }
+
+            if (child.id == View.NO_ID) {
+                child.id = View.generateViewId()
+            }
+        }
+    }
 }
