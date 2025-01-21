@@ -14,10 +14,10 @@ import com.drdisagree.iconify.xposed.modules.extras.utils.SettingsLibUtils
 import com.drdisagree.iconify.xposed.modules.launcher.IconUpdater
 import com.drdisagree.iconify.xposed.modules.lockscreen.Lockscreen
 import com.drdisagree.iconify.xposed.modules.lockscreen.LockscreenWidgets
-import com.drdisagree.iconify.xposed.modules.lockscreen.lockscreenclock.LockscreenClock
-import com.drdisagree.iconify.xposed.modules.lockscreen.lockscreenclock.LockscreenClockA15
-import com.drdisagree.iconify.xposed.modules.lockscreen.lockscreenweather.LockscreenWeather
-import com.drdisagree.iconify.xposed.modules.lockscreen.lockscreenweather.LockscreenWeatherA15
+import com.drdisagree.iconify.xposed.modules.lockscreen.clock.LockscreenClock
+import com.drdisagree.iconify.xposed.modules.lockscreen.clock.LockscreenClockA15
+import com.drdisagree.iconify.xposed.modules.lockscreen.weather.LockscreenWeather
+import com.drdisagree.iconify.xposed.modules.lockscreen.weather.LockscreenWeatherA15
 import com.drdisagree.iconify.xposed.modules.misc.Miscellaneous
 import com.drdisagree.iconify.xposed.modules.quicksettings.ColorizeNotification
 import com.drdisagree.iconify.xposed.modules.quicksettings.HeaderImage

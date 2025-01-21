@@ -1,4 +1,4 @@
-package com.drdisagree.iconify.xposed.modules.lockscreen.lockscreenclock
+package com.drdisagree.iconify.xposed.modules.lockscreen.clock
 
 import android.annotation.SuppressLint
 import android.app.ActivityManager
@@ -133,8 +133,8 @@ class LockscreenClock(context: Context) : ModPack(context) {
 
         resetStockClock()
 
-        if (key.isNotEmpty() &&
-            (key[0] in setOf(
+        when (key.firstOrNull()) {
+            in setOf(
                 LSCLOCK_SWITCH,
                 LSCLOCK_COLOR_SWITCH,
                 LSCLOCK_COLOR_CODE_ACCENT1,
@@ -150,13 +150,16 @@ class LockscreenClock(context: Context) : ModPack(context) {
                 LSCLOCK_FONT_TEXT_SCALING,
                 LSCLOCK_USERNAME,
                 LSCLOCK_DEVICENAME
-            ) || (isAndroid13OrBelow &&
-                    key[0] in setOf(
+            ) -> updateClockView()
+
+            in setOf(
                 DEPTH_WALLPAPER_SWITCH,
                 DEPTH_WALLPAPER_FADE_ANIMATION
-            )))
-        ) {
-            updateClockView()
+            ) -> {
+                if (isAndroid13OrBelow) {
+                    updateClockView()
+                }
+            }
         }
     }
 

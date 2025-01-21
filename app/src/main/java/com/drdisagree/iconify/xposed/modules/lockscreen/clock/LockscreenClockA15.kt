@@ -1,4 +1,4 @@
-package com.drdisagree.iconify.xposed.modules.lockscreen.lockscreenclock
+package com.drdisagree.iconify.xposed.modules.lockscreen.clock
 
 import android.annotation.SuppressLint
 import android.app.ActivityManager
@@ -94,7 +94,7 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
 
     private var showLockscreenClock = false
     private var showDepthWallpaper = false
-    private var mClockViewContainer: ViewGroup? = null
+    private var mLockscreenRootView: ViewGroup? = null
     private var mUserManager: UserManager? = null
     private var mAudioManager: AudioManager? = null
     private var mActivityManager: ActivityManager? = null
@@ -231,7 +231,7 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
                             if (!showLockscreenClock) return@postDelayed
 
                             val rootView = entryV.parent as ViewGroup
-                            mClockViewContainer = rootView
+                            mLockscreenRootView = rootView
 
                             // Hide stock clock
                             listOf(
@@ -279,7 +279,7 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
                 if (!showLockscreenClock) return@runAfter
 
                 val constraintSet = param.args[0]
-                val clockView = mClockViewContainer?.findViewWithTag<View?>(
+                val clockView = mLockscreenRootView?.findViewWithTag<View?>(
                     ICONIFY_LOCKSCREEN_CLOCK_TAG
                 )
 
@@ -313,7 +313,7 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
                 if (!showLockscreenClock) return@runAfter
 
                 val constraintSet = param.args[0]
-                val clockView = mClockViewContainer?.findViewWithTag<View?>(
+                val clockView = mLockscreenRootView?.findViewWithTag<View?>(
                     ICONIFY_LOCKSCREEN_CLOCK_TAG
                 )
 
@@ -382,7 +382,7 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
                     ConstraintSet.BOTTOM
                 )
 
-                val clockView = mClockViewContainer?.findViewWithTag<View?>(
+                val clockView = mLockscreenRootView?.findViewWithTag<View?>(
                     ICONIFY_LOCKSCREEN_CLOCK_TAG
                 )
 
@@ -470,11 +470,11 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
     }
 
     private fun updateClockView() {
-        if (mClockViewContainer == null) return
+        if (mLockscreenRootView == null) return
 
         val currentTime = System.currentTimeMillis()
         val isClockAdded =
-            mClockViewContainer!!.findViewWithTag<View?>(ICONIFY_LOCKSCREEN_CLOCK_TAG) != null
+            mLockscreenRootView!!.findViewWithTag<View?>(ICONIFY_LOCKSCREEN_CLOCK_TAG) != null
 
         if (isClockAdded && currentTime - lastUpdated < THRESHOLD_TIME) {
             return
@@ -484,8 +484,8 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
 
         // Remove existing clock view
         if (isClockAdded) {
-            mClockViewContainer!!.removeView(
-                mClockViewContainer!!.findViewWithTag(
+            mLockscreenRootView!!.removeView(
+                mLockscreenRootView!!.findViewWithTag(
                     ICONIFY_LOCKSCREEN_CLOCK_TAG
                 )
             )
@@ -493,7 +493,7 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
 
         val idx = if (showDepthWallpaper) {
             val tempIdx =
-                mClockViewContainer!!.findViewIdContainsTag(ICONIFY_DEPTH_WALLPAPER_FOREGROUND_TAG)
+                mLockscreenRootView!!.findViewIdContainsTag(ICONIFY_DEPTH_WALLPAPER_FOREGROUND_TAG)
             if (tempIdx == -1) 0 else tempIdx
         } else {
             0
@@ -504,7 +504,7 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
             id = View.generateViewId()
 
             (parent as? ViewGroup)?.removeView(this)
-            mClockViewContainer!!.addView(this, idx)
+            mLockscreenRootView!!.addView(this, idx)
             layoutParams.width = 0
 
             modifyClockView(this)
@@ -626,7 +626,7 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
     }
 
     private fun applyLayoutConstraints(clockView: View) {
-        assignIdsToViews(mClockViewContainer!!)
+        assignIdsToViews(mLockscreenRootView!!)
 
         val notificationContainerId = mContext.resources.getIdentifier(
             "nssl_placeholder",
@@ -640,7 +640,7 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
         )
 
         constraintSetInstance?.also { constraintSet ->
-            constraintSet.clone(mClockViewContainer!!)
+            constraintSet.clone(mLockscreenRootView!!)
 
             // Connect clock view to parent
             constraintSet.connect(
@@ -693,7 +693,7 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
                 )
             }
 
-            constraintSet.applyTo(mClockViewContainer!!)
+            constraintSet.applyTo(mLockscreenRootView!!)
         }
     }
 

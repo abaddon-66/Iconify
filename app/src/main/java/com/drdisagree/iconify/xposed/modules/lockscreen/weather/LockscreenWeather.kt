@@ -1,4 +1,4 @@
-package com.drdisagree.iconify.xposed.modules.lockscreen.lockscreenweather
+package com.drdisagree.iconify.xposed.modules.lockscreen.weather
 
 import android.content.Context
 import android.content.Intent
@@ -77,22 +77,22 @@ class LockscreenWeather(context: Context) : ModPack(context) {
             mCenterWeather = getBoolean(WEATHER_CENTER_VIEW, false)
         }
 
-        if (key.isNotEmpty() &&
-            (key[0] == WEATHER_SHOW_LOCATION ||
-                    key[0] == WEATHER_SHOW_CONDITION ||
-                    key[0] == WEATHER_SHOW_HUMIDITY ||
-                    key[0] == WEATHER_SHOW_WIND ||
-                    key[0] == WEATHER_TEXT_COLOR_SWITCH ||
-                    key[0] == WEATHER_TEXT_COLOR ||
-                    key[0] == WEATHER_TEXT_SIZE ||
-                    key[0] == WEATHER_ICON_SIZE ||
-                    key[0] == WEATHER_STYLE ||
-                    key[0] == WEATHER_CUSTOM_MARGINS_BOTTOM ||
-                    key[0] == WEATHER_CUSTOM_MARGINS_SIDE ||
-                    key[0] == WEATHER_CUSTOM_MARGINS_TOP ||
-                    key[0] == WEATHER_CENTER_VIEW)
-        ) {
-            updateWeatherView()
+        when (key.firstOrNull()) {
+            in setOf(
+                WEATHER_SHOW_LOCATION,
+                WEATHER_SHOW_CONDITION,
+                WEATHER_SHOW_HUMIDITY,
+                WEATHER_SHOW_WIND,
+                WEATHER_TEXT_COLOR_SWITCH,
+                WEATHER_TEXT_COLOR,
+                WEATHER_TEXT_SIZE,
+                WEATHER_ICON_SIZE,
+                WEATHER_STYLE,
+                WEATHER_CUSTOM_MARGINS_BOTTOM,
+                WEATHER_CUSTOM_MARGINS_SIDE,
+                WEATHER_CUSTOM_MARGINS_TOP,
+                WEATHER_CENTER_VIEW
+            ) -> updateWeatherView()
         }
     }
 
