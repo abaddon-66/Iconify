@@ -25,6 +25,7 @@ import android.widget.ProgressBar
 import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
+import com.drdisagree.iconify.common.Preferences.ICONIFY_LOCKSCREEN_CONTAINER_TAG
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.log
 
 object ViewHelper {
@@ -474,6 +475,33 @@ object ViewHelper {
             if (child.id == View.NO_ID) {
                 child.id = View.generateViewId()
             }
+        }
+    }
+
+    fun ViewGroup?.getItemsContainer(context: Context): LinearLayout? {
+        if (this == null) return null
+
+        var layout: LinearLayout? = findViewWithTag(ICONIFY_LOCKSCREEN_CONTAINER_TAG)
+
+        if (layout == null) {
+            layout = LinearLayout(context).apply {
+                id = View.generateViewId()
+                tag = ICONIFY_LOCKSCREEN_CONTAINER_TAG
+                layoutParams = LinearLayout.LayoutParams(
+                    0,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+                )
+            }
+            addView(layout)
+        }
+
+        return layout
+    }
+
+    fun ViewGroup.reAddView(childView: View?, index: Int) {
+        childView?.let { view ->
+            (view.parent as? ViewGroup)?.removeView(childView)
+            addView(view, index)
         }
     }
 }

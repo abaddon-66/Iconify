@@ -46,6 +46,7 @@ import com.drdisagree.iconify.xposed.HookEntry.Companion.enqueueProxyCommand
 import com.drdisagree.iconify.xposed.HookRes.Companion.modRes
 import com.drdisagree.iconify.xposed.ModPack
 import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.findViewIdContainsTag
+import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.reAddView
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.XposedHook.Companion.findClass
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.callMethod
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.getField
@@ -720,13 +721,6 @@ class DepthWallpaperA14(context: Context) : ModPack(context) {
                 }
             }, 0, 5, TimeUnit.SECONDS)
         } catch (ignored: Throwable) {
-        }
-    }
-
-    private fun ViewGroup.reAddView(childView: View?, index: Int) {
-        childView?.let { view ->
-            (view.parent as? ViewGroup)?.removeView(childView)
-            addView(view, index)
         }
     }
 }
