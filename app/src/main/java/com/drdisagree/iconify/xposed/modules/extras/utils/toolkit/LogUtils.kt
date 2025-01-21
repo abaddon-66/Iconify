@@ -12,7 +12,7 @@ fun log(message: String?) {
     XposedBridge.log(message)
 }
 
-fun <T : Any> log(clazz: T, message: String?) {
+fun <T : Any> log(clazz: T, message: Any?) {
     XposedBridge.log("Iconify - ${clazz.javaClass.simpleName}: $message")
 }
 
