@@ -1,88 +1,87 @@
-package com.drdisagree.iconify.ui.preferences;
+package com.drdisagree.iconify.ui.preferences
 
-import android.annotation.SuppressLint;
-import android.content.Context;
-import android.text.TextUtils;
-import android.util.AttributeSet;
-import android.view.View;
-import android.widget.ImageView;
+import android.annotation.SuppressLint
+import android.content.Context
+import android.text.TextUtils
+import android.util.AttributeSet
+import android.view.View
+import android.widget.ImageView
+import androidx.preference.CheckBoxPreference
+import androidx.preference.PreferenceViewHolder
+import com.drdisagree.iconify.R
 
-import androidx.annotation.NonNull;
-import androidx.preference.CheckBoxPreference;
-import androidx.preference.PreferenceViewHolder;
-
-import com.drdisagree.iconify.R;
-
-public class SelectorWithWidgetPreference extends CheckBoxPreference {
-
+class SelectorWithWidgetPreference : CheckBoxPreference {
     /**
      * Interface definition for a callback to be invoked when the preference is clicked.
      */
-    public interface OnClickListener {
+    interface OnClickListener {
         /**
          * Called when a preference has been clicked.
          *
          * @param emiter The clicked preference
          */
-        void onRadioButtonClicked(SelectorWithWidgetPreference emiter);
+        fun onRadioButtonClicked(emiter: SelectorWithWidgetPreference?)
     }
 
-    private OnClickListener mListener = null;
-    private View mAppendix;
-    private int mAppendixVisibility = -1;
+    private var mListener: OnClickListener? = null
+    private var mAppendix: View? = null
+    private var mAppendixVisibility = -1
 
-    private View mExtraWidgetContainer;
-    private ImageView mExtraWidget;
-    private boolean mIsCheckBox = false;  // whether to display this button as a checkbox
+    private var mExtraWidgetContainer: View? = null
+    private var mExtraWidget: ImageView? = null
 
-    private View.OnClickListener mExtraWidgetOnClickListener;
+    /**
+     * Returns whether this preference is a checkbox.
+     */
+    var isCheckBox: Boolean = false // whether to display this button as a checkbox
+        private set
+
+    private var mExtraWidgetOnClickListener: View.OnClickListener? = null
 
     /**
      * Perform inflation from XML and apply a class-specific base style.
      *
-     * @param context  The {@link Context} this is associated with, through which it can
-     *                 access the current theme, resources, etc.
+     * @param context  The [Context] this is associated with, through which it can
+     * access the current theme, resources, etc.
      * @param attrs    The attributes of the XML tag that is inflating the preference
      * @param defStyle An attribute in the current theme that contains a reference to a style
-     *                 resource that supplies default values for the view. Can be 0 to not
-     *                 look for defaults.
+     * resource that supplies default values for the view. Can be 0 to not
+     * look for defaults.
      */
-    public SelectorWithWidgetPreference(Context context, AttributeSet attrs, int defStyle) {
-        super(context, attrs, defStyle);
-        init();
+    constructor(context: Context, attrs: AttributeSet?, defStyle: Int) : super(
+        context,
+        attrs,
+        defStyle
+    ) {
+        init()
     }
 
     /**
      * Perform inflation from XML and apply a class-specific base style.
      *
-     * @param context The {@link Context} this is associated with, through which it can
-     *                access the current theme, resources, etc.
+     * @param context The [Context] this is associated with, through which it can
+     * access the current theme, resources, etc.
      * @param attrs   The attributes of the XML tag that is inflating the preference
      */
-    public SelectorWithWidgetPreference(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        init();
-    }
-
-    /**
-     * Constructor to create a preference, which will display with a checkbox style.
-     *
-     * @param context    The {@link Context} this is associated with.
-     * @param isCheckbox Whether this preference should display as a checkbox.
-     */
-    public SelectorWithWidgetPreference(Context context, boolean isCheckbox) {
-        super(context, null);
-        mIsCheckBox = isCheckbox;
-        init();
-    }
-
     /**
      * Constructor to create a preference.
      *
      * @param context The Context this is associated with.
      */
-    public SelectorWithWidgetPreference(Context context) {
-        this(context, null);
+    @JvmOverloads
+    constructor(context: Context, attrs: AttributeSet? = null) : super(context, attrs) {
+        init()
+    }
+
+    /**
+     * Constructor to create a preference, which will display with a checkbox style.
+     *
+     * @param context    The [Context] this is associated with.
+     * @param isCheckbox Whether this preference should display as a checkbox.
+     */
+    constructor(context: Context, isCheckbox: Boolean) : super(context, null) {
+        isCheckBox = isCheckbox
+        init()
     }
 
     /**
@@ -90,63 +89,63 @@ public class SelectorWithWidgetPreference extends CheckBoxPreference {
      *
      * @param listener The callback to be invoked
      */
-    public void setOnClickListener(OnClickListener listener) {
-        mListener = listener;
+    fun setOnClickListener(listener: OnClickListener?) {
+        mListener = listener
     }
 
     /**
      * Processes a click on the preference.
      */
-    @Override
-    public void onClick() {
+    public override fun onClick() {
         if (mListener != null) {
-            mListener.onRadioButtonClicked(this);
+            mListener!!.onRadioButtonClicked(this)
         }
     }
 
     /**
      * Binds the created View to the data for this preference.
      *
-     * <p>This is a good place to grab references to custom Views in the layout and set
+     *
+     * This is a good place to grab references to custom Views in the layout and set
      * properties on them.
      *
-     * <p>Make sure to call through to the superclass's implementation.
+     *
+     * Make sure to call through to the superclass's implementation.
      *
      * @param holder The ViewHolder that provides references to the views to fill in. These views
-     *               will be recycled, so you should not hold a reference to them after this method
-     *               returns.
+     * will be recycled, so you should not hold a reference to them after this method
+     * returns.
      */
     @SuppressLint("WrongConstant")
-    @Override
-    public void onBindViewHolder(@NonNull PreferenceViewHolder holder) {
-        super.onBindViewHolder(holder);
+    override fun onBindViewHolder(holder: PreferenceViewHolder) {
+        super.onBindViewHolder(holder)
 
-        View summaryContainer = holder.findViewById(R.id.summary_container);
+        val summaryContainer = holder.findViewById(R.id.summary_container)
         if (summaryContainer != null) {
-            summaryContainer.setVisibility(
-                    TextUtils.isEmpty(getSummary()) ? View.GONE : View.VISIBLE);
-            mAppendix = holder.findViewById(R.id.appendix);
+            summaryContainer.visibility =
+                if (TextUtils.isEmpty(summary)) View.GONE else View.VISIBLE
+            mAppendix = holder.findViewById(R.id.appendix)
             if (mAppendix != null && mAppendixVisibility != -1) {
-                mAppendix.setVisibility(mAppendixVisibility);
+                mAppendix!!.visibility = mAppendixVisibility
             }
         }
 
-        mExtraWidget = (ImageView) holder.findViewById(R.id.selector_extra_widget);
-        mExtraWidgetContainer = holder.findViewById(R.id.selector_extra_widget_container);
+        mExtraWidget = holder.findViewById(R.id.selector_extra_widget) as ImageView
+        mExtraWidgetContainer = holder.findViewById(R.id.selector_extra_widget_container)
 
-        setExtraWidgetOnClickListener(mExtraWidgetOnClickListener);
+        setExtraWidgetOnClickListener(mExtraWidgetOnClickListener)
     }
 
     /**
      * Set the visibility state of appendix view.
      *
-     * @param visibility One of {@link View#VISIBLE}, {@link View#INVISIBLE}, or {@link View#GONE}.
+     * @param visibility One of [View.VISIBLE], [View.INVISIBLE], or [View.GONE].
      */
-    public void setAppendixVisibility(int visibility) {
+    fun setAppendixVisibility(visibility: Int) {
         if (mAppendix != null) {
-            mAppendix.setVisibility(visibility);
+            mAppendix!!.visibility = visibility
         }
-        mAppendixVisibility = visibility;
+        mAppendixVisibility = visibility
     }
 
     /**
@@ -154,33 +153,28 @@ public class SelectorWithWidgetPreference extends CheckBoxPreference {
      *
      * @param listener The callback to be invoked
      */
-    public void setExtraWidgetOnClickListener(View.OnClickListener listener) {
-        mExtraWidgetOnClickListener = listener;
+    fun setExtraWidgetOnClickListener(listener: View.OnClickListener?) {
+        mExtraWidgetOnClickListener = listener
 
         if (mExtraWidget == null || mExtraWidgetContainer == null) {
-            return;
+            return
         }
 
-        mExtraWidget.setOnClickListener(mExtraWidgetOnClickListener);
+        mExtraWidget!!.setOnClickListener(mExtraWidgetOnClickListener)
 
-        mExtraWidgetContainer.setVisibility((mExtraWidgetOnClickListener != null)
-                ? View.VISIBLE : View.GONE);
+        mExtraWidgetContainer!!.visibility = if ((mExtraWidgetOnClickListener != null))
+            View.VISIBLE
+        else
+            View.GONE
     }
 
-    /**
-     * Returns whether this preference is a checkbox.
-     */
-    public boolean isCheckBox() {
-        return mIsCheckBox;
-    }
-
-    private void init() {
-        if (mIsCheckBox) {
-            setWidgetLayoutResource(R.layout.preference_widget_checkbox);
+    private fun init() {
+        widgetLayoutResource = if (isCheckBox) {
+            R.layout.preference_widget_checkbox
         } else {
-            setWidgetLayoutResource(R.layout.preference_widget_radiobutton);
+            R.layout.preference_widget_radiobutton
         }
-        setLayoutResource(R.layout.preference_selector_with_widget);
-        setIconSpaceReserved(false);
+        layoutResource = R.layout.preference_selector_with_widget
+        isIconSpaceReserved = false
     }
 }

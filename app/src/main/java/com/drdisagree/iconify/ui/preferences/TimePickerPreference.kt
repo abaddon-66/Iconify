@@ -1,113 +1,123 @@
-package com.drdisagree.iconify.ui.preferences;
+package com.drdisagree.iconify.ui.preferences
+
+import android.content.Context
+import android.content.res.TypedArray
+import android.text.format.DateFormat
+import android.util.AttributeSet
+import android.view.View
+import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
+import androidx.preference.Preference
+import androidx.preference.PreferenceViewHolder
+import com.drdisagree.iconify.R
+import com.google.android.material.timepicker.MaterialTimePicker
+import com.google.android.material.timepicker.TimeFormat
+import java.util.Locale
+import java.util.concurrent.atomic.AtomicInteger
 
 /*
- * Modified from https://github.com/etidoUP/Material-Time-picker-preference-
- * Credits: etidoUP
- */
+* Modified from https://github.com/etidoUP/Material-Time-picker-preference-
+* Credits: etidoUP
+*/
 
-import android.content.Context;
-import android.content.res.TypedArray;
-import android.text.format.DateFormat;
-import android.util.AttributeSet;
-import android.widget.TextView;
+class TimePickerPreference : Preference {
+    private var timeValue: String? = "00:00"
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.preference.Preference;
-import androidx.preference.PreferenceViewHolder;
+    constructor(context: Context) : super(context)
 
-import com.google.android.material.timepicker.MaterialTimePicker;
-import com.google.android.material.timepicker.TimeFormat;
+    constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {
+        init(context, attrs)
+    }
 
-import java.util.Locale;
-import java.util.concurrent.atomic.AtomicInteger;
+    constructor(context: Context, attrs: AttributeSet?, defStyle: Int) : super(
+        context,
+        attrs,
+        defStyle
+    ) {
+        init(context, attrs)
+    }
 
-import com.drdisagree.iconify.R;
+    private fun init(context: Context, attrs: AttributeSet?) {
+        layoutResource = R.layout.custom_preference_time_picker
+        if (attrs != null) {
+            val a =
+                context.theme.obtainStyledAttributes(
+                    attrs,
+                    R.styleable.MaterialTimePickerPreference,
+                    0,
+                    0
+                )
+            timeValue = try {
+                a.getString(R.styleable.MaterialTimePickerPreference_presetValue)
+            } catch (e: Exception) {
+                "00:00"
+            } finally {
+                a.recycle()
+            }
+        }
+    }
 
-public class TimePickerPreference extends Preference {
+    override fun onBindViewHolder(holder: PreferenceViewHolder) {
+        super.onBindViewHolder(holder)
+        val timeTextView = holder.findViewById(R.id.time_stamp) as TextView
+        timeTextView.text = timeValue
+    }
 
-	private String timeValue = "00:00";
+    override fun onClick() {
+        super.onClick()
 
-	public TimePickerPreference(Context context) {
-		super(context);
-	}
+        // parse hour and minute from timeValue
+        val hour = AtomicInteger(
+            timeValue!!.split(":".toRegex()).dropLastWhile { it.isEmpty() }
+                .toTypedArray()[0].toInt()
+        )
+        val minute = AtomicInteger(
+            timeValue!!.split(":".toRegex()).dropLastWhile { it.isEmpty() }
+                .toTypedArray()[1].toInt()
+        )
 
-	public TimePickerPreference(Context context, AttributeSet attrs) {
-		super(context, attrs);
-		init(context, attrs);
-	}
+        val timePicker =
+            MaterialTimePicker.Builder().setTimeFormat(
+                if (DateFormat.is24HourFormat(
+                        context
+                    )
+                ) TimeFormat.CLOCK_24H else TimeFormat.CLOCK_12H
+            ).setHour(hour.get()).setMinute(minute.get()).build()
 
-	public TimePickerPreference(Context context, AttributeSet attrs, int defStyle) {
-		super(context, attrs, defStyle);
-		init(context, attrs);
-	}
+        timePicker.addOnPositiveButtonClickListener { v: View? ->
+            hour.set(timePicker.hour)
+            minute.set(timePicker.minute)
+            val selectedTime = String.format(
+                Locale.getDefault(),
+                "%02d:%02d",
+                hour.get(),
+                minute.get()
+            )
 
-	private void init(Context context, AttributeSet attrs) {
-		setLayoutResource(R.layout.custom_preference_time_picker);
-		if (attrs != null) {
-			TypedArray a =
-					context.getTheme().obtainStyledAttributes(attrs, R.styleable.MaterialTimePickerPreference, 0, 0);
-			try {
-				timeValue = a.getString(R.styleable.MaterialTimePickerPreference_presetValue);
-			} catch (Exception e) {
-				timeValue = "00:00";
-			} finally {
-				a.recycle();
-			}
-		}
-	}
+            timeValue = selectedTime
+            persistString(selectedTime)
+            notifyChanged()
+        }
 
-	@Override
-	public void onBindViewHolder(@NonNull PreferenceViewHolder holder) {
-		super.onBindViewHolder(holder);
-		TextView timeTextView = (TextView) holder.findViewById(R.id.time_stamp);
-		timeTextView.setText(timeValue);
-	}
+        timePicker.show((context as AppCompatActivity).supportFragmentManager, "timePicker")
+    }
 
-	@Override
-	protected void onClick() {
-		super.onClick();
+    override fun onGetDefaultValue(a: TypedArray, index: Int): Any? {
+        return a.getString(index)
+    }
 
-		// parse hour and minute from timeValue
-		AtomicInteger hour = new AtomicInteger(Integer.parseInt(timeValue.split(":")[0]));
-		AtomicInteger minute = new AtomicInteger(Integer.parseInt(timeValue.split(":")[1]));
+    override fun onSetInitialValue(defaultValue: Any?) {
+        timeValue = getPersistedString(defaultValue as String?)
+        persistString(timeValue)
+    }
 
-		MaterialTimePicker timePicker =
-				new MaterialTimePicker.Builder().setTimeFormat(DateFormat.is24HourFormat(getContext()) ? TimeFormat.CLOCK_24H : TimeFormat.CLOCK_12H).setHour(hour.get()).setMinute(minute.get()).build();
+    fun getTimeValue(): String? {
+        return this.timeValue
+    }
 
-		timePicker.addOnPositiveButtonClickListener(
-				v -> {
-					hour.set(timePicker.getHour());
-					minute.set(timePicker.getMinute());
-					String selectedTime = String.format(Locale.getDefault(), "%02d:%02d", hour.get(), minute.get());
-
-					timeValue = selectedTime;
-					persistString(selectedTime);
-
-					notifyChanged();
-				});
-
-		timePicker.show(((AppCompatActivity) getContext()).getSupportFragmentManager(), "timePicker");
-	}
-
-	@Override
-	protected Object onGetDefaultValue(TypedArray a, int index) {
-		return a.getString(index);
-	}
-
-	@Override
-	protected void onSetInitialValue(Object defaultValue) {
-		timeValue = getPersistedString((String) defaultValue);
-		persistString(timeValue);
-	}
-
-	public String getTimeValue() {
-		return this.timeValue;
-	}
-
-	public void setTimeValue(String timeValue) {
-		this.timeValue = timeValue;
-		persistString(timeValue);
-		notifyChanged();
-	}
+    fun setTimeValue(timeValue: String?) {
+        this.timeValue = timeValue
+        persistString(timeValue)
+        notifyChanged()
+    }
 }

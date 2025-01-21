@@ -1,227 +1,209 @@
-package com.drdisagree.iconify.ui.preferences;
+package com.drdisagree.iconify.ui.preferences
 
-import android.content.Context;
-import android.text.SpannableString;
-import android.text.TextUtils;
-import android.text.style.URLSpan;
-import android.util.AttributeSet;
-import android.view.View;
-import android.widget.TextView;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.StringRes;
-import androidx.annotation.VisibleForTesting;
-import androidx.preference.Preference;
-import androidx.preference.PreferenceViewHolder;
-
-import com.drdisagree.iconify.R;
+import android.content.Context
+import android.text.SpannableString
+import android.text.TextUtils
+import android.text.style.URLSpan
+import android.util.AttributeSet
+import android.view.View
+import android.widget.TextView
+import androidx.annotation.StringRes
+import androidx.annotation.VisibleForTesting
+import androidx.preference.Preference
+import androidx.preference.PreferenceViewHolder
+import com.drdisagree.iconify.R
 
 /**
  * A custom preference acting as "footer" of a page. It has a field for icon and text. It is added
  * to screen as the last preference.
  */
-public class FooterPreference extends Preference {
-
-    public static final String KEY_FOOTER = "footer_preference";
-    static final int ORDER_FOOTER = Integer.MAX_VALUE - 1;
+class FooterPreference @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null) :
+    Preference(context, attrs, R.attr.footerPreferenceStyle) {
     @VisibleForTesting
-    View.OnClickListener mLearnMoreListener;
-    @VisibleForTesting
-    int mIconVisibility = View.VISIBLE;
-    private CharSequence mContentDescription;
-    private CharSequence mLearnMoreText;
-    private FooterLearnMoreSpan mLearnMoreSpan;
+    var mLearnMoreListener: View.OnClickListener? = null
 
-    public FooterPreference(Context context, AttributeSet attrs) {
-        super(context, attrs, R.attr.footerPreferenceStyle);
-        init();
+    @VisibleForTesting
+    var mIconVisibility: Int = View.VISIBLE
+    private var mContentDescription: CharSequence? = null
+    private var mLearnMoreText: CharSequence? = null
+    private var mLearnMoreSpan: FooterLearnMoreSpan? = null
+
+    init {
+        init()
     }
 
-    public FooterPreference(Context context) {
-        this(context, null);
-    }
-
-    @Override
-    public void onBindViewHolder(@NonNull PreferenceViewHolder holder) {
-        super.onBindViewHolder(holder);
-        TextView title = holder.itemView.findViewById(android.R.id.title);
+    override fun onBindViewHolder(holder: PreferenceViewHolder) {
+        super.onBindViewHolder(holder)
+        val title = holder.itemView.findViewById<TextView>(android.R.id.title)
         if (title != null && !TextUtils.isEmpty(mContentDescription)) {
-            title.setContentDescription(mContentDescription);
+            title.contentDescription = mContentDescription
         }
 
-        TextView learnMore = holder.itemView.findViewById(R.id.settingslib_learn_more);
+        val learnMore = holder.itemView.findViewById<TextView>(R.id.settingslib_learn_more)
         if (learnMore != null) {
             if (mLearnMoreListener != null) {
-                learnMore.setVisibility(View.VISIBLE);
+                learnMore.visibility = View.VISIBLE
                 if (TextUtils.isEmpty(mLearnMoreText)) {
-                    mLearnMoreText = learnMore.getText();
+                    mLearnMoreText = learnMore.text
                 } else {
-                    learnMore.setText(mLearnMoreText);
+                    learnMore.text = mLearnMoreText
                 }
-                SpannableString learnMoreText = new SpannableString(mLearnMoreText);
+                val learnMoreText = SpannableString(mLearnMoreText)
                 if (mLearnMoreSpan != null) {
-                    learnMoreText.removeSpan(mLearnMoreSpan);
+                    learnMoreText.removeSpan(mLearnMoreSpan)
                 }
-                mLearnMoreSpan = new FooterLearnMoreSpan(mLearnMoreListener);
-                learnMoreText.setSpan(mLearnMoreSpan, 0,
-                        learnMoreText.length(), 0);
-                learnMore.setText(learnMoreText);
+                mLearnMoreSpan = FooterLearnMoreSpan(mLearnMoreListener)
+                learnMoreText.setSpan(
+                    mLearnMoreSpan, 0,
+                    learnMoreText.length, 0
+                )
+                learnMore.text = learnMoreText
             } else {
-                learnMore.setVisibility(View.GONE);
+                learnMore.visibility = View.GONE
             }
         }
 
-        View icon = holder.itemView.findViewById(R.id.icon_frame);
+        val icon = holder.itemView.findViewById<View>(R.id.icon_frame)
         if (icon != null) {
-            icon.setVisibility(mIconVisibility);
+            icon.visibility = mIconVisibility
         }
     }
 
-    @Override
-    public void setSummary(CharSequence summary) {
-        setTitle(summary);
+    override fun setSummary(summary: CharSequence?) {
+        title = summary
     }
 
-    @Override
-    public void setSummary(int summaryResId) {
-        setTitle(summaryResId);
+    override fun setSummary(summaryResId: Int) {
+        setTitle(summaryResId)
     }
 
-    @Override
-    public CharSequence getSummary() {
-        return getTitle();
+    override fun getSummary(): CharSequence? {
+        return title
     }
 
-    /**
-     * To set content description of the {@link FooterPreference}. This can use for talkback
-     * environment if developer wants to have a customization content.
-     *
-     * @param contentDescription The resource id of the content description.
-     */
-    public void setContentDescription(CharSequence contentDescription) {
-        if (!TextUtils.equals(mContentDescription, contentDescription)) {
-            mContentDescription = contentDescription;
-            notifyChanged();
+    @get:VisibleForTesting
+    var contentDescription: CharSequence?
+        /**
+         * Return the content description of footer preference.
+         */
+        get() = mContentDescription
+        /**
+         * To set content description of the [FooterPreference]. This can use for talkback
+         * environment if developer wants to have a customization content.
+         *
+         * @param contentDescription The resource id of the content description.
+         */
+        set(contentDescription) {
+            if (!TextUtils.equals(mContentDescription, contentDescription)) {
+                mContentDescription = contentDescription
+                notifyChanged()
+            }
         }
-    }
-
-    /**
-     * Return the content description of footer preference.
-     */
-    @VisibleForTesting
-    CharSequence getContentDescription() {
-        return mContentDescription;
-    }
 
     /**
      * Sets the learn more text.
      *
      * @param learnMoreText The string of the learn more text.
      */
-    public void setLearnMoreText(CharSequence learnMoreText) {
+    fun setLearnMoreText(learnMoreText: CharSequence?) {
         if (!TextUtils.equals(mLearnMoreText, learnMoreText)) {
-            mLearnMoreText = learnMoreText;
-            notifyChanged();
+            mLearnMoreText = learnMoreText
+            notifyChanged()
         }
     }
 
     /**
      * Assign an action for the learn more link.
      */
-    public void setLearnMoreAction(View.OnClickListener listener) {
-        if (mLearnMoreListener != listener) {
-            mLearnMoreListener = listener;
-            notifyChanged();
+    fun setLearnMoreAction(listener: View.OnClickListener) {
+        if (mLearnMoreListener !== listener) {
+            mLearnMoreListener = listener
+            notifyChanged()
         }
     }
 
     /**
      * Set visibility of footer icon.
      */
-    public void setIconVisibility(int iconVisibility) {
+    fun setIconVisibility(iconVisibility: Int) {
         if (mIconVisibility == iconVisibility) {
-            return;
+            return
         }
-        mIconVisibility = iconVisibility;
-        notifyChanged();
+        mIconVisibility = iconVisibility
+        notifyChanged()
     }
 
-    private void init() {
-        setLayoutResource(R.layout.preference_footer);
-        if (getIcon() == null) {
-            setIcon(R.drawable.ic_info);
+    private fun init() {
+        layoutResource = R.layout.preference_footer
+        if (icon == null) {
+            setIcon(R.drawable.ic_info)
         }
-        setOrder(ORDER_FOOTER);
-        if (TextUtils.isEmpty(getKey())) {
-            setKey(KEY_FOOTER);
+        order = ORDER_FOOTER
+        if (TextUtils.isEmpty(key)) {
+            key = KEY_FOOTER
         }
-        setSelectable(false);
+        isSelectable = false
     }
 
     /**
      * The builder is convenient to creat a dynamic FooterPreference.
      */
-    public static class Builder {
-        private Context mContext;
-        private String mKey;
-        private CharSequence mTitle;
-        private CharSequence mContentDescription;
-        private CharSequence mLearnMoreText;
-
-        public Builder(@NonNull Context context) {
-            mContext = context;
-        }
+    class Builder(private val mContext: Context) {
+        private var mKey: String? = null
+        private var mTitle: CharSequence? = null
+        private var mContentDescription: CharSequence? = null
+        private var mLearnMoreText: CharSequence? = null
 
         /**
-         * To set the key value of the {@link FooterPreference}.
+         * To set the key value of the [FooterPreference].
          *
          * @param key The key value.
          */
-        public Builder setKey(@NonNull String key) {
-            mKey = key;
-            return this;
+        fun setKey(key: String): Builder {
+            mKey = key
+            return this
         }
 
         /**
-         * To set the title of the {@link FooterPreference}.
+         * To set the title of the [FooterPreference].
          *
          * @param title The title.
          */
-        public Builder setTitle(CharSequence title) {
-            mTitle = title;
-            return this;
+        fun setTitle(title: CharSequence?): Builder {
+            mTitle = title
+            return this
         }
 
         /**
-         * To set the title of the {@link FooterPreference}.
+         * To set the title of the [FooterPreference].
          *
          * @param titleResId The resource id of the title.
          */
-        public Builder setTitle(@StringRes int titleResId) {
-            mTitle = mContext.getText(titleResId);
-            return this;
+        fun setTitle(@StringRes titleResId: Int): Builder {
+            mTitle = mContext.getText(titleResId)
+            return this
         }
 
         /**
-         * To set content description of the {@link FooterPreference}. This can use for talkback
+         * To set content description of the [FooterPreference]. This can use for talkback
          * environment if developer wants to have a customization content.
          *
          * @param contentDescription The resource id of the content description.
          */
-        public Builder setContentDescription(CharSequence contentDescription) {
-            mContentDescription = contentDescription;
-            return this;
+        fun setContentDescription(contentDescription: CharSequence?): Builder {
+            mContentDescription = contentDescription
+            return this
         }
 
         /**
-         * To set content description of the {@link FooterPreference}. This can use for talkback
+         * To set content description of the [FooterPreference]. This can use for talkback
          * environment if developer wants to have a customization content.
          *
          * @param contentDescriptionResId The resource id of the content description.
          */
-        public Builder setContentDescription(@StringRes int contentDescriptionResId) {
-            mContentDescription = mContext.getText(contentDescriptionResId);
-            return this;
+        fun setContentDescription(@StringRes contentDescriptionResId: Int): Builder {
+            mContentDescription = mContext.getText(contentDescriptionResId)
+            return this
         }
 
         /**
@@ -230,67 +212,59 @@ public class FooterPreference extends Preference {
          *
          * @param learnMoreText The resource id of the learn more string.
          */
-        public Builder setLearnMoreText(CharSequence learnMoreText) {
-            mLearnMoreText = learnMoreText;
-            return this;
+        fun setLearnMoreText(learnMoreText: CharSequence?): Builder {
+            mLearnMoreText = learnMoreText
+            return this
         }
 
         /**
-         * To set learn more string of the {@link FooterPreference}. This can use for talkback
+         * To set learn more string of the [FooterPreference]. This can use for talkback
          * environment if developer wants to have a customization content.
          *
          * @param learnMoreTextResId The resource id of the learn more string.
          */
-        public Builder setLearnMoreText(@StringRes int learnMoreTextResId) {
-            mLearnMoreText = mContext.getText(learnMoreTextResId);
-            return this;
+        fun setLearnMoreText(@StringRes learnMoreTextResId: Int): Builder {
+            mLearnMoreText = mContext.getText(learnMoreTextResId)
+            return this
         }
 
 
         /**
-         * To generate the {@link FooterPreference}.
+         * To generate the [FooterPreference].
          */
-        public FooterPreference build() {
-            final FooterPreference footerPreference = new FooterPreference(mContext);
-            footerPreference.setSelectable(false);
-            if (TextUtils.isEmpty(mTitle)) {
-                throw new IllegalArgumentException("Footer title cannot be empty!");
-            }
-            footerPreference.setTitle(mTitle);
+        fun build(): FooterPreference {
+            val footerPreference = FooterPreference(mContext)
+            footerPreference.isSelectable = false
+            require(!TextUtils.isEmpty(mTitle)) { "Footer title cannot be empty!" }
+            footerPreference.title = mTitle
             if (!TextUtils.isEmpty(mKey)) {
-                footerPreference.setKey(mKey);
+                footerPreference.key = mKey
             }
 
             if (!TextUtils.isEmpty(mContentDescription)) {
-                footerPreference.setContentDescription(mContentDescription);
+                footerPreference.contentDescription = mContentDescription
             }
 
             if (!TextUtils.isEmpty(mLearnMoreText)) {
-                footerPreference.setLearnMoreText(mLearnMoreText);
+                footerPreference.setLearnMoreText(mLearnMoreText)
             }
-            return footerPreference;
+            return footerPreference
         }
     }
 
     /**
-     * A {@link URLSpan} that opens a support page when clicked
+     * A [URLSpan] that opens a support page when clicked
      */
-    static class FooterLearnMoreSpan extends URLSpan {
-
-        private final View.OnClickListener mClickListener;
-
-        FooterLearnMoreSpan(View.OnClickListener clickListener) {
-            // sets the url to empty string so we can prevent any other span processing from
-            // clearing things we need in this string.
-            super("");
-            mClickListener = clickListener;
+    internal class FooterLearnMoreSpan // sets the url to empty string so we can prevent any other span processing from
+    // clearing things we need in this string.
+        (private val mClickListener: View.OnClickListener?) : URLSpan("") {
+        override fun onClick(widget: View) {
+            mClickListener?.onClick(widget)
         }
+    }
 
-        @Override
-        public void onClick(View widget) {
-            if (mClickListener != null) {
-                mClickListener.onClick(widget);
-            }
-        }
+    companion object {
+        const val KEY_FOOTER: String = "footer_preference"
+        const val ORDER_FOOTER: Int = Int.MAX_VALUE - 1
     }
 }
