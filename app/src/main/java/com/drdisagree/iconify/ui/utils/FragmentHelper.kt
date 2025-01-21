@@ -60,7 +60,6 @@ fun isInGroup(fragment: Fragment, group: FragmentGroup): Boolean {
         FragmentGroup.HOME -> {
             fragment is Home ||
                     fragment is IconPack ||
-                    fragment is ColoredBattery ||
                     fragment is MediaIcons ||
                     fragment is SettingsIcons ||
                     fragment is CellularIcons ||
@@ -82,6 +81,7 @@ fun isInGroup(fragment: Fragment, group: FragmentGroup): Boolean {
                     fragment is ColorEngine ||
                     fragment is BasicColors ||
                     fragment is UiRoundness ||
+                    fragment is ColoredBattery ||
                     fragment is QsRowColumn ||
                     fragment is QsIconLabel ||
                     fragment is QsTileSize ||
