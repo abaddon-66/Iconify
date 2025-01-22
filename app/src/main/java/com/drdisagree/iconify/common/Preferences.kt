@@ -148,6 +148,7 @@ object Preferences {
     const val FIXED_STATUS_ICONS_SIDEMARGIN = "xposed_fixedstatusiconssidemargin"
     const val FIXED_STATUS_ICONS_TOPMARGIN = "xposed_fixedstatusiconstopmargin"
     const val HIDE_LOCKSCREEN_STATUSBAR = "xposed_hidelockscreenstatusbar"
+    const val STATUSBAR_SWAP_WIFI_CELLULAR = "xposed_statusbarswapwificellular"
     const val SB_CLOCK_SIZE_SWITCH = "xposed_sbclocksizeswitch"
     const val SB_CLOCK_SIZE = "xposed_sbclocksize"
     const val COLORED_STATUSBAR_ICON = "xposed_coloredstatusbaricon"

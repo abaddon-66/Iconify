@@ -12,6 +12,7 @@ import android.text.TextWatcher
 import android.util.TypedValue
 import android.view.Gravity
 import android.view.View
+import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
 import com.drdisagree.iconify.common.Const.FRAMEWORK_PACKAGE
@@ -21,6 +22,7 @@ import com.drdisagree.iconify.common.Preferences.HIDE_LOCKSCREEN_CARRIER
 import com.drdisagree.iconify.common.Preferences.HIDE_LOCKSCREEN_STATUSBAR
 import com.drdisagree.iconify.common.Preferences.SB_CLOCK_SIZE
 import com.drdisagree.iconify.common.Preferences.SB_CLOCK_SIZE_SWITCH
+import com.drdisagree.iconify.common.Preferences.STATUSBAR_SWAP_WIFI_CELLULAR
 import com.drdisagree.iconify.xposed.HookRes.Companion.resParams
 import com.drdisagree.iconify.xposed.ModPack
 import com.drdisagree.iconify.xposed.modules.extras.utils.StatusBarClock.getCenterClockView
@@ -31,12 +33,14 @@ import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.XposedHook.Com
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.callMethod
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.getField
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.getFieldSilently
+import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookConstructor
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookMethod
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.log
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.setField
 import com.drdisagree.iconify.xposed.utils.XPrefs.Xprefs
 import com.drdisagree.iconify.xposed.utils.XPrefs.XprefsIsInitialized
 import de.robv.android.xposed.XC_MethodHook
+import de.robv.android.xposed.XC_MethodHook.MethodHookParam
 import de.robv.android.xposed.XposedHelpers.callStaticMethod
 import de.robv.android.xposed.callbacks.XC_InitPackageResources.InitPackageResourcesParam
 import de.robv.android.xposed.callbacks.XC_LayoutInflated
@@ -56,6 +60,7 @@ class Statusbar(context: Context) : ModPack(context) {
     private var mRightClockSize = 14
     private var hideLockscreenCarrier = false
     private var hideLockscreenStatusbar = false
+    private var swapWifiAndCellularIcon = false
 
     override fun updatePrefs(vararg key: String) {
         if (!XprefsIsInitialized) return
@@ -66,22 +71,19 @@ class Statusbar(context: Context) : ModPack(context) {
             sbClockSize = getSliderInt(SB_CLOCK_SIZE, 14)
             hideLockscreenCarrier = getBoolean(HIDE_LOCKSCREEN_CARRIER, false)
             hideLockscreenStatusbar = getBoolean(HIDE_LOCKSCREEN_STATUSBAR, false)
+            swapWifiAndCellularIcon = getBoolean(STATUSBAR_SWAP_WIFI_CELLULAR, false)
         }
 
-        if (key.isNotEmpty()) {
-            key[0].let {
-                if (it == SB_CLOCK_SIZE_SWITCH ||
-                    it == SB_CLOCK_SIZE
-                ) {
-                    setClockSize()
-                }
+        when (key.firstOrNull()) {
+            in setOf(
+                SB_CLOCK_SIZE_SWITCH,
+                SB_CLOCK_SIZE
+            ) -> setClockSize()
 
-                if (it == HIDE_LOCKSCREEN_CARRIER ||
-                    it == HIDE_LOCKSCREEN_STATUSBAR
-                ) {
-                    hideLockscreenCarrierOrStatusbar()
-                }
-            }
+            in setOf(
+                HIDE_LOCKSCREEN_CARRIER,
+                HIDE_LOCKSCREEN_STATUSBAR
+            ) -> hideLockscreenCarrierOrStatusbar()
         }
     }
 
@@ -89,6 +91,7 @@ class Statusbar(context: Context) : ModPack(context) {
         setColoredNotificationIcons()
         hideLockscreenCarrierOrStatusbar()
         applyClockSize()
+        swapWifiAndCellularIcon()
     }
 
     private fun setColoredNotificationIcons() {
@@ -404,6 +407,73 @@ class Statusbar(context: Context) : ModPack(context) {
                 mCenterClockView?.addTextChangedListener(textChangeListener)
                 mRightClockView?.addTextChangedListener(textChangeListener)
             }
+    }
+
+    private fun swapWifiAndCellularIcon() {
+        val statusBarIconListClass = findClass(
+            "$SYSTEMUI_PACKAGE.statusbar.phone.StatusBarIconList",
+            "$SYSTEMUI_PACKAGE.statusbar.phone.ui.StatusBarIconList"
+        )
+
+        statusBarIconListClass
+            .hookConstructor()
+            .runAfter { param ->
+                if (!swapWifiAndCellularIcon) return@runAfter
+
+                swapStatusbarIconSlots(
+                    param.thisObject.getField("mSlots") as ArrayList<*>,
+                    param,
+                    "mSlots"
+                )
+                swapStatusbarIconSlots(
+                    param.thisObject.getField("mViewOnlySlots") as List<*>,
+                    param,
+                    "mViewOnlySlots"
+                )
+            }
+
+        val iconManagerClass = findClass(
+            "$SYSTEMUI_PACKAGE.statusbar.phone.StatusBarIconController\$IconManager",
+            "$SYSTEMUI_PACKAGE.statusbar.phone.ui.IconManager"
+        )
+
+        iconManagerClass
+            .hookMethod(
+                "addIcon",
+                "addNewWifiIcon",
+                "addNewMobileIcon",
+                "addNetworkTraffic",
+                "addBluetoothIcon"
+            )
+            .runBefore { param ->
+                val index = param.args[0] as Int
+                val mGroup = param.thisObject.getField("mGroup") as ViewGroup
+
+                param.args[0] = index.coerceIn(0, mGroup.childCount)
+            }
+
+        iconManagerClass
+            .hookMethod("addBindableIcon")
+            .suppressError()
+            .runBefore { param ->
+                val index = param.args[1] as Int
+                val mGroup = param.thisObject.getField("mGroup") as ViewGroup
+
+                param.args[1] = index.coerceIn(0, mGroup.childCount)
+            }
+    }
+
+    private fun swapStatusbarIconSlots(list: List<*>, param: MethodHookParam, fieldName: String) {
+        val wifiIndex = list.indexOfFirst { (it.getField("mName") as String) == "wifi" }
+        val mobileIndex = list.indexOfFirst { (it.getField("mName") as String) == "mobile" }
+
+        if (wifiIndex != -1 && mobileIndex != -1 && mobileIndex > wifiIndex) {
+            val mutableList = list.toMutableList()
+            mutableList[wifiIndex] = mutableList[mobileIndex].also {
+                mutableList[mobileIndex] = mutableList[wifiIndex]
+            }
+            param.thisObject.setField(fieldName, mutableList)
+        }
     }
 
     @SuppressLint("RtlHardcoded")
