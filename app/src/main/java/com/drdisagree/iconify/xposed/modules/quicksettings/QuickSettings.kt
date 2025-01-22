@@ -728,36 +728,41 @@ class QuickSettings(context: Context) : ModPack(context) {
             findClass("$SYSTEMUI_PACKAGE.statusbar.policy.RemoteInputQuickSettingsDisabler")
         val phoneStatusBarPolicyClass =
             findClass("$SYSTEMUI_PACKAGE.statusbar.phone.PhoneStatusBarPolicy")
+        val scrimManagerClass = findClass(
+            "$SYSTEMUI_PACKAGE.ambient.touch.scrim.ScrimManager",
+            "$SYSTEMUI_PACKAGE.dreams.touch.scrim.ScrimManager"
+        )
+
+        val getKeyguardStateController = object : XC_MethodHook() {
+            override fun afterHookedMethod(param: MethodHookParam) {
+                param.thisObject.getFieldSilently("mKeyguardStateController")?.let {
+                    mKeyguardStateController = it
+                }
+            }
+        }
 
         phoneStatusBarPolicyClass
             .hookConstructor()
-            .runAfter { param ->
-                mKeyguardStateController = param.thisObject.getFieldSilently(
-                    "mKeyguardStateController"
-                )
+            .run(getKeyguardStateController)
 
-                if (mKeyguardStateController == null) {
-                    log(this@QuickSettings, "mKeyguardStateController is null")
-                }
-            }
+        scrimManagerClass
+            .hookConstructor()
+            .run(getKeyguardStateController)
 
         remoteInputQuickSettingsDisablerClass
             .hookMethod("adjustDisableFlags")
             .runBefore { param ->
                 if (!hideQsOnLockscreen || mKeyguardStateController == null) return@runBefore
 
-                val isUnlocked = !(mKeyguardStateController.getField(
-                    "mShowing"
-                ) as Boolean) || mKeyguardStateController.getField(
-                    "mCanDismissLockScreen"
-                ) as Boolean
+                val isUnlocked = try {
+                    !(mKeyguardStateController.getField("mShowing") as Boolean) ||
+                            mKeyguardStateController.getField("mCanDismissLockScreen") as Boolean
+                } catch (ignored: Throwable) {
+                    mKeyguardStateController.callMethod("isUnlocked") as Boolean
+                }
 
-                /*
-                 * Location: frameworks/base/core/java/android/app/StatusBarManager.java
-                 * public static final int DISABLE2_QUICK_SETTINGS = 1;
-                 */
                 param.result = if (hideQsOnLockscreen && !isUnlocked) {
-                    param.args[0] as Int or 1 // DISABLE2_QUICK_SETTINGS
+                    param.args[0] as Int or DISABLE2_QUICK_SETTINGS
                 } else {
                     param.args[0]
                 }
@@ -894,5 +899,12 @@ class QuickSettings(context: Context) : ModPack(context) {
                 "secondaryLabel"
             ) as TextView).textAlignment = TEXT_ALIGNMENT_CENTER
         }
+    }
+
+    companion object {
+        /*
+         * Source: frameworks/base/core/java/android/app/StatusBarManager.java
+         */
+        private const val DISABLE2_QUICK_SETTINGS = 1
     }
 }
