@@ -193,16 +193,16 @@ class OpQsHeader(context: Context) : ModPack(context) {
             mediaBlurLevel = getSliderInt(OP_QS_HEADER_BLUR_LEVEL, 10).toFloat()
             topMarginValue = getSliderInt(OP_QS_HEADER_TOP_MARGIN, 0)
             expansionAmount = getSliderInt(OP_QS_HEADER_EXPANSION_Y, 0)
-            expandedQsGap = getInt(OP_QS_HEADER_GAP_EXPANDED, 0)
+            expandedQsGap = getSliderInt(OP_QS_HEADER_GAP_EXPANDED, 0)
             qsTextAlwaysWhite = getBoolean(QS_TEXT_ALWAYS_WHITE, false)
             qsTextFollowAccent = getBoolean(QS_TEXT_FOLLOW_ACCENT, false)
         }
 
-        if (key.isNotEmpty() &&
-            (key[0] == OP_QS_HEADER_VIBRATE ||
-                    key[0] == OP_QS_HEADER_BLUR_LEVEL)
-        ) {
-            updateMediaPlayers(force = true)
+        when (key.firstOrNull()) {
+            in setOf(
+                OP_QS_HEADER_VIBRATE,
+                OP_QS_HEADER_BLUR_LEVEL
+            ) -> updateMediaPlayers(force = true)
         }
     }
 
