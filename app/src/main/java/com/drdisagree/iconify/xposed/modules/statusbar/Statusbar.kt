@@ -414,6 +414,10 @@ class Statusbar(context: Context) : ModPack(context) {
             "$SYSTEMUI_PACKAGE.statusbar.phone.StatusBarIconList",
             "$SYSTEMUI_PACKAGE.statusbar.phone.ui.StatusBarIconList"
         )
+        val iconManagerClass = findClass(
+            "$SYSTEMUI_PACKAGE.statusbar.phone.StatusBarIconController\$IconManager",
+            "$SYSTEMUI_PACKAGE.statusbar.phone.ui.IconManager"
+        )
 
         statusBarIconListClass
             .hookConstructor()
@@ -432,34 +436,26 @@ class Statusbar(context: Context) : ModPack(context) {
                 )
             }
 
-        val iconManagerClass = findClass(
-            "$SYSTEMUI_PACKAGE.statusbar.phone.StatusBarIconController\$IconManager",
-            "$SYSTEMUI_PACKAGE.statusbar.phone.ui.IconManager"
-        )
-
         iconManagerClass
             .hookMethod(
                 "addIcon",
+                "addHolder",
                 "addNewWifiIcon",
                 "addNewMobileIcon",
                 "addNetworkTraffic",
-                "addBluetoothIcon"
+                "addBluetoothIcon",
+                "addBindableIcon"
             )
             .runBefore { param ->
-                val index = param.args[0] as Int
+                if (!swapWifiAndCellularIcon) return@runBefore
+
+                // addBindableIcon has index parameter at 1
+                val intIdx = if (param.args[0] is Int) 0 else 1
+
+                val index = param.args[intIdx] as Int
                 val mGroup = param.thisObject.getField("mGroup") as ViewGroup
 
-                param.args[0] = index.coerceIn(0, mGroup.childCount)
-            }
-
-        iconManagerClass
-            .hookMethod("addBindableIcon")
-            .suppressError()
-            .runBefore { param ->
-                val index = param.args[1] as Int
-                val mGroup = param.thisObject.getField("mGroup") as ViewGroup
-
-                param.args[1] = index.coerceIn(0, mGroup.childCount)
+                param.args[intIdx] = index.coerceIn(0, mGroup.childCount)
             }
     }
 
