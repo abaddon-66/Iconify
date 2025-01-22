@@ -382,6 +382,7 @@
     <string name="toast_module_created">Sikeresen elkészült a modul</string>
     <string name="read_carefully">Olvassa figyelmesen!</string>
     <string name="volume_module_installation_guide">Ez az opció létrehoz egy Magisk-modult a belső tárhely Letöltés mappájában. Flesselje az IconifyCompanion.zip nevű csomagot a Magisk-ban. Mindig távolítsa el a korábbi IconifyCompanion modult (ha telepítve van), és indítsa újra, mielőtt az újat flesselné.\n\n<b>Figyelem:</b>\n• ROM-frissítés előtt uninstallálja a modult.\n• ROM-frissítés után készítse el újra a modult és flesselje.\n• Ne felesseljen olyan modult, ami nem az Ön rendszeréhez készült!</string>
+    <string name="volume_module_unstable_desc">Currently volume module is unstable on Android 14 and above. Try at your own risk.</string>
     <!-- Media Player -->
     <string name="cont_desc_media_player">Médialejátszó előnézet</string>
     <string name="media_player_preview_music_title">Zeneszám-cím</string>
@@ -419,6 +420,8 @@
     <string name="activity_desc_themes">Témákkal is személyre szabhatja</string>
     <string name="activity_title_quick_settings">Gyorsbeállítások</string>
     <string name="activity_desc_quick_settings">A Gyorsbeállítások-panelhez kapcsolódó trükkök</string>
+    <string name="activity_title_lockscreen">Záróképernyő</string>
+    <string name="activity_desc_lockscreen">Testre szabhatja a záróképernyő megjelenését</string>
     <string name="activity_title_battery_style">Akkustílus</string>
     <string name="activity_desc_battery_style">Szabja személyre az Akku-ikon megjelenését</string>
     <string name="activity_title_op_qs_header">One+ Gyorsbeállítások</string>
@@ -547,6 +550,9 @@
     <string name="hide_qs_tile_label_title">Csempefelirat elrejtése</string>
     <string name="hide_qs_tile_label_desc">Csak függőleges csempék esetében</string>
     <string name="qs_tile_label_scaling_title">Szövegméretezés</string>
+    <string name="section_title_notifications">Értesítések</string>
+    <string name="colored_qs_notification_title">Színezett értesítésikon</string>
+    <string name="colored_qs_notification_desc">Az alkalmazásikon megjelenítése értesítési ikonként</string>
     <string name="section_title_qs_margin">Csempemargók</string>
     <string name="section_title_qs_elements">Gyorsbeállítások elemei</string>
     <string name="hide_qs_on_lockscreen_title">Nincs gyorsbeállítás a záróképernyőn</string>
@@ -638,6 +644,7 @@
     <string name="battery_circle">Kör akkumulátor</string>
     <string name="battery_dotted_circle">Pontozott kör akkumulátor</string>
     <string name="battery_filled_circle">Kitöltött kör akkumulátor</string>
+    <string name="battery_landscape_kim">Fekvő Kim</string>
     <!-- Xposed Volume Panel -->
     <string name="volume_percentage_title">Százalékos hangerő</string>
     <string name="volume_percentage_desc">Megjeleníti a százalékértéket a hangerőcsúszka felett</string>
@@ -713,6 +720,12 @@
     <!-- Xposed Depth Wallpaper -->
     <string name="enable_depth_wallpaper_title">A mélységi háttérkép engedélyezése</string>
     <string name="enable_depth_wallpaper_desc">iOS-ban megismert mélységi háttérkép\n%s</string>
+    <string name="depth_wallpaper_ai_mode">AI-mód</string>
+    <string name="depth_wallpaper_ai_mlkit">MLKit (Google)</string>
+    <string name="depth_wallpaper_ai_plugin">Bővítmény</string>
+    <string name="depth_wallpaper_ai_status">AI-állapot</string>
+    <string name="depth_wallpaper_ai_status_plugin_not_installed">Az AI-bővítmény nincs telepítve.\nKattintson a letöltéshez</string>
+    <string name="depth_wallpaper_ai_status_plugin_installed">Az AI-bővítmény telepítésre került.\nIndításhoz érintse meg</string>
     <string name="enable_custom_depth_wallpaper_title">Egyedi képek</string>
     <string name="enable_custom_depth_wallpaper_desc">Az egyedi kép beállítása mint mélységi háttérkép</string>
     <string name="depth_wallpaper_on_aod_title">\'Mindig bekapcsolva\' (AOD) esetén is</string>
@@ -802,6 +815,9 @@
     <string name="hide_ls_lock_icon_desc">A zárikon elrejtése a záróképernyőn</string>
     <string name="fixed_status_icons_title">Rögzített Állapotikonok</string>
     <string name="fixed_status_icons_desc">Az állapotikonok rögzített pozícióba kerülnek\nJónéhány ROM-on buggolást okoz</string>
+    <string name="ls_wallpaper_blur_title">Wallpaper Blur</string>
+    <string name="ls_wallpaper_blur_desc">Apply blur effect on lockscreen</string>
+    <string name="ls_wallpaper_blur_radius_title">Wallpaper Blur Intensity</string>
     <!-- Changelog -->
     <string name="activity_title_changelog">Változáslista</string>
     <string name="no_internet_connection">Nem sikerült csatlakozni a szerverhez!\nProbléma lehet az internetkapcsolattal, vagy a szerver jelenleg nem működik. Kérjük, próbálja újra később.</string>
@@ -839,9 +855,11 @@
     <string name="info_tester_desc">Az alkalmazás teszteléséért.</string>
     <string name="info_betterqs_desc">A jobb Gyorsbeállítások engedélyezéséért.</string>
     <string name="info_binaries_desc">Androidon futtatható binárisokhoz.</string>
+    <string name="info_buttercup_desc">Némelyik záróképernyői órastílushoz.</string>
     <string name="section_title_contributors">Közreműködők</string>
     <string name="info_contributor_desc">A githubon való közreműködésért.</string>
     <string name="info_contributor_desc_2">A Telegramban való segítségért.</string>
+    <string name="total_contributions">Az összes hozzájárulás: %d</string>
     <string name="section_title_translators">Fordítók</string>
     <string name="af_translation">Afrikai fordítás.</string>
     <string name="ar_translation">Arab fordítás.</string>
@@ -881,6 +899,10 @@
     <string name="unzoom_depth_wallpaper_desc">Eltávolítja a nagyítási hatást a mélységi háttérképről</string>
     <string name="hide_data_disabled_icon_title">Letiltásjelző-ikon elrejtése</string>
     <string name="hide_data_disabled_icon_desc">A \'Letiltott adatok\' ikon elrejtése</string>
+    <string name="colorize_notification_view_title">Színezett értesítési nézet</string>
+    <string name="colorize_notification_view_desc">Az értesítési nézet ugyanolyan színű, mint az alkalmazás ikonja</string>
+    <string name="colorize_notification_alternative_color_generation_title">Alternatív színgeneráció</string>
+    <string name="colorize_notification_alternative_color_generation_desc">Monet-pontszám és kvantáló használata a színek kinyeréséhez</string>
     <!-- Bottom Navigation -->
     <string name="navbar_home">Kezdőlap</string>
     <string name="navbar_tweaks">Trükkök</string>
@@ -1104,6 +1126,8 @@
     <string name="location_query_hint">Tartózkodási hely keresése</string>
     <string name="weather_permission_dialog_title">Helymeghatározási jogosultságok megadása</string>
     <string name="weather_permission_dialog_message">Az időjárási adatok lekéréséhez tartózkodási helymeghatározásra van szükség. Kattintson az OK gombra a Beállítások megnyitásához.</string>
+    <string name="omnijaws_today">Ma</string>
+    <string name="omnijaws_tomorrow">Holnap</string>
     <!-- Weather Conditions -->
     <string name="weather_condition_clouds">Felhős</string>
     <string name="weather_condition_rain">Esős</string>
@@ -1120,6 +1144,9 @@
     <string name="weather_api_key">OpenWeatherMap API-kulcs</string>
     <string name="weather_provider_owm_key_title">OpenWeatherMap API-kulcs szükséges</string>
     <string name="weather_provider_owm_key_message">Kérjük, adja meg az OpenWeatherMap API-kulcsot az időjárási adatok lekéréséhez.</string>
+    <string name="yandex_api_key">Yandex API-kulcs</string>
+    <string name="weather_provider_yandex_key_title">Yandex API-kulcs szükséges</string>
+    <string name="weather_provider_yandex_key_message">Kérjük, adja meg a Yandex API-kulcsot az időjárási adatok lekéréséhez.</string>
     <string name="weather_show_location">Tartózkodási hely kijelzése</string>
     <string name="weather_show_location_summary">Az ikon elé írja ki a tartózkodási helyet</string>
     <string name="weather_show_condition">Időjárási viszonyok kijelzése</string>

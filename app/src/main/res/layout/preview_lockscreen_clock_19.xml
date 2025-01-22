@@ -33,7 +33,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
             android:alpha="0.9"
-            android:fontFamily="@font/ios"
+            android:fontFamily="@font/sf_pro_stencil"
             android:format12Hour="hh:mm"
             android:format24Hour="HH:mm"
             android:gravity="center"

@@ -22,7 +22,7 @@ import androidx.core.graphics.PathParser
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import com.drdisagree.iconify.common.Preferences
 import com.drdisagree.iconify.config.RPrefs.getBoolean
-import com.drdisagree.iconify.xposed.modules.utils.AlphaRefreshedPaint
+import com.drdisagree.iconify.xposed.modules.extras.utils.AlphaRefreshedPaint
 import com.drdisagree.iconify.xposed.utils.XPrefs.Xprefs
 
 @Suppress("UNUSED_PARAMETER")
@@ -91,7 +91,7 @@ open class CircleBattery(private val mContext: Context, frameColor: Int) : Batte
 
     private fun initColors() {
         customBlendColor = try {
-            Xprefs.getBoolean(Preferences.CUSTOM_BATTERY_BLEND_COLOR, false) ?: false
+            Xprefs.getBoolean(Preferences.CUSTOM_BATTERY_BLEND_COLOR, false)
         } catch (ignored: Throwable) {
             getBoolean(Preferences.CUSTOM_BATTERY_BLEND_COLOR, false)
         }
@@ -242,6 +242,7 @@ open class CircleBattery(private val mContext: Context, frameColor: Int) : Batte
     }
 
     @SuppressLint("DiscouragedApi", "RestrictedApi")
+    @Suppress("DEPRECATION")
     private fun updateSize() {
         val res = mContext.resources
         mDiameter = getBounds().bottom - getBounds().top

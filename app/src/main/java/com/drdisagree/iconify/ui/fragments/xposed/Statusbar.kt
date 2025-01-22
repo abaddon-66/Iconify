@@ -2,8 +2,7 @@ package com.drdisagree.iconify.ui.fragments.xposed
 
 import com.drdisagree.iconify.R
 import com.drdisagree.iconify.common.Preferences.COLORED_STATUSBAR_ICON
-import com.drdisagree.iconify.common.Preferences.HIDE_LOCKSCREEN_CARRIER
-import com.drdisagree.iconify.common.Preferences.HIDE_LOCKSCREEN_STATUSBAR
+import com.drdisagree.iconify.common.Preferences.STATUSBAR_SWAP_WIFI_CELLULAR
 import com.drdisagree.iconify.ui.activities.MainActivity
 import com.drdisagree.iconify.ui.base.ControlledPreferenceFragmentCompat
 
@@ -26,8 +25,7 @@ class Statusbar : ControlledPreferenceFragmentCompat() {
 
         when (key) {
             COLORED_STATUSBAR_ICON,
-            HIDE_LOCKSCREEN_CARRIER,
-            HIDE_LOCKSCREEN_STATUSBAR -> {
+            STATUSBAR_SWAP_WIFI_CELLULAR -> {
                 MainActivity.showOrHidePendingActionButton(
                     activityBinding = (requireActivity() as MainActivity).binding,
                     requiresSystemUiRestart = true

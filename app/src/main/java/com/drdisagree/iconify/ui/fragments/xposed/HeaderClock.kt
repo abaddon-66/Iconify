@@ -2,9 +2,12 @@ package com.drdisagree.iconify.ui.fragments.xposed
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.result.ActivityResult
+import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import com.drdisagree.iconify.BuildConfig
 import com.drdisagree.iconify.Iconify.Companion.appContext
@@ -40,28 +43,34 @@ class HeaderClock : ControlledPreferenceFragmentCompat() {
     override val hasMenu: Boolean
         get() = true
 
-    private var startActivityIntent = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
-    ) { result: ActivityResult ->
-        if (result.resultCode == Activity.RESULT_OK) {
-            val data = result.data
-            val path = getRealPath(data)
+    private lateinit var startActivityIntent: ActivityResultLauncher<Intent?>
 
-            if (path != null && moveToIconifyHiddenDir(path, HEADER_CLOCK_FONT_DIR)) {
-                putBoolean(HEADER_CLOCK_FONT_SWITCH, false)
-                putBoolean(HEADER_CLOCK_FONT_SWITCH, true)
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
 
-                Toast.makeText(
-                    appContext,
-                    appContextLocale.resources.getString(R.string.toast_applied),
-                    Toast.LENGTH_SHORT
-                ).show()
-            } else {
-                Toast.makeText(
-                    appContext,
-                    appContextLocale.resources.getString(R.string.toast_rename_file),
-                    Toast.LENGTH_SHORT
-                ).show()
+        startActivityIntent = registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()
+        ) { result: ActivityResult ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                val data = result.data
+                val path = getRealPath(data)
+
+                if (path != null && moveToIconifyHiddenDir(path, HEADER_CLOCK_FONT_DIR)) {
+                    putBoolean(HEADER_CLOCK_FONT_SWITCH, false)
+                    putBoolean(HEADER_CLOCK_FONT_SWITCH, true)
+
+                    Toast.makeText(
+                        appContext,
+                        appContextLocale.resources.getString(R.string.toast_applied),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                } else {
+                    Toast.makeText(
+                        appContext,
+                        appContextLocale.resources.getString(R.string.toast_rename_file),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
             }
         }
     }
@@ -107,26 +116,23 @@ class HeaderClock : ControlledPreferenceFragmentCompat() {
                     BuildConfig.APPLICATION_ID
                 ) != 0
         ) {
-            maxIndex++
-        }
-
-        for (i in 0 until maxIndex) {
             headerClock.add(
                 ClockModel(
-                    if (i == 0) {
+                    if (maxIndex == 0) {
                         requireContext().getString(R.string.clock_none)
                     } else {
-                        requireContext().getString(R.string.clock_style_name, i)
+                        requireContext().getString(R.string.clock_style_name, maxIndex)
                     },
                     requireContext()
                         .resources
                         .getIdentifier(
-                            HEADER_CLOCK_LAYOUT + i,
+                            HEADER_CLOCK_LAYOUT + maxIndex,
                             "layout",
                             BuildConfig.APPLICATION_ID
                         )
                 )
             )
+            maxIndex++
         }
 
         return ClockPreviewAdapter(

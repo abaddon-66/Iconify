@@ -17,6 +17,7 @@ import java.util.Locale
 import java.util.concurrent.CountDownLatch
 
 abstract class AbstractWeatherProvider(protected var mContext: Context) {
+
     protected fun retrieve(url: String?): String {
         response = ""
         val latch = CountDownLatch(1)
@@ -41,9 +42,34 @@ abstract class AbstractWeatherProvider(protected var mContext: Context) {
         return response
     }
 
+    protected fun retrieve(url: String?, header: Array<String>): String {
+        response = ""
+        val latch = CountDownLatch(1)
+
+        NetworkUtils.asynchronousGetRequest(url, header) { result ->
+            if (!TextUtils.isEmpty(result)) {
+                Log.d(TAG, "Download success $result")
+                response = result
+            } else {
+                response = ""
+                Log.d(TAG, "Download failed")
+            }
+            latch.countDown()
+        }
+
+        try {
+            latch.await() // Wait until the response is set
+        } catch (e: InterruptedException) {
+            Thread.currentThread().interrupt() // Restore interrupt status
+            Log.e(TAG, "retrieve interrupted", e)
+        }
+
+        return response
+    }
+
     abstract fun getCustomWeather(lat: String?, lon: String?, metric: Boolean): WeatherInfo?
 
-    abstract fun getLocationWeather(location: Location?, metric: Boolean): WeatherInfo?
+    abstract fun getLocationWeather(location: Location, metric: Boolean): WeatherInfo?
 
     abstract fun shouldRetry(): Boolean
 
@@ -54,6 +80,7 @@ abstract class AbstractWeatherProvider(protected var mContext: Context) {
         )
     }
 
+    @Suppress("DEPRECATION")
     private fun getCoordinatesLocalityWithGoogle(coordinate: String): String? {
         val latitude =
             coordinate.substring(coordinate.indexOf("=") + 1, coordinate.indexOf("&")).toDouble()
@@ -72,7 +99,7 @@ abstract class AbstractWeatherProvider(protected var mContext: Context) {
         return null
     }
 
-    protected fun getCoordinatesLocality(coordinate: String): String? {
+    private fun getCoordinatesLocality(coordinate: String): String? {
         val cityGoogle = getCoordinatesLocalityWithGoogle(coordinate)
         if (!TextUtils.isEmpty(cityGoogle)) {
             return cityGoogle
@@ -82,8 +109,8 @@ abstract class AbstractWeatherProvider(protected var mContext: Context) {
         val longitude = coordinate.substring(coordinate.lastIndexOf("=") + 1).toDouble()
 
         val lang = Locale.getDefault().language.replaceFirst("_".toRegex(), "-")
-        val url = String.format(URL_LOCALITY, latitude, longitude, lang)
-        val response = retrieve(url) ?: return null
+        val url = String.format(Locale.getDefault(), URL_LOCALITY, latitude, longitude, lang)
+        val response = retrieve(url, arrayOf())
         log(TAG, "URL = $url returning a response of $response")
 
         try {

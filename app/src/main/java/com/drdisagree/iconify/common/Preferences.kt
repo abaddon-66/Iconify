@@ -104,6 +104,11 @@ object Preferences {
     const val LSCLOCK_FONT_TEXT_SCALING = "xposed_lockscreenclocktextscaling"
     const val LSCLOCK_USERNAME = "xposed_lockscreenclockcustomusername"
     const val LSCLOCK_DEVICENAME = "xposed_lockscreenclockcustomdevicename"
+    const val COLORED_NOTIFICATION_ICON_SWITCH = "xposed_colorednotificationicon"
+    const val COLORED_NOTIFICATION_VIEW_SWITCH = "xposed_colorednotificationview"
+    const val COLORED_NOTIFICATION_ALTERNATIVE_SWITCH = "xposed_colorednotificationalternative"
+    const val LOCKSCREEN_WALLPAPER_BLUR = "xposed_lockscreenwallpaperblur"
+    const val LOCKSCREEN_WALLPAPER_BLUR_RADIUS = "xposed_lockscreenwallpaperblurradius"
 
     // LS Widgets
     const val LOCKSCREEN_WIDGETS_ENABLED: String = "lockscreen_widgets_enabled"
@@ -136,12 +141,14 @@ object Preferences {
     const val LOCKSCREEN_WIDGETS_SMALL_ICON_ACTIVE: String = "lockscreen_widgets_small_icon_active"
     const val LOCKSCREEN_WIDGETS_SMALL_ICON_INACTIVE: String =
         "lockscreen_widgets_small_icon_inactive"
+    const val LOCKSCREEN_WIDGETS_TOP_MARGIN: String = "lockscreen_widgets_top_margin"
     const val LOCKSCREEN_WIDGETS_BOTTOM_MARGIN: String = "lockscreen_widgets_bottom_margin"
     const val LOCKSCREEN_WIDGETS_SCALE: String = "lockscreen_widgets_scale"
     const val FIXED_STATUS_ICONS_SWITCH = "xposed_fixedstatusicons"
     const val FIXED_STATUS_ICONS_SIDEMARGIN = "xposed_fixedstatusiconssidemargin"
     const val FIXED_STATUS_ICONS_TOPMARGIN = "xposed_fixedstatusiconstopmargin"
     const val HIDE_LOCKSCREEN_STATUSBAR = "xposed_hidelockscreenstatusbar"
+    const val STATUSBAR_SWAP_WIFI_CELLULAR = "xposed_statusbarswapwificellular"
     const val SB_CLOCK_SIZE_SWITCH = "xposed_sbclocksizeswitch"
     const val SB_CLOCK_SIZE = "xposed_sbclocksize"
     const val COLORED_STATUSBAR_ICON = "xposed_coloredstatusbaricon"
@@ -158,6 +165,8 @@ object Preferences {
     const val CUSTOM_BATTERY_HEIGHT = "xposed_custombatteryheight"
     const val HIDE_DATA_DISABLED_ICON = "xposed_hideDataDisabledIcon"
     const val DEPTH_WALLPAPER_SWITCH = "xposed_depthwallpaper"
+    const val DEPTH_WALLPAPER_AI_STATUS = "xposed_depthwallpaper_aistatus"
+    const val DEPTH_WALLPAPER_AI_MODE = "xposed_depthwallpaper_aimode"
     const val CUSTOM_DEPTH_WALLPAPER_SWITCH = "xposed_customdepthwallpaper"
     const val DEPTH_WALLPAPER_FOREGROUND_ALPHA = "xposed_depthwallpaperforegroundalpha"
     const val DEPTH_WALLPAPER_ON_AOD = "xposed_depthwallpaperaonaod"
@@ -219,8 +228,13 @@ object Preferences {
 
     // Xposed view tags
     const val ICONIFY_HEADER_CLOCK_TAG = "iconify_header_clock"
+    const val ICONIFY_LOCKSCREEN_CONTAINER_TAG = "iconify_lockscreen_container"
     const val ICONIFY_LOCKSCREEN_CLOCK_TAG = "iconify_lockscreen_clock"
+    const val ICONIFY_LOCKSCREEN_WEATHER_TAG = "iconify_lockscreen_weather"
+    const val ICONIFY_LOCKSCREEN_WIDGET_TAG = "iconify_lockscreen_widget"
     const val ICONIFY_DEPTH_WALLPAPER_TAG = "iconify_depth_wallpaper"
+    const val ICONIFY_DEPTH_WALLPAPER_FOREGROUND_TAG = "iconify_depth_wallpaper_foreground"
+    const val ICONIFY_DEPTH_WALLPAPER_BACKGROUND_TAG = "iconify_depth_wallpaper_background"
     const val ICONIFY_CHARGING_ICON_TAG = "iconify_charging_icon"
     const val ICONIFY_QS_HEADER_CONTAINER_TAG = "iconify_qs_header_container"
     const val ICONIFY_QS_HEADER_CONTAINER_SHADE_TAG = "iconify_qs_header_container_shade"
@@ -264,6 +278,7 @@ object Preferences {
     const val BATTERY_STYLE_CIRCLE = 35
     const val BATTERY_STYLE_DOTTED_CIRCLE = 36
     const val BATTERY_STYLE_FILLED_CIRCLE = 37
+    const val BATTERY_STYLE_LANDSCAPE_KIM = 38
 
     // Xposed force reload overlay
     const val FORCE_RELOAD_PACKAGE_NAME = "com.android.internal.display.cutout.emulation.corner"
@@ -353,6 +368,7 @@ object Preferences {
     const val WEATHER_TEXT_COLOR_SWITCH: String = "weather_text_color_switch"
     const val WEATHER_TEXT_COLOR: String = "weather_text_color"
     const val WEATHER_OWM_KEY: String = "owm_key"
+    const val WEATHER_YANDEX_KEY: String = "yandex_key"
     const val WEATHER_UNITS: String = "weather_units"
     const val WEATHER_PROVIDER: String = "weather_provider"
     const val WEATHER_CUSTOM_LOCATION: String = "weather_custom_location_switch"

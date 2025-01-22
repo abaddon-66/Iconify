@@ -11,10 +11,12 @@ import com.drdisagree.iconify.common.Resources
 import com.drdisagree.iconify.utils.SystemUtils.hasStoragePermission
 import com.drdisagree.iconify.utils.SystemUtils.requestStoragePermission
 import com.topjohnwu.superuser.Shell
+import java.io.BufferedReader
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.io.InputStream
+import java.io.InputStreamReader
 import java.io.OutputStream
 import java.nio.file.Files
 import java.nio.file.Paths
@@ -187,9 +189,23 @@ object FileUtils {
     }
 
     fun launchFilePicker(launcher: ActivityResultLauncher<Intent?>, type: String?) {
-        val chooseFile = Intent(Intent.ACTION_GET_CONTENT)
-        chooseFile.addCategory(Intent.CATEGORY_OPENABLE)
-        chooseFile.setType(type)
-        launcher.launch(chooseFile)
+        launcher.launch(
+            Intent(Intent.ACTION_GET_CONTENT).apply {
+                addCategory(Intent.CATEGORY_OPENABLE)
+                setType(type)
+            }
+        )
+    }
+
+    fun readJsonFileFromAssets(fileName: String): String {
+        val stringBuilder = StringBuilder()
+        val inputStream = appContext.assets.open(fileName)
+        val bufferedReader = BufferedReader(InputStreamReader(inputStream))
+        var line: String?
+        while (bufferedReader.readLine().also { line = it } != null) {
+            stringBuilder.append(line)
+        }
+        bufferedReader.close()
+        return stringBuilder.toString()
     }
 }

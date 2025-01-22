@@ -10,14 +10,14 @@ plugins {
 
 android {
     namespace = "com.drdisagree.iconify"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.drdisagree.iconify"
         minSdk = 31
-        targetSdk = 34
-        versionCode = 21
-        versionName = "6.9.0"
+        targetSdk = 35
+        versionCode = 22
+        versionName = "7.0.0"
         setProperty("archivesBaseName", "Iconify v$versionName")
         buildConfigField("int", "MIN_SDK_VERSION", "$minSdk")
     }
@@ -105,6 +105,15 @@ android {
         abortOnError = false
         checkReleaseBuilds = false
     }
+}
+
+tasks.withType<JavaCompile>().configureEach {
+    options.compilerArgs.add("-Xlint:-deprecation")
+}
+
+gradle.taskGraph.whenReady {
+    gradle.startParameter.showStacktrace = ShowStacktrace.ALWAYS
+    gradle.startParameter.warningMode = WarningMode.Summary
 }
 
 dependencies {
@@ -209,6 +218,9 @@ dependencies {
     implementation(libs.androidx.work.runtime.ktx)
     implementation(libs.slf4j.api)
     implementation(libs.commons.text)
+
+    // OkHttp
+    implementation(libs.okhttp)
 }
 
 tasks.register("printVersionName") {

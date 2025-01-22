@@ -1,11 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ripple xmlns:android="http://schemas.android.com/apk/res/android"
-    android:color="?android:colorControlHighlight">
-    <item>
-        <shape>
-            <solid android:color="#00000000" />
-        </shape>
-    </item>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:end="80dp"
         android:top="6dp">
@@ -50,4 +44,4 @@
                 android:height="3dp" />
         </shape>
     </item>
-</ripple>
+</layer-list>

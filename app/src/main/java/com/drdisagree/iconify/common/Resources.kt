@@ -15,7 +15,8 @@ import com.drdisagree.iconify.ui.fragments.xposed.BackgroundChip
 import com.drdisagree.iconify.ui.fragments.xposed.BatteryStyle
 import com.drdisagree.iconify.ui.fragments.xposed.DepthWallpaper
 import com.drdisagree.iconify.ui.fragments.xposed.HeaderClock
-import com.drdisagree.iconify.ui.fragments.xposed.LockscreenClock
+import com.drdisagree.iconify.ui.fragments.xposed.Lockscreen
+import com.drdisagree.iconify.ui.fragments.xposed.LockscreenClockParent
 import com.drdisagree.iconify.ui.fragments.xposed.LockscreenWeather
 import com.drdisagree.iconify.ui.fragments.xposed.LockscreenWidget
 import com.drdisagree.iconify.ui.fragments.xposed.OpQsHeader
@@ -146,6 +147,11 @@ object Resources {
             QuickSettings()
         ),
         SearchPreferenceItem(
+            R.xml.xposed_lockscreen,
+            R.string.activity_title_lockscreen,
+            Lockscreen()
+        ),
+        SearchPreferenceItem(
             R.xml.xposed_themes,
             R.string.activity_title_themes,
             Themes()
@@ -179,7 +185,7 @@ object Resources {
         SearchPreferenceItem(
             R.xml.xposed_lockscreen_clock,
             R.string.activity_title_lockscreen_clock,
-            LockscreenClock()
+            LockscreenClockParent()
         ),
         SearchPreferenceItem(
             R.xml.xposed_lockscreen_weather,
@@ -199,7 +205,8 @@ object Resources {
         SearchPreferenceItem(
             R.xml.xposed_others,
             R.string.activity_title_xposed_others,
-            Others()
+            Others(),
+            Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU
         )
     ).filter { it.shouldAdd }
         .distinctBy { it.fragment::class.java }

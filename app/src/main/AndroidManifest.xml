@@ -55,8 +55,10 @@
             android:name=".ui.activities.MainActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.activities.LocationBrowseActivity"
-            android:exported="false" />
+            android:name=".ui.activities.WeatherActivity"
+            android:exported="true"
+            android:excludeFromRecents="true"
+            android:theme="@style/Theme.Iconify" />
         <activity
             android:name=".SplashActivity"
             android:exported="true"
@@ -125,20 +127,6 @@
             android:exported="true"
             android:icon="@drawable/ic_tile_notch_bar_killer"
             android:label="@string/notch_bar_killer_title"
-            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
-            <intent-filter>
-                <action android:name="android.service.quicksettings.action.QS_TILE" />
-            </intent-filter>
-
-            <meta-data
-                android:name="android.service.quicksettings.TOGGLEABLE_TILE"
-                android:value="true" />
-        </service> <!-- Quick Settings Tile -->
-        <service
-            android:name=".services.TileMonetEngine"
-            android:exported="true"
-            android:icon="@drawable/ic_tile_monet_engine"
-            android:label="@string/activity_title_monet_engine"
             android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
             <intent-filter>
                 <action android:name="android.service.quicksettings.action.QS_TILE" />

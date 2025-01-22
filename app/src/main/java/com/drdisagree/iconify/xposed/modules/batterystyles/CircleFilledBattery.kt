@@ -188,7 +188,7 @@ open class CircleFilledBattery(private val mContext: Context, frameColor: Int) :
 
     private fun initColors() {
         customBlendColor = try {
-            Xprefs.getBoolean(Preferences.CUSTOM_BATTERY_BLEND_COLOR, false) ?: false
+            Xprefs.getBoolean(Preferences.CUSTOM_BATTERY_BLEND_COLOR, false)
         } catch (ignored: Throwable) {
             RPrefs.getBoolean(Preferences.CUSTOM_BATTERY_BLEND_COLOR, false)
         }

@@ -5,10 +5,8 @@ import android.graphics.drawable.RippleDrawable;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
-import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.view.ViewCompat;
 import androidx.fragment.app.FragmentManager;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
@@ -32,10 +30,15 @@ public class SearchPreferenceResult {
     }
 
     public static void highlight(final PreferenceFragmentCompat prefsFragment, final String key) {
-        new Handler(Looper.getMainLooper()).post(() -> doHighlight(prefsFragment, key));
+        new Handler(Looper.getMainLooper()).postDelayed(() -> doHighlight(prefsFragment, key), 100);
     }
 
     private static void doHighlight(final PreferenceFragmentCompat prefsFragment, final String key) {
+        if (prefsFragment == null) {
+            Log.w("doHighlight", "Preference fragment is null.");
+            return;
+        }
+
         final Preference prefResult = prefsFragment.findPreference(key);
 
         if (prefResult == null) {
@@ -154,7 +157,7 @@ public class SearchPreferenceResult {
      */
     @SuppressWarnings("unused")
     public void highlight(final PreferenceFragmentCompat prefsFragment) {
-        new Handler(Looper.getMainLooper()).post(() -> doHighlight(prefsFragment, getKey()));
+        new Handler(Looper.getMainLooper()).postDelayed(() -> doHighlight(prefsFragment, getKey()), 100);
     }
 
     /**

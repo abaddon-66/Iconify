@@ -106,8 +106,8 @@ class ClockPreviewAdapter(
             button.setEnabled(!isSelected)
             checkIcon.setVisibility(if (isSelected) View.VISIBLE else View.GONE)
 
-            if (wallpaperBitmap != null) {
-                setBitmapWithAnimation(wallpaperView, wallpaperBitmap)
+            wallpaperBitmap?.let {
+                wallpaperView.setBitmapWithAnimation(it)
             }
         }
     }

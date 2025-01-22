@@ -382,6 +382,7 @@
     <string name="toast_module_created">Módulo criado com sucesso</string>
     <string name="read_carefully">Leia cuidadosamente!</string>
     <string name="volume_module_installation_guide">Esta opção criará um módulo magisk dentro da pasta Download em seu armazenamento interno. Flash o módulo chamado IconifyCompanion.zip no Magisk. Sempre desinstale o módulo Iconify Companion anterior (se instalado) e reinicie antes de flashar o novo.\n\n<b>Observação:</b>\n• Desinstale o módulo antes de atualizar a ROM.\n• Recrie o módulo se você alterar ou atualize a rom.\n• Não faça o flash de um módulo que não tenha sido criado com base na sua ROM.</string>
+    <string name="volume_module_unstable_desc">Currently volume module is unstable on Android 14 and above. Try at your own risk.</string>
     <!-- Media Player -->
     <string name="cont_desc_media_player">Visualização do reprodutor de mídia</string>
     <string name="media_player_preview_music_title">Título da música</string>
@@ -419,6 +420,8 @@
     <string name="activity_desc_themes">Personalize com temas</string>
     <string name="activity_title_quick_settings">Configurações rápidas</string>
     <string name="activity_desc_quick_settings">Ajustes relacionados ao painel QS</string>
+    <string name="activity_title_lockscreen">Tela de bloqueio</string>
+    <string name="activity_desc_lockscreen">Personalize a aparência da tela de bloqueio</string>
     <string name="activity_title_battery_style">Estilo da bateria</string>
     <string name="activity_desc_battery_style">Personalize a visualização do ícone da bateria</string>
     <string name="activity_title_op_qs_header">Cabeçalho OnePlus QS</string>
@@ -547,6 +550,9 @@
     <string name="hide_qs_tile_label_title">Ocultar rótulo do bloco QS</string>
     <string name="hide_qs_tile_label_desc">Use apenas com rótulos verticais</string>
     <string name="qs_tile_label_scaling_title">Tamanho do texto</string>
+    <string name="section_title_notifications">Notificação</string>
+    <string name="colored_qs_notification_title">Ícone de notificação colorido</string>
+    <string name="colored_qs_notification_desc">Mostre o ícone do app como ícone de notificação</string>
     <string name="section_title_qs_margin">Margem QS</string>
     <string name="section_title_qs_elements">Elementos QS</string>
     <string name="hide_qs_on_lockscreen_title">Ocultar QS na tela de bloqueio</string>
@@ -638,6 +644,7 @@
     <string name="battery_circle">Bateria circular</string>
     <string name="battery_dotted_circle">Bateria circular pontilhada</string>
     <string name="battery_filled_circle">Bateria de círculo preenchido</string>
+    <string name="battery_landscape_kim">Paisagem Kim</string>
     <!-- Xposed Volume Panel -->
     <string name="volume_percentage_title">Porcentagem do volume</string>
     <string name="volume_percentage_desc">Mostrar porcentagem acima do controle deslizante de volume</string>
@@ -713,6 +720,12 @@
     <!-- Xposed Depth Wallpaper -->
     <string name="enable_depth_wallpaper_title">Ativar plano de fundo com profundidade</string>
     <string name="enable_depth_wallpaper_desc">Mostrar iOS como plano de fundo de profundidade\n%s</string>
+    <string name="depth_wallpaper_ai_mode">Modo IA</string>
+    <string name="depth_wallpaper_ai_mlkit">MLKit (Google)</string>
+    <string name="depth_wallpaper_ai_plugin">Plugin</string>
+    <string name="depth_wallpaper_ai_status">Status IA</string>
+    <string name="depth_wallpaper_ai_status_plugin_not_installed">Plugin IA não instalado.\nToque para baixar</string>
+    <string name="depth_wallpaper_ai_status_plugin_installed">Plugin IA instalado.\nToque para abrir</string>
     <string name="enable_custom_depth_wallpaper_title">Imagens personalizadas</string>
     <string name="enable_custom_depth_wallpaper_desc">Defina imagens personalizadas como plano de fundo de profundidade</string>
     <string name="depth_wallpaper_on_aod_title">Mostrar no AOD</string>
@@ -802,6 +815,9 @@
     <string name="hide_ls_lock_icon_desc">Oculte a visualização do ícone de cadeado na tela de bloqueio</string>
     <string name="fixed_status_icons_title">Ícones de status fixos</string>
     <string name="fixed_status_icons_desc">Defina ícones de status em posição fixa.\nPode haver bugs em algumas ROMs.</string>
+    <string name="ls_wallpaper_blur_title">Wallpaper Blur</string>
+    <string name="ls_wallpaper_blur_desc">Apply blur effect on lockscreen</string>
+    <string name="ls_wallpaper_blur_radius_title">Wallpaper Blur Intensity</string>
     <!-- Changelog -->
     <string name="activity_title_changelog">Registro de alterações</string>
     <string name="no_internet_connection">Não foi possível conectar ao servidor!\nPode haver um problema com sua conexão com a internet ou o servidor pode estar inativo neste momento. Por favor, tente novamente mais tarde.</string>
@@ -839,9 +855,11 @@
     <string name="info_tester_desc">Por testar o app.</string>
     <string name="info_betterqs_desc">Para permissão para usar o melhor QS.</string>
     <string name="info_binaries_desc">Para binários executáveis ​​​​do Android.</string>
+    <string name="info_buttercup_desc">Para alguns estilos de relógio da tela de bloqueio.</string>
     <string name="section_title_contributors">Contribuidores</string>
     <string name="info_contributor_desc">Por contribuir no GitHub.</string>
     <string name="info_contributor_desc_2">Por me ajudar no Telegram.</string>
+    <string name="total_contributions">Total de contribuições: %d</string>
     <string name="section_title_translators">Tradutores</string>
     <string name="af_translation">Tradução africâner.</string>
     <string name="ar_translation">Tradução árabe.</string>
@@ -881,6 +899,10 @@
     <string name="unzoom_depth_wallpaper_desc">Remova o efeito de zoom no plano de fundo com profundidade</string>
     <string name="hide_data_disabled_icon_title">Ocultar ícone de dados desativado</string>
     <string name="hide_data_disabled_icon_desc">Oculte o indicador de dados desativados</string>
+    <string name="colorize_notification_view_title">Visualização de notificação colorida</string>
+    <string name="colorize_notification_view_desc">Faça com que a visualização da notificação tenha a mesma cor do ícone do app</string>
+    <string name="colorize_notification_alternative_color_generation_title">Geração de cores alternativas</string>
+    <string name="colorize_notification_alternative_color_generation_desc">Use a pontuação do monet e quantizador para extrair cores</string>
     <!-- Bottom Navigation -->
     <string name="navbar_home">Início</string>
     <string name="navbar_tweaks">Ajustes</string>
@@ -912,7 +934,7 @@
     <string name="btn_enable_custom_colors">Aplicar cores</string>
     <string name="btn_reset">Redefinir</string>
     <string name="btn_reboot_now">Reiniciar agora</string>
-    <string name="btn_download">Download</string>
+    <string name="btn_download">Baixar</string>
     <string name="btn_restart_systemui">Reiniciar Interface do sistema</string>
     <string name="btn_pick_font">Escolher fonte</string>
     <string name="btn_reset_tint">Redefinir tonalidade</string>
@@ -1104,6 +1126,8 @@
     <string name="location_query_hint">Pesquisar por localização</string>
     <string name="weather_permission_dialog_title">Ativar permissões de localização</string>
     <string name="weather_permission_dialog_message">Permissões de localização são necessárias para obter dados meteorológicos. Clique em OK para abrir as Configurações.</string>
+    <string name="omnijaws_today">Hoje</string>
+    <string name="omnijaws_tomorrow">Amanhã</string>
     <!-- Weather Conditions -->
     <string name="weather_condition_clouds">Nublado</string>
     <string name="weather_condition_rain">Chuva</string>
@@ -1120,6 +1144,9 @@
     <string name="weather_api_key">Chave da API OpenWeatherMap</string>
     <string name="weather_provider_owm_key_title">Chave da API OpenWeatherMap necessária</string>
     <string name="weather_provider_owm_key_message">Por favor, insira sua chave da API OpenWeatherMap para obter dados meteorológicos.</string>
+    <string name="yandex_api_key">Chave da API Yandex</string>
+    <string name="weather_provider_yandex_key_title">Chave da API Yandex necessária</string>
+    <string name="weather_provider_yandex_key_message">Insira sua chave da API Yandex para obter dados meteorológicos.</string>
     <string name="weather_show_location">Mostrar localização</string>
     <string name="weather_show_location_summary">Mostre a localização antes do ícone</string>
     <string name="weather_show_condition">Mostrar condição</string>

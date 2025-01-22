@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
-    <string name="app_moto">Customize Boring Android UI</string>
+    <string name="app_moto">Modifica Ui-ul plictisitor al androidului</string>
     <!-- Onboarding -->
-    <string name="init_module_installation">Initializing setup</string>
-    <string name="step">Step</string>
-    <string name="step_number">Step %1$d/%2$d</string>
-    <string name="module_installation_step1">Creating module shell</string>
-    <string name="module_installation_step2">Extracting necessary files</string>
-    <string name="module_installation_step3">Creating overlay APKs</string>
-    <string name="module_installation_step4">Aligning overlay APKs</string>
-    <string name="module_installation_step5">Signing overlay APKs</string>
-    <string name="module_installation_step6">Cleaning directories</string>
-    <string name="onboarding_title_1">Got Bored of Stock UI ?</string>
+    <string name="init_module_installation">Inițializăm configurarea</string>
+    <string name="step">Pas</string>
+    <string name="step_number">Pas</string>
+    <string name="module_installation_step1">Creez modul pentru shell</string>
+    <string name="module_installation_step2">Extrag fișierele necesare</string>
+    <string name="module_installation_step3">Crearea suprapunerii ale APK-urilor</string>
+    <string name="module_installation_step4">Alinam suprapunerea APK-ului</string>
+    <string name="module_installation_step5">Semnam suprapunerea APK-ului</string>
+    <string name="module_installation_step6">Curățăm fișierele</string>
+    <string name="onboarding_title_1">Te-ai plictisit de Stoc UI?</string>
     <string name="onboarding_subtitle_1">Let\'s customize everything to our likings.</string>
     <string name="onboarding_desc_1">Ditch the stock UI monotony – personalize every tech detail to match your style and preferences.</string>
     <string name="onboarding_title_2">Is My Device Supported ?</string>
@@ -382,6 +382,7 @@
     <string name="toast_module_created">Module created successfully</string>
     <string name="read_carefully">Read Carefully!</string>
     <string name="volume_module_installation_guide">This option will create a magisk module inside Download folder in your Internal Storage. Flash the module named IconifyCompanion.zip in Magisk. Always uninstall previous Iconify Companion module (if installed) and reboot before flashing new one.\n\n<b>Note:</b>\n• Uninstall the module before updating rom.\n• Recreate the module if you change or update rom.\n• Do not flash a module which wasn\'t created based on your rom.</string>
+    <string name="volume_module_unstable_desc">Currently volume module is unstable on Android 14 and above. Try at your own risk.</string>
     <!-- Media Player -->
     <string name="cont_desc_media_player">Media Player Preview</string>
     <string name="media_player_preview_music_title">Music Title</string>
@@ -419,6 +420,8 @@
     <string name="activity_desc_themes">Personalize with themes</string>
     <string name="activity_title_quick_settings">Quick Settings</string>
     <string name="activity_desc_quick_settings">Tweaks related to QS panel</string>
+    <string name="activity_title_lockscreen">Lockscreen</string>
+    <string name="activity_desc_lockscreen">Customize lockscreen appearance</string>
     <string name="activity_title_battery_style">Battery Style</string>
     <string name="activity_desc_battery_style">Customize battery icon view</string>
     <string name="activity_title_op_qs_header">Oneplus QS Header</string>
@@ -547,6 +550,9 @@
     <string name="hide_qs_tile_label_title">Hide QS Tile Label</string>
     <string name="hide_qs_tile_label_desc">Use only with vertical tiles</string>
     <string name="qs_tile_label_scaling_title">Text Size Scaling</string>
+    <string name="section_title_notifications">Notification</string>
+    <string name="colored_qs_notification_title">Colored Notification Icon</string>
+    <string name="colored_qs_notification_desc">Show app icon as notification icon</string>
     <string name="section_title_qs_margin">QS Margin</string>
     <string name="section_title_qs_elements">QS Elements</string>
     <string name="hide_qs_on_lockscreen_title">Hide QS on Lockscreen</string>
@@ -638,6 +644,7 @@
     <string name="battery_circle">Circle Battery</string>
     <string name="battery_dotted_circle">Dotted Circle Battery</string>
     <string name="battery_filled_circle">Filled Circle Battery</string>
+    <string name="battery_landscape_kim">Landscape Kim</string>
     <!-- Xposed Volume Panel -->
     <string name="volume_percentage_title">Volume Percentage</string>
     <string name="volume_percentage_desc">Show percentage above volume slider</string>
@@ -713,6 +720,12 @@
     <!-- Xposed Depth Wallpaper -->
     <string name="enable_depth_wallpaper_title">Enable Depth Wallpaper</string>
     <string name="enable_depth_wallpaper_desc">Show iOS like depth wallpaper\n%s</string>
+    <string name="depth_wallpaper_ai_mode">AI Mode</string>
+    <string name="depth_wallpaper_ai_mlkit">MLKit (Google)</string>
+    <string name="depth_wallpaper_ai_plugin">Plugin</string>
+    <string name="depth_wallpaper_ai_status">AI Status</string>
+    <string name="depth_wallpaper_ai_status_plugin_not_installed">AI Plugin not installed.\nTap to download</string>
+    <string name="depth_wallpaper_ai_status_plugin_installed">AI Plugin installed.\nTap to open</string>
     <string name="enable_custom_depth_wallpaper_title">Custom Images</string>
     <string name="enable_custom_depth_wallpaper_desc">Set custom images as depth wallpaper</string>
     <string name="depth_wallpaper_on_aod_title">Show on AOD</string>
@@ -802,6 +815,9 @@
     <string name="hide_ls_lock_icon_desc">Hide lock icon view on lockscreen</string>
     <string name="fixed_status_icons_title">Fixed Status Icons</string>
     <string name="fixed_status_icons_desc">Set status icons in fixed position\nMight be buggy on some rom</string>
+    <string name="ls_wallpaper_blur_title">Wallpaper Blur</string>
+    <string name="ls_wallpaper_blur_desc">Apply blur effect on lockscreen</string>
+    <string name="ls_wallpaper_blur_radius_title">Wallpaper Blur Intensity</string>
     <!-- Changelog -->
     <string name="activity_title_changelog">Changelog</string>
     <string name="no_internet_connection">Couldn\'t connect to server!\nThere might be an issue with your internet connection or the server might be down at this moment. Please try again later.</string>
@@ -839,9 +855,11 @@
     <string name="info_tester_desc">For testing the app.</string>
     <string name="info_betterqs_desc">For permission to use better QS.</string>
     <string name="info_binaries_desc">For android executable binaries.</string>
+    <string name="info_buttercup_desc">For some lockscreen clock styles.</string>
     <string name="section_title_contributors">Contributors</string>
     <string name="info_contributor_desc">For contributing on github.</string>
     <string name="info_contributor_desc_2">For assisting me on telegram.</string>
+    <string name="total_contributions">Total Contributions: %d</string>
     <string name="section_title_translators">Translators</string>
     <string name="af_translation">Afrikaans translation.</string>
     <string name="ar_translation">Arabic translation.</string>
@@ -881,6 +899,10 @@
     <string name="unzoom_depth_wallpaper_desc">Remove the zoom effect on depth wallpaper</string>
     <string name="hide_data_disabled_icon_title">Hide Data Disabled Icon</string>
     <string name="hide_data_disabled_icon_desc">Hide data disabled indicator</string>
+    <string name="colorize_notification_view_title">Colorize Notification View</string>
+    <string name="colorize_notification_view_desc">Make notification view same color as app icon</string>
+    <string name="colorize_notification_alternative_color_generation_title">Alternative Color Generation</string>
+    <string name="colorize_notification_alternative_color_generation_desc">Use monet score and quantizer to extract color</string>
     <!-- Bottom Navigation -->
     <string name="navbar_home">Home</string>
     <string name="navbar_tweaks">Tweaks</string>
@@ -1104,6 +1126,8 @@
     <string name="location_query_hint">Search for a location</string>
     <string name="weather_permission_dialog_title">Enable Location Permissions</string>
     <string name="weather_permission_dialog_message">Location permissions are required to fetch weather data. Click OK to open Settings.</string>
+    <string name="omnijaws_today">Today</string>
+    <string name="omnijaws_tomorrow">Tomorrow</string>
     <!-- Weather Conditions -->
     <string name="weather_condition_clouds">Cloudy</string>
     <string name="weather_condition_rain">Rainy</string>
@@ -1120,6 +1144,9 @@
     <string name="weather_api_key">OpenWeatherMap API Key</string>
     <string name="weather_provider_owm_key_title">OpenWeatherMap API Key required</string>
     <string name="weather_provider_owm_key_message">Please enter your OpenWeatherMap API key to fetch weather data.</string>
+    <string name="yandex_api_key">Yandex API Key</string>
+    <string name="weather_provider_yandex_key_title">Yandex API Key required</string>
+    <string name="weather_provider_yandex_key_message">Please enter your Yandex API key to fetch weather data.</string>
     <string name="weather_show_location">Show Location</string>
     <string name="weather_show_location_summary">Show Location before icon</string>
     <string name="weather_show_condition">Show Condition</string>

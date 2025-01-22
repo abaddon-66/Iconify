@@ -26,6 +26,7 @@ import com.drdisagree.iconify.ui.activities.MainActivity.Companion.replaceFragme
 import com.drdisagree.iconify.ui.dialogs.LoadingDialog
 import com.drdisagree.iconify.ui.fragments.settings.Changelog
 import com.drdisagree.iconify.ui.fragments.settings.Experimental
+import com.drdisagree.iconify.ui.fragments.xposed.LockscreenClockParent
 import com.drdisagree.iconify.ui.preferences.preferencesearch.SearchPreferenceResult
 import com.drdisagree.iconify.utils.SystemUtils.restartSystemUI
 import com.drdisagree.iconify.utils.helper.ImportExport.exportSettings
@@ -137,11 +138,11 @@ abstract class BaseFragment : Fragment() {
         }, viewLifecycleOwner, Lifecycle.State.RESUMED)
     }
 
-    fun onSearchResultClicked(result: SearchPreferenceResult) {
+    open fun onSearchResultClicked(result: SearchPreferenceResult) {
         for (searchableFragment in searchableFragments) {
             if (searchableFragment.xml == result.resourceFile) {
                 replaceFragment(parentFragmentManager, searchableFragment.fragment)
-                SearchPreferenceResult.highlight(searchableFragment.fragment, result.key);
+                SearchPreferenceResult.highlight(parentFragmentManager as ControlledPreferenceFragmentCompat, result.key);
                 break
             }
         }

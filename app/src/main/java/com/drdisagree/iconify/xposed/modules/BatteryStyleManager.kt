@@ -46,6 +46,7 @@ import com.drdisagree.iconify.common.Preferences.BATTERY_STYLE_LANDSCAPE_BATTERY
 import com.drdisagree.iconify.common.Preferences.BATTERY_STYLE_LANDSCAPE_COLOROS
 import com.drdisagree.iconify.common.Preferences.BATTERY_STYLE_LANDSCAPE_IOS_15
 import com.drdisagree.iconify.common.Preferences.BATTERY_STYLE_LANDSCAPE_IOS_16
+import com.drdisagree.iconify.common.Preferences.BATTERY_STYLE_LANDSCAPE_KIM
 import com.drdisagree.iconify.common.Preferences.BATTERY_STYLE_LANDSCAPE_MIUI_PILL
 import com.drdisagree.iconify.common.Preferences.BATTERY_STYLE_LANDSCAPE_SMILEY
 import com.drdisagree.iconify.common.Preferences.BATTERY_STYLE_LANDSCAPE_STYLE_A
@@ -105,6 +106,7 @@ import com.drdisagree.iconify.xposed.modules.batterystyles.LandscapeBatteryH
 import com.drdisagree.iconify.xposed.modules.batterystyles.LandscapeBatteryI
 import com.drdisagree.iconify.xposed.modules.batterystyles.LandscapeBatteryJ
 import com.drdisagree.iconify.xposed.modules.batterystyles.LandscapeBatteryK
+import com.drdisagree.iconify.xposed.modules.batterystyles.LandscapeBatteryKim
 import com.drdisagree.iconify.xposed.modules.batterystyles.LandscapeBatteryL
 import com.drdisagree.iconify.xposed.modules.batterystyles.LandscapeBatteryM
 import com.drdisagree.iconify.xposed.modules.batterystyles.LandscapeBatteryMIUIPill
@@ -124,33 +126,32 @@ import com.drdisagree.iconify.xposed.modules.batterystyles.RLandscapeBattery
 import com.drdisagree.iconify.xposed.modules.batterystyles.RLandscapeBatteryColorOS
 import com.drdisagree.iconify.xposed.modules.batterystyles.RLandscapeBatteryStyleA
 import com.drdisagree.iconify.xposed.modules.batterystyles.RLandscapeBatteryStyleB
-import com.drdisagree.iconify.xposed.modules.utils.SettingsLibUtils
-import com.drdisagree.iconify.xposed.modules.utils.ViewHelper.toPx
+import com.drdisagree.iconify.xposed.modules.extras.utils.SettingsLibUtils
+import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.toPx
+import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.XposedHook.Companion.findClass
+import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.callMethod
+import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.getExtraField
+import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.getExtraFieldSilently
+import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.getField
+import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.getFieldSilently
+import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookConstructor
+import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookMethod
+import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookMethodMatchPattern
+import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.log
+import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.setExtraField
+import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.setField
 import com.drdisagree.iconify.xposed.utils.XPrefs.Xprefs
 import com.drdisagree.iconify.xposed.utils.XPrefs.XprefsIsInitialized
 import de.robv.android.xposed.XC_MethodHook
 import de.robv.android.xposed.XC_MethodHook.MethodHookParam
-import de.robv.android.xposed.XC_MethodReplacement
-import de.robv.android.xposed.XposedBridge.hookAllConstructors
-import de.robv.android.xposed.XposedBridge.hookAllMethods
-import de.robv.android.xposed.XposedBridge.log
-import de.robv.android.xposed.XposedHelpers.callMethod
-import de.robv.android.xposed.XposedHelpers.findAndHookConstructor
-import de.robv.android.xposed.XposedHelpers.findAndHookMethod
-import de.robv.android.xposed.XposedHelpers.findClass
-import de.robv.android.xposed.XposedHelpers.findClassIfExists
-import de.robv.android.xposed.XposedHelpers.getAdditionalInstanceField
 import de.robv.android.xposed.XposedHelpers.getBooleanField
-import de.robv.android.xposed.XposedHelpers.getIntField
-import de.robv.android.xposed.XposedHelpers.getObjectField
-import de.robv.android.xposed.XposedHelpers.setAdditionalInstanceField
-import de.robv.android.xposed.XposedHelpers.setObjectField
+import de.robv.android.xposed.XposedHelpers.setStaticIntField
 import de.robv.android.xposed.callbacks.XC_InitPackageResources.InitPackageResourcesParam
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam
 
 @Suppress("unused")
 @SuppressLint("DiscouragedApi")
-class BatteryStyleManager(context: Context?) : ModPack(context!!) {
+class BatteryStyleManager(context: Context) : ModPack(context) {
 
     private var defaultLandscapeBatteryEnabled = false
     private var frameColor = Color.WHITE
@@ -237,17 +238,17 @@ class BatteryStyleManager(context: Context?) : ModPack(context!!) {
             mBatteryStyle = batteryStyle
 
             for (view in batteryViews) {
-                val mBatteryIconView = getObjectField(view, "mBatteryIconView") as ImageView?
+                val mBatteryIconView = view.getFieldSilently("mBatteryIconView") as? ImageView
                 mBatteryIconView?.let {
                     updateBatteryRotation(it)
                     updateFlipper(it.parent)
                 }
 
-                val mBatteryPercentView = getObjectField(view, "mBatteryPercentView") as TextView?
+                val mBatteryPercentView = view.getFieldSilently("mBatteryPercentView") as? TextView
                 mBatteryPercentView?.visibility = if (mHidePercentage) View.GONE else View.VISIBLE
 
                 val mCharging = isBatteryCharging(view)
-                val mLevel = getObjectField(view, "mLevel") as Int
+                val mLevel = view.getField("mLevel") as Int
 
                 if (customBatteryEnabled) {
                     val mBatteryDrawable = getNewBatteryDrawable(mContext)
@@ -258,11 +259,7 @@ class BatteryStyleManager(context: Context?) : ModPack(context!!) {
                             mBatteryIconView.setVisibility(if (mHideBattery) View.GONE else View.VISIBLE)
                         }
 
-                        setAdditionalInstanceField(
-                            view,
-                            "mBatteryDrawable",
-                            mBatteryDrawable
-                        )
+                        view.setExtraField("mBatteryDrawable", mBatteryDrawable)
 
                         mBatteryDrawable.setBatteryLevel(mLevel)
                         mBatteryDrawable.setChargingEnabled(mCharging)
@@ -316,349 +313,271 @@ class BatteryStyleManager(context: Context?) : ModPack(context!!) {
     }
 
     override fun handleLoadPackage(loadPackageParam: LoadPackageParam) {
-        val batteryControllerImplClass = findClass(
-            "$SYSTEMUI_PACKAGE.statusbar.policy.BatteryControllerImpl",
-            loadPackageParam.classLoader
-        )
-        var batteryMeterViewClass = findClassIfExists(
+        val batteryControllerImplClass =
+            findClass("$SYSTEMUI_PACKAGE.statusbar.policy.BatteryControllerImpl")
+        val batteryMeterViewClass = findClass(
             "$SYSTEMUI_PACKAGE.battery.BatteryMeterView",
-            loadPackageParam.classLoader
+            "$SYSTEMUI_PACKAGE.BatteryMeterView"
         )
-        if (batteryMeterViewClass == null) {
-            batteryMeterViewClass = findClass(
-                "$SYSTEMUI_PACKAGE.BatteryMeterView",
-                loadPackageParam.classLoader
-            )
-        }
 
-        try {
-            hookAllConstructors(batteryControllerImplClass, object : XC_MethodHook() {
-                override fun afterHookedMethod(param: MethodHookParam) {
-                    batteryController = param.thisObject
+        batteryControllerImplClass
+            .hookConstructor()
+            .runAfter { param ->
+                batteryController = param.thisObject
+            }
+
+        batteryControllerImplClass
+            .hookMethod("fireBatteryUnknownStateChanged")
+            .suppressError()
+            .runAfter {
+                if (!customBatteryEnabled) return@runAfter
+
+                for (view in batteryViews) {
+                    val mBatteryDrawable = view.getExtraField(
+                        "mBatteryDrawable"
+                    ) as BatteryDrawable
+
+                    view.callMethod("setImageDrawable", mBatteryDrawable)
                 }
-            })
-        } catch (throwable: Throwable) {
-            log(TAG + throwable)
+            }
+
+        val batteryDataRefreshHook: XC_MethodHook = object : XC_MethodHook() {
+            override fun afterHookedMethod(param: MethodHookParam) {
+                val mLevel = param.thisObject.getField("mLevel") as Int
+                mIsChargingImpl = (getBooleanField(param.thisObject, "mPluggedIn")
+                        || getBooleanField(param.thisObject, "mCharging")
+                        || getBooleanField(param.thisObject, "mWirelessCharging"))
+                val mPowerSave = getBooleanField(param.thisObject, "mPowerSave")
+
+                if (!customBatteryEnabled) return
+
+                refreshBatteryData(mLevel, mIsChargingImpl, mPowerSave)
+                // refreshing twice to avoid a bug where the battery icon updates incorrectly
+                refreshBatteryData(mLevel, mIsChargingImpl, mPowerSave)
+            }
         }
 
-        try {
-            hookAllMethods(
-                batteryControllerImplClass,
-                "fireBatteryUnknownStateChanged",
-                object : XC_MethodHook() {
-                    override fun afterHookedMethod(param: MethodHookParam) {
-                        if (!customBatteryEnabled) return
+        batteryControllerImplClass
+            .hookMethodMatchPattern(".*fireBatteryLevelChanged.*")
+            .run(batteryDataRefreshHook)
 
-                        for (view in batteryViews) {
-                            val mBatteryDrawable = getAdditionalInstanceField(
-                                view,
-                                "mBatteryDrawable"
-                            ) as BatteryDrawable
+        batteryControllerImplClass
+            .hookMethodMatchPattern(".*firePowerSaveChanged.*")
+            .run(batteryDataRefreshHook)
 
-                            callMethod(view, "setImageDrawable", mBatteryDrawable)
+        batteryControllerImplClass
+            .hookMethod("onReceive")
+            .run(batteryDataRefreshHook)
+
+        val listener: OnAttachStateChangeListener = object : OnAttachStateChangeListener {
+            override fun onViewAttachedToWindow(v: View) {
+                batteryViews.add(v)
+
+                Thread {
+                    try {
+                        if (batteryController != null) {
+                            Thread.sleep(500)
+                            batteryController.callMethod("fireBatteryLevelChanged")
                         }
+                    } catch (ignored: Throwable) {
                     }
-                })
-        } catch (throwable: Throwable) {
-            log(TAG + throwable)
-        }
-
-        try {
-            val batteryDataRefreshHook: XC_MethodHook = object : XC_MethodHook() {
-                override fun afterHookedMethod(param: MethodHookParam) {
-                    val mLevel = getIntField(param.thisObject, "mLevel")
-                    mIsChargingImpl = (getBooleanField(param.thisObject, "mPluggedIn")
-                            || getBooleanField(param.thisObject, "mCharging")
-                            || getBooleanField(param.thisObject, "mWirelessCharging"))
-                    val mPowerSave = getBooleanField(param.thisObject, "mPowerSave")
-
-                    if (!customBatteryEnabled) return
-
-                    refreshBatteryData(mLevel, mIsChargingImpl, mPowerSave)
-                    // refreshing twice to avoid a bug where the battery icon updates incorrectly
-                    refreshBatteryData(mLevel, mIsChargingImpl, mPowerSave)
-                }
+                }.start()
             }
 
-            hookAllMethods(
-                batteryControllerImplClass,
-                "fireBatteryLevelChanged",
-                batteryDataRefreshHook
-            )
-
-            hookAllMethods(
-                batteryControllerImplClass,
-                "firePowerSaveChanged",
-                batteryDataRefreshHook
-            )
-        } catch (throwable: Throwable) {
-            log(TAG + throwable)
+            override fun onViewDetachedFromWindow(v: View) {
+                batteryViews.remove(v)
+            }
         }
 
-        try {
-            val listener: OnAttachStateChangeListener = object : OnAttachStateChangeListener {
-                override fun onViewAttachedToWindow(v: View) {
-                    batteryViews.add(v)
-
-                    Thread {
-                        try {
-                            if (batteryController != null) {
-                                Thread.sleep(500)
-                                callMethod(
-                                    batteryController,
-                                    "fireBatteryLevelChanged"
-                                )
-                            }
-                        } catch (ignored: Throwable) {
-                        }
-                    }.start()
-                }
-
-                override fun onViewDetachedFromWindow(v: View) {
-                    batteryViews.remove(v)
-                }
-            }
-
-            findAndHookConstructor(
-                batteryMeterViewClass,
+        batteryMeterViewClass
+            .hookConstructor()
+            .parameters(
                 Context::class.java,
                 AttributeSet::class.java,
-                Int::class.javaPrimitiveType,
-                object : XC_MethodHook() {
-                    override fun afterHookedMethod(param: MethodHookParam) {
-                        if (batteryMeterViewParam == null) {
-                            batteryMeterViewParam = param
-                        }
-
-                        val styleableBatteryMeterView = intArrayOf(
-                            mContext.resources.getIdentifier(
-                                "frameColor",
-                                "attr",
-                                mContext.packageName
-                            ),
-                            mContext.resources.getIdentifier(
-                                "textAppearance",
-                                "attr",
-                                mContext.packageName
-                            )
-                        )
-                        val attrs = mContext.obtainStyledAttributes(
-                            param.args[1] as AttributeSet,
-                            styleableBatteryMeterView,
-                            param.args[2] as Int,
-                            0
-                        )
-
-                        frameColor = attrs.getColor(
-                            mContext.resources.getIdentifier(
-                                "BatteryMeterView_frameColor",
-                                "styleable",
-                                mContext.packageName
-                            ),
-                            mContext.getColor(
-                                mContext.resources.getIdentifier(
-                                    "meter_background_color",
-                                    "color",
-                                    mContext.packageName
-                                )
-                            )
-                        )
-                        attrs.recycle()
-
-                        (param.thisObject as View).addOnAttachStateChangeListener(listener)
-
-                        val mBatteryIconView = initBatteryIfNull(
-                            param,
-                            getObjectField(
-                                param.thisObject,
-                                "mBatteryIconView"
-                            ) as ImageView?
-                        )
-
-                        if (customBatteryEnabled || mBatteryStyle == BATTERY_STYLE_DEFAULT_LANDSCAPE || mBatteryStyle == BATTERY_STYLE_DEFAULT_RLANDSCAPE) {
-                            updateBatteryRotation(mBatteryIconView)
-                            updateFlipper(mBatteryIconView.parent)
-                        }
-
-                        if (!customBatteryEnabled) return
-
-                        val mBatteryDrawable = getNewBatteryDrawable(mContext)
-
-                        if (mBatteryDrawable != null) {
-                            setAdditionalInstanceField(
-                                param.thisObject,
-                                "mBatteryDrawable",
-                                mBatteryDrawable
-                            )
-
-                            mBatteryIconView.setImageDrawable(mBatteryDrawable)
-
-                            setObjectField(
-                                param.thisObject,
-                                "mBatteryIconView",
-                                mBatteryIconView
-                            )
-
-                            mBatteryIconView.setVisibility(if (mHideBattery) View.GONE else View.VISIBLE)
-                        }
-
-                        val mCharging = isBatteryCharging(param.thisObject)
-                        updateChargingIconView(param.thisObject, mCharging)
-                        updateSettings(param)
-
-                        if (batteryController != null) {
-                            callMethod(batteryController, "fireBatteryLevelChanged")
-                        }
-                    }
-                })
-        } catch (throwable: Throwable) {
-            log(TAG + throwable)
-        }
-
-        try {
-            findAndHookMethod(
-                batteryMeterViewClass,
-                "updateColors",
-                Int::class.javaPrimitiveType,
-                Int::class.javaPrimitiveType,
-                Int::class.javaPrimitiveType,
-                object : XC_MethodHook() {
-                    override fun afterHookedMethod(param: MethodHookParam) {
-                        if (batteryMeterViewParam == null) {
-                            batteryMeterViewParam = param
-                        }
-
-                        if (!customBatteryEnabled) return
-
-                        val mBatteryDrawable = getAdditionalInstanceField(
-                            param.thisObject,
-                            "mBatteryDrawable"
-                        ) as BatteryDrawable?
-
-                        mBatteryDrawable?.setColors(
-                            param.args[0] as Int,
-                            param.args[1] as Int,
-                            param.args[2] as Int
-                        )
-
-                        val mChargingIconView =
-                            (param.thisObject as ViewGroup).findViewWithTag<ImageView>(
-                                ICONIFY_CHARGING_ICON_TAG
-                            )
-                        mChargingIconView?.setImageTintList(ColorStateList.valueOf(param.args[2] as Int))
-                    }
-                })
-        } catch (throwable: Throwable) {
-            log(TAG + throwable)
-        }
-
-        try {
-            var shadeHeaderControllerClass = findClassIfExists(
-                "$SYSTEMUI_PACKAGE.shade.ShadeHeaderController",
-                loadPackageParam.classLoader
+                Int::class.javaPrimitiveType
             )
-            if (shadeHeaderControllerClass == null) shadeHeaderControllerClass =
-                findClass(
-                    "$SYSTEMUI_PACKAGE.shade.LargeScreenShadeHeaderController",
-                    loadPackageParam.classLoader
+            .runAfter { param ->
+                if (batteryMeterViewParam == null) {
+                    batteryMeterViewParam = param
+                }
+
+                val styleableBatteryMeterView = intArrayOf(
+                    mContext.resources.getIdentifier(
+                        "frameColor",
+                        "attr",
+                        mContext.packageName
+                    ),
+                    mContext.resources.getIdentifier(
+                        "textAppearance",
+                        "attr",
+                        mContext.packageName
+                    )
+                )
+                val attrs = mContext.obtainStyledAttributes(
+                    param.args[1] as AttributeSet,
+                    styleableBatteryMeterView,
+                    param.args[2] as Int,
+                    0
                 )
 
-            hookAllMethods(
-                shadeHeaderControllerClass,
-                "onInit",
-                object : XC_MethodHook() {
-                    override fun afterHookedMethod(param: MethodHookParam) {
-                        try {
-                            val configurationControllerListener = getObjectField(
-                                param.thisObject,
-                                "configurationControllerListener"
-                            )
+                frameColor = attrs.getColor(
+                    mContext.resources.getIdentifier(
+                        "BatteryMeterView_frameColor",
+                        "styleable",
+                        mContext.packageName
+                    ),
+                    mContext.getColor(
+                        mContext.resources.getIdentifier(
+                            "meter_background_color",
+                            "color",
+                            mContext.packageName
+                        )
+                    )
+                )
+                attrs.recycle()
 
-                            hookAllMethods(
-                                configurationControllerListener.javaClass,
-                                "onConfigChanged",
-                                object : XC_MethodHook() {
-                                    override fun afterHookedMethod(methodHookParam: MethodHookParam) {
-                                        if (!customBatteryEnabled) return
+                (param.thisObject as View).addOnAttachStateChangeListener(listener)
 
-                                        updateBatteryResources(param)
-                                    }
-                                })
+                val mBatteryIconView = initBatteryIfNull(
+                    param,
+                    param.thisObject.getFieldSilently("mBatteryIconView") as? ImageView
+                )
 
-                            if (!customBatteryEnabled) return
+                if (customBatteryEnabled || mBatteryStyle == BATTERY_STYLE_DEFAULT_LANDSCAPE || mBatteryStyle == BATTERY_STYLE_DEFAULT_RLANDSCAPE) {
+                    updateBatteryRotation(mBatteryIconView)
+                    updateFlipper(mBatteryIconView.parent)
+                }
 
-                            updateBatteryResources(param)
-                        } catch (throwable: Throwable) {
-                            log(TAG + throwable)
-                        }
-                    }
-                })
-        } catch (ignored: Throwable) {
-        }
+                if (!customBatteryEnabled) return@runAfter
 
-        try {
-            if (customBatteryEnabled) {
-                hookAllMethods(
-                    batteryMeterViewClass,
-                    "scaleBatteryMeterViews",
-                    object : XC_MethodReplacement() {
-                        override fun replaceHookedMethod(methodHookParam: MethodHookParam): Any? {
-                            refreshBatteryIcons()
-                            return null
-                        }
-                    })
+                val mBatteryDrawable = getNewBatteryDrawable(mContext)
+
+                if (mBatteryDrawable != null) {
+                    param.thisObject.setExtraField("mBatteryDrawable", mBatteryDrawable)
+
+                    mBatteryIconView.setImageDrawable(mBatteryDrawable)
+
+                    param.thisObject.setField(
+                        "mBatteryIconView",
+                        mBatteryIconView
+                    )
+
+                    mBatteryIconView.setVisibility(if (mHideBattery) View.GONE else View.VISIBLE)
+                }
+
+                val mCharging = isBatteryCharging(param.thisObject)
+                updateChargingIconView(param.thisObject, mCharging)
+                updateSettings(param)
+
+                batteryController?.callMethod("fireBatteryLevelChanged")
             }
-        } catch (ignored: Throwable) {
-        }
 
-        try {
-            hookAllMethods(
-                batteryMeterViewClass,
-                "onBatteryLevelChanged",
-                object : XC_MethodHook() {
-                    override fun afterHookedMethod(param: MethodHookParam) {
-                        if (batteryMeterViewParam == null) {
-                            batteryMeterViewParam = param
+        batteryMeterViewClass
+            .hookMethod("updateColors")
+            .parameters(
+                Int::class.javaPrimitiveType,
+                Int::class.javaPrimitiveType,
+                Int::class.javaPrimitiveType
+            )
+            .runAfter { param ->
+                if (batteryMeterViewParam == null) {
+                    batteryMeterViewParam = param
+                }
+
+                if (!customBatteryEnabled) return@runAfter
+
+                val mBatteryDrawable = param.thisObject.getExtraFieldSilently(
+                    "mBatteryDrawable"
+                ) as? BatteryDrawable
+
+                mBatteryDrawable?.setColors(
+                    param.args[0] as Int,
+                    param.args[1] as Int,
+                    param.args[2] as Int
+                )
+
+                val mChargingIconView =
+                    (param.thisObject as ViewGroup).findViewWithTag<ImageView>(
+                        ICONIFY_CHARGING_ICON_TAG
+                    )
+                mChargingIconView?.setImageTintList(ColorStateList.valueOf(param.args[2] as Int))
+            }
+
+        val shadeHeaderControllerClass = findClass(
+            "$SYSTEMUI_PACKAGE.shade.ShadeHeaderController",
+            "$SYSTEMUI_PACKAGE.shade.LargeScreenShadeHeaderController"
+        )
+
+        shadeHeaderControllerClass
+            .hookMethod("onInit")
+            .runAfter { param ->
+                try {
+                    val configurationControllerListener = param.thisObject.getField(
+                        "configurationControllerListener"
+                    )
+
+                    configurationControllerListener.javaClass
+                        .hookMethod("onConfigChanged")
+                        .runAfter {
+                            if (customBatteryEnabled) {
+                                updateBatteryResources(param)
+                            }
                         }
 
-                        mIsCharging = param.args[1] as Boolean
+                    if (customBatteryEnabled) {
+                        updateBatteryResources(param)
                     }
-                })
-        } catch (throwable: Throwable) {
-            log(TAG + throwable)
+                } catch (throwable: Throwable) {
+                    log(this@BatteryStyleManager, throwable)
+                }
+            }
+
+        if (customBatteryEnabled) {
+            batteryMeterViewClass
+                .hookMethod("scaleBatteryMeterViews")
+                .replace { refreshBatteryIcons() }
+
+            batteryMeterViewClass
+                .hookMethod("scaleBatteryMeterViewsLegacy")
+                .suppressError()
+                .replace { refreshBatteryIcons() }
         }
 
-        try {
-            hookAllMethods(batteryMeterViewClass, "setPercentShowMode", object : XC_MethodHook() {
-                override fun beforeHookedMethod(param: MethodHookParam) {
-                    if (batteryMeterViewParam == null) {
-                        batteryMeterViewParam = param
-                    }
-
-                    if ((customBatteryEnabled || defaultLandscapeBatteryEnabled) && (mHidePercentage || mShowPercentInside)) {
-                        param.result = 2
-                    }
+        batteryMeterViewClass
+            .hookMethod("onBatteryLevelChanged")
+            .runAfter { param ->
+                if (batteryMeterViewParam == null) {
+                    batteryMeterViewParam = param
                 }
-            })
 
-            hookAllMethods(batteryMeterViewClass, "updateShowPercent", object : XC_MethodHook() {
-                override fun afterHookedMethod(param: MethodHookParam) {
-                    if (batteryMeterViewParam == null) {
-                        batteryMeterViewParam = param
-                    }
+                mIsCharging = param.args[1] as Boolean
+            }
 
-                    val mBatteryPercentView = getObjectField(
-                        param.thisObject,
-                        "mBatteryPercentView"
-                    ) as TextView?
-
-                    mBatteryPercentView?.visibility =
-                        if (mHidePercentage) View.GONE else View.VISIBLE
+        batteryMeterViewClass
+            .hookMethod("setPercentShowMode")
+            .runBefore { param ->
+                if (batteryMeterViewParam == null) {
+                    batteryMeterViewParam = param
                 }
-            })
-        } catch (throwable: Throwable) {
-            log(TAG + throwable)
-        }
+
+                if ((customBatteryEnabled || defaultLandscapeBatteryEnabled) && (mHidePercentage || mShowPercentInside)) {
+                    param.result = 2
+                }
+            }
+
+        batteryMeterViewClass
+            .hookMethod("updateShowPercent")
+            .runAfter { param ->
+                if (batteryMeterViewParam == null) {
+                    batteryMeterViewParam = param
+                }
+
+                val mBatteryPercentView = param.thisObject.getFieldSilently(
+                    "mBatteryPercentView"
+                ) as? TextView
+
+                mBatteryPercentView?.visibility = if (mHidePercentage) View.GONE else View.VISIBLE
+            }
 
         removeBatteryMeterViewMethods(batteryMeterViewClass)
         setDefaultBatteryDimens()
@@ -668,10 +587,9 @@ class BatteryStyleManager(context: Context?) : ModPack(context!!) {
         for (view in batteryViews) {
             try {
                 view.post {
-                    val mBatteryDrawable = getAdditionalInstanceField(
-                        view,
+                    val mBatteryDrawable = view.getExtraFieldSilently(
                         "mBatteryDrawable"
-                    ) as BatteryDrawable?
+                    ) as? BatteryDrawable
 
                     mBatteryDrawable?.let {
                         it.setBatteryLevel(mLevel)
@@ -681,8 +599,7 @@ class BatteryStyleManager(context: Context?) : ModPack(context!!) {
                     }
 
                     val mBatteryPercentView =
-                        getObjectField(view, "mBatteryPercentView") as TextView?
-
+                        view.getFieldSilently("mBatteryPercentView") as? TextView
                     mBatteryPercentView?.visibility =
                         if (mHidePercentage) View.GONE else View.VISIBLE
 
@@ -696,7 +613,7 @@ class BatteryStyleManager(context: Context?) : ModPack(context!!) {
 
     private fun updateBatteryResources(param: MethodHookParam) {
         try {
-            val header = getObjectField(param.thisObject, "header") as View
+            val header = param.thisObject.getField("header") as View
             val textColorPrimary = SettingsLibUtils.getColorAttrDefaultColor(
                 header.context,
                 android.R.attr.textColorPrimary
@@ -710,36 +627,28 @@ class BatteryStyleManager(context: Context?) : ModPack(context!!) {
                 android.R.attr.textColorSecondary
             )
             val batteryIcon = try {
-                getObjectField(
-                    param.thisObject,
+                param.thisObject.getField(
                     "batteryIcon"
                 ) as LinearLayout
             } catch (throwable: Throwable) {
-                getObjectField(
-                    param.thisObject,
+                param.thisObject.getField(
                     "batteryIcon"
                 ) as FrameLayout
             }
 
-            if (getObjectField(param.thisObject, "iconManager") != null) {
+            if (param.thisObject.getFieldSilently("iconManager") != null) {
                 try {
-                    callMethod(
-                        getObjectField(param.thisObject, "iconManager"),
-                        "setTint",
-                        textColorPrimary
-                    )
+                    param.thisObject
+                        .getField("iconManager")
+                        .callMethod("setTint", textColorPrimary)
                 } catch (ignored: Throwable) {
-                    callMethod(
-                        getObjectField(param.thisObject, "iconManager"),
-                        "setTint",
-                        textColorPrimary,
-                        textColorPrimaryInverse
-                    )
+                    param.thisObject
+                        .getField("iconManager")
+                        .callMethod("setTint", textColorPrimary, textColorPrimaryInverse)
                 }
             }
 
-            callMethod(
-                batteryIcon,
+            batteryIcon.callMethod(
                 "updateColors",
                 textColorPrimary,
                 textColorSecondary,
@@ -747,23 +656,22 @@ class BatteryStyleManager(context: Context?) : ModPack(context!!) {
             )
 
             scaleBatteryMeterViews(batteryIcon)
+        } catch (ignored: NoSuchFieldError) {
         } catch (throwable: Throwable) {
-            log(TAG + throwable)
+            log(this@BatteryStyleManager, throwable)
         }
     }
 
     private fun refreshBatteryIcons() {
         for (view in batteryViews) {
-            val mBatteryIconView =
-                getObjectField(view, "mBatteryIconView") as ImageView?
+            val mBatteryIconView = view.getFieldSilently("mBatteryIconView") as? ImageView
 
             if (mBatteryIconView != null) {
                 updateBatteryRotation(mBatteryIconView)
                 updateFlipper(mBatteryIconView.parent)
             }
 
-            val mBatteryPercentView =
-                getObjectField(view, "mBatteryPercentView") as TextView?
+            val mBatteryPercentView = view.getFieldSilently("mBatteryPercentView") as? TextView?
             mBatteryPercentView?.visibility = if (mHidePercentage) View.GONE else View.VISIBLE
 
             if (customBatteryEnabled) {
@@ -771,16 +679,14 @@ class BatteryStyleManager(context: Context?) : ModPack(context!!) {
 
                 mBatteryIconView?.setVisibility(if (mHideBattery) View.GONE else View.VISIBLE)
 
-                try {
-                    val mBatteryDrawable = getAdditionalInstanceField(
-                        view,
+                val mBatteryDrawable = view.getExtraFieldSilently(
                         "mBatteryDrawable"
-                    ) as BatteryDrawable
+                ) as? BatteryDrawable
 
-                    mBatteryDrawable.setShowPercentEnabled(mShowPercentInside)
-                    mBatteryDrawable.alpha = Math.round(BATTERY_ICON_OPACITY * 2.55f)
-                    updateCustomizeBatteryDrawable(mBatteryDrawable)
-                } catch (ignored: Throwable) {
+                mBatteryDrawable?.let { batteryDrawable ->
+                    batteryDrawable.setShowPercentEnabled(mShowPercentInside)
+                    batteryDrawable.alpha = Math.round(BATTERY_ICON_OPACITY * 2.55f)
+                    updateCustomizeBatteryDrawable(batteryDrawable)
                 }
             }
 
@@ -790,19 +696,24 @@ class BatteryStyleManager(context: Context?) : ModPack(context!!) {
     }
 
     private fun isBatteryCharging(thisObject: Any): Boolean {
-        var mCharging = mIsCharging
         var mIsIncompatibleCharging = false
 
-        try {
-            mCharging = getObjectField(thisObject, "mCharging") as Boolean
+        val mCharging: Boolean = try {
+            thisObject.getField("mCharging") as Boolean
         } catch (ignored: Throwable) {
             try {
-                mIsIncompatibleCharging =
-                    getObjectField(thisObject, "mIsIncompatibleCharging") as Boolean
-            } catch (throwable: Throwable) {
-                log(TAG + throwable)
+                thisObject.getField("mPluggedIn") as Boolean
+            } catch (ignored: Throwable) {
+                mIsCharging
             }
         }
+
+        try {
+            mIsIncompatibleCharging = thisObject.getField("mIsIncompatibleCharging") as Boolean
+        } catch (throwable: Throwable) {
+            log(this@BatteryStyleManager, throwable)
+        }
+
         return mCharging && !mIsIncompatibleCharging
     }
 
@@ -813,25 +724,16 @@ class BatteryStyleManager(context: Context?) : ModPack(context!!) {
             mBatteryIconView = ImageView(mContext)
             try {
                 mBatteryIconView.setImageDrawable(
-                    getObjectField(
-                        param.thisObject,
-                        "mAccessorizedDrawable"
-                    ) as Drawable
+                    param.thisObject.getField("mAccessorizedDrawable") as Drawable
                 )
             } catch (throwable: Throwable) {
                 try {
                     mBatteryIconView.setImageDrawable(
-                        getObjectField(
-                            param.thisObject,
-                            "mThemedDrawable"
-                        ) as Drawable
+                        param.thisObject.getField("mThemedDrawable") as Drawable
                     )
                 } catch (throwable1: Throwable) {
                     mBatteryIconView.setImageDrawable(
-                        getObjectField(
-                            param.thisObject,
-                            "mDrawable"
-                        ) as Drawable
+                        param.thisObject.getField("mDrawable") as Drawable
                     )
                 }
             }
@@ -874,8 +776,8 @@ class BatteryStyleManager(context: Context?) : ModPack(context!!) {
                 )
             )
 
-            setObjectField(param.thisObject, "mBatteryIconView", mBatteryIconView)
-            callMethod(param.thisObject, "addView", mBatteryIconView, mlp)
+            param.thisObject.setField("mBatteryIconView", mBatteryIconView)
+            param.thisObject.callMethod("addView", mBatteryIconView, mlp)
 
             mBatteryIconView.setVisibility(if (mHideBattery) View.GONE else View.VISIBLE)
         }
@@ -919,12 +821,13 @@ class BatteryStyleManager(context: Context?) : ModPack(context!!) {
             BATTERY_STYLE_LANDSCAPE_BATTERYO -> LandscapeBatteryO(context, frameColor)
             BATTERY_STYLE_CIRCLE, BATTERY_STYLE_DOTTED_CIRCLE -> CircleBattery(context, frameColor)
             BATTERY_STYLE_FILLED_CIRCLE -> CircleFilledBattery(context, frameColor)
+            BATTERY_STYLE_LANDSCAPE_KIM -> LandscapeBatteryKim(context, frameColor)
             else -> null
         }
 
-        if (mBatteryDrawable != null) {
-            mBatteryDrawable.setShowPercentEnabled(mShowPercentInside)
-            mBatteryDrawable.alpha = Math.round(BATTERY_ICON_OPACITY * 2.55f)
+        mBatteryDrawable?.apply {
+            setShowPercentEnabled(mShowPercentInside)
+            alpha = Math.round(BATTERY_ICON_OPACITY * 2.55f)
         }
 
         return mBatteryDrawable
@@ -964,27 +867,75 @@ class BatteryStyleManager(context: Context?) : ModPack(context!!) {
 
     private fun removeBatteryMeterViewMethods(batteryMeterViewClass: Class<*>?) {
         if (customBatteryEnabled) {
-            val methodNames = arrayOf(
-                "updateDrawable",
-                "updateBatteryStyle",
-                "updateSettings",
-                "updateVisibility"
-            )
-            val methodReplacement: XC_MethodReplacement = object : XC_MethodReplacement() {
-                override fun replaceHookedMethod(methodHookParam: MethodHookParam): Any? {
-                    return null
-                }
-            }
+            batteryMeterViewClass
+                .hookMethod(
+                    "updateDrawable",
+                    "updateBatteryStyle",
+                    "updateSettings",
+                    "updateVisibility"
+                )
+                .suppressError()
+                .replace { }
 
-            for (methodName in methodNames) {
-                try {
-                    hookAllMethods(
-                        batteryMeterViewClass,
-                        methodName,
-                        methodReplacement
-                    )
-                } catch (ignored: Throwable) {
-                }
+            val batteryMeterViewExClass = findClass(
+                "com.nothing.systemui.battery.BatteryMeterViewEx",
+                suppressError = true
+            )
+
+            batteryMeterViewExClass?.let { batteryMeterViewEx ->
+                batteryMeterViewEx
+                    .hookMethod("refreshByBatteryStateEx")
+                    .replace { }
+
+                batteryMeterViewEx
+                    .hookMethod("addBatteryImageView")
+                    .replace { param ->
+                        val context = param.args[0] as Context
+                        val batteryMeterView = param.args[1] as ViewGroup
+                        val batteryIconView = param.args[2] as ImageView
+                        val batteryWidth = TypedValue.applyDimension(
+                            TypedValue.COMPLEX_UNIT_DIP,
+                            mBatteryScaleWidth.toFloat(),
+                            context.resources.displayMetrics
+                        ).toInt()
+                        val batteryHeight = TypedValue.applyDimension(
+                            TypedValue.COMPLEX_UNIT_DIP,
+                            mBatteryScaleHeight.toFloat(),
+                            context.resources.displayMetrics
+                        ).toInt()
+
+                        setStaticIntField(
+                            batteryMeterViewEx,
+                            "sTempMax",
+                            context.resources.getInteger(
+                                context.resources.getIdentifier(
+                                    "config_wire_charging_temp_max",
+                                    "integer",
+                                    context.packageName
+                                )
+                            )
+                        )
+                        setStaticIntField(
+                            batteryMeterViewEx,
+                            "sVoltMax",
+                            context.resources.getInteger(
+                                context.resources.getIdentifier(
+                                    "config_wire_charging_voltage_max",
+                                    "integer",
+                                    context.packageName
+                                )
+                            )
+                        )
+
+                        batteryMeterView.addView(
+                            batteryIconView,
+                            ViewGroup.LayoutParams(batteryWidth, batteryHeight)
+                        )
+                    }
+
+                batteryMeterViewEx
+                    .hookMethod("updateView")
+                    .replace { refreshBatteryIcons() }
             }
         }
     }
@@ -1161,8 +1112,10 @@ class BatteryStyleManager(context: Context?) : ModPack(context!!) {
             )
         )
 
-        mChargingIconView.setLayoutParams(lp)
-        mChargingIconView.setVisibility(if (mCharging && mChargingIconSwitch) View.VISIBLE else View.GONE)
+        mChargingIconView.apply {
+            setLayoutParams(lp)
+            setVisibility(if (mCharging && mChargingIconSwitch) View.VISIBLE else View.GONE)
+        }
     }
 
     private fun updateSettings(param: MethodHookParam) {
@@ -1190,7 +1143,7 @@ class BatteryStyleManager(context: Context?) : ModPack(context!!) {
     }
 
     private fun updateBatteryRotation(thisObject: Any) {
-        val mBatteryIconView = getObjectField(thisObject, "mBatteryIconView") as View
+        val mBatteryIconView = thisObject.getField("mBatteryIconView") as View
         updateBatteryRotation(mBatteryIconView)
     }
 
@@ -1205,10 +1158,7 @@ class BatteryStyleManager(context: Context?) : ModPack(context!!) {
     private fun updateCustomizeBatteryDrawable(thisObject: Any) {
         if (!customBatteryEnabled) return
 
-        val mBatteryDrawable = getAdditionalInstanceField(
-            thisObject,
-            "mBatteryDrawable"
-        ) as BatteryDrawable
+        val mBatteryDrawable = thisObject.getExtraField("mBatteryDrawable") as BatteryDrawable
 
         updateCustomizeBatteryDrawable(mBatteryDrawable)
     }
@@ -1237,7 +1187,7 @@ class BatteryStyleManager(context: Context?) : ModPack(context!!) {
         if (thisObject is ImageView) {
             scaleBatteryMeterViews(thisObject)
         } else {
-            val mBatteryIconView = getObjectField(thisObject, "mBatteryIconView") as ImageView?
+            val mBatteryIconView = thisObject.getFieldSilently("mBatteryIconView") as? ImageView
             mBatteryIconView?.let { scaleBatteryMeterViews(it) }
         }
     }
@@ -1301,12 +1251,11 @@ class BatteryStyleManager(context: Context?) : ModPack(context!!) {
             mBatteryIconView.setLayoutParams(scaledLayoutParams)
             mBatteryIconView.setVisibility(if (mHideBattery) View.GONE else View.VISIBLE)
         } catch (throwable: Throwable) {
-            log(TAG + throwable)
+            log(this@BatteryStyleManager, throwable)
         }
     }
 
     companion object {
-        private val TAG = "Iconify - ${BatteryStyleManager::class.java.simpleName}: "
         private val batteryViews = ArrayList<View>()
         private var mBatteryStyle = 0
         private var mShowPercentInside = false

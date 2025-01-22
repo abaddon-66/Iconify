@@ -16,7 +16,6 @@ import com.airbnb.lottie.LottieCompositionFactory
 import com.drdisagree.iconify.R
 import com.drdisagree.iconify.common.Dynamic
 import com.drdisagree.iconify.common.Preferences
-import com.drdisagree.iconify.common.Preferences.MONET_ENGINE_SWITCH
 import com.drdisagree.iconify.common.Preferences.ON_HOME_PAGE
 import com.drdisagree.iconify.common.Resources.searchConfiguration
 import com.drdisagree.iconify.common.Resources.searchableFragments
@@ -30,11 +29,13 @@ import com.drdisagree.iconify.ui.events.ColorSelectedEvent
 import com.drdisagree.iconify.ui.fragments.home.Home
 import com.drdisagree.iconify.ui.fragments.settings.Settings
 import com.drdisagree.iconify.ui.fragments.tweaks.Tweaks
+import com.drdisagree.iconify.ui.fragments.xposed.WeatherSettings
 import com.drdisagree.iconify.ui.fragments.xposed.Xposed
 import com.drdisagree.iconify.ui.preferences.preferencesearch.SearchPreferenceFragment
 import com.drdisagree.iconify.ui.preferences.preferencesearch.SearchPreferenceResult
 import com.drdisagree.iconify.ui.preferences.preferencesearch.SearchPreferenceResultListener
-import com.drdisagree.iconify.ui.utils.FragmentHelper.isInGroup
+import com.drdisagree.iconify.ui.utils.FragmentGroup
+import com.drdisagree.iconify.ui.utils.isInGroup
 import com.drdisagree.iconify.utils.HapticUtils.weakVibrate
 import com.drdisagree.iconify.utils.SystemUtils
 import com.drdisagree.iconify.utils.overlay.FabricatedUtils
@@ -72,6 +73,11 @@ class MainActivity : BaseActivity(),
             )
         }
 
+        if (intent != null && intent.getBooleanExtra("openWeatherSettings", false)) {
+            replaceFragment(supportFragmentManager, Xposed())
+            replaceFragment(supportFragmentManager, WeatherSettings())
+        }
+
         initData()
 
         setupFloatingActionButtons()
@@ -94,11 +100,6 @@ class MainActivity : BaseActivity(),
                     RPrefs.putBoolean("fabricated$overlay", true)
                 }
             }
-
-            RPrefs.putBoolean(
-                MONET_ENGINE_SWITCH,
-                enabledOverlays.contains("IconifyComponentME.overlay")
-            )
         }
     }
 
@@ -181,19 +182,19 @@ class MainActivity : BaseActivity(),
             val settingsIndex = if (!xposedOnlyMode) 3 else 1
 
             when {
-                isInGroup(fragment, homeIndex) && !xposedOnlyMode -> {
+                isInGroup(fragment, FragmentGroup.HOME) && !xposedOnlyMode -> {
                     binding.bottomNavigationView.menu.getItem(homeIndex).setChecked(true)
                 }
 
-                isInGroup(fragment, tweaksIndex) && !xposedOnlyMode -> {
+                isInGroup(fragment, FragmentGroup.TWEAKS) && !xposedOnlyMode -> {
                     binding.bottomNavigationView.menu.getItem(tweaksIndex).setChecked(true)
                 }
 
-                isInGroup(fragment, xposedIndex) -> {
+                isInGroup(fragment, FragmentGroup.XPOSED) -> {
                     binding.bottomNavigationView.menu.getItem(xposedIndex).setChecked(true)
                 }
 
-                isInGroup(fragment, settingsIndex) -> {
+                isInGroup(fragment, FragmentGroup.SETTINGS) -> {
                     binding.bottomNavigationView.menu.getItem(settingsIndex).setChecked(true)
                 }
             }
@@ -428,8 +429,14 @@ class MainActivity : BaseActivity(),
                             fragmentManager.popBackStack(null, POP_BACK_STACK_INCLUSIVE)
                         }
 
+                        Xposed::class.java.simpleName -> {
+                            fragmentManager.popBackStack(null, POP_BACK_STACK_INCLUSIVE)
+                            if (!Preferences.isXposedOnlyMode) {
+                                addToBackStack(fragmentTag)
+                            }
+                        }
+
                         Tweaks::class.java.simpleName,
-                        Xposed::class.java.simpleName,
                         Settings::class.java.simpleName -> {
                             fragmentManager.popBackStack(null, POP_BACK_STACK_INCLUSIVE)
                             addToBackStack(fragmentTag)
