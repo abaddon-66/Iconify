@@ -17,9 +17,9 @@ import android.widget.LinearLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import com.drdisagree.iconify.common.Const.ACTION_LS_CLOCK_INFLATED
 import com.drdisagree.iconify.common.Const.ACTION_WEATHER_INFLATED
+import com.drdisagree.iconify.common.Const.DISABLE_DYNAMIC_CLOCK_COMMAND
+import com.drdisagree.iconify.common.Const.ENABLE_DYNAMIC_CLOCK_COMMAND
 import com.drdisagree.iconify.common.Const.SYSTEMUI_PACKAGE
-import com.drdisagree.iconify.common.Preferences.ICONIFY_LOCKSCREEN_CLOCK_TAG
-import com.drdisagree.iconify.common.Preferences.ICONIFY_LOCKSCREEN_WEATHER_TAG
 import com.drdisagree.iconify.common.Preferences.ICONIFY_LOCKSCREEN_WIDGET_TAG
 import com.drdisagree.iconify.common.Preferences.LOCKSCREEN_WIDGETS
 import com.drdisagree.iconify.common.Preferences.LOCKSCREEN_WIDGETS_BIG_ACTIVE
@@ -44,6 +44,7 @@ import com.drdisagree.iconify.common.Preferences.LOCKSCREEN_WIDGETS_SMALL_INACTI
 import com.drdisagree.iconify.common.Preferences.LOCKSCREEN_WIDGETS_TOP_MARGIN
 import com.drdisagree.iconify.common.Preferences.LSCLOCK_SWITCH
 import com.drdisagree.iconify.common.Preferences.WEATHER_SWITCH
+import com.drdisagree.iconify.xposed.HookEntry.Companion.enqueueProxyCommand
 import com.drdisagree.iconify.xposed.ModPack
 import com.drdisagree.iconify.xposed.modules.extras.utils.MyConstraintSet.Companion.applyTo
 import com.drdisagree.iconify.xposed.modules.extras.utils.MyConstraintSet.Companion.clear
@@ -51,6 +52,7 @@ import com.drdisagree.iconify.xposed.modules.extras.utils.MyConstraintSet.Compan
 import com.drdisagree.iconify.xposed.modules.extras.utils.MyConstraintSet.Companion.connect
 import com.drdisagree.iconify.xposed.modules.extras.utils.MyConstraintSet.Companion.constraintSetInstance
 import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.assignIdsToViews
+import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.getLsItemsContainer
 import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.setMargins
 import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.toPx
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.XposedHook.Companion.findClass
@@ -68,6 +70,7 @@ class LockscreenWidgetsA15(context: Context) : ModPack(context) {
 
     // Parent
     private var mLockscreenRootView: ViewGroup? = null
+    private var mLsItemsContainer: LinearLayout? = null
 
     // Widgets Container
     private lateinit var mWidgetsContainer: LinearLayout
@@ -76,16 +79,16 @@ class LockscreenWidgetsA15(context: Context) : ModPack(context) {
     private var mActivityStarter: Any? = null
 
     // Ls custom clock
-    private var customLockscreenClock = false
+    private var mLockscreenClockEnabled = false
     private var mLockscreenClockInflated = false
 
     // Ls weather
-    private var lsWeatherEnabled = false
-    private var lsWeatherInflated = false
+    private var mWeatherEnabled = false
+    private var mWeatherInflated = false
 
     // Widgets Prefs
     // Lockscreen Widgets
-    private var mWidgetsEnabled: Boolean = false
+    private var mWidgetsEnabled = false
     private var mDeviceWidgetEnabled = false
     private var mDeviceCustomColor = false
     private var mDeviceLinearColor = Color.WHITE
@@ -101,8 +104,8 @@ class LockscreenWidgetsA15(context: Context) : ModPack(context) {
     private var mSmallIconActiveColor = Color.WHITE
     private var mSmallIconInactiveColor = Color.BLACK
     private var mDeviceName = ""
-    private var mMainWidgets: String = ""
-    private var mExtraWidgets: String = ""
+    private var mMainWidgets = ""
+    private var mExtraWidgets = ""
     private var mTopMargin = 0
     private var mBottomMargin = 0
     private var mWidgetsScale = 1.0f
@@ -112,11 +115,13 @@ class LockscreenWidgetsA15(context: Context) : ModPack(context) {
         override fun onReceive(context: Context?, intent: Intent?) {
             if (intent != null && intent.action != null && mWidgetsEnabled) {
                 if (intent.action == ACTION_WEATHER_INFLATED) {
-                    lsWeatherInflated = true
-                    placeWidgets()
-                } else if (intent.action == ACTION_LS_CLOCK_INFLATED && !lsWeatherEnabled) {
+                    mWeatherInflated = true
+                    placeWidgetsView()
+                } else if (intent.action == ACTION_LS_CLOCK_INFLATED) {
                     mLockscreenClockInflated = true
-                    placeWidgets()
+                    if (!mWeatherEnabled) {
+                        placeWidgetsView()
+                    }
                 }
             }
         }
@@ -126,12 +131,6 @@ class LockscreenWidgetsA15(context: Context) : ModPack(context) {
         if (!XprefsIsInitialized || !isComposeLockscreen) return
 
         Xprefs.apply {
-            // Ls custom clock
-            customLockscreenClock = getBoolean(LSCLOCK_SWITCH, false)
-
-            // Ls weather
-            lsWeatherEnabled = getBoolean(WEATHER_SWITCH, false)
-
             // Widgets
             mWidgetsEnabled = getBoolean(LOCKSCREEN_WIDGETS_ENABLED, false)
             mDeviceWidgetEnabled = getBoolean(LOCKSCREEN_WIDGETS_DEVICE_WIDGET, false)
@@ -156,11 +155,21 @@ class LockscreenWidgetsA15(context: Context) : ModPack(context) {
             mTopMargin = getSliderInt(LOCKSCREEN_WIDGETS_TOP_MARGIN, 0)
             mBottomMargin = getSliderInt(LOCKSCREEN_WIDGETS_BOTTOM_MARGIN, 0)
             mWidgetsScale = getSliderFloat(LOCKSCREEN_WIDGETS_SCALE, 1.0f)
+
+            // Ls custom clock
+            mLockscreenClockEnabled = getBoolean(LSCLOCK_SWITCH, false)
+
+            // Ls weather
+            mWeatherEnabled = getBoolean(WEATHER_SWITCH, false)
         }
 
         when (key.firstOrNull()) {
+            LOCKSCREEN_WIDGETS_ENABLED -> {
+                resetDynamicClock()
+                updateLockscreenWidgets()
+            }
+
             in setOf(
-                LOCKSCREEN_WIDGETS_ENABLED,
                 LOCKSCREEN_WIDGETS_DEVICE_WIDGET,
                 LOCKSCREEN_WIDGETS,
                 LOCKSCREEN_WIDGETS_EXTRAS
@@ -195,7 +204,7 @@ class LockscreenWidgetsA15(context: Context) : ModPack(context) {
         }
     }
 
-    @SuppressLint("UnspecifiedRegisterReceiverFlag")
+    @SuppressLint("UnspecifiedRegisterReceiverFlag", "DiscouragedApi")
     override fun handleLoadPackage(loadPackageParam: XC_LoadPackage.LoadPackageParam) {
         if (!isComposeLockscreen) return
 
@@ -244,31 +253,6 @@ class LockscreenWidgetsA15(context: Context) : ModPack(context) {
                 setActivityStarter()
             }
 
-        val aodBurnInLayerClass =
-            findClass("$SYSTEMUI_PACKAGE.keyguard.ui.view.layout.sections.AodBurnInLayer")
-
-        aodBurnInLayerClass
-            .hookConstructor()
-            .runAfter { param ->
-                if (!mWidgetsEnabled) return@runAfter
-
-                val entryV = param.thisObject as View
-
-                entryV.addOnAttachStateChangeListener(object : OnAttachStateChangeListener {
-                    override fun onViewAttachedToWindow(v: View) {
-                        Handler(Looper.getMainLooper()).postDelayed({
-                            if (!mWidgetsEnabled) return@postDelayed
-
-                            mLockscreenRootView = entryV.parent as ViewGroup
-
-                            placeWidgets()
-                        }, 1000)
-                    }
-
-                    override fun onViewDetachedFromWindow(v: View) {}
-                })
-            }
-
         val keyguardClockSwitch = findClass("com.android.keyguard.KeyguardClockSwitch")
 
         keyguardClockSwitch
@@ -285,35 +269,159 @@ class LockscreenWidgetsA15(context: Context) : ModPack(context) {
         dozeScrimControllerClass
             .hookMethod("onDozingChanged")
             .runAfter { param -> updateDozingState(param.args[0] as Boolean) }
+
+        val aodBurnInLayerClass =
+            findClass("$SYSTEMUI_PACKAGE.keyguard.ui.view.layout.sections.AodBurnInLayer")
+
+        aodBurnInLayerClass
+            .hookConstructor()
+            .runAfter { param ->
+                if (!mWidgetsEnabled) return@runAfter
+
+                val entryV = param.thisObject as View
+
+                entryV.addOnAttachStateChangeListener(object : OnAttachStateChangeListener {
+                    override fun onViewAttachedToWindow(v: View) {
+                        Handler(Looper.getMainLooper()).postDelayed({
+                            if (!mWidgetsEnabled) return@postDelayed
+
+                            val rootView = entryV.parent as ViewGroup
+                            mLockscreenRootView = rootView
+
+                            if (mLockscreenClockEnabled || mWeatherEnabled) {
+                                mLsItemsContainer = rootView.getLsItemsContainer()
+
+                                (mWidgetsContainer.parent as? ViewGroup)
+                                    ?.removeView(mWidgetsContainer)
+
+                                // Add widgets view at the end
+                                mLsItemsContainer!!.addView(
+                                    mWidgetsContainer,
+                                    mLsItemsContainer!!.childCount - 1
+                                )
+                            } else {
+                                mLockscreenRootView!!.addView(mWidgetsContainer)
+                            }
+
+                            applyLayoutConstraints(mLsItemsContainer ?: mWidgetsContainer)
+
+                            placeWidgetsView()
+                        }, 1000)
+                    }
+
+                    override fun onViewDetachedFromWindow(v: View) {}
+                })
+            }
+
+        val defaultNotificationStackScrollLayoutSectionClass =
+            findClass("$SYSTEMUI_PACKAGE.keyguard.ui.view.layout.sections.DefaultNotificationStackScrollLayoutSection")
+
+        val notificationContainerId = mContext.resources.getIdentifier(
+            "nssl_placeholder",
+            "id",
+            mContext.packageName
+        )
+
+        defaultNotificationStackScrollLayoutSectionClass
+            .hookMethod("applyConstraints")
+            .runAfter { param ->
+                if (!mWidgetsEnabled) return@runAfter
+
+                val constraintSet = param.args[0]
+
+                constraintSet.clear(
+                    notificationContainerId,
+                    ConstraintSet.TOP
+                )
+                constraintSet.connect(
+                    notificationContainerId,
+                    ConstraintSet.TOP,
+                    (mLsItemsContainer ?: mWidgetsContainer).id,
+                    ConstraintSet.BOTTOM,
+                    mContext.toPx(mBottomMargin)
+                )
+            }
+
+        val smartspaceSectionClass =
+            findClass("$SYSTEMUI_PACKAGE.keyguard.ui.view.layout.sections.SmartspaceSection")
+
+        smartspaceSectionClass
+            .hookMethod("applyConstraints")
+            .runAfter { param ->
+                if (!mWidgetsEnabled) return@runAfter
+
+                val constraintSet = param.args[0]
+
+                val dateSmartSpaceViewId = mContext.resources.getIdentifier(
+                    "date_smartspace_view",
+                    "id",
+                    mContext.packageName
+                )
+
+                // Connect widget view to bottom of date smartspace
+                if (!mLockscreenClockEnabled && mWeatherEnabled && mLsItemsContainer != null) {
+                    constraintSet.clear(
+                        mLsItemsContainer!!.id,
+                        ConstraintSet.TOP
+                    )
+                    constraintSet.connect(
+                        mLsItemsContainer!!.id,
+                        ConstraintSet.TOP,
+                        dateSmartSpaceViewId,
+                        ConstraintSet.BOTTOM
+                    )
+                } else if (mLockscreenClockEnabled && mLsItemsContainer != null) {
+                    constraintSet.clear(
+                        mLsItemsContainer!!.id,
+                        ConstraintSet.TOP
+                    )
+                    constraintSet.connect(
+                        mLsItemsContainer!!.id,
+                        ConstraintSet.TOP,
+                        ConstraintSet.PARENT_ID,
+                        ConstraintSet.TOP
+                    )
+                } else if (!mLockscreenClockEnabled && !mWeatherEnabled) {
+                    constraintSet.clear(
+                        mWidgetsContainer.id,
+                        ConstraintSet.TOP
+                    )
+                    constraintSet.connect(
+                        mWidgetsContainer.id,
+                        ConstraintSet.TOP,
+                        dateSmartSpaceViewId,
+                        ConstraintSet.BOTTOM
+                    )
+                }
+            }
     }
 
-    private fun placeWidgets() {
+    private fun placeWidgetsView() {
         if (!isComposeLockscreen) return
         if (!mWidgetsEnabled || mLockscreenRootView == null) return
-        if (customLockscreenClock && !mLockscreenClockInflated) return
-        if (lsWeatherEnabled && !lsWeatherInflated) return
+        if (mLockscreenClockEnabled && !mLockscreenClockInflated) return
+        if (mWeatherEnabled && !mWeatherInflated) return
 
         try {
             val lsWidgets = LockscreenWidgetsView.getInstance(mContext, mActivityStarter)
-            (lsWidgets.parent as ViewGroup?)?.removeView(lsWidgets)
-            (mWidgetsContainer.parent as ViewGroup?)?.removeView(mWidgetsContainer)
-
+            (lsWidgets.parent as? ViewGroup)?.removeView(lsWidgets)
             mWidgetsContainer.addView(lsWidgets)
-            mLockscreenRootView?.addView(mWidgetsContainer)
 
             updateLockscreenWidgets()
             updateLsDeviceWidget()
             updateLockscreenWidgetsColors()
             updateMargins()
             updateLockscreenWidgetsScale()
-            applyLayoutConstraints()
+            applyLayoutConstraints(mLsItemsContainer ?: mWidgetsContainer)
         } catch (ignored: Throwable) {
         }
     }
 
     @SuppressLint("DiscouragedApi")
-    private fun applyLayoutConstraints(widgetView: ViewGroup = mWidgetsContainer) {
+    private fun applyLayoutConstraints(widgetView: ViewGroup) {
         assignIdsToViews(mLockscreenRootView!!)
+
+        widgetView.getChildAt(0)?.layoutParams?.width = LinearLayout.LayoutParams.MATCH_PARENT
 
         val notificationContainerId = mContext.resources.getIdentifier(
             "nssl_placeholder",
@@ -348,40 +456,25 @@ class LockscreenWidgetsA15(context: Context) : ModPack(context) {
                 ConstraintSet.END
             )
 
-            if (lsWeatherEnabled) {
-                val weatherView = mLockscreenRootView!!.findViewWithTag<View?>(
-                    ICONIFY_LOCKSCREEN_WEATHER_TAG
-                )
-
+            if ((widgetView == mWidgetsContainer && !mLockscreenClockEnabled && !mWeatherEnabled) ||
+                (widgetView == mLsItemsContainer && !mLockscreenClockEnabled && mWeatherEnabled)
+            ) {
+                // If no custom clock or widgets enabled, or only widgets enabled
+                // then connect widget view to bottom of date smartspace
                 constraintSet.connect(
                     widgetView.id,
                     ConstraintSet.TOP,
-                    weatherView.id,
-                    ConstraintSet.BOTTOM,
-                    mContext.toPx(mTopMargin)
+                    dateSmartspaceViewId,
+                    ConstraintSet.BOTTOM
                 )
-            } else {
-                if (customLockscreenClock) {
-                    val clockView = mLockscreenRootView!!.findViewWithTag<View?>(
-                        ICONIFY_LOCKSCREEN_CLOCK_TAG
-                    )
-
-                    constraintSet.connect(
-                        widgetView.id,
-                        ConstraintSet.TOP,
-                        clockView.id,
-                        ConstraintSet.BOTTOM,
-                        mContext.toPx(mTopMargin)
-                    )
-                } else {
-                    constraintSet.connect(
-                        widgetView.id,
-                        ConstraintSet.TOP,
-                        dateSmartspaceViewId,
-                        ConstraintSet.BOTTOM,
-                        mContext.toPx(mTopMargin)
-                    )
-                }
+            } else if (widgetView == mLsItemsContainer && mLockscreenClockEnabled) {
+                // If custom clock enabled, then connect whole container to top of parent
+                constraintSet.connect(
+                    widgetView.id,
+                    ConstraintSet.TOP,
+                    ConstraintSet.PARENT_ID,
+                    ConstraintSet.TOP
+                )
             }
 
             // Connect notification container below widget
@@ -394,8 +487,7 @@ class LockscreenWidgetsA15(context: Context) : ModPack(context) {
                     notificationContainerId,
                     ConstraintSet.TOP,
                     widgetView.id,
-                    ConstraintSet.BOTTOM,
-                    mContext.toPx(mBottomMargin)
+                    ConstraintSet.BOTTOM
                 )
             }
 
@@ -409,8 +501,7 @@ class LockscreenWidgetsA15(context: Context) : ModPack(context) {
                     aodNotificationIconContainerId,
                     ConstraintSet.BOTTOM,
                     widgetView.id,
-                    ConstraintSet.TOP,
-                    mContext.toPx(mBottomMargin)
+                    ConstraintSet.TOP
                 )
             }
 
@@ -425,7 +516,7 @@ class LockscreenWidgetsA15(context: Context) : ModPack(context) {
 
     private fun updateLockscreenWidgetsOnClock(isLargeClock: Boolean) {
         val lsWidgets = LockscreenWidgetsView.getInstance() ?: return
-        lsWidgets.setIsLargeClock(if (customLockscreenClock) false else isLargeClock)
+        lsWidgets.setIsLargeClock(if (mLockscreenClockEnabled) false else isLargeClock)
     }
 
     private fun updateLsDeviceWidget() {
@@ -455,19 +546,29 @@ class LockscreenWidgetsA15(context: Context) : ModPack(context) {
     }
 
     private fun updateMargins() {
-        val childView = mWidgetsContainer.getChildAt(0) as LinearLayout
+        val childView = mWidgetsContainer.getChildAt(0) as? LinearLayout
+
+        mWidgetsContainer.layoutParams.width = if (mLsItemsContainer == null) {
+            0
+        } else {
+            LinearLayout.LayoutParams.MATCH_PARENT
+        }
 
         mWidgetsContainer.gravity = Gravity.CENTER_HORIZONTAL
-        childView.gravity = Gravity.CENTER_HORIZONTAL
+        childView?.gravity = Gravity.CENTER_HORIZONTAL
 
-        setMargins(
-            childView,
-            mContext,
-            0,
-            mTopMargin,
-            0,
-            mBottomMargin
-        )
+        if (childView != null) {
+            setMargins(
+                childView,
+                mContext,
+                0,
+                mTopMargin,
+                0,
+                mBottomMargin
+            )
+        }
+
+        applyLayoutConstraints(mLsItemsContainer ?: mWidgetsContainer)
     }
 
     private fun updateLockscreenWidgetsScale() {
@@ -483,5 +584,13 @@ class LockscreenWidgetsA15(context: Context) : ModPack(context) {
     private fun setActivityStarter() {
         val lsWidgets = LockscreenWidgetsView.getInstance() ?: return
         if (mActivityStarter != null) lsWidgets.setActivityStarter(mActivityStarter)
+    }
+
+    private fun resetDynamicClock() {
+        enqueueProxyCommand { proxy ->
+            proxy.runCommand(
+                if (mWidgetsEnabled) DISABLE_DYNAMIC_CLOCK_COMMAND else ENABLE_DYNAMIC_CLOCK_COMMAND
+            )
+        }
     }
 }

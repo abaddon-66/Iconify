@@ -44,6 +44,7 @@ import com.drdisagree.iconify.xposed.modules.extras.utils.MyConstraintSet.Compan
 import com.drdisagree.iconify.xposed.modules.extras.utils.MyConstraintSet.Companion.connect
 import com.drdisagree.iconify.xposed.modules.extras.utils.MyConstraintSet.Companion.constraintSetInstance
 import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.assignIdsToViews
+import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.getLsItemsContainer
 import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.setMargins
 import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.toPx
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.XposedHook.Companion.findClass
@@ -57,9 +58,7 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage
 
 class LockscreenWeatherA15(context: Context) : ModPack(context) {
 
-    private var customLockscreenClock = false
-    private var weatherEnabled = false
-    private var widgetsEnabled = false
+    private var mWeatherEnabled = false
     private var weatherShowLocation = true
     private var weatherShowCondition = true
     private var weatherShowHumidity = false
@@ -74,14 +73,17 @@ class LockscreenWeatherA15(context: Context) : ModPack(context) {
     private var mWeatherBackground = 0
     private var mCenterWeather = false
     private var mLockscreenRootView: ViewGroup? = null
+    private var mLsItemsContainer: LinearLayout? = null
+    private var mLockscreenClockEnabled = false
     private var mLockscreenClockInflated = false
+    private var mWidgetsEnabled = false
     private lateinit var mWeatherContainer: LinearLayout
 
     private var mBroadcastRegistered = false
     private val mReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             if (intent != null && intent.action != null) {
-                if (intent.action == ACTION_LS_CLOCK_INFLATED && weatherEnabled) {
+                if (intent.action == ACTION_LS_CLOCK_INFLATED && mWeatherEnabled) {
                     mLockscreenClockInflated = true
                     placeWeatherView()
                 }
@@ -93,9 +95,7 @@ class LockscreenWeatherA15(context: Context) : ModPack(context) {
         if (!XprefsIsInitialized || !isComposeLockscreen) return
 
         Xprefs.apply {
-            customLockscreenClock = getBoolean(LSCLOCK_SWITCH, false)
-            weatherEnabled = getBoolean(WEATHER_SWITCH, false)
-            widgetsEnabled = getBoolean(LOCKSCREEN_WIDGETS_ENABLED, false)
+            mWeatherEnabled = getBoolean(WEATHER_SWITCH, false)
             weatherShowLocation = getBoolean(WEATHER_SHOW_LOCATION, true)
             weatherShowCondition = getBoolean(WEATHER_SHOW_CONDITION, true)
             weatherShowHumidity = getBoolean(WEATHER_SHOW_HUMIDITY, false)
@@ -109,6 +109,8 @@ class LockscreenWeatherA15(context: Context) : ModPack(context) {
             mBottomMargin = getSliderInt(WEATHER_CUSTOM_MARGINS_BOTTOM, 20)
             mWeatherBackground = Integer.parseInt(getString(WEATHER_STYLE, "0")!!)
             mCenterWeather = getBoolean(WEATHER_CENTER_VIEW, false)
+            mLockscreenClockEnabled = getBoolean(LSCLOCK_SWITCH, false)
+            mWidgetsEnabled = getBoolean(LOCKSCREEN_WIDGETS_ENABLED, false)
         }
 
         when (key.firstOrNull()) {
@@ -126,7 +128,12 @@ class LockscreenWeatherA15(context: Context) : ModPack(context) {
                 WEATHER_CUSTOM_MARGINS_SIDE,
                 WEATHER_CUSTOM_MARGINS_TOP,
                 WEATHER_CENTER_VIEW
-            ) -> updateWeatherView()
+            ) -> {
+                if (::mWeatherContainer.isInitialized) {
+                    applyLayoutConstraints(mLsItemsContainer ?: mWeatherContainer)
+                    updateWeatherView()
+                }
+            }
         }
     }
 
@@ -170,16 +177,37 @@ class LockscreenWeatherA15(context: Context) : ModPack(context) {
         aodBurnInLayerClass
             .hookConstructor()
             .runAfter { param ->
-                if (!weatherEnabled) return@runAfter
+                if (!mWeatherEnabled) return@runAfter
 
                 val entryV = param.thisObject as View
 
                 entryV.addOnAttachStateChangeListener(object : OnAttachStateChangeListener {
                     override fun onViewAttachedToWindow(v: View) {
                         Handler(Looper.getMainLooper()).postDelayed({
-                            if (!weatherEnabled) return@postDelayed
+                            if (!mWeatherEnabled) return@postDelayed
 
-                            mLockscreenRootView = entryV.parent as ViewGroup
+                            val rootView = entryV.parent as ViewGroup
+                            mLockscreenRootView = rootView
+
+                            if (mLockscreenClockEnabled || mWidgetsEnabled) {
+                                mLsItemsContainer = rootView.getLsItemsContainer()
+
+                                (mWeatherContainer.parent as? ViewGroup)
+                                    ?.removeView(mWeatherContainer)
+
+                                // Add weather view after clock view if exists
+                                mLsItemsContainer!!.addView(
+                                    mWeatherContainer,
+                                    if (mLsItemsContainer!!.findViewWithTag<View?>(
+                                            ICONIFY_LOCKSCREEN_CLOCK_TAG
+                                        ) != null
+                                    ) 1 else 0
+                                )
+                            } else {
+                                mLockscreenRootView!!.addView(mWeatherContainer)
+                            }
+
+                            applyLayoutConstraints(mLsItemsContainer ?: mWeatherContainer)
 
                             placeWeatherView()
                         }, 1000)
@@ -201,23 +229,21 @@ class LockscreenWeatherA15(context: Context) : ModPack(context) {
         defaultNotificationStackScrollLayoutSectionClass
             .hookMethod("applyConstraints")
             .runAfter { param ->
-                if (!weatherEnabled) return@runAfter
+                if (!mWeatherEnabled) return@runAfter
 
                 val constraintSet = param.args[0]
 
-                if (!widgetsEnabled) {
-                    constraintSet.clear(
-                        notificationContainerId,
-                        ConstraintSet.TOP
-                    )
-                    constraintSet.connect(
-                        notificationContainerId,
-                        ConstraintSet.TOP,
-                        mWeatherContainer.id,
-                        ConstraintSet.BOTTOM,
-                        mContext.toPx(mBottomMargin)
-                    )
-                }
+                constraintSet.clear(
+                    notificationContainerId,
+                    ConstraintSet.TOP
+                )
+                constraintSet.connect(
+                    notificationContainerId,
+                    ConstraintSet.TOP,
+                    (mLsItemsContainer ?: mWeatherContainer).id,
+                    ConstraintSet.BOTTOM,
+                    mContext.toPx(mBottomMargin)
+                )
             }
 
         val smartspaceSectionClass =
@@ -226,11 +252,9 @@ class LockscreenWeatherA15(context: Context) : ModPack(context) {
         smartspaceSectionClass
             .hookMethod("applyConstraints")
             .runAfter { param ->
-                if (!weatherEnabled) return@runAfter
+                if (!mWeatherEnabled) return@runAfter
 
                 val constraintSet = param.args[0]
-                val clockView =
-                    mLockscreenRootView?.findViewWithTag<View?>(ICONIFY_LOCKSCREEN_CLOCK_TAG)
 
                 val dateSmartSpaceViewId = mContext.resources.getIdentifier(
                     "date_smartspace_view",
@@ -239,40 +263,48 @@ class LockscreenWeatherA15(context: Context) : ModPack(context) {
                 )
 
                 // Connect weather view to bottom of date smartspace
-                constraintSet.clear(
-                    mWeatherContainer.id,
-                    ConstraintSet.TOP
-                )
-                constraintSet.connect(
-                    mWeatherContainer.id,
-                    ConstraintSet.TOP,
-                    clockView?.id ?: dateSmartSpaceViewId,
-                    ConstraintSet.BOTTOM,
-                    mContext.toPx(mTopMargin)
-                )
+                if ((mLockscreenClockEnabled || mWidgetsEnabled) && mLsItemsContainer != null) {
+                    constraintSet.clear(
+                        mLsItemsContainer!!.id,
+                        ConstraintSet.TOP
+                    )
+                    constraintSet.connect(
+                        mLsItemsContainer!!.id,
+                        ConstraintSet.TOP,
+                        dateSmartSpaceViewId,
+                        ConstraintSet.BOTTOM
+                    )
+                } else if (!mLockscreenClockEnabled && !mWidgetsEnabled) {
+                    constraintSet.clear(
+                        mWeatherContainer.id,
+                        ConstraintSet.TOP
+                    )
+                    constraintSet.connect(
+                        mWeatherContainer.id,
+                        ConstraintSet.TOP,
+                        dateSmartSpaceViewId,
+                        ConstraintSet.BOTTOM
+                    )
+                }
             }
     }
 
     @SuppressLint("DiscouragedApi")
     private fun placeWeatherView() {
         if (!isComposeLockscreen) return
-        if (!weatherEnabled || mLockscreenRootView == null) return
-        if (customLockscreenClock && !mLockscreenClockInflated) return
+        if (!mWeatherEnabled || mLockscreenRootView == null) return
+        if (mLockscreenClockEnabled && !mLockscreenClockInflated) return
 
         try {
             val currentWeatherView: CurrentWeatherView = CurrentWeatherView.getInstance(
                 mContext,
                 LOCKSCREEN_WEATHER
             )
-
-            (currentWeatherView.parent as ViewGroup?)?.removeView(currentWeatherView)
-            (mWeatherContainer.parent as ViewGroup?)?.removeView(mWeatherContainer)
-
+            (currentWeatherView.parent as? ViewGroup)?.removeView(currentWeatherView)
             mWeatherContainer.addView(currentWeatherView)
-            mLockscreenRootView!!.addView(mWeatherContainer)
 
             refreshWeatherView(currentWeatherView)
-            applyConstraints()
+            applyLayoutConstraints(mLsItemsContainer ?: mWeatherContainer)
 
             // Weather placed, now inflate widgets
             val broadcast = Intent(ACTION_WEATHER_INFLATED)
@@ -282,8 +314,11 @@ class LockscreenWeatherA15(context: Context) : ModPack(context) {
         }
     }
 
-    private fun applyConstraints(weatherView: ViewGroup = mWeatherContainer) {
+    @SuppressLint("DiscouragedApi")
+    private fun applyLayoutConstraints(weatherView: ViewGroup) {
         assignIdsToViews(mLockscreenRootView!!)
+
+        weatherView.getChildAt(0)?.layoutParams?.width = LinearLayout.LayoutParams.MATCH_PARENT
 
         val notificationContainerId = mContext.resources.getIdentifier(
             "nssl_placeholder",
@@ -318,29 +353,29 @@ class LockscreenWeatherA15(context: Context) : ModPack(context) {
                 ConstraintSet.END
             )
 
-            if (customLockscreenClock) {
-                val clockView =
-                    mLockscreenRootView!!.findViewWithTag<View?>(ICONIFY_LOCKSCREEN_CLOCK_TAG)
-
-                constraintSet.connect(
-                    weatherView.id,
-                    ConstraintSet.TOP,
-                    clockView.id,
-                    ConstraintSet.BOTTOM,
-                    mContext.toPx(mTopMargin)
-                )
-            } else {
+            if ((weatherView == mWeatherContainer && !mLockscreenClockEnabled && !mWidgetsEnabled) ||
+                (weatherView == mLsItemsContainer && !mLockscreenClockEnabled && mWidgetsEnabled)
+            ) {
+                // If no custom clock or widgets enabled, or only widgets enabled
+                // then connect weather view to bottom of date smartspace
                 constraintSet.connect(
                     weatherView.id,
                     ConstraintSet.TOP,
                     dateSmartspaceViewId,
-                    ConstraintSet.BOTTOM,
-                    mContext.toPx(mTopMargin)
+                    ConstraintSet.BOTTOM
+                )
+            } else if (weatherView == mLsItemsContainer && mLockscreenClockEnabled) {
+                // If custom clock enabled, then connect whole container to top of parent
+                constraintSet.connect(
+                    weatherView.id,
+                    ConstraintSet.TOP,
+                    ConstraintSet.PARENT_ID,
+                    ConstraintSet.TOP
                 )
             }
 
             // Connect notification container below weather
-            if (notificationContainerId != 0 && !widgetsEnabled) {
+            if (notificationContainerId != 0) {
                 constraintSet.clear(
                     notificationContainerId,
                     ConstraintSet.TOP
@@ -349,8 +384,7 @@ class LockscreenWeatherA15(context: Context) : ModPack(context) {
                     notificationContainerId,
                     ConstraintSet.TOP,
                     weatherView.id,
-                    ConstraintSet.BOTTOM,
-                    mContext.toPx(mBottomMargin)
+                    ConstraintSet.BOTTOM
                 )
             }
 
@@ -364,8 +398,7 @@ class LockscreenWeatherA15(context: Context) : ModPack(context) {
                     aodNotificationIconContainerId,
                     ConstraintSet.TOP,
                     weatherView.id,
-                    ConstraintSet.BOTTOM,
-                    mContext.toPx(mBottomMargin)
+                    ConstraintSet.BOTTOM
                 )
             }
 
@@ -375,6 +408,8 @@ class LockscreenWeatherA15(context: Context) : ModPack(context) {
 
     private fun refreshWeatherView(currentWeatherView: CurrentWeatherView?) {
         if (currentWeatherView == null) return
+
+        applyLayoutConstraints(mLsItemsContainer ?: mWeatherContainer)
 
         currentWeatherView.apply {
             updateSizes(
@@ -393,7 +428,7 @@ class LockscreenWeatherA15(context: Context) : ModPack(context) {
                 weatherShowWind,
                 LOCKSCREEN_WEATHER
             )
-            visibility = if (weatherEnabled) View.VISIBLE else View.GONE
+            visibility = if (mWeatherEnabled) View.VISIBLE else View.GONE
             updateWeatherBg(
                 mWeatherBackground,
                 LOCKSCREEN_WEATHER
@@ -405,6 +440,12 @@ class LockscreenWeatherA15(context: Context) : ModPack(context) {
 
     private fun updateMargins() {
         val childView = mWeatherContainer.getChildAt(0) as LinearLayout
+
+        mWeatherContainer.layoutParams.width = if (mLsItemsContainer == null) {
+            0
+        } else {
+            LinearLayout.LayoutParams.MATCH_PARENT
+        }
 
         setMargins(
             childView,

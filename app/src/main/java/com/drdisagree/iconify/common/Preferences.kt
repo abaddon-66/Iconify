@@ -227,6 +227,7 @@ object Preferences {
 
     // Xposed view tags
     const val ICONIFY_HEADER_CLOCK_TAG = "iconify_header_clock"
+    const val ICONIFY_LOCKSCREEN_CONTAINER_TAG = "iconify_lockscreen_container"
     const val ICONIFY_LOCKSCREEN_CLOCK_TAG = "iconify_lockscreen_clock"
     const val ICONIFY_LOCKSCREEN_WEATHER_TAG = "iconify_lockscreen_weather"
     const val ICONIFY_LOCKSCREEN_WIDGET_TAG = "iconify_lockscreen_widget"

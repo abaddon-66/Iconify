@@ -24,6 +24,7 @@ import android.view.View
 import android.view.View.OnAttachStateChangeListener
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextClock
 import android.widget.TextView
@@ -36,9 +37,7 @@ import com.drdisagree.iconify.common.Const.ACTION_LS_CLOCK_INFLATED
 import com.drdisagree.iconify.common.Const.RESET_LOCKSCREEN_CLOCK_COMMAND
 import com.drdisagree.iconify.common.Const.SYSTEMUI_PACKAGE
 import com.drdisagree.iconify.common.Preferences.DEPTH_WALLPAPER_SWITCH
-import com.drdisagree.iconify.common.Preferences.ICONIFY_DEPTH_WALLPAPER_FOREGROUND_TAG
 import com.drdisagree.iconify.common.Preferences.ICONIFY_LOCKSCREEN_CLOCK_TAG
-import com.drdisagree.iconify.common.Preferences.LOCKSCREEN_WIDGETS_ENABLED
 import com.drdisagree.iconify.common.Preferences.LSCLOCK_BOTTOMMARGIN
 import com.drdisagree.iconify.common.Preferences.LSCLOCK_COLOR_CODE_ACCENT1
 import com.drdisagree.iconify.common.Preferences.LSCLOCK_COLOR_CODE_ACCENT2
@@ -54,7 +53,6 @@ import com.drdisagree.iconify.common.Preferences.LSCLOCK_STYLE
 import com.drdisagree.iconify.common.Preferences.LSCLOCK_SWITCH
 import com.drdisagree.iconify.common.Preferences.LSCLOCK_TOPMARGIN
 import com.drdisagree.iconify.common.Preferences.LSCLOCK_USERNAME
-import com.drdisagree.iconify.common.Preferences.WEATHER_SWITCH
 import com.drdisagree.iconify.common.Resources.LOCKSCREEN_CLOCK_LAYOUT
 import com.drdisagree.iconify.utils.TextUtils
 import com.drdisagree.iconify.xposed.HookEntry.Companion.enqueueProxyCommand
@@ -74,10 +72,10 @@ import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.applyTextMa
 import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.applyTextScalingRecursively
 import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.assignIdsToViews
 import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.findViewContainsTag
-import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.findViewIdContainsTag
 import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.findViewWithTagAndChangeColor
+import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.getLsItemsContainer
 import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.hideView
-import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.toPx
+import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.setMargins
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.XposedHook.Companion.findClass
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookConstructor
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookMethod
@@ -95,10 +93,9 @@ import java.util.concurrent.TimeUnit
 class LockscreenClockA15(context: Context) : ModPack(context) {
 
     private var showLockscreenClock = false
-    private var weatherEnabled = false
-    private var widgetsEnabled = false
     private var showDepthWallpaper = false
     private var mLockscreenRootView: ViewGroup? = null
+    private var mLsItemsContainer: LinearLayout? = null
     private var mUserManager: UserManager? = null
     private var mAudioManager: AudioManager? = null
     private var mActivityManager: ActivityManager? = null
@@ -169,8 +166,6 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
 
         Xprefs.apply {
             showLockscreenClock = getBoolean(LSCLOCK_SWITCH, false)
-            weatherEnabled = getBoolean(WEATHER_SWITCH, false)
-            widgetsEnabled = getBoolean(LOCKSCREEN_WIDGETS_ENABLED, false)
             showDepthWallpaper = getBoolean(DEPTH_WALLPAPER_SWITCH, false)
             clockStyle = getInt(LSCLOCK_STYLE, 0)
             topMargin = getSliderInt(LSCLOCK_TOPMARGIN, 100)
@@ -201,7 +196,10 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
                 LSCLOCK_USERNAME,
                 LSCLOCK_DEVICENAME,
                 DEPTH_WALLPAPER_SWITCH
-            ) -> updateClockView()
+            ) -> {
+                mLsItemsContainer?.let { applyLayoutConstraints(it) }
+                updateClockView()
+            }
 
             in setOf(
                 LSCLOCK_COLOR_CODE_ACCENT1,
@@ -238,6 +236,9 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
 
                             val rootView = entryV.parent as ViewGroup
                             mLockscreenRootView = rootView
+
+                            mLsItemsContainer = rootView.getLsItemsContainer()
+                            applyLayoutConstraints(mLsItemsContainer!!)
 
                             // Hide stock clock
                             listOf(
@@ -285,11 +286,8 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
                 if (!showLockscreenClock) return@runAfter
 
                 val constraintSet = param.args[0]
-                val clockView = mLockscreenRootView?.findViewWithTag<View?>(
-                    ICONIFY_LOCKSCREEN_CLOCK_TAG
-                )
 
-                if (clockView != null && !weatherEnabled && !widgetsEnabled) {
+                if (mLsItemsContainer != null) {
                     constraintSet.clear(
                         notificationContainerId,
                         ConstraintSet.TOP
@@ -297,9 +295,8 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
                     constraintSet.connect(
                         notificationContainerId,
                         ConstraintSet.TOP,
-                        clockView.id,
-                        ConstraintSet.BOTTOM,
-                        mContext.toPx(bottomMargin)
+                        mLsItemsContainer!!.id,
+                        ConstraintSet.BOTTOM
                     )
                 }
             }
@@ -319,11 +316,8 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
                 if (!showLockscreenClock) return@runAfter
 
                 val constraintSet = param.args[0]
-                val clockView = mLockscreenRootView?.findViewWithTag<View?>(
-                    ICONIFY_LOCKSCREEN_CLOCK_TAG
-                )
 
-                if (clockView != null) {
+                if (mLsItemsContainer != null) {
                     constraintSet.clear(
                         aodNotificationContainerId,
                         ConstraintSet.TOP
@@ -331,7 +325,7 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
                     constraintSet.connect(
                         aodNotificationContainerId,
                         ConstraintSet.TOP,
-                        clockView.id,
+                        mLsItemsContainer!!.id,
                         ConstraintSet.BOTTOM,
                         mContext.resources.getDimensionPixelSize(
                             mContext.resources.getIdentifier(
@@ -388,12 +382,8 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
                     ConstraintSet.BOTTOM
                 )
 
-                val clockView = mLockscreenRootView?.findViewWithTag<View?>(
-                    ICONIFY_LOCKSCREEN_CLOCK_TAG
-                )
-
-                // Connect date smartspace to bottom of clock view
-                if (clockView != null) {
+                // Connect date smartspace to bottom of clock container
+                if (mLsItemsContainer != null) {
                     constraintSet.clear(
                         dateSmartSpaceViewId,
                         ConstraintSet.TOP
@@ -401,7 +391,7 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
                     constraintSet.connect(
                         dateSmartSpaceViewId,
                         ConstraintSet.TOP,
-                        clockView.id,
+                        mLsItemsContainer!!.id,
                         ConstraintSet.BOTTOM
                     )
                 }
@@ -476,11 +466,11 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
     }
 
     private fun updateClockView() {
-        if (mLockscreenRootView == null) return
+        if (mLsItemsContainer == null) return
 
         val currentTime = System.currentTimeMillis()
         val isClockAdded =
-            mLockscreenRootView!!.findViewWithTag<View?>(ICONIFY_LOCKSCREEN_CLOCK_TAG) != null
+            mLsItemsContainer!!.findViewWithTag<View?>(ICONIFY_LOCKSCREEN_CLOCK_TAG) != null
 
         if (isClockAdded && currentTime - lastUpdated < THRESHOLD_TIME) {
             return
@@ -490,19 +480,11 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
 
         // Remove existing clock view
         if (isClockAdded) {
-            mLockscreenRootView!!.removeView(
-                mLockscreenRootView!!.findViewWithTag(
+            mLsItemsContainer!!.removeView(
+                mLsItemsContainer!!.findViewWithTag(
                     ICONIFY_LOCKSCREEN_CLOCK_TAG
                 )
             )
-        }
-
-        val idx = if (showDepthWallpaper) {
-            val tempIdx =
-                mLockscreenRootView!!.findViewIdContainsTag(ICONIFY_DEPTH_WALLPAPER_FOREGROUND_TAG)
-            if (tempIdx == -1) 0 else tempIdx
-        } else {
-            0
         }
 
         clockViewLayout?.apply {
@@ -510,8 +492,7 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
             id = View.generateViewId()
 
             (parent as? ViewGroup)?.removeView(this)
-            mLockscreenRootView!!.addView(this, idx)
-            layoutParams.width = 0
+            mLsItemsContainer!!.addView(this, 0)
 
             modifyClockView(this)
             initSoundManager()
@@ -539,9 +520,11 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
         }
 
     private fun modifyClockView(clockView: View) {
-        if (!XprefsIsInitialized) return
+        if (!XprefsIsInitialized || mLsItemsContainer == null) return
 
-        applyLayoutConstraints(clockView)
+        clockView.layoutParams.width = LinearLayout.LayoutParams.MATCH_PARENT
+
+        setMargins(clockView, mContext, 0, topMargin, 0, bottomMargin)
 
         if (customColorEnabled) {
             findViewWithTagAndChangeColor(clockView, "accent1", mAccentColor1)
@@ -631,7 +614,7 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
         }
     }
 
-    private fun applyLayoutConstraints(clockView: View) {
+    private fun applyLayoutConstraints(containerView: ViewGroup) {
         assignIdsToViews(mLockscreenRootView!!)
 
         val notificationContainerId = mContext.resources.getIdentifier(
@@ -650,27 +633,26 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
 
             // Connect clock view to parent
             constraintSet.connect(
-                clockView.id,
+                containerView.id,
                 ConstraintSet.START,
                 ConstraintSet.PARENT_ID,
                 ConstraintSet.START
             )
             constraintSet.connect(
-                clockView.id,
+                containerView.id,
                 ConstraintSet.END,
                 ConstraintSet.PARENT_ID,
                 ConstraintSet.END
             )
             constraintSet.connect(
-                clockView.id,
+                containerView.id,
                 ConstraintSet.TOP,
                 ConstraintSet.PARENT_ID,
-                ConstraintSet.TOP,
-                mContext.toPx(topMargin)
+                ConstraintSet.TOP
             )
 
             // Connect notification container below clock
-            if (notificationContainerId != 0 && !weatherEnabled && !widgetsEnabled) {
+            if (notificationContainerId != 0) {
                 constraintSet.clear(
                     notificationContainerId,
                     ConstraintSet.TOP
@@ -678,14 +660,13 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
                 constraintSet.connect(
                     notificationContainerId,
                     ConstraintSet.TOP,
-                    clockView.id,
-                    ConstraintSet.BOTTOM,
-                    mContext.toPx(bottomMargin)
+                    containerView.id,
+                    ConstraintSet.BOTTOM
                 )
             }
 
             // Connect aod notification icon container below clock
-            if (aodNotificationIconContainerId != 0 && !weatherEnabled) {
+            if (aodNotificationIconContainerId != 0) {
                 constraintSet.clear(
                     aodNotificationIconContainerId,
                     ConstraintSet.TOP
@@ -693,9 +674,8 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
                 constraintSet.connect(
                     aodNotificationIconContainerId,
                     ConstraintSet.TOP,
-                    clockView.id,
-                    ConstraintSet.BOTTOM,
-                    mContext.toPx(bottomMargin)
+                    containerView.id,
+                    ConstraintSet.BOTTOM
                 )
             }
 

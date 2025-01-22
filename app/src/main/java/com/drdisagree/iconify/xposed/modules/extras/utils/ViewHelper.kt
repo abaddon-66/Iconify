@@ -25,8 +25,11 @@ import android.widget.ProgressBar
 import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
+import com.drdisagree.iconify.common.Preferences.DEPTH_WALLPAPER_SWITCH
+import com.drdisagree.iconify.common.Preferences.ICONIFY_DEPTH_WALLPAPER_FOREGROUND_TAG
 import com.drdisagree.iconify.common.Preferences.ICONIFY_LOCKSCREEN_CONTAINER_TAG
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.log
+import com.drdisagree.iconify.xposed.utils.XPrefs.Xprefs
 
 object ViewHelper {
 
@@ -478,21 +481,30 @@ object ViewHelper {
         }
     }
 
-    fun ViewGroup?.getItemsContainer(context: Context): LinearLayout? {
+    fun ViewGroup?.getLsItemsContainer(): LinearLayout? {
         if (this == null) return null
 
         var layout: LinearLayout? = findViewWithTag(ICONIFY_LOCKSCREEN_CONTAINER_TAG)
 
         if (layout == null) {
-            layout = LinearLayout(context).apply {
+            val showDepthWallpaper = Xprefs.getBoolean(DEPTH_WALLPAPER_SWITCH, false)
+            val idx = if (showDepthWallpaper) {
+                val tempIdx = rootView.findViewIdContainsTag(ICONIFY_DEPTH_WALLPAPER_FOREGROUND_TAG)
+                if (tempIdx == -1) 0 else tempIdx
+            } else {
+                0
+            }
+
+            layout = LinearLayout(this.context).apply {
                 id = View.generateViewId()
                 tag = ICONIFY_LOCKSCREEN_CONTAINER_TAG
                 layoutParams = LinearLayout.LayoutParams(
                     0,
                     ViewGroup.LayoutParams.WRAP_CONTENT
                 )
+                orientation = LinearLayout.VERTICAL
             }
-            addView(layout)
+            addView(layout, idx)
         }
 
         return layout
