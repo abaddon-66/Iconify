@@ -881,6 +881,7 @@
     <string name="view_changelog">View Changelog</string>
     <string name="hide_changelog">Hide Changelog</string>
     <string name="already_up_to_date">You are already up to date.</string>
+    <string name="auto_update_disabled">Auto update is disabled for debug build.</string>
     <string name="current_version">Current Version:</string>
     <string name="latest_version">Latest Version:</string>
     <string name="update_checking_failed">Failed to check for update!</string>
