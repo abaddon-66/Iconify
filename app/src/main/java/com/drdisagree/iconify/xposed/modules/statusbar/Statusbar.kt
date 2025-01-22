@@ -418,6 +418,24 @@ class Statusbar(context: Context) : ModPack(context) {
             "$SYSTEMUI_PACKAGE.statusbar.phone.StatusBarIconController\$IconManager",
             "$SYSTEMUI_PACKAGE.statusbar.phone.ui.IconManager"
         )
+        val darkIconManagerClass = findClass(
+            "$SYSTEMUI_PACKAGE.statusbar.phone.StatusBarIconController\$DarkIconManager",
+            "$SYSTEMUI_PACKAGE.statusbar.phone.ui.DarkIconManager"
+        )
+        val statusBarIconViewClass = findClass("$SYSTEMUI_PACKAGE.statusbar.StatusBarIconView")
+
+        fun swapStatusbarIconSlots(list: List<*>, param: MethodHookParam, fieldName: String) {
+            val wifiIndex = list.indexOfFirst { (it.getField("mName") as String) == "wifi" }
+            val mobileIndex = list.indexOfFirst { (it.getField("mName") as String) == "mobile" }
+
+            if (wifiIndex != -1 && mobileIndex != -1 && mobileIndex > wifiIndex) {
+                val mutableList = list.toMutableList()
+                mutableList[wifiIndex] = mutableList[mobileIndex].also {
+                    mutableList[mobileIndex] = mutableList[wifiIndex]
+                }
+                param.thisObject.setField(fieldName, mutableList)
+            }
+        }
 
         statusBarIconListClass
             .hookConstructor()
@@ -457,19 +475,49 @@ class Statusbar(context: Context) : ModPack(context) {
 
                 param.args[intIdx] = index.coerceIn(0, mGroup.childCount)
             }
-    }
 
-    private fun swapStatusbarIconSlots(list: List<*>, param: MethodHookParam, fieldName: String) {
-        val wifiIndex = list.indexOfFirst { (it.getField("mName") as String) == "wifi" }
-        val mobileIndex = list.indexOfFirst { (it.getField("mName") as String) == "mobile" }
+        fun handleSetIcon(param: MethodHookParam, applyDark: Boolean = false) {
+            if (!swapWifiAndCellularIcon) return
 
-        if (wifiIndex != -1 && mobileIndex != -1 && mobileIndex > wifiIndex) {
-            val mutableList = list.toMutableList()
-            mutableList[wifiIndex] = mutableList[mobileIndex].also {
-                mutableList[mobileIndex] = mutableList[wifiIndex]
+            val viewIndex = param.args[0] as Int
+            val icon = param.args[1]
+            val mGroup = param.thisObject.getField("mGroup") as ViewGroup
+            val view = mGroup.getChildAt(viewIndex)
+
+            if (view.javaClass.simpleName != statusBarIconViewClass?.simpleName) {
+                try {
+                    val layoutParams: ViewGroup.LayoutParams = view.layoutParams
+                    val onCreateLayoutParams: LinearLayout.LayoutParams =
+                        param.thisObject.callMethod(
+                            "onCreateLayoutParams",
+                            icon.getField("shape")
+                        ) as LinearLayout.LayoutParams
+
+                    if (onCreateLayoutParams.width != layoutParams.width ||
+                        onCreateLayoutParams.height != layoutParams.height
+                    ) {
+                        view.setLayoutParams(onCreateLayoutParams)
+                    }
+                } catch (ignored: Throwable) {
+                    // icon.shape does not exist in older versions
+                }
+
+                if (applyDark) {
+                    val mDarkIconDispatcher = param.thisObject.getField("mDarkIconDispatcher")
+                    mDarkIconDispatcher.callMethod("applyDark", view)
+                }
+
+                param.result = null
             }
-            param.thisObject.setField(fieldName, mutableList)
         }
+
+        iconManagerClass
+            .hookMethod("onSetIcon")
+            .runBefore { param -> handleSetIcon(param, false) }
+
+        darkIconManagerClass
+            .hookMethod("onSetIcon")
+            .runBefore { param -> handleSetIcon(param, true) }
     }
 
     @SuppressLint("RtlHardcoded")
