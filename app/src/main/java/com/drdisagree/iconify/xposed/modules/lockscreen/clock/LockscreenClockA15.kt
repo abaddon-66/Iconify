@@ -245,7 +245,8 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
                                 "bc_smartspace_view",
                                 "date_smartspace_view",
                                 "lockscreen_clock_view",
-                                "lockscreen_clock_view_large"
+                                "lockscreen_clock_view_large",
+                                "keyguard_slice_view"
                             ).map { resourceName ->
                                 val resourceId = mContext.resources.getIdentifier(
                                     resourceName,
@@ -350,7 +351,8 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
 
                 val smartspaceViewIdNames = listOf(
                     "bc_smartspace_view",
-                    "date_smartspace_view"
+                    "date_smartspace_view",
+                    "keyguard_slice_view"
                 )
 
                 val bcSmartSpaceViewId = mContext.resources.getIdentifier(
@@ -365,10 +367,17 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
                     mContext.packageName
                 )
 
+                val keyguardSliceViewId = mContext.resources.getIdentifier(
+                    smartspaceViewIdNames[2],
+                    "id",
+                    mContext.packageName
+                )
+
                 val smartspaceViewIds = listOf(
                     bcSmartSpaceViewId,
-                    dateSmartSpaceViewId
-                )
+                    dateSmartSpaceViewId,
+                    keyguardSliceViewId
+                ).filter { it != -1 }
 
                 // Connect bc smartspace to bottom of date smartspace
                 constraintSet.clear(
@@ -404,11 +413,7 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
                 }
 
                 smartspaceViewIds.map { resourceId ->
-                    if (resourceId != -1) {
-                        mLockscreenRootView?.findViewById<View?>(resourceId)
-                    } else {
-                        null
-                    }
+                    mLockscreenRootView?.findViewById<View?>(resourceId)
                 }.forEach { view ->
                     view.hideView()
                 }
