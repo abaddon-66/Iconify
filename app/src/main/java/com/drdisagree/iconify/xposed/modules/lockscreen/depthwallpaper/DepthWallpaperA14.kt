@@ -1,4 +1,4 @@
-package com.drdisagree.iconify.xposed.modules.depthwallpaper
+package com.drdisagree.iconify.xposed.modules.lockscreen.depthwallpaper
 
 import android.annotation.SuppressLint
 import android.app.WallpaperManager
@@ -40,6 +40,9 @@ import com.drdisagree.iconify.common.Preferences.DEPTH_WALLPAPER_SWITCH
 import com.drdisagree.iconify.common.Preferences.ICONIFY_DEPTH_WALLPAPER_BACKGROUND_TAG
 import com.drdisagree.iconify.common.Preferences.ICONIFY_DEPTH_WALLPAPER_FOREGROUND_TAG
 import com.drdisagree.iconify.common.Preferences.ICONIFY_LOCKSCREEN_CLOCK_TAG
+import com.drdisagree.iconify.common.Preferences.ICONIFY_LOCKSCREEN_CONTAINER_TAG
+import com.drdisagree.iconify.common.Preferences.ICONIFY_LOCKSCREEN_WEATHER_TAG
+import com.drdisagree.iconify.common.Preferences.ICONIFY_LOCKSCREEN_WIDGET_TAG
 import com.drdisagree.iconify.common.Preferences.LOCKSCREEN_SHADE_SWITCH
 import com.drdisagree.iconify.common.Preferences.LSCLOCK_SWITCH
 import com.drdisagree.iconify.xposed.HookEntry.Companion.enqueueProxyCommand
@@ -91,6 +94,12 @@ class DepthWallpaperA14(context: Context) : ModPack(context) {
     private var mPluginReceiverRegistered = false
     private lateinit var mPluginReceiver: BroadcastReceiver
     private var wallpaperProcessorThread: Thread? = null
+    private val lsItemTags = listOf(
+        ICONIFY_LOCKSCREEN_CONTAINER_TAG,
+        ICONIFY_LOCKSCREEN_CLOCK_TAG,
+        ICONIFY_LOCKSCREEN_WEATHER_TAG,
+        ICONIFY_LOCKSCREEN_WIDGET_TAG
+    )
 
     override fun updatePrefs(vararg key: String) {
         if (!XprefsIsInitialized) return
@@ -228,10 +237,10 @@ class DepthWallpaperA14(context: Context) : ModPack(context) {
                             )
 
                             rootView.apply {
-                                val idx = if (showLockscreenClock && isComposeLockscreen) {
-                                    val tempIdx =
-                                        findViewIdContainsTag(ICONIFY_LOCKSCREEN_CLOCK_TAG)
-                                    if (tempIdx == -1) 0 else tempIdx + 1
+                                val idx = if (isComposeLockscreen) {
+                                    val tempIdx = lsItemTags.map { findViewIdContainsTag(it) }
+                                        .firstOrNull { it != -1 } ?: 0
+                                    tempIdx + 1
                                 } else {
                                     0
                                 }
@@ -296,9 +305,10 @@ class DepthWallpaperA14(context: Context) : ModPack(context) {
                     createLayers()
                 }
 
-                val idx = if (showLockscreenClock && isComposeLockscreen) {
-                    val tempIdx = targetView.findViewIdContainsTag(ICONIFY_LOCKSCREEN_CLOCK_TAG)
-                    if (tempIdx == -1) 1 else tempIdx + 1
+                val idx = if (isComposeLockscreen) {
+                    val tempIdx = lsItemTags.map { targetView.findViewIdContainsTag(it) }
+                        .firstOrNull { it != -1 } ?: 1
+                    tempIdx + 1
                 } else {
                     1
                 }

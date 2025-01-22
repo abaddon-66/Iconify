@@ -5,8 +5,6 @@ import com.drdisagree.iconify.common.Const.PIXEL_LAUNCHER_PACKAGE
 import com.drdisagree.iconify.common.Const.SYSTEMUI_PACKAGE
 import com.drdisagree.iconify.xposed.modules.BackgroundChip
 import com.drdisagree.iconify.xposed.modules.BatteryStyleManager
-import com.drdisagree.iconify.xposed.modules.depthwallpaper.DepthWallpaper
-import com.drdisagree.iconify.xposed.modules.depthwallpaper.DepthWallpaperA14
 import com.drdisagree.iconify.xposed.modules.extras.callbacks.ControllersProvider
 import com.drdisagree.iconify.xposed.modules.extras.callbacks.ThemeChange
 import com.drdisagree.iconify.xposed.modules.extras.utils.MyConstraintSet
@@ -15,6 +13,8 @@ import com.drdisagree.iconify.xposed.modules.launcher.IconUpdater
 import com.drdisagree.iconify.xposed.modules.lockscreen.Lockscreen
 import com.drdisagree.iconify.xposed.modules.lockscreen.clock.LockscreenClock
 import com.drdisagree.iconify.xposed.modules.lockscreen.clock.LockscreenClockA15
+import com.drdisagree.iconify.xposed.modules.lockscreen.depthwallpaper.DepthWallpaper
+import com.drdisagree.iconify.xposed.modules.lockscreen.depthwallpaper.DepthWallpaperA14
 import com.drdisagree.iconify.xposed.modules.lockscreen.weather.LockscreenWeather
 import com.drdisagree.iconify.xposed.modules.lockscreen.weather.LockscreenWeatherA15
 import com.drdisagree.iconify.xposed.modules.lockscreen.widgets.LockscreenWidgets

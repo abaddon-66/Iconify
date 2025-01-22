@@ -1,4 +1,4 @@
-package com.drdisagree.iconify.xposed.modules.depthwallpaper
+package com.drdisagree.iconify.xposed.modules.lockscreen.depthwallpaper
 
 import android.annotation.SuppressLint
 import android.content.Context
