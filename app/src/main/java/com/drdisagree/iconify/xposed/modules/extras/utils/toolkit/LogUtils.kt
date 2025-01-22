@@ -12,6 +12,12 @@ fun log(message: String?) {
     XposedBridge.log(message)
 }
 
+fun log(tag: String, message: Any?) {
+    XposedBridge.log(
+        "Iconify - $tag: $message"
+    )
+}
+
 fun <T : Any> log(clazz: T, message: Any?) {
     XposedBridge.log(
         "Iconify - ${
