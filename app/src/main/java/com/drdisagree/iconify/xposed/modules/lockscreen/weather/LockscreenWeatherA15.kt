@@ -316,7 +316,7 @@ class LockscreenWeatherA15(context: Context) : ModPack(context) {
 
     @SuppressLint("DiscouragedApi")
     private fun applyLayoutConstraints(weatherView: ViewGroup) {
-        assignIdsToViews(mLockscreenRootView!!)
+        mLockscreenRootView.assignIdsToViews()
 
         weatherView.getChildAt(0)?.layoutParams?.width = LinearLayout.LayoutParams.MATCH_PARENT
 

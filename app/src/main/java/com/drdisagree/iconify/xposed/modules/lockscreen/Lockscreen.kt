@@ -139,7 +139,7 @@ class Lockscreen(context: Context) : ModPack(context) {
                                         null
                                     }
                                 }.forEach { view ->
-                                    view?.hideView()
+                                    view.hideView()
                                 }
                             }, 1000)
                         }

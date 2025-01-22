@@ -465,18 +465,29 @@ object ViewHelper {
         viewTreeObserver?.addOnGlobalLayoutListener {
             hide()
         }
+        viewTreeObserver?.addOnDrawListener {
+            hide()
+        }
     }
 
-    fun assignIdsToViews(container: ViewGroup) {
-        for (i in 0 until container.childCount) {
-            val child = container.getChildAt(i)
+    fun View?.assignIdsToViews() {
+        if (this == null) return
 
-            if (child is ViewGroup) {
-                assignIdsToViews(child)
+        if (this is ViewGroup) {
+            for (i in 0 until childCount) {
+                val child = getChildAt(i)
+
+                if (child is ViewGroup) {
+                    child.assignIdsToViews()
+                }
+
+                if (child.id == View.NO_ID) {
+                    child.id = View.generateViewId()
+                }
             }
-
-            if (child.id == View.NO_ID) {
-                child.id = View.generateViewId()
+        } else {
+            if (id == View.NO_ID) {
+                id = View.generateViewId()
             }
         }
     }

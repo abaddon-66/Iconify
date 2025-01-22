@@ -258,7 +258,7 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
                                     null
                                 }
                             }.forEach { view ->
-                                view?.hideView()
+                                view.hideView()
                             }
 
                             registerClockUpdater()
@@ -401,6 +401,16 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
                     constraintSet.constrainHeight(viewId, 0)
                     constraintSet.constrainWidth(viewId, 0)
                     constraintSet.setVisibility(viewId, ConstraintSet.INVISIBLE)
+                }
+
+                smartspaceViewIds.map { resourceId ->
+                    if (resourceId != -1) {
+                        mLockscreenRootView?.findViewById<View?>(resourceId)
+                    } else {
+                        null
+                    }
+                }.forEach { view ->
+                    view.hideView()
                 }
             }
 
@@ -615,7 +625,7 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
     }
 
     private fun applyLayoutConstraints(containerView: ViewGroup) {
-        assignIdsToViews(mLockscreenRootView!!)
+        mLockscreenRootView.assignIdsToViews()
 
         val notificationContainerId = mContext.resources.getIdentifier(
             "nssl_placeholder",

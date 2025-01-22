@@ -419,7 +419,7 @@ class LockscreenWidgetsA15(context: Context) : ModPack(context) {
 
     @SuppressLint("DiscouragedApi")
     private fun applyLayoutConstraints(widgetView: ViewGroup) {
-        assignIdsToViews(mLockscreenRootView!!)
+        mLockscreenRootView.assignIdsToViews()
 
         widgetView.getChildAt(0)?.layoutParams?.width = LinearLayout.LayoutParams.MATCH_PARENT
 
