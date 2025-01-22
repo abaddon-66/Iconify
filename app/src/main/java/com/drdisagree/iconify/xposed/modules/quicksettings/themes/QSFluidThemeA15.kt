@@ -33,6 +33,7 @@ import com.drdisagree.iconify.xposed.ModPack
 import com.drdisagree.iconify.xposed.modules.extras.utils.SettingsLibUtils
 import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.toPx
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.XposedHook.Companion.findClass
+import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.findMethod
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.getField
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.getFieldSilently
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookConstructor
@@ -379,12 +380,19 @@ class QSFluidThemeA15(context: Context) : ModPack(context) {
             suppressError = true
         )
 
+        val colorAttrParams = themeColorKtClass?.let {
+            findMethod(it, "colorAttr")?.parameters
+        } ?: emptyArray()
+        val resIdIndex = colorAttrParams.indexOfFirst {
+            it.type == Int::class.javaPrimitiveType
+        }.takeIf { it != -1 } ?: 0
+
         themeColorKtClass
             .hookMethod("colorAttr")
             .runBefore { param ->
                 if (!fluidQsThemeEnabled) return@runBefore
 
-                val code = param.args[0] as Int
+                val code = param.args[resIdIndex] as Int
                 var result = 0
 
                 when (code) {

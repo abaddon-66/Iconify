@@ -22,6 +22,7 @@ import com.drdisagree.iconify.xposed.ModPack
 import com.drdisagree.iconify.xposed.modules.extras.utils.SettingsLibUtils.Companion.getColorAttr
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.XposedHook.Companion.findClass
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.callMethod
+import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.findMethod
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.getField
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookConstructor
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookMethod
@@ -34,6 +35,7 @@ import com.drdisagree.iconify.xposed.utils.XPrefs.XprefsIsInitialized
 import de.robv.android.xposed.XC_MethodHook
 import de.robv.android.xposed.XposedHelpers.callStaticMethod
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam
+
 
 @SuppressLint("DiscouragedApi")
 class QSBlackThemeA15(context: Context) : ModPack(context) {
@@ -688,12 +690,19 @@ class QSBlackThemeA15(context: Context) : ModPack(context) {
                 param.args[1] = callStaticMethod(graphicsColorKtClass, "Color", Color.WHITE)
             }
 
+        val colorAttrParams = themeColorKtClass?.let {
+            findMethod(it, "colorAttr")?.parameters
+        } ?: emptyArray()
+        val resIdIndex = colorAttrParams.indexOfFirst {
+            it.type == Int::class.javaPrimitiveType
+        }.takeIf { it != -1 } ?: 0
+
         themeColorKtClass
             .hookMethod("colorAttr")
             .runBefore { param ->
                 if (!blackQSHeaderEnabled) return@runBefore
 
-                val code = param.args[0] as Int
+                val code = param.args[resIdIndex] as Int
                 var result = 0
 
                 if (code == PM_LITE_BACKGROUND_CODE) {
