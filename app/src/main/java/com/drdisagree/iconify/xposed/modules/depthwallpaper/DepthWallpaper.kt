@@ -629,7 +629,4 @@ class DepthWallpaper(context: Context) : ModPack(context) {
             drawable.start()
         }
     }
-
-    companion object {
-        }
 }

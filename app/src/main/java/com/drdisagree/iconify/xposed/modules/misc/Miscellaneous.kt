@@ -565,7 +565,4 @@ class Miscellaneous(context: Context) : ModPack(context) {
                 }
             }
     }
-
-    companion object {
-        }
 }

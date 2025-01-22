@@ -299,7 +299,4 @@ class HeaderImage(context: Context) : ModPack(context) {
         } catch (ignored: Throwable) {
         }
     }
-
-    companion object {
-        }
 }

@@ -792,7 +792,4 @@ class BackgroundChip(context: Context) : ModPack(context) {
                 }
         }
     }
-
-    companion object {
-        }
 }
