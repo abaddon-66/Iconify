@@ -13,15 +13,36 @@ fun log(message: String?) {
 }
 
 fun <T : Any> log(clazz: T, message: Any?) {
-    XposedBridge.log("Iconify - ${clazz.javaClass.simpleName}: $message")
+    XposedBridge.log(
+        "Iconify - ${
+            clazz.javaClass.simpleName.replace(
+                "\$Companion",
+                ""
+            )
+        }: $message"
+    )
 }
 
 fun <T : Any> log(clazz: T, throwable: Throwable?) {
-    XposedBridge.log("Iconify - ${clazz.javaClass.simpleName}: $throwable")
+    XposedBridge.log(
+        "Iconify - ${
+            clazz.javaClass.simpleName.replace(
+                "\$Companion",
+                ""
+            )
+        }: $throwable"
+    )
 }
 
 fun <T : Any> log(clazz: T, exception: Exception?) {
-    XposedBridge.log("Iconify - ${clazz.javaClass.simpleName}: $exception")
+    XposedBridge.log(
+        "Iconify - ${
+            clazz.javaClass.simpleName.replace(
+                "\$Companion",
+                ""
+            )
+        }: $exception"
+    )
 }
 
 fun findAndDumpClass(className: String, classLoader: ClassLoader?): Class<*> {
