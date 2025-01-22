@@ -54,7 +54,6 @@ import com.drdisagree.iconify.xposed.modules.extras.utils.MyConstraintSet.Compan
 import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.assignIdsToViews
 import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.getLsItemsContainer
 import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.setMargins
-import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.toPx
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.XposedHook.Companion.findClass
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.getField
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookConstructor
@@ -239,10 +238,10 @@ class LockscreenWidgetsA15(context: Context) : ModPack(context) {
             )
         }
 
-        val keyguardQuickAffordanceInteractor =
+        val keyguardQuickAffordanceInteractorClass =
             findClass("$SYSTEMUI_PACKAGE.keyguard.domain.interactor.KeyguardQuickAffordanceInteractor")
 
-        keyguardQuickAffordanceInteractor
+        keyguardQuickAffordanceInteractorClass
             .hookConstructor()
             .runAfter { param ->
                 try {
@@ -253,9 +252,9 @@ class LockscreenWidgetsA15(context: Context) : ModPack(context) {
                 setActivityStarter()
             }
 
-        val keyguardClockSwitch = findClass("com.android.keyguard.KeyguardClockSwitch")
+        val keyguardClockSwitchClass = findClass("com.android.keyguard.KeyguardClockSwitch")
 
-        keyguardClockSwitch
+        keyguardClockSwitchClass
             .hookMethod("updateClockViews")
             .runAfter { param ->
                 if (!mWidgetsEnabled) return@runAfter
@@ -337,8 +336,7 @@ class LockscreenWidgetsA15(context: Context) : ModPack(context) {
                     notificationContainerId,
                     ConstraintSet.TOP,
                     (mLsItemsContainer ?: mWidgetsContainer).id,
-                    ConstraintSet.BOTTOM,
-                    mContext.toPx(mBottomMargin)
+                    ConstraintSet.BOTTOM
                 )
             }
 
@@ -433,11 +431,6 @@ class LockscreenWidgetsA15(context: Context) : ModPack(context) {
             "id",
             mContext.packageName
         )
-        val dateSmartspaceViewId = mContext.resources.getIdentifier(
-            "date_smartspace_view",
-            "id",
-            mContext.packageName
-        )
 
         constraintSetInstance?.also { constraintSet ->
             constraintSet.clone(mLockscreenRootView!!)
@@ -459,6 +452,11 @@ class LockscreenWidgetsA15(context: Context) : ModPack(context) {
             if ((widgetView == mWidgetsContainer && !mLockscreenClockEnabled && !mWeatherEnabled) ||
                 (widgetView == mLsItemsContainer && !mLockscreenClockEnabled && mWeatherEnabled)
             ) {
+                val dateSmartspaceViewId = mContext.resources.getIdentifier(
+                    "date_smartspace_view",
+                    "id",
+                    mContext.packageName
+                )
                 // If no custom clock or widgets enabled, or only widgets enabled
                 // then connect widget view to bottom of date smartspace
                 constraintSet.connect(
@@ -495,13 +493,13 @@ class LockscreenWidgetsA15(context: Context) : ModPack(context) {
             if (aodNotificationIconContainerId != 0) {
                 constraintSet.clear(
                     aodNotificationIconContainerId,
-                    ConstraintSet.BOTTOM
+                    ConstraintSet.TOP
                 )
                 constraintSet.connect(
                     aodNotificationIconContainerId,
-                    ConstraintSet.BOTTOM,
+                    ConstraintSet.TOP,
                     widgetView.id,
-                    ConstraintSet.TOP
+                    ConstraintSet.BOTTOM
                 )
             }
 

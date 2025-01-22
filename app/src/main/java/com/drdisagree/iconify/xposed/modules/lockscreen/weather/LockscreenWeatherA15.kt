@@ -46,7 +46,6 @@ import com.drdisagree.iconify.xposed.modules.extras.utils.MyConstraintSet.Compan
 import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.assignIdsToViews
 import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.getLsItemsContainer
 import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.setMargins
-import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.toPx
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.XposedHook.Companion.findClass
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookConstructor
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookMethod
@@ -241,8 +240,7 @@ class LockscreenWeatherA15(context: Context) : ModPack(context) {
                     notificationContainerId,
                     ConstraintSet.TOP,
                     (mLsItemsContainer ?: mWeatherContainer).id,
-                    ConstraintSet.BOTTOM,
-                    mContext.toPx(mBottomMargin)
+                    ConstraintSet.BOTTOM
                 )
             }
 
@@ -263,7 +261,7 @@ class LockscreenWeatherA15(context: Context) : ModPack(context) {
                 )
 
                 // Connect weather view to bottom of date smartspace
-                if ((mLockscreenClockEnabled || mWidgetsEnabled) && mLsItemsContainer != null) {
+                if (!mLockscreenClockEnabled && mWidgetsEnabled && mLsItemsContainer != null) {
                     constraintSet.clear(
                         mLsItemsContainer!!.id,
                         ConstraintSet.TOP
@@ -274,7 +272,18 @@ class LockscreenWeatherA15(context: Context) : ModPack(context) {
                         dateSmartSpaceViewId,
                         ConstraintSet.BOTTOM
                     )
-                } else if (!mLockscreenClockEnabled && !mWidgetsEnabled) {
+                } else if (mLockscreenClockEnabled && mLsItemsContainer != null) {
+                    constraintSet.clear(
+                        mLsItemsContainer!!.id,
+                        ConstraintSet.TOP
+                    )
+                    constraintSet.connect(
+                        mLsItemsContainer!!.id,
+                        ConstraintSet.TOP,
+                        ConstraintSet.PARENT_ID,
+                        ConstraintSet.TOP
+                    )
+                } else if (!mLockscreenClockEnabled && !mWeatherEnabled) {
                     constraintSet.clear(
                         mWeatherContainer.id,
                         ConstraintSet.TOP
@@ -330,11 +339,6 @@ class LockscreenWeatherA15(context: Context) : ModPack(context) {
             "id",
             mContext.packageName
         )
-        val dateSmartspaceViewId = mContext.resources.getIdentifier(
-            "date_smartspace_view",
-            "id",
-            mContext.packageName
-        )
 
         constraintSetInstance?.also { constraintSet ->
             constraintSet.clone(mLockscreenRootView!!)
@@ -356,6 +360,11 @@ class LockscreenWeatherA15(context: Context) : ModPack(context) {
             if ((weatherView == mWeatherContainer && !mLockscreenClockEnabled && !mWidgetsEnabled) ||
                 (weatherView == mLsItemsContainer && !mLockscreenClockEnabled && mWidgetsEnabled)
             ) {
+                val dateSmartspaceViewId = mContext.resources.getIdentifier(
+                    "date_smartspace_view",
+                    "id",
+                    mContext.packageName
+                )
                 // If no custom clock or widgets enabled, or only widgets enabled
                 // then connect weather view to bottom of date smartspace
                 constraintSet.connect(

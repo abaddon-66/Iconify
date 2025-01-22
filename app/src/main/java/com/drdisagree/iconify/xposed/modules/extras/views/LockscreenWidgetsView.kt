@@ -603,22 +603,20 @@ class LockscreenWidgetsView(context: Context, activityStarter: Any?) :
         val isSecondaryWidgetsEmpty = mSecondaryLockscreenWidgetsList.isNullOrEmpty()
         val isEmpty = isMainWidgetsEmpty && isSecondaryWidgetsEmpty
 
-        if (mDeviceWidgetContainer != null) {
-            mDeviceWidgetContainer?.visibility = if (deviceWidgetsEnabled) {
-                if (mIsLargeClock) View.GONE else View.VISIBLE
-            } else {
-                View.GONE
-            }
+        mDeviceWidgetContainer?.visibility = if (deviceWidgetsEnabled) {
+            if (mIsLargeClock) View.GONE else View.VISIBLE
+        } else {
+            View.GONE
         }
-        if (mMainWidgetsContainer != null) {
-            mMainWidgetsContainer?.visibility = if (isMainWidgetsEmpty) GONE else VISIBLE
-        }
-        if (mSecondaryWidgetsContainer != null) {
-            mSecondaryWidgetsContainer?.visibility =
-                if (isSecondaryWidgetsEmpty || mIsLargeClock) GONE else VISIBLE
-        }
+        mMainWidgetsContainer?.visibility = if (isMainWidgetsEmpty) GONE else VISIBLE
+        mSecondaryWidgetsContainer?.visibility =
+            if (isSecondaryWidgetsEmpty || mIsLargeClock) GONE else VISIBLE
+
         val shouldHideContainer = isEmpty || mDozing || !lockscreenWidgetsEnabled
-        visibility = if (shouldHideContainer) GONE else VISIBLE
+        layoutParams?.apply {
+            width = if (shouldHideContainer) 0 else ViewGroup.LayoutParams.MATCH_PARENT
+            height = if (shouldHideContainer) 0 else ViewGroup.LayoutParams.WRAP_CONTENT
+        }
     }
 
     private fun updateWidgetViews() {
