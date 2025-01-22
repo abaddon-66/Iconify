@@ -20,6 +20,7 @@ import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.XposedHook.Com
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.callMethod
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.getField
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.getFieldSilently
+import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookConstructor
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookMethod
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.setField
 import com.drdisagree.iconify.xposed.utils.XPrefs.Xprefs
@@ -59,6 +60,7 @@ class VolumePanel(context: Context) : ModPack(context) {
     override fun handleLoadPackage(loadPackageParam: LoadPackageParam) {
         coloredSelectedRingerIcon()
         showVolumePercentage()
+        showSafetyWarning()
     }
 
     private fun coloredSelectedRingerIcon() {
@@ -93,6 +95,10 @@ class VolumePanel(context: Context) : ModPack(context) {
 
     private fun showVolumePercentage() {
         val volumeDialogImplClass = findClass("$SYSTEMUI_PACKAGE.volume.VolumeDialogImpl")
+        val audioStreamStateClass = findClass(
+            "$SYSTEMUI_PACKAGE.volume.panel.component.volume.slider.ui.viewmodel.AudioStreamSliderViewModel\$State",
+            suppressError = true
+        )
 
         volumeDialogImplClass
             .hookMethod("initRow")
@@ -171,6 +177,28 @@ class VolumePanel(context: Context) : ModPack(context) {
                 }
             }
 
+        // Compose implementation of extended volume panel
+        audioStreamStateClass
+            .hookConstructor()
+            .suppressError()
+            .runAfter { param ->
+                if (!showPercentage) return@runAfter
+
+                val currentValue = param.thisObject.getField("value") as Float
+                val maxValue = param.thisObject
+                    .getField("valueRange")
+                    .getField("_endInclusive") as Float
+                val percentage = 100 * currentValue / maxValue
+                var label = param.thisObject.getField("label") as String
+                label = String.format("$label - ${Math.round(percentage)}%%")
+
+                param.thisObject.setField("label", label)
+            }
+    }
+
+    private fun showSafetyWarning() {
+        val volumeDialogImplClass = findClass("$SYSTEMUI_PACKAGE.volume.VolumeDialogImpl")
+
         volumeDialogImplClass
             .hookMethod(
                 "onShowSafetyWarning",
@@ -214,7 +242,4 @@ class VolumePanel(context: Context) : ModPack(context) {
 
         return volumeNumber
     }
-
-    companion object {
-        }
 }
