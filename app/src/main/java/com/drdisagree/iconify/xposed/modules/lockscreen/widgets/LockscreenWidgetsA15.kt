@@ -63,6 +63,7 @@ import com.drdisagree.iconify.xposed.modules.extras.views.LockscreenWidgetsView
 import com.drdisagree.iconify.xposed.modules.lockscreen.Lockscreen.Companion.isComposeLockscreen
 import com.drdisagree.iconify.xposed.utils.XPrefs.Xprefs
 import com.drdisagree.iconify.xposed.utils.XPrefs.XprefsIsInitialized
+import de.robv.android.xposed.XC_MethodHook
 import de.robv.android.xposed.callbacks.XC_LoadPackage
 
 class LockscreenWidgetsA15(context: Context) : ModPack(context) {
@@ -108,6 +109,7 @@ class LockscreenWidgetsA15(context: Context) : ModPack(context) {
     private var mTopMargin = 0
     private var mBottomMargin = 0
     private var mWidgetsScale = 1.0f
+    private var dateSmartSpaceViewAvailable = false
 
     private var mBroadcastRegistered = false
     private val mReceiver: BroadcastReceiver = object : BroadcastReceiver() {
@@ -271,45 +273,90 @@ class LockscreenWidgetsA15(context: Context) : ModPack(context) {
 
         val aodBurnInLayerClass =
             findClass("$SYSTEMUI_PACKAGE.keyguard.ui.view.layout.sections.AodBurnInLayer")
+        var aodBurnInLayerHooked = false
+
+        // Apparently ROMs like CrDroid doesn't even use AodBurnInLayer class
+        // So we hook which ever is available
+        val keyguardStatusViewClass = findClass("com.android.keyguard.KeyguardStatusView")
+        var keyguardStatusViewHooked = false
+
+        fun initializeLockscreenLayout(param: XC_MethodHook.MethodHookParam) {
+            val entryV = param.thisObject as View
+
+            // If both are already hooked, return. We only want to hook one
+            if (aodBurnInLayerHooked && keyguardStatusViewHooked) return
+
+            entryV.addOnAttachStateChangeListener(object : OnAttachStateChangeListener {
+                override fun onViewAttachedToWindow(v: View) {
+                    Handler(Looper.getMainLooper()).postDelayed({
+                        if (!mWidgetsEnabled) return@postDelayed
+
+                        val rootView = entryV.parent as ViewGroup
+
+                        // If rootView is not R.id.keyguard_root_view, detach and return
+                        if (rootView.id != mContext.resources.getIdentifier(
+                                "keyguard_root_view",
+                                "id",
+                                mContext.packageName
+                            )
+                        ) {
+                            entryV.removeOnAttachStateChangeListener(this)
+                            return@postDelayed
+                        }
+
+                        dateSmartSpaceViewAvailable = rootView.findViewById<View?>(
+                            mContext.resources.getIdentifier(
+                                "date_smartspace_view",
+                                "id",
+                                mContext.packageName
+                            )
+                        ) != null
+
+                        mLockscreenRootView = rootView
+
+                        if (mLockscreenClockEnabled || mWeatherEnabled) {
+                            mLsItemsContainer = rootView.getLsItemsContainer()
+
+                            (mWidgetsContainer.parent as? ViewGroup)
+                                ?.removeView(mWidgetsContainer)
+
+                            // Add widgets view at the end
+                            mLsItemsContainer!!.addView(
+                                mWidgetsContainer,
+                                mLsItemsContainer!!.childCount - 1
+                            )
+                        } else {
+                            mLockscreenRootView!!.addView(mWidgetsContainer)
+                        }
+
+                        applyLayoutConstraints(mLsItemsContainer ?: mWidgetsContainer)
+
+                        placeWidgetsView()
+                    }, 1000)
+                }
+
+                override fun onViewDetachedFromWindow(v: View) {}
+            })
+        }
 
         aodBurnInLayerClass
             .hookConstructor()
             .runAfter { param ->
                 if (!mWidgetsEnabled) return@runAfter
 
-                val entryV = param.thisObject as View
+                aodBurnInLayerHooked = true
 
-                entryV.addOnAttachStateChangeListener(object : OnAttachStateChangeListener {
-                    override fun onViewAttachedToWindow(v: View) {
-                        Handler(Looper.getMainLooper()).postDelayed({
-                            if (!mWidgetsEnabled) return@postDelayed
+                initializeLockscreenLayout(param)
+            }
 
-                            val rootView = entryV.parent as ViewGroup
-                            mLockscreenRootView = rootView
+        keyguardStatusViewClass
+            .hookConstructor()
+            .runAfter { param ->
+                if (!mWidgetsEnabled) return@runAfter
 
-                            if (mLockscreenClockEnabled || mWeatherEnabled) {
-                                mLsItemsContainer = rootView.getLsItemsContainer()
+                keyguardStatusViewHooked = true
 
-                                (mWidgetsContainer.parent as? ViewGroup)
-                                    ?.removeView(mWidgetsContainer)
-
-                                // Add widgets view at the end
-                                mLsItemsContainer!!.addView(
-                                    mWidgetsContainer,
-                                    mLsItemsContainer!!.childCount - 1
-                                )
-                            } else {
-                                mLockscreenRootView!!.addView(mWidgetsContainer)
-                            }
-
-                            applyLayoutConstraints(mLsItemsContainer ?: mWidgetsContainer)
-
-                            placeWidgetsView()
-                        }, 1000)
-                    }
-
-                    override fun onViewDetachedFromWindow(v: View) {}
-                })
+                initializeLockscreenLayout(param)
             }
 
         val defaultNotificationStackScrollLayoutSectionClass =
@@ -350,11 +397,20 @@ class LockscreenWidgetsA15(context: Context) : ModPack(context) {
 
                 val constraintSet = param.args[0]
 
-                val dateSmartSpaceViewId = mContext.resources.getIdentifier(
-                    "date_smartspace_view",
-                    "id",
-                    mContext.packageName
-                )
+                val dateSmartSpaceViewId = if (dateSmartSpaceViewAvailable) {
+                    mContext.resources.getIdentifier(
+                        "date_smartspace_view",
+                        "id",
+                        mContext.packageName
+                    )
+                } else {
+                    // Some ROMs don't have date smartspace view
+                    mContext.resources.getIdentifier(
+                        "bc_smartspace_view",
+                        "id",
+                        mContext.packageName
+                    )
+                }
 
                 // Connect widget view to bottom of date smartspace
                 if (!mLockscreenClockEnabled && mWeatherEnabled && mLsItemsContainer != null) {
@@ -452,11 +508,20 @@ class LockscreenWidgetsA15(context: Context) : ModPack(context) {
             if ((widgetView == mWidgetsContainer && !mLockscreenClockEnabled && !mWeatherEnabled) ||
                 (widgetView == mLsItemsContainer && !mLockscreenClockEnabled && mWeatherEnabled)
             ) {
-                val dateSmartspaceViewId = mContext.resources.getIdentifier(
-                    "date_smartspace_view",
-                    "id",
-                    mContext.packageName
-                )
+                val dateSmartspaceViewId = if (dateSmartSpaceViewAvailable) {
+                    mContext.resources.getIdentifier(
+                        "date_smartspace_view",
+                        "id",
+                        mContext.packageName
+                    )
+                } else {
+                    // Some ROMs don't have date smartspace view
+                    mContext.resources.getIdentifier(
+                        "bc_smartspace_view",
+                        "id",
+                        mContext.packageName
+                    )
+                }
                 // If no custom clock or widgets enabled, or only widgets enabled
                 // then connect widget view to bottom of date smartspace
                 constraintSet.connect(
