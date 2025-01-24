@@ -1,7 +1,6 @@
 package com.drdisagree.iconify.xposed.modules.extras.utils.toolkit
 
 
-import android.content.Context
 import android.view.View
 import android.view.ViewGroup
 import de.robv.android.xposed.XposedBridge
@@ -114,16 +113,29 @@ private fun dumpClass(ourClass: Class<*>) {
     XposedBridge.log("End dump\n\n")
 }
 
-fun dumpChildViews(context: Context, view: View) {
-    if (view is ViewGroup) {
-        logViewInfo(context, view, 0)
-        dumpChildViewsRecursive(context, view, 0)
+fun View.dumpChildViews() {
+    if (this is ViewGroup) {
+        logViewInfo(this, 0)
+        dumpChildViewsRecursive(this, 0)
     } else {
-        logViewInfo(context, view, 0)
+        logViewInfo(this, 0)
     }
 }
 
-private fun logViewInfo(context: Context, view: View, indentationLevel: Int) {
+private fun dumpChildViewsRecursive(
+    viewGroup: ViewGroup,
+    indentationLevel: Int
+) {
+    for (i in 0 until viewGroup.childCount) {
+        val childView = viewGroup.getChildAt(i)
+        logViewInfo(childView, indentationLevel + 1)
+        if (childView is ViewGroup) {
+            dumpChildViewsRecursive(childView, indentationLevel + 1)
+        }
+    }
+}
+
+private fun logViewInfo(view: View, indentationLevel: Int) {
     val indentation = repeatString("\t", indentationLevel)
     val viewName = view.javaClass.simpleName
     val superclassName = view.javaClass.superclass?.simpleName ?: "None"
@@ -132,7 +144,7 @@ private fun logViewInfo(context: Context, view: View, indentationLevel: Int) {
     var resourceIdName = "none"
     try {
         val viewId = view.id
-        resourceIdName = context.resources.getResourceName(viewId)
+        resourceIdName = view.context.resources.getResourceName(viewId)
     } catch (ignored: Throwable) {
     }
     var logMessage = "$indentation$viewName (Extends: $superclassName) - ID: $resourceIdName"
@@ -143,20 +155,6 @@ private fun logViewInfo(context: Context, view: View, indentationLevel: Int) {
         logMessage += " - Background: ${backgroundDrawable.javaClass.simpleName}"
     }
     XposedBridge.log(logMessage)
-}
-
-private fun dumpChildViewsRecursive(
-    context: Context,
-    viewGroup: ViewGroup,
-    indentationLevel: Int
-) {
-    for (i in 0 until viewGroup.childCount) {
-        val childView = viewGroup.getChildAt(i)
-        logViewInfo(context, childView, indentationLevel + 1)
-        if (childView is ViewGroup) {
-            dumpChildViewsRecursive(context, childView, indentationLevel + 1)
-        }
-    }
 }
 
 @Suppress("SameParameterValue")
