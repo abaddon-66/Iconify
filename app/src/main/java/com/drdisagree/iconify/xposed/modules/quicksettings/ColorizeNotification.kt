@@ -85,12 +85,17 @@ class ColorizeNotification(context: Context) : ModPack(context) {
         val notificationHeaderViewWrapperClass =
             findClass("$SYSTEMUI_PACKAGE.statusbar.notification.row.wrapper.NotificationHeaderViewWrapper")
 
-        val styles: Array<out Any> = monetStyleClass.getEnumConstants()!!
-        for (style in styles) {
-            if (style.toString().contains("CONTENT")) {
-                schemeStyle = style
-                break
+        try {
+            val styles: Array<out Any> = monetStyleClass.getEnumConstants()!!
+            for (style in styles) {
+                if (style.toString().contains("CONTENT")) {
+                    schemeStyle = style
+                    break
+                }
             }
+        } catch (ignore: Throwable) {
+            // A16B1 doesn't have the enum constants, but CONTENT exists
+            schemeStyle = "CONTENT"
         }
 
         findClass("android.app.Notification\$Builder")
@@ -288,20 +293,38 @@ class ColorizeNotification(context: Context) : ModPack(context) {
             }
 
             val darkTheme = packageContext.resources.configuration.isNightModeActive
-            val colorScheme = try {
+            val colorScheme = runCatching {
                 newInstance(
                     colorSchemeClass,
                     primaryColor,
                     darkTheme,
                     schemeStyle
                 )
-            } catch (ignored: NoSuchMethodError) {
-                newInstance(
-                    colorSchemeClass,
-                    wallpaperColors,
-                    darkTheme,
-                    schemeStyle
-                )
+            }.getOrElse {
+                runCatching {
+                    newInstance(
+                        colorSchemeClass,
+                        wallpaperColors,
+                        darkTheme,
+                        schemeStyle
+                    )
+                }.getOrElse {
+                    runCatching {
+                        newInstance(
+                            colorSchemeClass,
+                            wallpaperColors,
+                            darkTheme,
+                            6 // CONTENT style is converted to 6 in A16B1
+                        )
+                    }.getOrElse {
+                        newInstance(
+                            colorSchemeClass,
+                            primaryColor,
+                            darkTheme,
+                            6 // CONTENT style is converted to 6 in A16B1
+                        )
+                    }
+                }
             }
 
             val paletteAccent1 = colorScheme.getAnyField("accent1", "mAccent1")
