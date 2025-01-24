@@ -148,7 +148,7 @@ class ColorizeNotification(context: Context) : ModPack(context) {
 
                 val overflowColor = notification.getExtraFieldSilently("mSecondaryTextColor")
                 if (overflowColor != null) {
-                    param.thisObject.setField("mNotificationColor", overflowColor)
+                    param.thisObject.setFieldSilently("mNotificationColor", overflowColor)
                 }
 
                 val mNotifyBackgroundColor =
