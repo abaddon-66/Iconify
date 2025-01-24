@@ -84,6 +84,7 @@ import com.drdisagree.iconify.xposed.modules.extras.views.ArcProgressWidget.gene
 import com.drdisagree.iconify.xposed.modules.lockscreen.Lockscreen.Companion.isComposeLockscreen
 import com.drdisagree.iconify.xposed.utils.XPrefs.Xprefs
 import com.drdisagree.iconify.xposed.utils.XPrefs.XprefsIsInitialized
+import de.robv.android.xposed.XC_MethodHook
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam
 import java.io.File
 import java.util.concurrent.Executors
@@ -221,55 +222,92 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
 
         val aodBurnInLayerClass =
             findClass("$SYSTEMUI_PACKAGE.keyguard.ui.view.layout.sections.AodBurnInLayer")
+        var aodBurnInLayerHooked = false
+
+        // Apparently ROMs like CrDroid doesn't even use AodBurnInLayer class
+        // So we hook which ever is available
+        val keyguardStatusViewClass = findClass("com.android.keyguard.KeyguardStatusView")
+        var keyguardStatusViewHooked = false
+
+        fun initializeLockscreenLayout(param: XC_MethodHook.MethodHookParam) {
+            val entryV = param.thisObject as View
+
+            // If both are already hooked, return. We only want to hook one
+            if (aodBurnInLayerHooked && keyguardStatusViewHooked) return
+
+            entryV.addOnAttachStateChangeListener(object : OnAttachStateChangeListener {
+                override fun onViewAttachedToWindow(v: View) {
+                    Handler(Looper.getMainLooper()).postDelayed({
+                        if (!showLockscreenClock) return@postDelayed
+
+                        val rootView = entryV.parent as ViewGroup
+
+                        // If rootView is not R.id.keyguard_root_view, detach and return
+                        if (rootView.id != mContext.resources.getIdentifier(
+                                "keyguard_root_view",
+                                "id",
+                                mContext.packageName
+                            )
+                        ) {
+                            entryV.removeOnAttachStateChangeListener(this)
+                            return@postDelayed
+                        }
+
+                        mLockscreenRootView = rootView
+
+                        mLsItemsContainer = rootView.getLsItemsContainer()
+                        applyLayoutConstraints(mLsItemsContainer!!)
+
+                        // Hide stock clock
+                        listOf(
+                            "bc_smartspace_view",
+                            "date_smartspace_view",
+                            "lockscreen_clock_view",
+                            "lockscreen_clock_view_large",
+                            "keyguard_slice_view"
+                        ).map { resourceName ->
+                            val resourceId = mContext.resources.getIdentifier(
+                                resourceName,
+                                "id",
+                                mContext.packageName
+                            )
+                            if (resourceId != -1) {
+                                rootView.findViewById<View?>(resourceId)
+                            } else {
+                                null
+                            }
+                        }.forEach { view ->
+                            view.hideView()
+                        }
+
+                        registerClockUpdater()
+                    }, 1000)
+                }
+
+                override fun onViewDetachedFromWindow(v: View) {
+                    unregisterClockUpdater()
+                }
+            })
+        }
 
         aodBurnInLayerClass
             .hookConstructor()
             .runAfter { param ->
                 if (!showLockscreenClock) return@runAfter
 
-                val entryV = param.thisObject as View
+                aodBurnInLayerHooked = true
 
-                entryV.addOnAttachStateChangeListener(object : OnAttachStateChangeListener {
-                    override fun onViewAttachedToWindow(v: View) {
-                        Handler(Looper.getMainLooper()).postDelayed({
-                            if (!showLockscreenClock) return@postDelayed
+                initializeLockscreenLayout(param)
+            }
 
-                            val rootView = entryV.parent as ViewGroup
-                            mLockscreenRootView = rootView
+        keyguardStatusViewClass
+            .hookConstructor()
+            .runAfter { param ->
+                if (!showLockscreenClock) return@runAfter
 
-                            mLsItemsContainer = rootView.getLsItemsContainer()
-                            applyLayoutConstraints(mLsItemsContainer!!)
+                keyguardStatusViewHooked = true
 
-                            // Hide stock clock
-                            listOf(
-                                "bc_smartspace_view",
-                                "date_smartspace_view",
-                                "lockscreen_clock_view",
-                                "lockscreen_clock_view_large",
-                                "keyguard_slice_view"
-                            ).map { resourceName ->
-                                val resourceId = mContext.resources.getIdentifier(
-                                    resourceName,
-                                    "id",
-                                    mContext.packageName
-                                )
-                                if (resourceId != -1) {
-                                    rootView.findViewById<View?>(resourceId)
-                                } else {
-                                    null
-                                }
-                            }.forEach { view ->
-                                view.hideView()
-                            }
-
-                            registerClockUpdater()
-                        }, 1000)
-                    }
-
-                    override fun onViewDetachedFromWindow(v: View) {
-                        unregisterClockUpdater()
-                    }
-                })
+                initializeLockscreenLayout(param)
             }
 
         val defaultNotificationStackScrollLayoutSectionClass =
