@@ -196,6 +196,8 @@ class DepthWallpaperA14(context: Context) : ModPack(context) {
             "$SYSTEMUI_PACKAGE.statusbar.phone.CentralSurfacesImpl",
             suppressError = true
         )
+        val statusBarKeyguardViewManagerClass =
+            findClass("$SYSTEMUI_PACKAGE.statusbar.phone.StatusBarKeyguardViewManager")
         val scrimControllerClass = findClass("$SYSTEMUI_PACKAGE.statusbar.phone.ScrimController")
         val scrimViewClass = findClass("$SYSTEMUI_PACKAGE.scrim.ScrimView")
         val aodBurnInLayerClass = findClass(
@@ -317,9 +319,8 @@ class DepthWallpaperA14(context: Context) : ModPack(context) {
                 targetView.reAddView(mWallpaperForeground, idx)
             }
 
-        centralSurfacesImplClass
+        statusBarKeyguardViewManagerClass
             .hookMethod("onStartedWakingUp")
-            .suppressError()
             .runAfter { setDepthWallpaper() }
 
         canvasEngineClass
