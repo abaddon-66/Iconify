@@ -11,6 +11,10 @@ fun log(message: String?) {
     XposedBridge.log(message)
 }
 
+fun log(message: Any?) {
+    XposedBridge.log(message.toString())
+}
+
 fun log(tag: String, message: Any?) {
     XposedBridge.log(
         "Iconify - $tag: $message"
