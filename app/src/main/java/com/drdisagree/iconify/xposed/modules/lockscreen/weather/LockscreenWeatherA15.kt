@@ -352,6 +352,26 @@ class LockscreenWeatherA15(context: Context) : ModPack(context) {
                     )
                 }
             }
+
+        // For unknown reason, rotating device makes the height of view to 0
+        // This is a workaround to make sure the view is visible
+        val statusBarKeyguardViewManagerClass =
+            findClass("$SYSTEMUI_PACKAGE.statusbar.phone.StatusBarKeyguardViewManager")
+
+        statusBarKeyguardViewManagerClass
+            .hookMethod("onStartedWakingUp")
+            .runAfter {
+                if (::mWeatherContainer.isInitialized) {
+                    (mLsItemsContainer ?: mWeatherContainer).apply {
+                        applyLayoutConstraints(this)
+
+                        layoutParams.apply {
+                            width = ViewGroup.LayoutParams.MATCH_PARENT
+                            height = ViewGroup.LayoutParams.WRAP_CONTENT
+                        }
+                    }
+                }
+            }
     }
 
     @SuppressLint("DiscouragedApi")
@@ -381,6 +401,8 @@ class LockscreenWeatherA15(context: Context) : ModPack(context) {
 
     @SuppressLint("DiscouragedApi")
     private fun applyLayoutConstraints(weatherView: ViewGroup) {
+        if (mLockscreenRootView == null) return
+
         mLockscreenRootView.assignIdsToViews()
 
         weatherView.getChildAt(0)?.layoutParams?.width = LinearLayout.LayoutParams.MATCH_PARENT

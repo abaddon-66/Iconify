@@ -448,6 +448,26 @@ class LockscreenWidgetsA15(context: Context) : ModPack(context) {
                     )
                 }
             }
+
+        // For unknown reason, rotating device makes the height of view to 0
+        // This is a workaround to make sure the view is visible
+        val statusBarKeyguardViewManagerClass =
+            findClass("$SYSTEMUI_PACKAGE.statusbar.phone.StatusBarKeyguardViewManager")
+
+        statusBarKeyguardViewManagerClass
+            .hookMethod("onStartedWakingUp")
+            .runAfter {
+                if (::mWidgetsContainer.isInitialized) {
+                    (mLsItemsContainer ?: mWidgetsContainer).apply {
+                        applyLayoutConstraints(this)
+
+                        layoutParams?.apply {
+                            width = ViewGroup.LayoutParams.MATCH_PARENT
+                            height = ViewGroup.LayoutParams.WRAP_CONTENT
+                        }
+                    }
+                }
+            }
     }
 
     private fun placeWidgetsView() {
@@ -466,13 +486,14 @@ class LockscreenWidgetsA15(context: Context) : ModPack(context) {
             updateLockscreenWidgetsColors()
             updateMargins()
             updateLockscreenWidgetsScale()
-            applyLayoutConstraints(mLsItemsContainer ?: mWidgetsContainer)
         } catch (ignored: Throwable) {
         }
     }
 
     @SuppressLint("DiscouragedApi")
     private fun applyLayoutConstraints(widgetView: ViewGroup) {
+        if (mLockscreenRootView == null) return
+
         mLockscreenRootView.assignIdsToViews()
 
         widgetView.getChildAt(0)?.layoutParams?.width = LinearLayout.LayoutParams.MATCH_PARENT
@@ -630,8 +651,6 @@ class LockscreenWidgetsA15(context: Context) : ModPack(context) {
                 mBottomMargin
             )
         }
-
-        applyLayoutConstraints(mLsItemsContainer ?: mWidgetsContainer)
     }
 
     private fun updateLockscreenWidgetsScale() {

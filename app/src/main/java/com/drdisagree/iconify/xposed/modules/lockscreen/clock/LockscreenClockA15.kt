@@ -197,10 +197,7 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
                 LSCLOCK_USERNAME,
                 LSCLOCK_DEVICENAME,
                 DEPTH_WALLPAPER_SWITCH
-            ) -> {
-                mLsItemsContainer?.let { applyLayoutConstraints(it) }
-                updateClockView()
-            }
+            ) -> updateClockView()
 
             in setOf(
                 LSCLOCK_COLOR_CODE_ACCENT1,
@@ -457,6 +454,24 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
                 }
             }
 
+        // For unknown reason, rotating device makes the height of view to 0
+        // This is a workaround to make sure the view is visible
+        val statusBarKeyguardViewManagerClass =
+            findClass("$SYSTEMUI_PACKAGE.statusbar.phone.StatusBarKeyguardViewManager")
+
+        statusBarKeyguardViewManagerClass
+            .hookMethod("onStartedWakingUp")
+            .runAfter {
+                mLsItemsContainer?.apply {
+                    applyLayoutConstraints(this)
+
+                    layoutParams?.apply {
+                        width = ViewGroup.LayoutParams.MATCH_PARENT
+                        height = ViewGroup.LayoutParams.WRAP_CONTENT
+                    }
+                }
+            }
+
         try {
             val executor = Executors.newSingleThreadScheduledExecutor()
             executor.scheduleAtFixedRate({
@@ -668,6 +683,8 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
     }
 
     private fun applyLayoutConstraints(containerView: ViewGroup) {
+        if (mLockscreenRootView == null) return
+
         mLockscreenRootView.assignIdsToViews()
 
         val notificationContainerId = mContext.resources.getIdentifier(
