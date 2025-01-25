@@ -1,5 +1,6 @@
 package com.drdisagree.iconify.xposed.modules.lockscreen.weather
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
@@ -28,6 +29,7 @@ import com.drdisagree.iconify.xposed.ModPack
 import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.setMargins
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.XposedHook.Companion.findClass
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.getField
+import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.getFieldSilently
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookMethod
 import com.drdisagree.iconify.xposed.modules.extras.views.CurrentWeatherView
 import com.drdisagree.iconify.xposed.modules.lockscreen.Lockscreen.Companion.isComposeLockscreen
@@ -96,6 +98,7 @@ class LockscreenWeather(context: Context) : ModPack(context) {
         }
     }
 
+    @SuppressLint("DiscouragedApi")
     override fun handleLoadPackage(loadPackageParam: XC_LoadPackage.LoadPackageParam) {
         if (isComposeLockscreen) return
 
@@ -113,7 +116,14 @@ class LockscreenWeather(context: Context) : ModPack(context) {
                 if (!weatherEnabled) return@runAfter
 
                 mStatusViewContainer =
-                    param.thisObject.getField("mStatusViewContainer") as ViewGroup
+                    param.thisObject.getFieldSilently("mStatusViewContainer") as? ViewGroup
+                        ?: (param.thisObject as ViewGroup).findViewById(
+                            mContext.resources.getIdentifier(
+                                "status_view_container",
+                                "id",
+                                mContext.packageName
+                            )
+                        )
 
                 placeWeatherView()
             }

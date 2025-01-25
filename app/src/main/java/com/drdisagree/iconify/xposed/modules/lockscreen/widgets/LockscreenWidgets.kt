@@ -38,6 +38,7 @@ import com.drdisagree.iconify.xposed.ModPack
 import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.setMargins
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.XposedHook.Companion.findClass
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.getField
+import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.getFieldSilently
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookConstructor
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookMethod
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.log
@@ -175,7 +176,7 @@ class LockscreenWidgets(context: Context) : ModPack(context) {
         }
     }
 
-    @SuppressLint("UnspecifiedRegisterReceiverFlag")
+    @SuppressLint("UnspecifiedRegisterReceiverFlag", "DiscouragedApi")
     override fun handleLoadPackage(loadPackageParam: XC_LoadPackage.LoadPackageParam) {
         if (isComposeLockscreen) return
 
@@ -232,13 +233,15 @@ class LockscreenWidgets(context: Context) : ModPack(context) {
             .runAfter { param ->
                 if (!mWidgetsEnabled) return@runAfter
 
-                try {
-                    mStatusViewContainer = param.thisObject.getField(
-                        "mStatusViewContainer"
-                    ) as ViewGroup
-                } catch (t: Throwable) {
-                    log(this@LockscreenWidgets, "Failed to get mStatusViewContainer")
-                }
+                mStatusViewContainer =
+                    param.thisObject.getFieldSilently("mStatusViewContainer") as? ViewGroup
+                        ?: (param.thisObject as ViewGroup).findViewById(
+                            mContext.resources.getIdentifier(
+                                "status_view_container",
+                                "id",
+                                mContext.packageName
+                            )
+                        )
 
                 placeWidgets()
             }

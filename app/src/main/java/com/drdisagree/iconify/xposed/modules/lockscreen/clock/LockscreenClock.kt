@@ -68,6 +68,7 @@ import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.findViewWit
 import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.setMargins
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.XposedHook.Companion.findClass
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.getField
+import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.getFieldSilently
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookMethod
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.log
 import com.drdisagree.iconify.xposed.modules.extras.views.ArcProgressWidget.generateBitmap
@@ -176,7 +177,14 @@ class LockscreenClock(context: Context) : ModPack(context) {
                 if (!showLockscreenClock) return@runAfter
 
                 mStatusViewContainer =
-                    param.thisObject.getField("mStatusViewContainer") as ViewGroup
+                    param.thisObject.getFieldSilently("mStatusViewContainer") as? ViewGroup
+                        ?: (param.thisObject as ViewGroup).findViewById(
+                            mContext.resources.getIdentifier(
+                                "status_view_container",
+                                "id",
+                                mContext.packageName
+                            )
+                        )
 
                 if (!showDepthWallpaper) {
                     mClockViewContainer = mStatusViewContainer
