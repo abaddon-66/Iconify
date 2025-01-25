@@ -77,6 +77,7 @@ import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.getLsItemsC
 import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.hideView
 import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.setMargins
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.XposedHook.Companion.findClass
+import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.getFieldSilently
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookConstructor
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookMethod
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.log
@@ -197,7 +198,10 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
                 LSCLOCK_USERNAME,
                 LSCLOCK_DEVICENAME,
                 DEPTH_WALLPAPER_SWITCH
-            ) -> updateClockView()
+            ) -> {
+                mLsItemsContainer?.let { applyLayoutConstraints(it) }
+                updateClockView()
+            }
 
             in setOf(
                 LSCLOCK_COLOR_CODE_ACCENT1,
@@ -461,7 +465,10 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
 
         statusBarKeyguardViewManagerClass
             .hookMethod("onStartedWakingUp")
+            .suppressError()
             .runAfter {
+                if (!showLockscreenClock) return@runAfter
+
                 mLsItemsContainer?.apply {
                     applyLayoutConstraints(this)
 
@@ -470,6 +477,34 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
                         height = ViewGroup.LayoutParams.WRAP_CONTENT
                     }
                 }
+            }
+
+        val centralSurfacesImplClass = findClass(
+            "$SYSTEMUI_PACKAGE.statusbar.phone.CentralSurfacesImpl",
+            suppressError = true
+        )
+
+        centralSurfacesImplClass
+            .hookConstructor()
+            .runAfter { param ->
+                if (!showLockscreenClock) return@runAfter
+
+                val mWakefulnessObserver = param.thisObject.getFieldSilently("mWakefulnessObserver")
+
+                mWakefulnessObserver?.javaClass
+                    .hookMethod("onStartedWakingUp")
+                    .runAfter runAfter2@{
+                        if (!showLockscreenClock) return@runAfter2
+
+                        mLsItemsContainer?.apply {
+                            applyLayoutConstraints(this)
+
+                            layoutParams?.apply {
+                                width = ViewGroup.LayoutParams.MATCH_PARENT
+                                height = ViewGroup.LayoutParams.WRAP_CONTENT
+                            }
+                        }
+                    }
             }
 
         try {

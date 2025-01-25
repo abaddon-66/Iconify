@@ -53,6 +53,7 @@ import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.reAddView
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.XposedHook.Companion.findClass
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.callMethod
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.getField
+import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.getFieldSilently
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookConstructor
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookMethod
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.log
@@ -319,8 +320,24 @@ class DepthWallpaperA14(context: Context) : ModPack(context) {
                 targetView.reAddView(mWallpaperForeground, idx)
             }
 
+        centralSurfacesImplClass
+            .hookConstructor()
+            .runAfter { param ->
+                val mWakefulnessObserver = param.thisObject.getFieldSilently("mWakefulnessObserver")
+
+                mWakefulnessObserver?.javaClass
+                    .hookMethod("onStartedWakingUp")
+                    .runAfter { setDepthWallpaper() }
+            }
+
+        centralSurfacesImplClass
+            .hookMethod("onStartedWakingUp")
+            .suppressError()
+            .runAfter { setDepthWallpaper() }
+
         statusBarKeyguardViewManagerClass
             .hookMethod("onStartedWakingUp")
+            .suppressError()
             .runAfter { setDepthWallpaper() }
 
         canvasEngineClass

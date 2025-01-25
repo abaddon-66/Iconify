@@ -47,6 +47,7 @@ import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.assignIdsTo
 import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.getLsItemsContainer
 import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.setMargins
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.XposedHook.Companion.findClass
+import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.getFieldSilently
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookConstructor
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookMethod
 import com.drdisagree.iconify.xposed.modules.extras.views.CurrentWeatherView
@@ -360,7 +361,10 @@ class LockscreenWeatherA15(context: Context) : ModPack(context) {
 
         statusBarKeyguardViewManagerClass
             .hookMethod("onStartedWakingUp")
+            .suppressError()
             .runAfter {
+                if (!mWeatherEnabled) return@runAfter
+
                 if (::mWeatherContainer.isInitialized) {
                     (mLsItemsContainer ?: mWeatherContainer).apply {
                         applyLayoutConstraints(this)
@@ -371,6 +375,36 @@ class LockscreenWeatherA15(context: Context) : ModPack(context) {
                         }
                     }
                 }
+            }
+
+        val centralSurfacesImplClass = findClass(
+            "$SYSTEMUI_PACKAGE.statusbar.phone.CentralSurfacesImpl",
+            suppressError = true
+        )
+
+        centralSurfacesImplClass
+            .hookConstructor()
+            .runAfter { param ->
+                if (!mWeatherEnabled) return@runAfter
+
+                val mWakefulnessObserver = param.thisObject.getFieldSilently("mWakefulnessObserver")
+
+                mWakefulnessObserver?.javaClass
+                    .hookMethod("onStartedWakingUp")
+                    .runAfter runAfter2@{
+                        if (!mWeatherEnabled) return@runAfter2
+
+                        if (::mWeatherContainer.isInitialized) {
+                            (mLsItemsContainer ?: mWeatherContainer).apply {
+                                applyLayoutConstraints(this)
+
+                                layoutParams.apply {
+                                    width = ViewGroup.LayoutParams.MATCH_PARENT
+                                    height = ViewGroup.LayoutParams.WRAP_CONTENT
+                                }
+                            }
+                        }
+                    }
             }
     }
 

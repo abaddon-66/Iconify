@@ -56,6 +56,7 @@ import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.getLsItemsC
 import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.setMargins
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.XposedHook.Companion.findClass
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.getField
+import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.getFieldSilently
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookConstructor
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookMethod
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.log
@@ -456,7 +457,10 @@ class LockscreenWidgetsA15(context: Context) : ModPack(context) {
 
         statusBarKeyguardViewManagerClass
             .hookMethod("onStartedWakingUp")
+            .suppressError()
             .runAfter {
+                if (!mWidgetsEnabled) return@runAfter
+
                 if (::mWidgetsContainer.isInitialized) {
                     (mLsItemsContainer ?: mWidgetsContainer).apply {
                         applyLayoutConstraints(this)
@@ -467,6 +471,36 @@ class LockscreenWidgetsA15(context: Context) : ModPack(context) {
                         }
                     }
                 }
+            }
+
+        val centralSurfacesImplClass = findClass(
+            "$SYSTEMUI_PACKAGE.statusbar.phone.CentralSurfacesImpl",
+            suppressError = true
+        )
+
+        centralSurfacesImplClass
+            .hookConstructor()
+            .runAfter { param ->
+                if (!mWidgetsEnabled) return@runAfter
+
+                val mWakefulnessObserver = param.thisObject.getFieldSilently("mWakefulnessObserver")
+
+                mWakefulnessObserver?.javaClass
+                    .hookMethod("onStartedWakingUp")
+                    .runAfter runAfter2@{
+                        if (!mWidgetsEnabled) return@runAfter2
+
+                        if (::mWidgetsContainer.isInitialized) {
+                            (mLsItemsContainer ?: mWidgetsContainer).apply {
+                                applyLayoutConstraints(this)
+
+                                layoutParams?.apply {
+                                    width = ViewGroup.LayoutParams.MATCH_PARENT
+                                    height = ViewGroup.LayoutParams.WRAP_CONTENT
+                                }
+                            }
+                        }
+                    }
             }
     }
 
