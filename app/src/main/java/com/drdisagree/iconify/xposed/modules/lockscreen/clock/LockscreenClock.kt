@@ -67,7 +67,6 @@ import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.findViewCon
 import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.findViewWithTagAndChangeColor
 import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.setMargins
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.XposedHook.Companion.findClass
-import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.getField
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.getFieldSilently
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookMethod
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.log
@@ -203,7 +202,17 @@ class LockscreenClock(context: Context) : ModPack(context) {
                     visibility = View.INVISIBLE
                 }
 
-                (param.thisObject.getField("mMediaHostContainer") as View).apply {
+                val mMediaHostContainer =
+                    param.thisObject.getFieldSilently("mMediaHostContainer") as? View
+                        ?: (param.thisObject as ViewGroup).findViewById(
+                            mContext.resources.getIdentifier(
+                                "status_view_media_container",
+                                "id",
+                                mContext.packageName
+                            )
+                        )
+
+                mMediaHostContainer.apply {
                     layoutParams.height = 0
                     layoutParams.width = 0
                     visibility = View.INVISIBLE
