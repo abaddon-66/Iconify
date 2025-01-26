@@ -456,13 +456,9 @@ class LockscreenWidgetsA15(context: Context) : ModPack(context) {
             if (!mWidgetsEnabled) return
 
             if (::mWidgetsContainer.isInitialized) {
-                (mLsItemsContainer ?: mWidgetsContainer).apply {
-                    applyLayoutConstraints(this)
-
-                    layoutParams?.apply {
-                        width = ViewGroup.LayoutParams.MATCH_PARENT
-                        height = ViewGroup.LayoutParams.WRAP_CONTENT
-                    }
+                (mLsItemsContainer ?: mWidgetsContainer).layoutParams?.apply {
+                    width = ViewGroup.LayoutParams.MATCH_PARENT
+                    height = ViewGroup.LayoutParams.WRAP_CONTENT
                 }
             }
         }

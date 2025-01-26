@@ -470,13 +470,9 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
         fun updateLayoutParams() {
             if (!showLockscreenClock) return
 
-            mLsItemsContainer?.apply {
-                applyLayoutConstraints(this)
-
-                layoutParams?.apply {
-                    width = ViewGroup.LayoutParams.MATCH_PARENT
-                    height = ViewGroup.LayoutParams.WRAP_CONTENT
-                }
+            mLsItemsContainer?.layoutParams?.apply {
+                width = ViewGroup.LayoutParams.MATCH_PARENT
+                height = ViewGroup.LayoutParams.WRAP_CONTENT
             }
         }
 

@@ -366,13 +366,9 @@ class LockscreenWeatherA15(context: Context) : ModPack(context) {
             if (!mWeatherEnabled) return
 
             if (::mWeatherContainer.isInitialized) {
-                (mLsItemsContainer ?: mWeatherContainer).apply {
-                    applyLayoutConstraints(this)
-
-                    layoutParams.apply {
-                        width = ViewGroup.LayoutParams.MATCH_PARENT
-                        height = ViewGroup.LayoutParams.WRAP_CONTENT
-                    }
+                (mLsItemsContainer ?: mWeatherContainer).layoutParams.apply {
+                    width = ViewGroup.LayoutParams.MATCH_PARENT
+                    height = ViewGroup.LayoutParams.WRAP_CONTENT
                 }
             }
         }
