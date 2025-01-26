@@ -223,11 +223,10 @@ class LockscreenWeatherA15(context: Context) : ModPack(context) {
 
                         mLockscreenRootView = rootView
 
+                        (mWeatherContainer.parent as? ViewGroup)?.removeView(mWeatherContainer)
+
                         if (mLockscreenClockEnabled || mWidgetsEnabled) {
                             mLsItemsContainer = rootView.getLsItemsContainer()
-
-                            (mWeatherContainer.parent as? ViewGroup)
-                                ?.removeView(mWeatherContainer)
 
                             // Add weather view after clock view if exists
                             mLsItemsContainer!!.addView(
