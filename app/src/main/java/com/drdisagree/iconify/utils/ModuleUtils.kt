@@ -117,10 +117,13 @@ object ModuleUtils {
 
         Shell.cmd("touch $TEMP_MODULE_DIR/system.prop").exec()
         Shell.cmd("touch $TEMP_MODULE_DIR/auto_mount").exec()
-        if (RootUtils.isKSUInstalled) Shell.cmd("touch $TEMP_MODULE_DIR/skip_mount").exec()
         Shell.cmd("mkdir -p $TEMP_MODULE_DIR/system").exec()
         Shell.cmd("mkdir -p $TEMP_MODULE_DIR/system/product").exec()
         Shell.cmd("mkdir -p $TEMP_MODULE_DIR/system/product/overlay").exec()
+
+        if (RootUtils.isSusfsBinaryAvailable) {
+            Shell.cmd("touch $TEMP_MODULE_DIR/skip_mount").exec()
+        }
 
         createMETAINF()
         writePostExec()
