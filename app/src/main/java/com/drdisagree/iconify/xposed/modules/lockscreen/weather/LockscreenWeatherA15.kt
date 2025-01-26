@@ -56,6 +56,11 @@ import com.drdisagree.iconify.xposed.utils.XPrefs.Xprefs
 import com.drdisagree.iconify.xposed.utils.XPrefs.XprefsIsInitialized
 import de.robv.android.xposed.XC_MethodHook
 import de.robv.android.xposed.callbacks.XC_LoadPackage
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class LockscreenWeatherA15(context: Context) : ModPack(context) {
 
@@ -80,6 +85,8 @@ class LockscreenWeatherA15(context: Context) : ModPack(context) {
     private var mWidgetsEnabled = false
     private var dateSmartSpaceViewAvailable = false
     private lateinit var mWeatherContainer: LinearLayout
+    private val job = Job()
+    private val coroutineScope = CoroutineScope(Dispatchers.Main + job)
 
     private var mBroadcastRegistered = false
     private val mReceiver: BroadcastReceiver = object : BroadcastReceiver() {
@@ -356,31 +363,38 @@ class LockscreenWeatherA15(context: Context) : ModPack(context) {
 
         // For unknown reason, rotating device makes the height of view to 0
         // This is a workaround to make sure the view is visible
+        fun updateLayoutParams() {
+            if (!mWeatherEnabled) return
+
+            if (::mWeatherContainer.isInitialized) {
+                (mLsItemsContainer ?: mWeatherContainer).apply {
+                    applyLayoutConstraints(this)
+
+                    layoutParams.apply {
+                        width = ViewGroup.LayoutParams.MATCH_PARENT
+                        height = ViewGroup.LayoutParams.WRAP_CONTENT
+                    }
+                }
+            }
+        }
+
         val statusBarKeyguardViewManagerClass =
             findClass("$SYSTEMUI_PACKAGE.statusbar.phone.StatusBarKeyguardViewManager")
 
         statusBarKeyguardViewManagerClass
             .hookMethod("onStartedWakingUp")
             .suppressError()
-            .runAfter {
-                if (!mWeatherEnabled) return@runAfter
-
-                if (::mWeatherContainer.isInitialized) {
-                    (mLsItemsContainer ?: mWeatherContainer).apply {
-                        applyLayoutConstraints(this)
-
-                        layoutParams.apply {
-                            width = ViewGroup.LayoutParams.MATCH_PARENT
-                            height = ViewGroup.LayoutParams.WRAP_CONTENT
-                        }
-                    }
-                }
-            }
+            .runAfter { updateLayoutParams() }
 
         val centralSurfacesImplClass = findClass(
             "$SYSTEMUI_PACKAGE.statusbar.phone.CentralSurfacesImpl",
             suppressError = true
         )
+
+        centralSurfacesImplClass
+            .hookMethod("onStartedWakingUp")
+            .suppressError()
+            .runAfter { updateLayoutParams() }
 
         centralSurfacesImplClass
             .hookConstructor()
@@ -391,20 +405,20 @@ class LockscreenWeatherA15(context: Context) : ModPack(context) {
 
                 mWakefulnessObserver?.javaClass
                     .hookMethod("onStartedWakingUp")
-                    .runAfter runAfter2@{
-                        if (!mWeatherEnabled) return@runAfter2
+                    .runAfter { updateLayoutParams() }
+            }
 
-                        if (::mWeatherContainer.isInitialized) {
-                            (mLsItemsContainer ?: mWeatherContainer).apply {
-                                applyLayoutConstraints(this)
+        val dozeServiceClass = findClass("$SYSTEMUI_PACKAGE.doze.DozeService")
 
-                                layoutParams.apply {
-                                    width = ViewGroup.LayoutParams.MATCH_PARENT
-                                    height = ViewGroup.LayoutParams.WRAP_CONTENT
-                                }
-                            }
-                        }
+        dozeServiceClass
+            .hookMethod("onDreamingStarted")
+            .runAfter {
+                coroutineScope.launch {
+                    repeat(3) {
+                        updateLayoutParams()
+                        delay(500L)
                     }
+                }
             }
     }
 

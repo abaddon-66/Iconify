@@ -87,6 +87,11 @@ import com.drdisagree.iconify.xposed.utils.XPrefs.Xprefs
 import com.drdisagree.iconify.xposed.utils.XPrefs.XprefsIsInitialized
 import de.robv.android.xposed.XC_MethodHook
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.io.File
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
@@ -127,6 +132,8 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
     private var customTypeface: Typeface? = null
     private val customFontDirectory =
         "${Environment.getExternalStorageDirectory()}/.iconify_files/lsclock_font.ttf"
+    private val job = Job()
+    private val coroutineScope = CoroutineScope(Dispatchers.Main + job)
 
     private val mBatteryReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
@@ -460,29 +467,36 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
 
         // For unknown reason, rotating device makes the height of view to 0
         // This is a workaround to make sure the view is visible
+        fun updateLayoutParams() {
+            if (!showLockscreenClock) return
+
+            mLsItemsContainer?.apply {
+                applyLayoutConstraints(this)
+
+                layoutParams?.apply {
+                    width = ViewGroup.LayoutParams.MATCH_PARENT
+                    height = ViewGroup.LayoutParams.WRAP_CONTENT
+                }
+            }
+        }
+
         val statusBarKeyguardViewManagerClass =
             findClass("$SYSTEMUI_PACKAGE.statusbar.phone.StatusBarKeyguardViewManager")
 
         statusBarKeyguardViewManagerClass
             .hookMethod("onStartedWakingUp")
             .suppressError()
-            .runAfter {
-                if (!showLockscreenClock) return@runAfter
-
-                mLsItemsContainer?.apply {
-                    applyLayoutConstraints(this)
-
-                    layoutParams?.apply {
-                        width = ViewGroup.LayoutParams.MATCH_PARENT
-                        height = ViewGroup.LayoutParams.WRAP_CONTENT
-                    }
-                }
-            }
+            .runAfter { updateLayoutParams() }
 
         val centralSurfacesImplClass = findClass(
             "$SYSTEMUI_PACKAGE.statusbar.phone.CentralSurfacesImpl",
             suppressError = true
         )
+
+        centralSurfacesImplClass
+            .hookMethod("onStartedWakingUp")
+            .suppressError()
+            .runAfter { updateLayoutParams() }
 
         centralSurfacesImplClass
             .hookConstructor()
@@ -493,18 +507,20 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
 
                 mWakefulnessObserver?.javaClass
                     .hookMethod("onStartedWakingUp")
-                    .runAfter runAfter2@{
-                        if (!showLockscreenClock) return@runAfter2
+                    .runAfter { updateLayoutParams() }
+            }
 
-                        mLsItemsContainer?.apply {
-                            applyLayoutConstraints(this)
+        val dozeServiceClass = findClass("$SYSTEMUI_PACKAGE.doze.DozeService")
 
-                            layoutParams?.apply {
-                                width = ViewGroup.LayoutParams.MATCH_PARENT
-                                height = ViewGroup.LayoutParams.WRAP_CONTENT
-                            }
-                        }
+        dozeServiceClass
+            .hookMethod("onDreamingStarted")
+            .runAfter {
+                coroutineScope.launch {
+                    repeat(3) {
+                        updateLayoutParams()
+                        delay(500L)
                     }
+                }
             }
 
         try {
