@@ -455,6 +455,7 @@
     <string name="oneplus_qs_header_fade_level">Fade Level</string>
     <string name="oneplus_qs_header_top_margin">上部マージン</string>
     <string name="oneplus_qs_header_expansion_y">Expansion Amount</string>
+    <string name="oneplus_qs_header_gap">Expanded Gap</string>
     <!-- Lockscreen Widgets -->
     <string name="lockscreen_widgets_title">Lockscreen Widgets</string>
     <string name="lockscreen_widgets_enabled_title">Enable Lockscreen Widgets</string>
@@ -804,6 +805,8 @@
     <string name="hide_ls_carrier_desc">ロック画面のキャリア名を非表示にします</string>
     <string name="hide_ls_statusbar_title">ロック画面のステータスバーを非表示</string>
     <string name="hide_ls_statusbar_desc">ロック画面のステータスバーを非表示にします</string>
+    <string name="sb_swap_wifi_cellular_title">Swap Wifi and Cellular</string>
+    <string name="sb_swap_wifi_cellular_desc">Swap wifi and cellular icons</string>
     <!-- Xposed Others -->
     <string name="qs_header">クイック設定ヘッダー</string>
     <string name="hide_carrier_group_title">キャリア名を非表示</string>
@@ -830,6 +833,7 @@
     <string name="view_changelog">変更履歴を見る</string>
     <string name="hide_changelog">変更履歴を隠す</string>
     <string name="already_up_to_date">すでに最新版です。</string>
+    <string name="auto_update_disabled">Auto update is disabled for debug build.</string>
     <string name="current_version">現在のバージョン:</string>
     <string name="latest_version">最新のバージョン:</string>
     <string name="update_checking_failed">アップデートのチェックに失敗しました！</string>

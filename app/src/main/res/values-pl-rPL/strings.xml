@@ -455,6 +455,7 @@
     <string name="oneplus_qs_header_fade_level">Poziom zanikania</string>
     <string name="oneplus_qs_header_top_margin">Górny margines</string>
     <string name="oneplus_qs_header_expansion_y">Wartość rozszerzenia</string>
+    <string name="oneplus_qs_header_gap">Rozwinięty odstęp</string>
     <!-- Lockscreen Widgets -->
     <string name="lockscreen_widgets_title">Blur level</string>
     <string name="lockscreen_widgets_enabled_title">Włącz widżety ekranu blokady</string>
@@ -804,6 +805,8 @@
     <string name="hide_ls_carrier_desc">Ukryj nazwę operatora na ekranie blokady</string>
     <string name="hide_ls_statusbar_title">Ukryj pasek stanu</string>
     <string name="hide_ls_statusbar_desc">Ukryj pasek stanu na ekranie blokady</string>
+    <string name="sb_swap_wifi_cellular_title">Zamień Wi-Fi i komórkę</string>
+    <string name="sb_swap_wifi_cellular_desc">Zamień ikony Wi-Fi i danych komórkowych</string>
     <!-- Xposed Others -->
     <string name="qs_header">Nagłówek szybkich ustawień</string>
     <string name="hide_carrier_group_title">Ukryj nazwę operatora</string>
@@ -830,6 +833,7 @@
     <string name="view_changelog">Wyświetl listę zmian</string>
     <string name="hide_changelog">Ukryj listę zmian</string>
     <string name="already_up_to_date">Jesteś już na bieżąco</string>
+    <string name="auto_update_disabled">Automatyczna aktualizacja jest wyłączona dla wersji debugowanej.</string>
     <string name="current_version">Bieżąca wersja:</string>
     <string name="latest_version">Najnowsza wersja:</string>
     <string name="update_checking_failed">Nie udało się sprawdzić aktualizacji!</string>

@@ -455,6 +455,7 @@
     <string name="oneplus_qs_header_fade_level">Fade Level</string>
     <string name="oneplus_qs_header_top_margin">Top Margin</string>
     <string name="oneplus_qs_header_expansion_y">Expansion Amount</string>
+    <string name="oneplus_qs_header_gap">Expanded Gap</string>
     <!-- Lockscreen Widgets -->
     <string name="lockscreen_widgets_title">Lockscreen Widgets</string>
     <string name="lockscreen_widgets_enabled_title">Enable Lockscreen Widgets</string>
@@ -804,6 +805,8 @@
     <string name="hide_ls_carrier_desc">在鎖屏上隱藏運營商名字</string>
     <string name="hide_ls_statusbar_title">隱藏鎖屏狀態列</string>
     <string name="hide_ls_statusbar_desc">在鎖屏上隱藏狀態列</string>
+    <string name="sb_swap_wifi_cellular_title">Swap Wifi and Cellular</string>
+    <string name="sb_swap_wifi_cellular_desc">Swap wifi and cellular icons</string>
     <!-- Xposed Others -->
     <string name="qs_header">快速設定面板頁眉</string>
     <string name="hide_carrier_group_title">隱藏運營商組</string>
@@ -830,6 +833,7 @@
     <string name="view_changelog">查看更改記錄儅</string>
     <string name="hide_changelog">隱藏更改記錄儅</string>
     <string name="already_up_to_date">您已經是最新版本了。</string>
+    <string name="auto_update_disabled">Auto update is disabled for debug build.</string>
     <string name="current_version">目前版本：</string>
     <string name="latest_version">最新版本：</string>
     <string name="update_checking_failed">檢查更新失敗！</string>

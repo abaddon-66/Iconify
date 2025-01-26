@@ -382,7 +382,7 @@
     <string name="toast_module_created">Module créé avec succès</string>
     <string name="read_carefully">Lisez attentivement !</string>
     <string name="volume_module_installation_guide">Cette option créera un module magisk dans le dossier de téléchargement de votre stockage interne. Flashez le module nommé IconifyCompanion.zip dans Magisk. Désinstallez toujours le module Iconify Companion précédent (s\'il est installé) et redémarrez avant d\'en flasher un nouveau.\n\n<b>Remarque :</b>\n• Désinstallez le module avant de mettre à jour la ROM.\n• Recréez le module si vous modifiez ou mettre à jour la rom.\n• Ne flashez pas un module qui n\'a pas été créé en fonction de votre rom.</string>
-    <string name="volume_module_unstable_desc">Currently volume module is unstable on Android 14 and above. Try at your own risk.</string>
+    <string name="volume_module_unstable_desc">Actuellement, le module de volume est instable sur Android 14 et plus. Essayez à vos propres risques.</string>
     <!-- Media Player -->
     <string name="cont_desc_media_player">Aperçu du lecteur multimédia</string>
     <string name="media_player_preview_music_title">Titre</string>
@@ -455,6 +455,7 @@
     <string name="oneplus_qs_header_fade_level">Niveau de fondu</string>
     <string name="oneplus_qs_header_top_margin">Marge supérieure</string>
     <string name="oneplus_qs_header_expansion_y">Quantité d\'extension</string>
+    <string name="oneplus_qs_header_gap">Expanded Gap</string>
     <!-- Lockscreen Widgets -->
     <string name="lockscreen_widgets_title">Widgets de l\'écran de verrouillage</string>
     <string name="lockscreen_widgets_enabled_title">Activer les widgets de l\'écran de verrouillage</string>
@@ -804,6 +805,8 @@
     <string name="hide_ls_carrier_desc">Masquer le nom de l\'opérateur sur l\'écran de verrouillage</string>
     <string name="hide_ls_statusbar_title">Masquer la barre d\'état sur l\'écran de verrouillage</string>
     <string name="hide_ls_statusbar_desc">Masquer la barre d\'état sur l\'écran de verrouillage</string>
+    <string name="sb_swap_wifi_cellular_title">Swap Wifi and Cellular</string>
+    <string name="sb_swap_wifi_cellular_desc">Swap wifi and cellular icons</string>
     <!-- Xposed Others -->
     <string name="qs_header">En-tête du panneau d\'accès rapide</string>
     <string name="hide_carrier_group_title">Cacher le groupe d\'opérateur</string>
@@ -815,9 +818,9 @@
     <string name="hide_ls_lock_icon_desc">Masquer l\'icône de verrouillage sur l\'écran de verrouillage</string>
     <string name="fixed_status_icons_title">Icônes d\'état fixes</string>
     <string name="fixed_status_icons_desc">Définir les icônes de statut en position fixe\nPeut être bogué sur certaine rom</string>
-    <string name="ls_wallpaper_blur_title">Wallpaper Blur</string>
-    <string name="ls_wallpaper_blur_desc">Apply blur effect on lockscreen</string>
-    <string name="ls_wallpaper_blur_radius_title">Wallpaper Blur Intensity</string>
+    <string name="ls_wallpaper_blur_title">Flou de fond d\'écran</string>
+    <string name="ls_wallpaper_blur_desc">Appliquer l\'effet de flou sur l\'écran de verrouillage</string>
+    <string name="ls_wallpaper_blur_radius_title">Intensité du flou du fond d\'écran</string>
     <!-- Changelog -->
     <string name="activity_title_changelog">Journal de modifications</string>
     <string name="no_internet_connection">Impossible de se connecter au serveur!\nIl peut y avoir un problème avec votre connexion internet ou le serveur peut être en panne pour le moment. Veuillez réessayer plus tard.</string>
@@ -830,6 +833,7 @@
     <string name="view_changelog">Voir la liste des changements</string>
     <string name="hide_changelog">Masquer le journal des modifications</string>
     <string name="already_up_to_date">Vous êtes déjà à jour.</string>
+    <string name="auto_update_disabled">Auto update is disabled for debug build.</string>
     <string name="current_version">Version actuelle :</string>
     <string name="latest_version">Dernière Version :</string>
     <string name="update_checking_failed">Échec de la vérification des mises à jour !</string>

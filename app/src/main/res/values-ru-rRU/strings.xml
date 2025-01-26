@@ -455,6 +455,7 @@
     <string name="oneplus_qs_header_fade_level">Уровень затемнения</string>
     <string name="oneplus_qs_header_top_margin">Верхнее поле</string>
     <string name="oneplus_qs_header_expansion_y">Высота</string>
+    <string name="oneplus_qs_header_gap">Expanded Gap</string>
     <!-- Lockscreen Widgets -->
     <string name="lockscreen_widgets_title">Виджеты на экране блокировки</string>
     <string name="lockscreen_widgets_enabled_title">Включить виджеты на экране блокировки</string>
@@ -804,6 +805,8 @@
     <string name="hide_ls_carrier_desc">Скрывает оператора на экране блокировки</string>
     <string name="hide_ls_statusbar_title">Скрыть строку состояния</string>
     <string name="hide_ls_statusbar_desc">Скрывает строку состояния на экране блокировки</string>
+    <string name="sb_swap_wifi_cellular_title">Swap Wifi and Cellular</string>
+    <string name="sb_swap_wifi_cellular_desc">Swap wifi and cellular icons</string>
     <!-- Xposed Others -->
     <string name="qs_header">Шапка быстрых настроек</string>
     <string name="hide_carrier_group_title">Скрыть группу Сим-карт</string>
@@ -830,6 +833,7 @@
     <string name="view_changelog">Показать Журнал Изменений</string>
     <string name="hide_changelog">Скрыть журнал изменений</string>
     <string name="already_up_to_date">У вас последняя версия.</string>
+    <string name="auto_update_disabled">Auto update is disabled for debug build.</string>
     <string name="current_version">Установленная версия:</string>
     <string name="latest_version">Последняя версия:</string>
     <string name="update_checking_failed">Ошибка проверки обновлений!</string>
