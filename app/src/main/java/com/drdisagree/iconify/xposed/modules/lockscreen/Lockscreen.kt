@@ -27,6 +27,7 @@ import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookLayout
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookMethod
 import com.drdisagree.iconify.xposed.utils.XPrefs.Xprefs
 import com.drdisagree.iconify.xposed.utils.XPrefs.XprefsIsInitialized
+import de.robv.android.xposed.XC_MethodHook
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam
 import java.util.Calendar
 
@@ -109,43 +110,79 @@ class Lockscreen(context: Context) : ModPack(context) {
         } else {
             val aodBurnInLayerClass =
                 findClass("$SYSTEMUI_PACKAGE.keyguard.ui.view.layout.sections.AodBurnInLayer")
+            var aodBurnInLayerHooked = false
+
+            // Apparently ROMs like CrDroid doesn't even use AodBurnInLayer class
+            // So we hook which ever is available
+            val keyguardStatusViewClass = findClass("com.android.keyguard.KeyguardStatusView")
+            var keyguardStatusViewHooked = false
+
+            fun hideLockIcon(param: XC_MethodHook.MethodHookParam) {
+                val entryV = param.thisObject as View
+
+                // If both are already hooked, return. We only want to hook one
+                if (aodBurnInLayerHooked && keyguardStatusViewHooked) return
+
+                entryV.addOnAttachStateChangeListener(object : OnAttachStateChangeListener {
+                    override fun onViewAttachedToWindow(v: View) {
+                        Handler(Looper.getMainLooper()).postDelayed({
+                            if (!hideLockscreenLockIcon) return@postDelayed
+
+                            val rootView = entryV.parent as ViewGroup
+
+                            // If rootView is not R.id.keyguard_root_view, detach and return
+                            if (rootView.id != mContext.resources.getIdentifier(
+                                    "keyguard_root_view",
+                                    "id",
+                                    mContext.packageName
+                                )
+                            ) {
+                                entryV.removeOnAttachStateChangeListener(this)
+                                return@postDelayed
+                            }
+
+                            listOf(
+                                "device_entry_icon_bg",
+                                "device_entry_icon_fg"
+                            ).map { resourceName ->
+                                val resourceId = mContext.resources.getIdentifier(
+                                    resourceName,
+                                    "id",
+                                    mContext.packageName
+                                )
+                                if (resourceId != -1) {
+                                    rootView.findViewById<View?>(resourceId)
+                                } else {
+                                    null
+                                }
+                            }.forEach { view ->
+                                view.hideView()
+                            }
+                        }, 1000)
+                    }
+
+                    override fun onViewDetachedFromWindow(v: View) {}
+                })
+            }
 
             aodBurnInLayerClass
                 .hookConstructor()
                 .runAfter { param ->
                     if (!hideLockscreenLockIcon) return@runAfter
 
-                    val entryV = param.thisObject as View
+                    aodBurnInLayerHooked = true
 
-                    entryV.addOnAttachStateChangeListener(object : OnAttachStateChangeListener {
-                        override fun onViewAttachedToWindow(v: View) {
-                            Handler(Looper.getMainLooper()).postDelayed({
-                                if (!hideLockscreenLockIcon) return@postDelayed
+                    hideLockIcon(param)
+                }
 
-                                val rootView = entryV.parent as ViewGroup
+            keyguardStatusViewClass
+                .hookConstructor()
+                .runAfter { param ->
+                    if (!hideLockscreenLockIcon) return@runAfter
 
-                                listOf(
-                                    "device_entry_icon_bg",
-                                    "device_entry_icon_fg"
-                                ).map { resourceName ->
-                                    val resourceId = mContext.resources.getIdentifier(
-                                        resourceName,
-                                        "id",
-                                        mContext.packageName
-                                    )
-                                    if (resourceId != -1) {
-                                        rootView.findViewById<View?>(resourceId)
-                                    } else {
-                                        null
-                                    }
-                                }.forEach { view ->
-                                    view.hideView()
-                                }
-                            }, 1000)
-                        }
+                    keyguardStatusViewHooked = true
 
-                        override fun onViewDetachedFromWindow(v: View) {}
-                    })
+                    hideLockIcon(param)
                 }
         }
     }
