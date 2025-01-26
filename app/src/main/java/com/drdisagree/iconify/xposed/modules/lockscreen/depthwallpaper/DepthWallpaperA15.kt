@@ -645,6 +645,15 @@ class DepthWallpaperA15(context: Context) : ModPack(context) {
                 (state == "KEYGUARD" || (showOnAOD && (state == "AOD" || state == "PULSING"))))
 
         if (showForeground) {
+            mWallpaperForeground.layoutParams.apply {
+                height = MATCH_PARENT
+                width = MATCH_PARENT
+            }
+            mWallpaperBackground.layoutParams.apply {
+                height = MATCH_PARENT
+                width = MATCH_PARENT
+            }
+
             if ((!mWallpaperForegroundCacheValid || mWallpaperForeground.background == null) &&
                 File(foregroundPath).exists()
             ) {
