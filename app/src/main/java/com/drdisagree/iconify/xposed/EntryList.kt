@@ -15,6 +15,7 @@ import com.drdisagree.iconify.xposed.modules.lockscreen.clock.LockscreenClock
 import com.drdisagree.iconify.xposed.modules.lockscreen.clock.LockscreenClockA15
 import com.drdisagree.iconify.xposed.modules.lockscreen.depthwallpaper.DepthWallpaper
 import com.drdisagree.iconify.xposed.modules.lockscreen.depthwallpaper.DepthWallpaperA14
+import com.drdisagree.iconify.xposed.modules.lockscreen.depthwallpaper.DepthWallpaperA15
 import com.drdisagree.iconify.xposed.modules.lockscreen.weather.LockscreenWeather
 import com.drdisagree.iconify.xposed.modules.lockscreen.weather.LockscreenWeatherA15
 import com.drdisagree.iconify.xposed.modules.lockscreen.widgets.LockscreenWidgets
@@ -93,7 +94,7 @@ object EntryList {
     )
 
     private val systemUiAndroid15ModPacks: List<Class<out ModPack>> = listOf(
-        DepthWallpaperA14::class.java,
+        DepthWallpaperA15::class.java,
         QSFluidThemeA15::class.java,
         QSBlackThemeA15::class.java,
         QSLightThemeA15::class.java,

@@ -48,6 +48,7 @@ import com.drdisagree.iconify.common.Preferences.LSCLOCK_SWITCH
 import com.drdisagree.iconify.xposed.HookEntry.Companion.enqueueProxyCommand
 import com.drdisagree.iconify.xposed.HookRes.Companion.modRes
 import com.drdisagree.iconify.xposed.ModPack
+import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.findViewIdContainsTag
 import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.reAddView
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.XposedHook.Companion.findClass
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.callMethod
@@ -56,8 +57,10 @@ import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.getFieldSilent
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookConstructor
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookMethod
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.log
+import com.drdisagree.iconify.xposed.modules.lockscreen.Lockscreen.Companion.isComposeLockscreen
 import com.drdisagree.iconify.xposed.utils.XPrefs.Xprefs
 import com.drdisagree.iconify.xposed.utils.XPrefs.XprefsIsInitialized
+import de.robv.android.xposed.XC_MethodHook
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam
 import java.io.ByteArrayOutputStream
 import java.io.File
@@ -69,7 +72,7 @@ import java.util.concurrent.TimeUnit
 import kotlin.math.max
 
 @SuppressLint("DiscouragedApi")
-class DepthWallpaperA14(context: Context) : ModPack(context) {
+class DepthWallpaperA15(context: Context) : ModPack(context) {
 
     private var showDepthWallpaper = false
     private var showLockscreenClock = false
@@ -152,7 +155,10 @@ class DepthWallpaperA14(context: Context) : ModPack(context) {
 
                         ACTION_EXTRACT_FAILURE -> {
                             mWallpaperForegroundCacheValid = false
-                            log(this@DepthWallpaperA14, "Subject extraction failed\n${intent.getStringExtra("error")}")
+                            log(
+                                this@DepthWallpaperA15,
+                                "Subject extraction failed\n${intent.getStringExtra("error")}"
+                            )
 
                             Handler(Looper.getMainLooper()).post {
                                 Toast.makeText(
@@ -195,61 +201,96 @@ class DepthWallpaperA14(context: Context) : ModPack(context) {
             "$SYSTEMUI_PACKAGE.statusbar.phone.CentralSurfacesImpl",
             suppressError = true
         )
-        val statusBarKeyguardViewManagerClass =
-            findClass("$SYSTEMUI_PACKAGE.statusbar.phone.StatusBarKeyguardViewManager")
         val scrimControllerClass = findClass("$SYSTEMUI_PACKAGE.statusbar.phone.ScrimController")
         val scrimViewClass = findClass("$SYSTEMUI_PACKAGE.scrim.ScrimView")
+        val keyguardBottomAreaViewClass =
+            findClass("$SYSTEMUI_PACKAGE.statusbar.phone.KeyguardBottomAreaView")
+        val statusBarKeyguardViewManagerClass =
+            findClass("$SYSTEMUI_PACKAGE.statusbar.phone.StatusBarKeyguardViewManager")
         val aodBurnInLayerClass = findClass(
             "$SYSTEMUI_PACKAGE.keyguard.ui.view.layout.sections.AodBurnInLayer",
             suppressError = true
         )
-        val keyguardBottomAreaViewClass =
-            findClass("$SYSTEMUI_PACKAGE.statusbar.phone.KeyguardBottomAreaView")
+        var aodBurnInLayerHooked = false
+
+        // Apparently ROMs like CrDroid doesn't even use AodBurnInLayer class
+        // So we hook which ever is available
+        val keyguardStatusViewClass = findClass("com.android.keyguard.KeyguardStatusView")
+        var keyguardStatusViewHooked = false
+
+        fun initializeDepthWallpaperLayout(param: XC_MethodHook.MethodHookParam) {
+            val entryV = param.thisObject as View
+
+            // If both are already hooked, return. We only want to hook one
+            if (aodBurnInLayerHooked && keyguardStatusViewHooked) return
+
+            entryV.addOnAttachStateChangeListener(object : OnAttachStateChangeListener {
+                override fun onViewAttachedToWindow(v: View) {
+                    Handler(Looper.getMainLooper()).postDelayed({
+                        if (!showDepthWallpaper) return@postDelayed
+
+                        val rootView = entryV.parent as ViewGroup
+
+                        if (!mLayersCreated) {
+                            createLayers()
+                        }
+
+                        val largeClockView = rootView.findViewById<View>(
+                            mContext.resources.getIdentifier(
+                                "lockscreen_clock_view_large",
+                                "id",
+                                mContext.packageName
+                            )
+                        )
+                        val smallClockView = rootView.findViewById<View>(
+                            mContext.resources.getIdentifier(
+                                "lockscreen_clock_view",
+                                "id",
+                                mContext.packageName
+                            )
+                        )
+
+                        rootView.apply {
+                            val idx = if (isComposeLockscreen) {
+                                val tempIdx = lsItemTags.map { findViewIdContainsTag(it) }
+                                    .firstOrNull { it != -1 } ?: 0
+                                tempIdx + 1
+                            } else {
+                                0
+                            }
+
+                            reAddView(mWallpaperForeground, idx)
+
+                            if (!showLockscreenClock) {
+                                reAddView(largeClockView, 0)
+                                reAddView(smallClockView, 0)
+                            }
+                        }
+                    }, 1000)
+                }
+
+                override fun onViewDetachedFromWindow(v: View) {}
+            })
+        }
 
         aodBurnInLayerClass
             .hookConstructor()
             .runAfter { param ->
                 if (!showDepthWallpaper) return@runAfter
 
-                val entryV = param.thisObject as View
+                aodBurnInLayerHooked = true
 
-                entryV.addOnAttachStateChangeListener(object : OnAttachStateChangeListener {
-                    override fun onViewAttachedToWindow(v: View) {
-                        Handler(Looper.getMainLooper()).postDelayed({
-                            val rootView = entryV.parent as ViewGroup
+                initializeDepthWallpaperLayout(param)
+            }
 
-                            if (!mLayersCreated) {
-                                createLayers()
-                            }
+        keyguardStatusViewClass
+            .hookConstructor()
+            .runAfter { param ->
+                if (!showDepthWallpaper) return@runAfter
 
-                            val largeClockView = rootView.findViewById<View>(
-                                mContext.resources.getIdentifier(
-                                    "lockscreen_clock_view_large",
-                                    "id",
-                                    mContext.packageName
-                                )
-                            )
-                            val smallClockView = rootView.findViewById<View>(
-                                mContext.resources.getIdentifier(
-                                    "lockscreen_clock_view",
-                                    "id",
-                                    mContext.packageName
-                                )
-                            )
+                keyguardStatusViewHooked = true
 
-                            rootView.apply {
-                                reAddView(mWallpaperForeground, 0)
-
-                                if (!showLockscreenClock) {
-                                    reAddView(largeClockView, 0)
-                                    reAddView(smallClockView, 0)
-                                }
-                            }
-                        }, 1000)
-                    }
-
-                    override fun onViewDetachedFromWindow(v: View) {}
-                })
+                initializeDepthWallpaperLayout(param)
             }
 
         scrimViewClass
@@ -298,8 +339,16 @@ class DepthWallpaperA14(context: Context) : ModPack(context) {
                     createLayers()
                 }
 
+                val idx = if (isComposeLockscreen) {
+                    val tempIdx = lsItemTags.map { targetView.findViewIdContainsTag(it) }
+                        .firstOrNull { it != -1 } ?: 1
+                    tempIdx + 1
+                } else {
+                    1
+                }
+
                 rootView.reAddView(mWallpaperBackground, 0)
-                targetView.reAddView(mWallpaperForeground, 1)
+                targetView.reAddView(mWallpaperForeground, idx)
             }
 
         centralSurfacesImplClass
@@ -405,7 +454,7 @@ class DepthWallpaperA14(context: Context) : ModPack(context) {
                             out.flush()
                             out.close()
                         } catch (throwable: IOException) {
-                            log(this@DepthWallpaperA14, throwable)
+                            log(this@DepthWallpaperA15, throwable)
                         }
 
                         if (!mLayersCreated) {
@@ -713,7 +762,7 @@ class DepthWallpaperA14(context: Context) : ModPack(context) {
                                             mWallpaperDimmingOverlay.setBackgroundColor(Color.BLACK)
                                             mWallpaperDimmingOverlay.alpha =
                                                 mScrimController.getField(
-                                                "mScrimBehindAlphaKeyguard"
+                                                    "mScrimBehindAlphaKeyguard"
                                                 ) as Float
                                         }
                                     }

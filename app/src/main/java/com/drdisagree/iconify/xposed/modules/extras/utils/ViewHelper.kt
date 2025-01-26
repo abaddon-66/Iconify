@@ -497,15 +497,15 @@ object ViewHelper {
 
         var layout: LinearLayout? = findViewWithTag(ICONIFY_LOCKSCREEN_CONTAINER_TAG)
 
-        if (layout == null) {
-            val showDepthWallpaper = Xprefs.getBoolean(DEPTH_WALLPAPER_SWITCH, false)
-            val idx = if (showDepthWallpaper) {
-                val tempIdx = rootView.findViewIdContainsTag(ICONIFY_DEPTH_WALLPAPER_FOREGROUND_TAG)
-                if (tempIdx == -1) 0 else tempIdx
-            } else {
-                0
-            }
+        val showDepthWallpaper = Xprefs.getBoolean(DEPTH_WALLPAPER_SWITCH, false)
+        val idx = if (showDepthWallpaper) {
+            val tempIdx = findViewIdContainsTag(ICONIFY_DEPTH_WALLPAPER_FOREGROUND_TAG)
+            if (tempIdx == -1) 0 else tempIdx
+        } else {
+            0
+        }
 
+        if (layout == null) {
             layout = LinearLayout(this.context).apply {
                 id = View.generateViewId()
                 tag = ICONIFY_LOCKSCREEN_CONTAINER_TAG
@@ -516,6 +516,10 @@ object ViewHelper {
                 orientation = LinearLayout.VERTICAL
             }
             addView(layout, idx)
+        } else {
+            if (indexOfChild(layout) != idx) {
+                reAddView(layout, idx)
+            }
         }
 
         return layout
