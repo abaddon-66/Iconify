@@ -382,7 +382,7 @@
     <string name="toast_module_created">Modulo creato con successo</string>
     <string name="read_carefully">Leggi Attentamente!</string>
     <string name="volume_module_installation_guide">Questa opzione creerà un modulo Magisk nella cartella Download nella memoria interna. Installa il modulo denominato IconifyCompanion.zip tramite Magisk. Disinstalla sempre il modulo Iconify Companion precedente (se installato) e riavvia prima di installarne uno nuovo.\n\n<b>Nota:</b>\n• Disinstallare il modulo prima di aggiornare la rom.\n• Ricreare il modulo se si modifica o aggiorna rom.\n• Non eseguire il flashing di un modulo che non è stato creato in base alla tua rom.</string>
-    <string name="volume_module_unstable_desc">Currently volume module is unstable on Android 14 and above. Try at your own risk.</string>
+    <string name="volume_module_unstable_desc">Attualmente il modulo del volume è instabile su Android 14 e superiore. Prova a tuo rischio.</string>
     <!-- Media Player -->
     <string name="cont_desc_media_player">Anteprima Lettore Multimediale</string>
     <string name="media_player_preview_music_title">Titolo Musica</string>
@@ -455,6 +455,7 @@
     <string name="oneplus_qs_header_fade_level">Livello Dissolvenza</string>
     <string name="oneplus_qs_header_top_margin">Margine Superiore</string>
     <string name="oneplus_qs_header_expansion_y">Quantità Espansione</string>
+    <string name="oneplus_qs_header_gap">Expanded Gap</string>
     <!-- Lockscreen Widgets -->
     <string name="lockscreen_widgets_title">Widget Schermata di Blocco</string>
     <string name="lockscreen_widgets_enabled_title">Abilita Widget Schermata di Blocco</string>
@@ -804,6 +805,8 @@
     <string name="hide_ls_carrier_desc">Nascondi nome operatore nella schermata di blocco</string>
     <string name="hide_ls_statusbar_title">Nascondi Barra Di Stato LS</string>
     <string name="hide_ls_statusbar_desc">Nascondi barra di stato nella schermata di blocco</string>
+    <string name="sb_swap_wifi_cellular_title">Swap Wifi and Cellular</string>
+    <string name="sb_swap_wifi_cellular_desc">Swap wifi and cellular icons</string>
     <!-- Xposed Others -->
     <string name="qs_header">Intestazione QS</string>
     <string name="hide_carrier_group_title">Nascondi Gruppo Operatore</string>
@@ -815,9 +818,9 @@
     <string name="hide_ls_lock_icon_desc">Nascondi la visualizzazione dell\'icona di blocco nella schermata di blocco</string>
     <string name="fixed_status_icons_title">Icone di Stato Fisse</string>
     <string name="fixed_status_icons_desc">Imposta le icone di stato in posizione fissa\nPotrebbe essere buggato su alcune rom</string>
-    <string name="ls_wallpaper_blur_title">Wallpaper Blur</string>
-    <string name="ls_wallpaper_blur_desc">Apply blur effect on lockscreen</string>
-    <string name="ls_wallpaper_blur_radius_title">Wallpaper Blur Intensity</string>
+    <string name="ls_wallpaper_blur_title">Sfocatura Sfondo</string>
+    <string name="ls_wallpaper_blur_desc">Applica effetto sfocatura sulla schermata di blocco</string>
+    <string name="ls_wallpaper_blur_radius_title">Intensità Sfocatura Sfondo</string>
     <!-- Changelog -->
     <string name="activity_title_changelog">Changelog</string>
     <string name="no_internet_connection">Impossibile connettersi al server!\nCi potrebbe essere un problema con la tua connessione internet o il server potrebbe essere giù in questo momento. Riprova più tardi per favore.</string>
@@ -830,6 +833,7 @@
     <string name="view_changelog">Visualizza Changelog</string>
     <string name="hide_changelog">Nascondi Changelog</string>
     <string name="already_up_to_date">Sei già aggiornato.</string>
+    <string name="auto_update_disabled">Auto update is disabled for debug build.</string>
     <string name="current_version">Versione Attuale:</string>
     <string name="latest_version">Ultima Versione:</string>
     <string name="update_checking_failed">Controllo dell\'aggiornamento non riuscito!</string>
