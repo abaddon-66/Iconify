@@ -176,12 +176,21 @@ class ColorizeNotification(context: Context) : ModPack(context) {
                             6 // CONTENT style is converted to 6 in A16B1
                         )
                     }.getOrElse {
-                        newInstance(
-                            colorSchemeClass,
-                            primaryColor,
-                            darkTheme,
-                            6 // CONTENT style is converted to 6 in A16B1
-                        )
+                        runCatching {
+                            newInstance(
+                                colorSchemeClass,
+                                primaryColor,
+                                darkTheme,
+                                6 // CONTENT style is converted to 6 in A16B1
+                            )
+                        }.getOrElse {
+                            // Android 13
+                            newInstance(
+                                colorSchemeClass,
+                                wallpaperColors,
+                                schemeStyle
+                            )
+                        }
                     }
                 }
             }
