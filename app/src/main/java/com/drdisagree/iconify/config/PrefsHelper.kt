@@ -306,7 +306,10 @@ object PrefsHelper {
             COLORED_NOTIFICATION_ALTERNATIVE_SWITCH ->
                 getBoolean(COLORED_NOTIFICATION_VIEW_SWITCH, false)
 
-            LOCKSCREEN_WALLPAPER_BLUR_RADIUS -> getBoolean(LOCKSCREEN_WALLPAPER_BLUR, false)
+            LOCKSCREEN_WALLPAPER_BLUR -> Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE
+
+            LOCKSCREEN_WALLPAPER_BLUR_RADIUS -> Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE &&
+                    getBoolean(LOCKSCREEN_WALLPAPER_BLUR, false)
 
             else -> true
         }
