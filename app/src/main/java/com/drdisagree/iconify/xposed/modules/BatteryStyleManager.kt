@@ -696,8 +696,6 @@ class BatteryStyleManager(context: Context) : ModPack(context) {
     }
 
     private fun isBatteryCharging(thisObject: Any): Boolean {
-        var mIsIncompatibleCharging = false
-
         val mCharging: Boolean = try {
             thisObject.getField("mCharging") as Boolean
         } catch (ignored: Throwable) {
@@ -708,11 +706,8 @@ class BatteryStyleManager(context: Context) : ModPack(context) {
             }
         }
 
-        try {
-            mIsIncompatibleCharging = thisObject.getField("mIsIncompatibleCharging") as Boolean
-        } catch (throwable: Throwable) {
-            log(this@BatteryStyleManager, throwable)
-        }
+        val mIsIncompatibleCharging =
+            thisObject.getFieldSilently("mIsIncompatibleCharging") as? Boolean ?: false
 
         return mCharging && !mIsIncompatibleCharging
     }
