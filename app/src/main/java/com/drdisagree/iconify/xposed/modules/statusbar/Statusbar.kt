@@ -39,7 +39,6 @@ import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.log
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.setField
 import com.drdisagree.iconify.xposed.utils.XPrefs.Xprefs
 import com.drdisagree.iconify.xposed.utils.XPrefs.XprefsIsInitialized
-import de.robv.android.xposed.XC_MethodHook
 import de.robv.android.xposed.XC_MethodHook.MethodHookParam
 import de.robv.android.xposed.XposedHelpers.callStaticMethod
 import de.robv.android.xposed.callbacks.XC_InitPackageResources.InitPackageResourcesParam
@@ -101,8 +100,10 @@ class Statusbar(context: Context) : ModPack(context) {
             findClass("$SYSTEMUI_PACKAGE.statusbar.phone.NotificationIconContainer")
         val iconStateClass =
             findClass("$SYSTEMUI_PACKAGE.statusbar.phone.NotificationIconContainer\$IconState")
-        val legacyNotificationIconAreaControllerImplClass =
-            findClass("$SYSTEMUI_PACKAGE.statusbar.phone.LegacyNotificationIconAreaControllerImpl")
+        val legacyNotificationIconAreaControllerImplClass = findClass(
+            "$SYSTEMUI_PACKAGE.statusbar.phone.LegacyNotificationIconAreaControllerImpl",
+            "$SYSTEMUI_PACKAGE.statusbar.phone.NotificationIconAreaController"
+        )
         val drawableSizeClass = findClass("$SYSTEMUI_PACKAGE.util.drawable.DrawableSize")
         val scalingDrawableWrapperClass =
             findClass("$SYSTEMUI_PACKAGE.statusbar.ScalingDrawableWrapper")!!
@@ -200,7 +201,7 @@ class Statusbar(context: Context) : ModPack(context) {
         }
     }
 
-    private fun removeTintForStatusbarIcon(param: XC_MethodHook.MethodHookParam) {
+    private fun removeTintForStatusbarIcon(param: MethodHookParam) {
         val icon = param.args[0] as View
         removeTintForStatusbarIcon(icon)
     }
@@ -225,7 +226,7 @@ class Statusbar(context: Context) : ModPack(context) {
         context: Context,
         sysuiContext: Context,
         drawableSize: Class<*>?,
-        param: XC_MethodHook.MethodHookParam,
+        param: MethodHookParam,
         scalingDrawableWrapper: Class<*>
     ) {
         var icon: Drawable
