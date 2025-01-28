@@ -189,6 +189,21 @@ class LockscreenClock(context: Context) : ModPack(context) {
                     mClockViewContainer = mStatusViewContainer
                 }
 
+                val aodNotificationIconContainer = (param.thisObject as ViewGroup)
+                    .findViewById<View?>(
+                        mContext.resources.getIdentifier(
+                            "left_aligned_notification_icon_container",
+                            "id",
+                            mContext.packageName
+                        )
+                    )
+
+                if (aodNotificationIconContainer != null) {
+                    (aodNotificationIconContainer.parent as? ViewGroup)
+                        ?.removeView(aodNotificationIconContainer)
+                    mClockViewContainer?.addView(aodNotificationIconContainer, -1)
+                }
+
                 // Hide stock clock
                 (param.thisObject as GridLayout).findViewById<RelativeLayout>(
                     mContext.resources.getIdentifier(
@@ -258,6 +273,25 @@ class LockscreenClock(context: Context) : ModPack(context) {
                         }
                     }, 0, 200, TimeUnit.MILLISECONDS)
                 } catch (ignored: Throwable) {
+                }
+            }
+
+        val legacyNotificationIconAreaControllerImplClass = findClass(
+            "$SYSTEMUI_PACKAGE.statusbar.phone.LegacyNotificationIconAreaControllerImpl",
+            "$SYSTEMUI_PACKAGE.statusbar.phone.NotificationIconAreaController"
+        )
+
+        legacyNotificationIconAreaControllerImplClass
+            .hookMethod("setupAodIcons")
+            .runBefore { param ->
+                if (param.args[0] == null && mClockViewContainer != null) {
+                    param.args[0] = mClockViewContainer!!.findViewById(
+                        mContext.resources.getIdentifier(
+                            "left_aligned_notification_icon_container",
+                            "id",
+                            mContext.packageName
+                        )
+                    )
                 }
             }
 
@@ -353,7 +387,7 @@ class LockscreenClock(context: Context) : ModPack(context) {
                  If the clock view container is the depth wallpaper container, we need to
                  add the clock view to the middle of foreground and background images
                  */
-                if (mClockViewContainer!!.childCount > 0) {
+                if (mClockViewContainer!!.childCount > 1) {
                     idx = 1
                 }
 
