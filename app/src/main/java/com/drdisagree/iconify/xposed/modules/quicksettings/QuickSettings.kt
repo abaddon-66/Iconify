@@ -3,7 +3,6 @@ package com.drdisagree.iconify.xposed.modules.quicksettings
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.ColorStateList
-import android.content.res.Configuration
 import android.content.res.Resources
 import android.graphics.Color
 import android.graphics.PorterDuff
@@ -40,6 +39,7 @@ import com.drdisagree.iconify.common.Preferences.QS_TEXT_FOLLOW_ACCENT
 import com.drdisagree.iconify.common.Preferences.QS_TOPMARGIN
 import com.drdisagree.iconify.common.Preferences.VERTICAL_QSTILE_SWITCH
 import com.drdisagree.iconify.xposed.ModPack
+import com.drdisagree.iconify.xposed.modules.extras.utils.DisplayUtils.isLandscape
 import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.toPx
 import com.drdisagree.iconify.xposed.modules.extras.utils.isPixelVariant
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.XposedHook.Companion.findClass
@@ -220,61 +220,54 @@ class QuickSettings(context: Context) : ModPack(context) {
     }
 
     private fun setQsMargin() {
+        fun replaceDimens(param: MethodHookParam, multiplyDensity: Boolean) {
+            if (!customQsMarginsEnabled) return
+
+            fun getQqsMargin() = if (multiplyDensity) mContext.toPx(qqsTopMargin) else qqsTopMargin
+            fun getQsMargin() = if (multiplyDensity) mContext.toPx(qsTopMargin) else qsTopMargin
+
+            val resourceGroups = mapOf(
+                arrayOf( // QQS margin
+                    "qs_header_system_icons_area_height",
+                    "qqs_layout_margin_top",
+                    "qs_header_row_min_height"
+                ) to getQqsMargin(),
+                arrayOf( // QS margin
+                    "qs_panel_padding_top",
+                    "qs_panel_padding_top_combined_headers",
+                    "qs_header_height"
+                ) to if (showHeaderClock &&
+                    Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE &&
+                    mContext.isLandscape
+                ) 0 else getQsMargin()
+            )
+
+            resourceGroups.forEach { (resNames, value) ->
+                resNames.forEach { resName ->
+                    if (param.args[0] == mContext.resources.getIdentifier(
+                            resName,
+                            "dimen",
+                            mContext.packageName
+                        )
+                    ) {
+                        param.result = value
+                    }
+                }
+            }
+        }
+
         Resources::class.java
             .hookMethod("getDimensionPixelSize")
             .suppressError()
             .runBefore { param ->
-                if (!customQsMarginsEnabled) return@runBefore
+                replaceDimens(param, true)
+            }
 
-                val qqsHeaderResNames = arrayOf(
-                    "qs_header_system_icons_area_height",
-                    "qqs_layout_margin_top",
-                    "qs_header_row_min_height",
-                    "large_screen_shade_header_min_height"
-                )
-
-                qqsHeaderResNames.forEach { resName ->
-                    try {
-                        val resId = mContext.resources.getIdentifier(
-                            resName,
-                            "dimen",
-                            mContext.packageName
-                        )
-
-                        if (param.args[0] == resId) {
-                            param.result = mContext.toPx(qqsTopMargin)
-                        }
-                    } catch (ignored: Throwable) {
-                    }
-                }
-
-                val qsHeaderResNames = arrayOf(
-                    "qs_panel_padding_top",
-                    "qs_panel_padding_top_combined_headers",
-                    "qs_header_height"
-                )
-
-                qsHeaderResNames.forEach { resName ->
-                    try {
-                        val resId = mContext.resources.getIdentifier(
-                            resName,
-                            "dimen",
-                            mContext.packageName
-                        )
-
-                        if (param.args[0] == resId) {
-                            if (showHeaderClock && Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-                                val isLandscape =
-                                    mContext.resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
-
-                                param.result = if (isLandscape) 0 else mContext.toPx(qsTopMargin)
-                            } else {
-                                param.result = mContext.toPx(qsTopMargin)
-                            }
-                        }
-                    } catch (ignored: Throwable) {
-                    }
-                }
+        Resources::class.java
+            .hookMethod("getDimension", "getDimensionPixelOffset")
+            .suppressError()
+            .runBefore { param ->
+                replaceDimens(param, false)
             }
 
         val quickStatusBarHeader = findClass("$SYSTEMUI_PACKAGE.qs.QuickStatusBarHeader")

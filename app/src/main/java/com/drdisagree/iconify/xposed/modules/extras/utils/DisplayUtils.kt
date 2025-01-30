@@ -1,6 +1,7 @@
 package com.drdisagree.iconify.xposed.modules.extras.utils
 
 import android.content.Context
+import android.content.res.Configuration
 import android.hardware.display.DisplayManager
 import android.view.Display
 
@@ -41,4 +42,7 @@ object DisplayUtils {
         val dm = context.getSystemService(Context.DISPLAY_SERVICE) as DisplayManager
         return dm.displays
     }
+
+    val Context.isLandscape: Boolean
+        get() = resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
 }
