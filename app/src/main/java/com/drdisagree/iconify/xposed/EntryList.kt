@@ -56,9 +56,6 @@ object EntryList {
         BackgroundChip::class.java,
         HeaderImage::class.java,
         Lockscreen::class.java,
-        LockscreenClock::class.java,
-        LockscreenWidgets::class.java,
-        LockscreenWeather::class.java,
         Miscellaneous::class.java,
         QSTransparency::class.java,
         QuickSettings::class.java,
@@ -68,13 +65,19 @@ object EntryList {
         ColorizeNotification::class.java
     )
 
+    private val systemUiAndroid12to14ModPacks: List<Class<out ModPack>> = listOf(
+        LockscreenClock::class.java,
+        LockscreenWeather::class.java,
+        LockscreenWidgets::class.java
+    )
+
     private val systemUiAndroid12ModPacks: List<Class<out ModPack>> = listOf(
         DepthWallpaper::class.java,
         QSFluidThemeA13::class.java,
         QSBlackThemeA13::class.java,
         QSLightThemeA12::class.java,
         HeaderClock::class.java
-    )
+    ) + systemUiAndroid12to14ModPacks
 
     private val systemUiAndroid13ModPacks: List<Class<out ModPack>> = listOf(
         DepthWallpaper::class.java,
@@ -82,7 +85,7 @@ object EntryList {
         QSBlackThemeA13::class.java,
         QSLightThemeA13::class.java,
         HeaderClock::class.java
-    )
+    ) + systemUiAndroid12to14ModPacks
 
     private val systemUiAndroid14ModPacks: List<Class<out ModPack>> = listOf(
         DepthWallpaperA14::class.java,
@@ -91,7 +94,7 @@ object EntryList {
         QSLightThemeA14::class.java,
         HeaderClockA14::class.java,
         OpQsHeader::class.java
-    )
+    ) + systemUiAndroid12to14ModPacks
 
     private val systemUiAndroid15ModPacks: List<Class<out ModPack>> = listOf(
         DepthWallpaperA15::class.java,
