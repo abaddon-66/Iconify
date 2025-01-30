@@ -78,7 +78,7 @@ jobs:
         id: get_commit_message
         run: |
           COMMIT_MESSAGE_HEADER=$(git log -1 --pretty=%B | head -n 1)
-          ESCAPED_MESSAGE=$(echo "$COMMIT_MESSAGE_HEADER" | jq -Rsa .)
+          ESCAPED_MESSAGE=$(echo "$COMMIT_MESSAGE_HEADER" | jq -Rsa . | sed 's/^"\(.*\)"$/\1/')
           echo "COMMIT_MESSAGE_HEADER=${ESCAPED_MESSAGE}" >> $GITHUB_ENV
 
       - name: Zip Artifact for Deployment
