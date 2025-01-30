@@ -5,7 +5,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.content.res.Configuration
+import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.Typeface
 import android.graphics.drawable.BitmapDrawable
@@ -53,20 +53,23 @@ import com.drdisagree.iconify.common.Preferences.ICONIFY_QS_HEADER_CONTAINER_SHA
 import com.drdisagree.iconify.common.Preferences.ICONIFY_QS_HEADER_CONTAINER_TAG
 import com.drdisagree.iconify.common.Preferences.OP_QS_HEADER_SWITCH
 import com.drdisagree.iconify.common.Preferences.QSPANEL_HIDE_CARRIER
-import com.drdisagree.iconify.common.Resources
+import com.drdisagree.iconify.common.Resources.HEADER_CLOCK_LAYOUT
 import com.drdisagree.iconify.utils.TextUtils
 import com.drdisagree.iconify.xposed.HookRes.Companion.resParams
 import com.drdisagree.iconify.xposed.ModPack
+import com.drdisagree.iconify.xposed.modules.extras.utils.DisplayUtils.isLandscape
 import com.drdisagree.iconify.xposed.modules.extras.utils.TouchAnimator
 import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.applyFontRecursively
 import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.applyTextScalingRecursively
 import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.findViewContainsTag
+import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.findViewIdContainsTag
 import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.findViewWithTagAndChangeColor
 import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.setMargins
 import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.toPx
 import com.drdisagree.iconify.xposed.modules.extras.utils.getColorResCompat
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.XposedHook.Companion.findClass
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.callMethod
+import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.callStaticMethodSilently
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.getField
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookConstructor
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookMethod
@@ -74,7 +77,6 @@ import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.log
 import com.drdisagree.iconify.xposed.utils.XPrefs.Xprefs
 import com.drdisagree.iconify.xposed.utils.XPrefs.XprefsIsInitialized
 import de.robv.android.xposed.XC_MethodHook
-import de.robv.android.xposed.XposedHelpers.callStaticMethod
 import de.robv.android.xposed.callbacks.XC_InitPackageResources.InitPackageResourcesParam
 import de.robv.android.xposed.callbacks.XC_LayoutInflated
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam
@@ -95,11 +97,9 @@ class HeaderClockA14(context: Context) : ModPack(context) {
     private var mQsClockContainer: LinearLayout = LinearLayout(mContext)
     private var mQsIconsContainer: LinearLayout = LinearLayout(mContext)
     private var mQsPanelView: ViewGroup? = null
-    private var mQuickStatusBarHeader: FrameLayout? = null
     private var mUserManager: UserManager? = null
     private var mActivityStarter: Any? = null
-    private var mQQSContainerAnimator: TouchAnimator? =
-        null
+    private var mQQSContainerAnimator: TouchAnimator? = null
     private var mQQSExpansionY: Float = 8f
     private var hideQsCarrierGroup = false
     private var hideStatusIcons = false
@@ -202,17 +202,20 @@ class HeaderClockA14(context: Context) : ModPack(context) {
         quickStatusBarHeaderClass
             .hookConstructor()
             .runAfter {
-                try {
-                    mActivityStarter =
-                        callStaticMethod(dependencyClass, "get", activityStarterClass)
-                } catch (ignored: Throwable) {
+                if (mActivityStarter == null) {
+                    mActivityStarter = dependencyClass.callStaticMethodSilently(
+                        "get",
+                        activityStarterClass
+                    )
                 }
             }
 
         qsSecurityFooterUtilsClass
             .hookConstructor()
             .runAfter { param ->
-                mActivityStarter = param.thisObject.getField("mActivityStarter")
+                if (mActivityStarter == null) {
+                    mActivityStarter = param.thisObject.getField("mActivityStarter")
+                }
             }
 
         quickStatusBarHeaderClass
@@ -220,7 +223,7 @@ class HeaderClockA14(context: Context) : ModPack(context) {
             .runAfter { param ->
                 if (!showHeaderClock) return@runAfter
 
-                mQuickStatusBarHeader = param.thisObject as FrameLayout
+                val mQuickStatusBarHeader = param.thisObject as FrameLayout
 
                 mQsHeaderClockContainer.apply {
                     layoutParams = LinearLayout.LayoutParams(
@@ -259,23 +262,19 @@ class HeaderClockA14(context: Context) : ModPack(context) {
                 }
 
                 mQsHeaderClockContainer.apply {
-                    (this.parent as? ViewGroup)?.removeView(this)
+                    (parent as? ViewGroup)?.removeView(this)
                     removeAllViews()
                     addView(mQsClockContainer)
                     addView(mQsIconsContainer)
                 }
 
                 (mQsHeaderClockContainer.parent as? ViewGroup)?.removeView(mQsHeaderClockContainer)
-                val headerImageAvailable = mQuickStatusBarHeader!!.findViewWithTag<ViewGroup?>(
+                val headerImageIndex = mQuickStatusBarHeader.findViewIdContainsTag(
                     ICONIFY_QS_HEADER_CONTAINER_TAG
                 )
-                mQuickStatusBarHeader!!.addView(
+                mQuickStatusBarHeader.addView(
                     mQsHeaderClockContainer,
-                    if (headerImageAvailable == null) {
-                        -1
-                    } else {
-                        mQuickStatusBarHeader!!.indexOfChild(headerImageAvailable) + 1
-                    }
+                    if (headerImageIndex == -1) -1 else headerImageIndex + 1
                 )
 
                 handleOldHeaderView(param)
@@ -288,14 +287,11 @@ class HeaderClockA14(context: Context) : ModPack(context) {
             .runAfter { param ->
                 if (!showHeaderClock) return@runAfter
 
-                mQuickStatusBarHeader = param.thisObject as FrameLayout
+                val mQuickStatusBarHeader = param.thisObject as FrameLayout
 
                 buildHeaderViewExpansion()
 
-                val isLandscape =
-                    mContext.resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
-
-                if (isLandscape) {
+                if (mContext.isLandscape) {
                     if (mQsHeaderClockContainer.parent != mQsHeaderContainerShade) {
                         (mQsHeaderClockContainer.parent as? ViewGroup)?.removeView(
                             mQsHeaderClockContainer
@@ -305,20 +301,15 @@ class HeaderClockA14(context: Context) : ModPack(context) {
                     mQsHeaderContainerShade.visibility = View.VISIBLE
                 } else {
                     if (mQsHeaderClockContainer.parent != mQuickStatusBarHeader) {
-                        val headerImageAvailable =
-                            mQuickStatusBarHeader!!.findViewWithTag<ViewGroup?>(
-                                ICONIFY_QS_HEADER_CONTAINER_TAG
-                            )
+                        val headerImageIndex = mQuickStatusBarHeader.findViewIdContainsTag(
+                            ICONIFY_QS_HEADER_CONTAINER_TAG
+                        )
                         (mQsHeaderClockContainer.parent as? ViewGroup)?.removeView(
                             mQsHeaderClockContainer
                         )
-                        mQuickStatusBarHeader?.addView(
+                        mQuickStatusBarHeader.addView(
                             mQsHeaderClockContainer,
-                            if (headerImageAvailable == null) {
-                                0
-                            } else {
-                                mQuickStatusBarHeader!!.indexOfChild(headerImageAvailable) + 1
-                            }
+                            if (headerImageIndex == -1) 0 else headerImageIndex + 1
                         )
                     }
                     mQsHeaderContainerShade.visibility = View.GONE
@@ -507,7 +498,6 @@ class HeaderClockA14(context: Context) : ModPack(context) {
 
         Resources::class.java
             .hookMethod("getBoolean")
-            .suppressError()
             .runBefore { param ->
                 if (!showHeaderClock) return@runBefore
 
@@ -524,10 +514,7 @@ class HeaderClockA14(context: Context) : ModPack(context) {
                 )
 
                 if (param.args[0] == resId1) {
-                    val isLandscape =
-                        mContext.resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
-
-                    param.result = isLandscape
+                    param.result = mContext.isLandscape
                 } else if (param.args[0] == resId2) {
                     param.result = false
                 }
@@ -535,7 +522,6 @@ class HeaderClockA14(context: Context) : ModPack(context) {
 
         Resources::class.java
             .hookMethod("getDimensionPixelSize")
-            .suppressError()
             .runBefore { param ->
                 if (!showHeaderClock) return@runBefore
 
@@ -629,9 +615,7 @@ class HeaderClockA14(context: Context) : ModPack(context) {
     }
 
     private fun buildHeaderViewExpansion() {
-        val isLandscape =
-            mContext.resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
-        val mQQSExpansionY = if (isLandscape) 0 else mQQSExpansionY
+        val mQQSExpansionY = if (mContext.isLandscape) 0 else mQQSExpansionY
 
         val builderP: TouchAnimator.Builder = TouchAnimator.Builder()
             .addFloat(
@@ -700,7 +684,7 @@ class HeaderClockA14(context: Context) : ModPack(context) {
 
             return inflater.inflate(
                 appContext.resources.getIdentifier(
-                    Resources.HEADER_CLOCK_LAYOUT + clockStyle,
+                    HEADER_CLOCK_LAYOUT + clockStyle,
                     "layout",
                     BuildConfig.APPLICATION_ID
                 ),
@@ -711,14 +695,13 @@ class HeaderClockA14(context: Context) : ModPack(context) {
     private fun modifyClockView(clockView: View) {
         if (!XprefsIsInitialized) return
 
-        val isLandscape =
-            mContext.resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
         val clockStyle: Int = Xprefs.getInt(HEADER_CLOCK_STYLE, 0)
         val customFontEnabled: Boolean = Xprefs.getBoolean(HEADER_CLOCK_FONT_SWITCH, false)
         val clockScale: Float =
             (Xprefs.getSliderInt(HEADER_CLOCK_FONT_TEXT_SCALING, 10) / 10.0).toFloat()
         val sideMargin: Int = Xprefs.getSliderInt(HEADER_CLOCK_SIDEMARGIN, 0)
-        val topMargin: Int = if (isLandscape) 0 else Xprefs.getSliderInt(HEADER_CLOCK_TOPMARGIN, 8)
+        val topMargin: Int =
+            if (mContext.isLandscape) 0 else Xprefs.getSliderInt(HEADER_CLOCK_TOPMARGIN, 8)
         val customFont = Environment.getExternalStorageDirectory().toString() +
                 "/.iconify_files/headerclock_font.ttf"
 
@@ -792,7 +775,6 @@ class HeaderClockA14(context: Context) : ModPack(context) {
 
         if (customFontEnabled && File(customFont).exists()) typeface =
             Typeface.createFromFile(File(customFont))
-
 
         setMargins(mQsHeaderClockContainer, mContext, 0, topMargin, 0, 0)
 
@@ -884,7 +866,10 @@ class HeaderClockA14(context: Context) : ModPack(context) {
     }
 
     private fun onClockClick() {
-        if (mActivityStarter == null) return
+        if (mActivityStarter == null) {
+            log(this@HeaderClockA14, "mActivityStarter is null")
+            return
+        }
 
         val intent = Intent(AlarmClock.ACTION_SHOW_ALARMS)
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP + Intent.FLAG_ACTIVITY_SINGLE_TOP)
@@ -893,7 +878,10 @@ class HeaderClockA14(context: Context) : ModPack(context) {
     }
 
     private fun onDateClick() {
-        if (mActivityStarter == null) return
+        if (mActivityStarter == null) {
+            log(this@HeaderClockA14, "mActivityStarter is null")
+            return
+        }
 
         val builder = CalendarContract.CONTENT_URI.buildUpon()
         builder.appendPath("time")
