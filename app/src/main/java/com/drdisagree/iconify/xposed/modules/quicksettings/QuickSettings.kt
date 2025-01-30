@@ -34,9 +34,11 @@ import com.drdisagree.iconify.common.Preferences.HIDE_QS_FOOTER_BUTTONS
 import com.drdisagree.iconify.common.Preferences.HIDE_QS_ON_LOCKSCREEN
 import com.drdisagree.iconify.common.Preferences.HIDE_QS_SILENT_TEXT
 import com.drdisagree.iconify.common.Preferences.QQS_TOPMARGIN
+import com.drdisagree.iconify.common.Preferences.QQS_TOPMARGIN_LANDSCAPE
 import com.drdisagree.iconify.common.Preferences.QS_TEXT_ALWAYS_WHITE
 import com.drdisagree.iconify.common.Preferences.QS_TEXT_FOLLOW_ACCENT
 import com.drdisagree.iconify.common.Preferences.QS_TOPMARGIN
+import com.drdisagree.iconify.common.Preferences.QS_TOPMARGIN_LANDSCAPE
 import com.drdisagree.iconify.common.Preferences.VERTICAL_QSTILE_SWITCH
 import com.drdisagree.iconify.xposed.ModPack
 import com.drdisagree.iconify.xposed.modules.extras.utils.DisplayUtils.isLandscape
@@ -72,8 +74,10 @@ class QuickSettings(context: Context) : ModPack(context) {
     private var hideQsOnLockscreen = false
     private var hideSilentText = false
     private var hideFooterButtons = false
-    private var qqsTopMargin = 100
-    private var qsTopMargin = 100
+    private var qqsTopMarginPortrait = 100
+    private var qsTopMarginPortrait = 100
+    private var qqsTopMarginLandscape = 0
+    private var qsTopMarginLandscape = 0
     private var mParam: Any? = null
     private var mFooterButtonsContainer: ViewGroup? = null
     private var mFooterButtonsOnDrawListener: OnDrawListener? = null
@@ -95,8 +99,10 @@ class QuickSettings(context: Context) : ModPack(context) {
             isVerticalQSTileActive = getBoolean(VERTICAL_QSTILE_SWITCH, false)
             isHideLabelActive = getBoolean(HIDE_QSLABEL_SWITCH, false)
             customQsMarginsEnabled = getBoolean(CUSTOM_QS_MARGIN, false)
-            qqsTopMargin = getSliderInt(QQS_TOPMARGIN, 100)
-            qsTopMargin = getSliderInt(QS_TOPMARGIN, 100)
+            qqsTopMarginPortrait = getSliderInt(QQS_TOPMARGIN, 100)
+            qsTopMarginPortrait = getSliderInt(QS_TOPMARGIN, 100)
+            qqsTopMarginLandscape = getSliderInt(QQS_TOPMARGIN_LANDSCAPE, 0)
+            qsTopMarginLandscape = getSliderInt(QS_TOPMARGIN_LANDSCAPE, 0)
             fixQsTileColor = isAtLeastAndroid14 &&
                     getBoolean(FIX_QS_TILE_COLOR, false)
             fixNotificationColor = isAtLeastAndroid14 &&
@@ -223,8 +229,17 @@ class QuickSettings(context: Context) : ModPack(context) {
         fun replaceDimens(param: MethodHookParam, multiplyDensity: Boolean) {
             if (!customQsMarginsEnabled) return
 
-            fun getQqsMargin() = if (multiplyDensity) mContext.toPx(qqsTopMargin) else qqsTopMargin
-            fun getQsMargin() = if (multiplyDensity) mContext.toPx(qsTopMargin) else qsTopMargin
+            fun getQqsMargin() = if (mContext.isLandscape) {
+                if (multiplyDensity) mContext.toPx(qqsTopMarginLandscape) else qqsTopMarginLandscape
+            } else {
+                if (multiplyDensity) mContext.toPx(qqsTopMarginPortrait) else qqsTopMarginPortrait
+            }
+
+            fun getQsMargin() = if (mContext.isLandscape) {
+                if (multiplyDensity) mContext.toPx(qsTopMarginLandscape) else qsTopMarginLandscape
+            } else {
+                if (multiplyDensity) mContext.toPx(qsTopMarginPortrait) else qsTopMarginPortrait
+            }
 
             val resourceGroups = mapOf(
                 arrayOf( // QQS margin
@@ -236,10 +251,7 @@ class QuickSettings(context: Context) : ModPack(context) {
                     "qs_panel_padding_top",
                     "qs_panel_padding_top_combined_headers",
                     "qs_header_height"
-                ) to if (showHeaderClock &&
-                    Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE &&
-                    mContext.isLandscape
-                ) 0 else getQsMargin()
+                ) to getQsMargin()
             )
 
             resourceGroups.forEach { (resNames, value) ->

@@ -122,9 +122,11 @@ import com.drdisagree.iconify.common.Preferences.NEW_UPDATE_FOUND
 import com.drdisagree.iconify.common.Preferences.NOTIF_TRANSPARENCY_SWITCH
 import com.drdisagree.iconify.common.Preferences.PREF_KEY_UPDATE_STATUS
 import com.drdisagree.iconify.common.Preferences.QQS_TOPMARGIN
+import com.drdisagree.iconify.common.Preferences.QQS_TOPMARGIN_LANDSCAPE
 import com.drdisagree.iconify.common.Preferences.QSALPHA_LEVEL
 import com.drdisagree.iconify.common.Preferences.QSPANEL_BLUR_SWITCH
 import com.drdisagree.iconify.common.Preferences.QS_TOPMARGIN
+import com.drdisagree.iconify.common.Preferences.QS_TOPMARGIN_LANDSCAPE
 import com.drdisagree.iconify.common.Preferences.QS_TRANSPARENCY_SWITCH
 import com.drdisagree.iconify.common.Preferences.SB_CLOCK_SIZE
 import com.drdisagree.iconify.common.Preferences.SB_CLOCK_SIZE_SWITCH
@@ -176,7 +178,11 @@ object PrefsHelper {
             HIDE_QSLABEL_SWITCH -> getBoolean(VERTICAL_QSTILE_SWITCH)
 
             QQS_TOPMARGIN,
-            QS_TOPMARGIN -> getBoolean(CUSTOM_QS_MARGIN)
+            QS_TOPMARGIN,
+            QQS_TOPMARGIN_LANDSCAPE,
+            QS_TOPMARGIN_LANDSCAPE,
+            "xposedQuickSettingsQsMarginPortrait",
+            "xposedQuickSettingsQsMarginLandscape" -> getBoolean(CUSTOM_QS_MARGIN)
 
             SB_CLOCK_SIZE -> getBoolean(SB_CLOCK_SIZE_SWITCH)
 
@@ -303,13 +309,12 @@ object PrefsHelper {
             DEPTH_WALLPAPER_AI_STATUS -> Build.VERSION.SDK_INT > Build.VERSION_CODES.TIRAMISU &&
                     !getBoolean(CUSTOM_DEPTH_WALLPAPER_SWITCH)
 
-            COLORED_NOTIFICATION_ALTERNATIVE_SWITCH ->
-                getBoolean(COLORED_NOTIFICATION_VIEW_SWITCH, false)
+            COLORED_NOTIFICATION_ALTERNATIVE_SWITCH -> getBoolean(COLORED_NOTIFICATION_VIEW_SWITCH)
 
             LOCKSCREEN_WALLPAPER_BLUR -> Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE
 
             LOCKSCREEN_WALLPAPER_BLUR_RADIUS -> Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE &&
-                    getBoolean(LOCKSCREEN_WALLPAPER_BLUR, false)
+                    getBoolean(LOCKSCREEN_WALLPAPER_BLUR)
 
             else -> true
         }
@@ -321,7 +326,7 @@ object PrefsHelper {
         val showAdvancedCustomizations =
             batteryStyle in BATTERY_STYLE_LANDSCAPE_BATTERYA..BATTERY_STYLE_LANDSCAPE_BATTERYO
 
-        val showColorPickers: Boolean = getBoolean(CUSTOM_BATTERY_BLEND_COLOR, false)
+        val showColorPickers: Boolean = getBoolean(CUSTOM_BATTERY_BLEND_COLOR)
 
         val showRainbowBattery = batteryStyle == BATTERY_STYLE_LANDSCAPE_BATTERYI ||
                 batteryStyle == BATTERY_STYLE_LANDSCAPE_BATTERYJ
@@ -339,11 +344,11 @@ object PrefsHelper {
         val kimBattery = batteryStyle == BATTERY_STYLE_LANDSCAPE_KIM
 
         val showInsidePercentage = showPercentage && !kimBattery &&
-                !getBoolean(CUSTOM_BATTERY_HIDE_PERCENTAGE, false)
+                !getBoolean(CUSTOM_BATTERY_HIDE_PERCENTAGE)
 
         val showChargingIconCustomization: Boolean =
             batteryStyle > BATTERY_STYLE_DEFAULT_LANDSCAPE &&
-                    getBoolean(CUSTOM_BATTERY_CHARGING_ICON_SWITCH, false)
+                    getBoolean(CUSTOM_BATTERY_CHARGING_ICON_SWITCH)
 
         val showSwapLayout: Boolean = showInsidePercentage &&
                 batteryStyle > BATTERY_STYLE_DEFAULT_LANDSCAPE

@@ -210,6 +210,8 @@ object Preferences {
     const val CUSTOM_QS_MARGIN = "xposed_customqsmargin"
     const val QQS_TOPMARGIN = "xposed_qqspanelTopMargin"
     const val QS_TOPMARGIN = "xposed_qspanelTopMargin"
+    const val QQS_TOPMARGIN_LANDSCAPE = "xposed_qqspanelTopMarginLandscape"
+    const val QS_TOPMARGIN_LANDSCAPE = "xposed_qspanelTopMarginLandscape"
     const val FIX_QS_TILE_COLOR = "xposed_fixqstilecolor"
     const val FIX_NOTIFICATION_COLOR = "xposed_fixnotificationcolor"
     const val FIX_NOTIFICATION_FOOTER_BUTTON_COLOR = "xposed_fixnotificationfooterbuttoncolor"

@@ -13,10 +13,12 @@ import com.drdisagree.iconify.common.Preferences.HIDE_QSLABEL_SWITCH
 import com.drdisagree.iconify.common.Preferences.HIDE_QS_SILENT_TEXT
 import com.drdisagree.iconify.common.Preferences.HIDE_STATUS_ICONS_SWITCH
 import com.drdisagree.iconify.common.Preferences.QQS_TOPMARGIN
+import com.drdisagree.iconify.common.Preferences.QQS_TOPMARGIN_LANDSCAPE
 import com.drdisagree.iconify.common.Preferences.QSPANEL_HIDE_CARRIER
 import com.drdisagree.iconify.common.Preferences.QS_TEXT_ALWAYS_WHITE
 import com.drdisagree.iconify.common.Preferences.QS_TEXT_FOLLOW_ACCENT
 import com.drdisagree.iconify.common.Preferences.QS_TOPMARGIN
+import com.drdisagree.iconify.common.Preferences.QS_TOPMARGIN_LANDSCAPE
 import com.drdisagree.iconify.common.Preferences.VERTICAL_QSTILE_SWITCH
 import com.drdisagree.iconify.config.RPrefs.getBoolean
 import com.drdisagree.iconify.config.RPrefs.putBoolean
@@ -50,6 +52,8 @@ class QuickSettings : ControlledPreferenceFragmentCompat() {
             CUSTOM_QS_MARGIN,
             QQS_TOPMARGIN,
             QS_TOPMARGIN,
+            QQS_TOPMARGIN_LANDSCAPE,
+            QS_TOPMARGIN_LANDSCAPE,
             COLORED_NOTIFICATION_ICON_SWITCH,
             COLORED_NOTIFICATION_VIEW_SWITCH,
             COLORED_NOTIFICATION_ALTERNATIVE_SWITCH,
