@@ -23,6 +23,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.annotation.ColorInt
+import com.drdisagree.iconify.common.Const.FRAMEWORK_PACKAGE
 import com.drdisagree.iconify.common.Const.SYSTEMUI_PACKAGE
 import com.drdisagree.iconify.common.Preferences.CUSTOM_QS_MARGIN
 import com.drdisagree.iconify.common.Preferences.FIX_NOTIFICATION_COLOR
@@ -241,29 +242,43 @@ class QuickSettings(context: Context) : ModPack(context) {
                 if (multiplyDensity) mContext.toPx(qsTopMarginPortrait) else qsTopMarginPortrait
             }
 
-            val resourceGroups = mapOf(
-                arrayOf( // QQS margin
+            mapOf(
+                arrayOf( // QQS
                     "qs_header_system_icons_area_height",
                     "qqs_layout_margin_top",
                     "qs_header_row_min_height"
                 ) to getQqsMargin(),
-                arrayOf( // QS margin
+                arrayOf( // QS
                     "qs_panel_padding_top",
                     "qs_panel_padding_top_combined_headers",
                     "qs_header_height"
                 ) to getQsMargin()
-            )
-
-            resourceGroups.forEach { (resNames, value) ->
+            ).forEach { (resNames, value) ->
                 resNames.forEach { resName ->
-                    if (param.args[0] == mContext.resources.getIdentifier(
-                            resName,
-                            "dimen",
-                            mContext.packageName
-                        )
-                    ) {
+                    val resId = mContext.resources.getIdentifier(
+                        resName,
+                        "dimen",
+                        SYSTEMUI_PACKAGE
+                    )
+
+                    if (resId != 0 && param.args[0] == resId) {
                         param.result = value
                     }
+                }
+            }
+
+            mapOf(
+                "quick_qs_offset_height" to getQqsMargin(), // QQS
+                "quick_qs_total_height" to getQsMargin() // QS
+            ).forEach { (resName, value) ->
+                val resId = mContext.resources.getIdentifier(
+                    resName,
+                    "dimen",
+                    FRAMEWORK_PACKAGE
+                )
+
+                if (resId != 0 && param.args[0] == resId) {
+                    param.result = value
                 }
             }
         }
