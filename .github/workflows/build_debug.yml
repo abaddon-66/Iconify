@@ -78,7 +78,8 @@ jobs:
         id: get_commit_message
         run: |
           COMMIT_MESSAGE_HEADER=$(git log -1 --pretty=%B | head -n 1)
-          echo "COMMIT_MESSAGE_HEADER=${COMMIT_MESSAGE_HEADER}" >> $GITHUB_ENV
+          ESCAPED_MESSAGE=$(echo "$COMMIT_MESSAGE_HEADER" | jq -Rsa .)
+          echo "COMMIT_MESSAGE_HEADER=${ESCAPED_MESSAGE}" >> $GITHUB_ENV
 
       - name: Zip Artifact for Deployment
         run: cd ./app/build/outputs/apk/debug/ && zip "Iconify v${{ env.VERSION_NAME }} Dev (#${{github.run_number}}).zip" *.apk -r
