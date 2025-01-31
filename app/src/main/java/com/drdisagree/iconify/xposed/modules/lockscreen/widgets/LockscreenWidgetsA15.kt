@@ -276,7 +276,7 @@ class LockscreenWidgetsA15(context: Context) : ModPack(context) {
                     Handler(Looper.getMainLooper()).postDelayed({
                         if (!mWidgetsEnabled) return@postDelayed
 
-                        val rootView = entryV.parent as ViewGroup
+                        val rootView = v.parent as? ViewGroup ?: return@postDelayed
 
                         // If rootView is not R.id.keyguard_root_view, detach and return
                         if (rootView.id != mContext.resources.getIdentifier(

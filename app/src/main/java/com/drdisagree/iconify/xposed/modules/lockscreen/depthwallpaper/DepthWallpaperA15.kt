@@ -229,7 +229,7 @@ class DepthWallpaperA15(context: Context) : ModPack(context) {
                     Handler(Looper.getMainLooper()).postDelayed({
                         if (!showDepthWallpaper) return@postDelayed
 
-                        val rootView = entryV.parent as ViewGroup
+                        val rootView = v.parent as? ViewGroup ?: return@postDelayed
 
                         if (!mLayersCreated) {
                             createLayers()

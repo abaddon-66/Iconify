@@ -216,7 +216,7 @@ class DepthWallpaperA14(context: Context) : ModPack(context) {
                 entryV.addOnAttachStateChangeListener(object : OnAttachStateChangeListener {
                     override fun onViewAttachedToWindow(v: View) {
                         Handler(Looper.getMainLooper()).postDelayed({
-                            val rootView = entryV.parent as ViewGroup
+                            val rootView = v.parent as? ViewGroup ?: return@postDelayed
 
                             if (!mLayersCreated) {
                                 createLayers()
