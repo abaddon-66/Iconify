@@ -64,6 +64,7 @@ Furthermore, the open-source nature of Iconify encourages community contribution
 > [!TIP]
 >
 > KernelSU doesn't show root prompt. You will have to manually enable root access for Iconify from the KernelSU app itself.
+> In some cases, you may need to disable the `Umount modules by default` option from KernelSU settings if Iconify changes are not reflecting.
 
 # 🤫 Roadmap
 
