@@ -134,15 +134,21 @@ class Miscellaneous : BaseFragment() {
                     FRAMEWORK_PACKAGE,
                     "bool",
                     "config_fillMainBuiltInDisplayCutout",
-                    "true"
+                    "false"
                 )
                 val resourceEntry12 = ResourceEntry(
+                    FRAMEWORK_PACKAGE,
+                    "bool",
+                    "config_maskMainBuiltInDisplayCutout",
+                    "true"
+                )
+                val resourceEntry13 = ResourceEntry(
                     FRAMEWORK_PACKAGE,
                     "string",
                     "config_mainBuiltInDisplayCutout",
                     "M 0,0 L 0, 0 C 0,0 0,0 0,0"
                 )
-                val resourceEntry13 = ResourceEntry(
+                val resourceEntry14 = ResourceEntry(
                     FRAMEWORK_PACKAGE,
                     "string",
                     "config_mainBuiltInDisplayCutoutRectApproximation",
@@ -162,6 +168,7 @@ class Miscellaneous : BaseFragment() {
                 resourceEntry11.setLandscape(true)
                 resourceEntry12.setLandscape(true)
                 resourceEntry13.setLandscape(true)
+                resourceEntry14.setLandscape(true)
 
                 if (isChecked) {
                     buildOverlayWithResource(
@@ -178,7 +185,8 @@ class Miscellaneous : BaseFragment() {
                         resourceEntry10,
                         resourceEntry11,
                         resourceEntry12,
-                        resourceEntry13
+                        resourceEntry13,
+                        resourceEntry14
                     )
                 } else {
                     removeResourceFromOverlay(
@@ -195,7 +203,8 @@ class Miscellaneous : BaseFragment() {
                         resourceEntry10,
                         resourceEntry11,
                         resourceEntry12,
-                        resourceEntry13
+                        resourceEntry13,
+                        resourceEntry14
                     )
                 }
             }
@@ -228,6 +237,12 @@ class Miscellaneous : BaseFragment() {
                             FRAMEWORK_PACKAGE,
                             "bool",
                             "config_fillMainBuiltInDisplayCutout",
+                            "false"
+                        ),
+                        ResourceEntry(
+                            FRAMEWORK_PACKAGE,
+                            "bool",
+                            "config_maskMainBuiltInDisplayCutout",
                             "true"
                         ),
                         ResourceEntry(
@@ -250,6 +265,11 @@ class Miscellaneous : BaseFragment() {
                             FRAMEWORK_PACKAGE,
                             "bool",
                             "config_fillMainBuiltInDisplayCutout"
+                        ),
+                        ResourceEntry(
+                            FRAMEWORK_PACKAGE,
+                            "bool",
+                            "config_maskMainBuiltInDisplayCutout"
                         ),
                         ResourceEntry(
                             FRAMEWORK_PACKAGE,

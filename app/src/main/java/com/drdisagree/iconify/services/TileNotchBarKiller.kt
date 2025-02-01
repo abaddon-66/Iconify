@@ -53,6 +53,12 @@ class TileNotchBarKiller : TileService() {
                     FRAMEWORK_PACKAGE,
                     "bool",
                     "config_fillMainBuiltInDisplayCutout",
+                    "false"
+                ),
+                ResourceEntry(
+                    FRAMEWORK_PACKAGE,
+                    "bool",
+                    "config_maskMainBuiltInDisplayCutout",
                     "true"
                 ),
                 ResourceEntry(
@@ -75,6 +81,11 @@ class TileNotchBarKiller : TileService() {
                     FRAMEWORK_PACKAGE,
                     "bool",
                     "config_fillMainBuiltInDisplayCutout"
+                ),
+                ResourceEntry(
+                    FRAMEWORK_PACKAGE,
+                    "bool",
+                    "config_maskMainBuiltInDisplayCutout"
                 ),
                 ResourceEntry(
                     FRAMEWORK_PACKAGE,
