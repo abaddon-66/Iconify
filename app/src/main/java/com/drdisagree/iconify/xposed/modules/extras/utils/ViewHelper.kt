@@ -362,6 +362,17 @@ object ViewHelper {
         return -1
     }
 
+    fun View.findChildIndexContainsTag(tag: String): Int {
+        if (this is ViewGroup) {
+            for (i in 0 until childCount) {
+                if (getChildAt(i).tag?.toString()?.let { isTagMatch(tag, it) } == true) {
+                    return i
+                }
+            }
+        }
+        return -1
+    }
+
     private fun isTagMatch(tagToCheck: String, targetTag: String): Boolean {
         val parts = targetTag.split("|")
         return parts.any { it.trim() == tagToCheck }
@@ -525,10 +536,28 @@ object ViewHelper {
         return layout
     }
 
+    fun ViewGroup.reAddView(childView: View?) {
+        childView?.let { view ->
+            val currentIndex = indexOfChild(view)
+            if (currentIndex != -1 && currentIndex == childCount - 1) return
+
+            (view.parent as? ViewGroup)?.removeView(view)
+            addView(view)
+        }
+    }
+
     fun ViewGroup.reAddView(childView: View?, index: Int) {
         childView?.let { view ->
-            (view.parent as? ViewGroup)?.removeView(childView)
-            addView(view, index)
+            val adjustedIndex = if (index >= childCount) childCount - 1 else index
+            val currentIndex = indexOfChild(view)
+
+            if (currentIndex != -1 &&
+                ((index != -1 && currentIndex == adjustedIndex)
+                        || (index == -1 && currentIndex == childCount - 1))
+            ) return
+
+            (view.parent as? ViewGroup)?.removeView(view)
+            addView(view, index.coerceAtMost(childCount))
         }
     }
 }

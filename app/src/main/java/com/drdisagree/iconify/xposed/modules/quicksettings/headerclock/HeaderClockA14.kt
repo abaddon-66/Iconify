@@ -61,9 +61,10 @@ import com.drdisagree.iconify.xposed.modules.extras.utils.DisplayUtils.isLandsca
 import com.drdisagree.iconify.xposed.modules.extras.utils.TouchAnimator
 import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.applyFontRecursively
 import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.applyTextScalingRecursively
+import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.findChildIndexContainsTag
 import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.findViewContainsTag
-import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.findViewIdContainsTag
 import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.findViewWithTagAndChangeColor
+import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.reAddView
 import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.setMargins
 import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.toPx
 import com.drdisagree.iconify.xposed.modules.extras.utils.getColorResCompat
@@ -184,7 +185,7 @@ class HeaderClockA14(context: Context) : ModPack(context) {
 
         initResources(mContext)
 
-        val qsPanelClass = findClass("$SYSTEMUI_PACKAGE.qs.QSPanel")!!
+        val qsPanelClass = findClass("$SYSTEMUI_PACKAGE.qs.QSPanel")
         val qsImplClass = findClass(
             "$SYSTEMUI_PACKAGE.qs.QSImpl",
             "$SYSTEMUI_PACKAGE.qs.QSFragment"
@@ -193,7 +194,7 @@ class HeaderClockA14(context: Context) : ModPack(context) {
             "$SYSTEMUI_PACKAGE.shade.LargeScreenShadeHeaderController",
             "$SYSTEMUI_PACKAGE.shade.ShadeHeaderController"
         )
-        val qsPanelControllerBase = findClass("$SYSTEMUI_PACKAGE.qs.QSPanelControllerBase")
+        val qsPanelControllerBaseClass = findClass("$SYSTEMUI_PACKAGE.qs.QSPanelControllerBase")
         val qsSecurityFooterUtilsClass = findClass("$SYSTEMUI_PACKAGE.qs.QSSecurityFooterUtils")
         val quickStatusBarHeaderClass = findClass("$SYSTEMUI_PACKAGE.qs.QuickStatusBarHeader")
         val dependencyClass = findClass("$SYSTEMUI_PACKAGE.Dependency")
@@ -268,13 +269,12 @@ class HeaderClockA14(context: Context) : ModPack(context) {
                     addView(mQsIconsContainer)
                 }
 
-                (mQsHeaderClockContainer.parent as? ViewGroup)?.removeView(mQsHeaderClockContainer)
-                val headerImageIndex = mQuickStatusBarHeader.findViewIdContainsTag(
+                val headerImageIndex = mQuickStatusBarHeader.findChildIndexContainsTag(
                     ICONIFY_QS_HEADER_CONTAINER_TAG
                 )
-                mQuickStatusBarHeader.addView(
+                mQuickStatusBarHeader.reAddView(
                     mQsHeaderClockContainer,
-                    if (headerImageIndex == -1) -1 else headerImageIndex + 1
+                    if (headerImageIndex == -1) headerImageIndex else headerImageIndex + 1
                 )
 
                 handleOldHeaderView(param)
@@ -292,193 +292,67 @@ class HeaderClockA14(context: Context) : ModPack(context) {
                 buildHeaderViewExpansion()
 
                 if (mContext.isLandscape) {
-                    if (mQsHeaderClockContainer.parent != mQsHeaderContainerShade) {
-                        (mQsHeaderClockContainer.parent as? ViewGroup)?.removeView(
-                            mQsHeaderClockContainer
-                        )
-                        mQsHeaderContainerShade.addView(mQsHeaderClockContainer, 0)
-                    }
+                    mQsHeaderContainerShade.reAddView(mQsHeaderClockContainer, 0)
                     mQsHeaderContainerShade.visibility = View.VISIBLE
                 } else {
-                    if (mQsHeaderClockContainer.parent != mQuickStatusBarHeader) {
-                        val headerImageIndex = mQuickStatusBarHeader.findViewIdContainsTag(
-                            ICONIFY_QS_HEADER_CONTAINER_TAG
-                        )
-                        (mQsHeaderClockContainer.parent as? ViewGroup)?.removeView(
-                            mQsHeaderClockContainer
-                        )
-                        mQuickStatusBarHeader.addView(
-                            mQsHeaderClockContainer,
-                            if (headerImageIndex == -1) 0 else headerImageIndex + 1
-                        )
-                    }
+                    val headerImageIndex = mQuickStatusBarHeader.findChildIndexContainsTag(
+                        ICONIFY_QS_HEADER_CONTAINER_TAG
+                    )
+                    mQuickStatusBarHeader.reAddView(
+                        mQsHeaderClockContainer,
+                        if (headerImageIndex == -1) 0 else headerImageIndex + 1
+                    )
                     mQsHeaderContainerShade.visibility = View.GONE
                 }
 
                 updateClockView()
             }
 
-        val hasSwitchAllContentToParent = qsPanelClass.declaredMethods.any {
-            it.name == "switchAllContentToParent"
-        }
-        val hasSwitchToParentMethod = qsPanelClass.declaredMethods.any { method ->
-            method.name == "switchToParent" &&
-                    method.parameterTypes.contentEquals(
-                        arrayOf(View::class.java, ViewGroup::class.java, Int::class.java)
-                    )
-        }
-
-        if (hasSwitchAllContentToParent && hasSwitchToParentMethod) {
-            qsPanelClass
-                .hookMethod("switchAllContentToParent")
-                .runBefore { param ->
-                    if (!showHeaderClock) return@runBefore
-
-                    val parent = param.args[0] as ViewGroup
-                    val mMovableContentStartIndex = param.thisObject.getField(
-                        "mMovableContentStartIndex"
-                    ) as Int
-                    val index = if (parent === param.thisObject) mMovableContentStartIndex else 0
-                    val targetParentId = mContext.resources.getIdentifier(
-                        "quick_settings_panel",
-                        "id",
-                        mContext.packageName
-                    )
-
-                    if (parent.id == targetParentId) {
-                        val checkExistingView =
-                            parent.findViewWithTag<ViewGroup?>(ICONIFY_QS_HEADER_CONTAINER_SHADE_TAG)
-                        if (checkExistingView != null) {
-                            mQsHeaderContainerShade = checkExistingView as LinearLayout
-                            if (parent.indexOfChild(mQsHeaderContainerShade) == index) {
-                                return@runBefore
-                            }
-                        }
-
-                        param.thisObject.callMethod(
-                            "switchToParent",
-                            mQsHeaderContainerShade,
-                            parent,
-                            index
-                        )
-                    }
-                }
-
-            if (showHeaderClock) {
-                qsPanelClass
-                    .hookMethod("switchToParent")
-                    .parameters(
-                        View::class.java,
-                        ViewGroup::class.java,
-                        Int::class.java
-                    )
-                    .replace { param ->
-                        val view = param.args[0] as View
-                        val parent = param.args[1] as ViewGroup
-                        val tempIndex = param.args[2] as Int
-                        val index = if (view.tag == ICONIFY_QS_HEADER_CONTAINER_SHADE_TAG) {
-                            tempIndex
-                        } else {
-                            tempIndex + 1
-                        }
-                        val tag = param.thisObject.callMethod("getDumpableTag")
-
-                        param.thisObject.callMethod(
-                            "switchToParent",
-                            view,
-                            parent,
-                            index.coerceAtMost(parent.childCount),
-                            tag
-                        )
-                    }
+        qsPanelControllerBaseClass
+            .hookMethod("onInit")
+            .runBefore { param ->
+                mQsPanelView = param.thisObject.getField("mView") as ViewGroup
             }
 
-            if (showHeaderClock) {
-                qsPanelClass
-                    .hookMethod("switchToParent")
-                    .parameters(
-                        View::class.java,
-                        ViewGroup::class.java,
-                        Int::class.java,
-                        String::class.java
-                    )
-                    .replace { param ->
-                        val view = param.args[0] as View
-                        val newParent = param.args[1] as? ViewGroup
-                        val tempIndex = param.args[2] as Int
+        qsPanelClass
+            .hookMethod("switchToParent")
+            .parameters(
+                View::class.java,
+                ViewGroup::class.java,
+                Int::class.java,
+                String::class.java
+            )
+            .runBefore { param ->
+                if (!showHeaderClock || mQsPanelView == null) return@runBefore
 
-                        if (newParent == null) {
-                            return@replace
-                        }
-
-                        val index = if (view.tag == ICONIFY_QS_HEADER_CONTAINER_SHADE_TAG) {
-                            tempIndex
-                        } else {
-                            tempIndex + 1
-                        }.coerceAtMost(newParent.childCount)
-
-                        val currentParent = view.parent as? ViewGroup
-
-                        if (currentParent != newParent) {
-                            currentParent?.removeView(view)
-                            newParent.addView(view, index.coerceAtMost(newParent.childCount))
-                        } else if (newParent.indexOfChild(view) == index) {
-                            return@replace
-                        } else {
-                            newParent.removeView(view)
-                            newParent.addView(view, index.coerceAtMost(newParent.childCount))
-                        }
-                    }
-            }
-        } else { // Some ROMs don't have this method switchAllContentToParent()
-            qsPanelControllerBase
-                .hookMethod("onInit")
-                .runBefore { param ->
-                    mQsPanelView = param.thisObject.getField("mView") as ViewGroup
-                }
-
-            qsPanelClass
-                .hookMethod("switchToParent")
-                .parameters(
-                    View::class.java,
-                    ViewGroup::class.java,
-                    Int::class.java,
-                    String::class.java
+                val child = param.args[0] as View
+                val parent = param.args[1] as? ViewGroup ?: return@runBefore
+                val mMovableContentStartIndex = mQsPanelView.getField(
+                    "mMovableContentStartIndex"
+                ) as Int
+                val index = if (parent === mQsPanelView) mMovableContentStartIndex else 0
+                val targetParentId = mContext.resources.getIdentifier(
+                    "quick_settings_panel",
+                    "id",
+                    SYSTEMUI_PACKAGE
                 )
-                .runBefore { param ->
-                    if (!showHeaderClock ||
-                        mQsPanelView == null ||
-                        (param.args[1] as? ViewGroup) == null
-                    ) return@runBefore
 
-                    val parent = param.args[1] as ViewGroup
-                    val mMovableContentStartIndex = mQsPanelView.getField(
-                        "mMovableContentStartIndex"
-                    ) as Int
-                    val index = if (parent === mQsPanelView) mMovableContentStartIndex else 0
-                    val targetParentId = mContext.resources.getIdentifier(
-                        "quick_settings_panel",
-                        "id",
-                        SYSTEMUI_PACKAGE
-                    )
+                if (parent.id == targetParentId) {
+                    parent.findViewWithTag<LinearLayout?>(ICONIFY_QS_HEADER_CONTAINER_SHADE_TAG)
+                        ?.also { mQsHeaderContainerShade = it }
 
-                    if (parent.id == targetParentId) {
-                        val mQsHeaderContainerShadeParent =
-                            mQsHeaderContainerShade.parent as? ViewGroup
-                        if (mQsHeaderContainerShadeParent != parent ||
-                            mQsHeaderContainerShadeParent.indexOfChild(mQsHeaderContainerShade) != index
-                        ) {
-                            mQsHeaderContainerShadeParent?.removeView(mQsHeaderContainerShade)
-                            parent.addView(
-                                mQsHeaderContainerShade,
-                                index.coerceAtMost(parent.childCount)
-                            )
-                        }
+                    if (parent.indexOfChild(mQsHeaderContainerShade) == index) {
+                        param.args[2] = ((param.args[2] as Int) + 1).coerceAtMost(parent.childCount)
+                        return@runBefore
                     }
 
-                    param.args[2] = (param.args[2] as Int) + 1
+                    parent.reAddView(mQsHeaderContainerShade, index)
                 }
-        }
+
+                parent.reAddView(child, (param.args[2] as Int) + 1)
+
+                param.result = null
+            }
 
         qsImplClass
             .hookMethod("setQsExpansion")
