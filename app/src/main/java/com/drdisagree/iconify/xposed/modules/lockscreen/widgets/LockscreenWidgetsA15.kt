@@ -58,6 +58,7 @@ import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.XposedHook.Com
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.getFieldSilently
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookConstructor
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookMethod
+import com.drdisagree.iconify.xposed.modules.extras.views.AodBurnInProtection
 import com.drdisagree.iconify.xposed.modules.extras.views.LockscreenWidgetsView
 import com.drdisagree.iconify.xposed.modules.lockscreen.Lockscreen.Companion.isComposeLockscreen
 import com.drdisagree.iconify.xposed.utils.XPrefs.Xprefs
@@ -116,6 +117,7 @@ class LockscreenWidgetsA15(context: Context) : ModPack(context) {
     private var dateSmartSpaceViewAvailable = false
     private val job = Job()
     private val coroutineScope = CoroutineScope(Dispatchers.Main + job)
+    private var aodBurnInProtection: AodBurnInProtection? = null
 
     private var mBroadcastRegistered = false
     private val mReceiver: BroadcastReceiver = object : BroadcastReceiver() {
@@ -314,6 +316,9 @@ class LockscreenWidgetsA15(context: Context) : ModPack(context) {
                         }
 
                         applyLayoutConstraints(mLsItemsContainer ?: mWidgetsContainer)
+                        aodBurnInProtection = AodBurnInProtection.registerForView(
+                            mLsItemsContainer ?: mWidgetsContainer
+                        )
 
                         placeWidgetsView()
                     }, 1000)
@@ -443,12 +448,26 @@ class LockscreenWidgetsA15(context: Context) : ModPack(context) {
                 updateLockscreenWidgetsOnClock(param.args[0] as Boolean)
             }
 
+        fun onDozingChanged(isDozing: Boolean) {
+            updateDozingState(isDozing)
+            aodBurnInProtection?.setMovementEnabled(isDozing)
+        }
+
+        val collapsedStatusBarFragment = findClass(
+            "$SYSTEMUI_PACKAGE.statusbar.phone.CollapsedStatusBarFragment",
+            "$SYSTEMUI_PACKAGE.statusbar.phone.fragment.CollapsedStatusBarFragment"
+        )
+
+        collapsedStatusBarFragment
+            .hookMethod("onDozingChanged")
+            .runAfter { param -> onDozingChanged(param.args[0] as Boolean) }
+
         val dozeScrimControllerClass =
             findClass("$SYSTEMUI_PACKAGE.statusbar.phone.DozeScrimController")
 
         dozeScrimControllerClass
             .hookMethod("onDozingChanged")
-            .runAfter { param -> updateDozingState(param.args[0] as Boolean) }
+            .runAfter { param -> onDozingChanged(param.args[0] as Boolean) }
 
         // For unknown reason, rotating device makes the height of view to 0
         // This is a workaround to make sure the view is visible
@@ -499,7 +518,7 @@ class LockscreenWidgetsA15(context: Context) : ModPack(context) {
             .hookMethod("onDreamingStarted")
             .runAfter {
                 coroutineScope.launch {
-                    repeat(3) {
+                    repeat(5) {
                         updateLayoutParams()
                         delay(500L)
                     }

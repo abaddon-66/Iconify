@@ -81,6 +81,7 @@ import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.getFieldSilent
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookConstructor
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookMethod
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.log
+import com.drdisagree.iconify.xposed.modules.extras.views.AodBurnInProtection
 import com.drdisagree.iconify.xposed.modules.extras.views.ArcProgressWidget.generateBitmap
 import com.drdisagree.iconify.xposed.modules.lockscreen.Lockscreen.Companion.isComposeLockscreen
 import com.drdisagree.iconify.xposed.utils.XPrefs.Xprefs
@@ -134,6 +135,7 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
         "${Environment.getExternalStorageDirectory()}/.iconify_files/lsclock_font.ttf"
     private val job = Job()
     private val coroutineScope = CoroutineScope(Dispatchers.Main + job)
+    private var aodBurnInProtection: AodBurnInProtection? = null
 
     private val mBatteryReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
@@ -264,6 +266,9 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
                         mLockscreenRootView = rootView
 
                         mLsItemsContainer = rootView.getLsItemsContainer()
+                        aodBurnInProtection =
+                            AodBurnInProtection.registerForView(mLsItemsContainer!!)
+                        aodBurnInProtection!!.setMovementEnabled(true)
                         applyLayoutConstraints(mLsItemsContainer!!)
 
                         // Hide stock clock
@@ -465,6 +470,26 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
                 }
             }
 
+        fun onDozingChanged(isDozing: Boolean) {
+            aodBurnInProtection?.setMovementEnabled(isDozing)
+        }
+
+        val collapsedStatusBarFragment = findClass(
+            "$SYSTEMUI_PACKAGE.statusbar.phone.CollapsedStatusBarFragment",
+            "$SYSTEMUI_PACKAGE.statusbar.phone.fragment.CollapsedStatusBarFragment"
+        )
+
+        collapsedStatusBarFragment
+            .hookMethod("onDozingChanged")
+            .runAfter { param -> onDozingChanged(param.args[0] as Boolean) }
+
+        val dozeScrimControllerClass =
+            findClass("$SYSTEMUI_PACKAGE.statusbar.phone.DozeScrimController")
+
+        dozeScrimControllerClass
+            .hookMethod("onDozingChanged")
+            .runAfter { param -> onDozingChanged(param.args[0] as Boolean) }
+
         // For unknown reason, rotating device makes the height of view to 0
         // This is a workaround to make sure the view is visible
         fun updateLayoutParams() {
@@ -512,7 +537,7 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
             .hookMethod("onDreamingStarted")
             .runAfter {
                 coroutineScope.launch {
-                    repeat(3) {
+                    repeat(5) {
                         updateLayoutParams()
                         delay(500L)
                     }
