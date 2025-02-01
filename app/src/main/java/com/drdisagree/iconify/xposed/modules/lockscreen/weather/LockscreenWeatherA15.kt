@@ -6,7 +6,9 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.graphics.Color
+import android.graphics.Typeface
 import android.os.Build
+import android.os.Environment
 import android.os.Handler
 import android.os.Looper
 import android.view.Gravity
@@ -27,6 +29,7 @@ import com.drdisagree.iconify.common.Preferences.WEATHER_CENTER_VIEW
 import com.drdisagree.iconify.common.Preferences.WEATHER_CUSTOM_MARGINS_BOTTOM
 import com.drdisagree.iconify.common.Preferences.WEATHER_CUSTOM_MARGINS_SIDE
 import com.drdisagree.iconify.common.Preferences.WEATHER_CUSTOM_MARGINS_TOP
+import com.drdisagree.iconify.common.Preferences.WEATHER_FONT_SWITCH
 import com.drdisagree.iconify.common.Preferences.WEATHER_ICON_SIZE
 import com.drdisagree.iconify.common.Preferences.WEATHER_SHOW_CONDITION
 import com.drdisagree.iconify.common.Preferences.WEATHER_SHOW_HUMIDITY
@@ -37,12 +40,14 @@ import com.drdisagree.iconify.common.Preferences.WEATHER_SWITCH
 import com.drdisagree.iconify.common.Preferences.WEATHER_TEXT_COLOR
 import com.drdisagree.iconify.common.Preferences.WEATHER_TEXT_COLOR_SWITCH
 import com.drdisagree.iconify.common.Preferences.WEATHER_TEXT_SIZE
+import com.drdisagree.iconify.common.Preferences.WEATHER_TRIGGER_UPDATE
 import com.drdisagree.iconify.xposed.ModPack
 import com.drdisagree.iconify.xposed.modules.extras.utils.MyConstraintSet.Companion.applyTo
 import com.drdisagree.iconify.xposed.modules.extras.utils.MyConstraintSet.Companion.clear
 import com.drdisagree.iconify.xposed.modules.extras.utils.MyConstraintSet.Companion.clone
 import com.drdisagree.iconify.xposed.modules.extras.utils.MyConstraintSet.Companion.connect
 import com.drdisagree.iconify.xposed.modules.extras.utils.MyConstraintSet.Companion.constraintSetInstance
+import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.applyFontRecursively
 import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.assignIdsToViews
 import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.getLsItemsContainer
 import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.setMargins
@@ -61,6 +66,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.io.File
 
 class LockscreenWeatherA15(context: Context) : ModPack(context) {
 
@@ -87,6 +93,9 @@ class LockscreenWeatherA15(context: Context) : ModPack(context) {
     private lateinit var mWeatherContainer: LinearLayout
     private val job = Job()
     private val coroutineScope = CoroutineScope(Dispatchers.Main + job)
+    private var mCustomFontEnabled = false
+    private val mCustomFontLocation = Environment.getExternalStorageDirectory().toString() +
+            "/.iconify_files/lockscreen_weather_font.ttf"
 
     private var mBroadcastRegistered = false
     private val mReceiver: BroadcastReceiver = object : BroadcastReceiver() {
@@ -120,10 +129,12 @@ class LockscreenWeatherA15(context: Context) : ModPack(context) {
             mCenterWeather = getBoolean(WEATHER_CENTER_VIEW, false)
             mLockscreenClockEnabled = getBoolean(LSCLOCK_SWITCH, false)
             mWidgetsEnabled = getBoolean(LOCKSCREEN_WIDGETS_ENABLED, false)
+            mCustomFontEnabled = Xprefs.getBoolean(WEATHER_FONT_SWITCH, false)
         }
 
         when (key.firstOrNull()) {
             in setOf(
+                WEATHER_TRIGGER_UPDATE,
                 WEATHER_SHOW_LOCATION,
                 WEATHER_SHOW_CONDITION,
                 WEATHER_SHOW_HUMIDITY,
@@ -136,7 +147,8 @@ class LockscreenWeatherA15(context: Context) : ModPack(context) {
                 WEATHER_CUSTOM_MARGINS_BOTTOM,
                 WEATHER_CUSTOM_MARGINS_SIDE,
                 WEATHER_CUSTOM_MARGINS_TOP,
-                WEATHER_CENTER_VIEW
+                WEATHER_CENTER_VIEW,
+                WEATHER_FONT_SWITCH
             ) -> {
                 if (::mWeatherContainer.isInitialized) {
                     applyLayoutConstraints(mLsItemsContainer ?: mWeatherContainer)
@@ -575,6 +587,7 @@ class LockscreenWeatherA15(context: Context) : ModPack(context) {
         }
 
         updateMargins()
+        updateFont()
     }
 
     private fun updateMargins() {
@@ -603,6 +616,16 @@ class LockscreenWeatherA15(context: Context) : ModPack(context) {
             } else {
                 Gravity.START or Gravity.CENTER_VERTICAL
             }
+        }
+    }
+
+    private fun updateFont() {
+        if (mCustomFontEnabled && File(mCustomFontLocation).exists()) {
+            Typeface.createFromFile(File(mCustomFontLocation))
+        } else {
+            Typeface.create(Typeface.DEFAULT, Typeface.NORMAL)
+        }.also { typeface ->
+            applyFontRecursively(mWeatherContainer, typeface)
         }
     }
 

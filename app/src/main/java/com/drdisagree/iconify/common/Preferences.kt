@@ -359,6 +359,7 @@ object Preferences {
     // Weather
     const val WEATHER_SWITCH: String = "weather_switch"
     const val PREF_KEY_UPDATE_STATUS: String = "update_status"
+    const val WEATHER_TRIGGER_UPDATE: String = "weather_trigger_update"
     const val WEATHER_ICON_PACK: String = "weather_icon_pack"
     const val WEATHER_UPDATE_INTERVAL: String = "weather_update_interval"
     const val WEATHER_SHOW_LOCATION: String = "weather_show_location"
@@ -380,6 +381,7 @@ object Preferences {
     const val WEATHER_CUSTOM_MARGINS_BOTTOM: String = "weather_custom_margins_bottom"
     const val WEATHER_STYLE: String = "weather_style"
     const val WEATHER_CENTER_VIEW: String = "weather_center_view"
+    const val WEATHER_FONT_SWITCH: String = "lockscreen_weather_font"
 
     // Settings
     const val APP_LANGUAGE = "IconifyAppLanguage"

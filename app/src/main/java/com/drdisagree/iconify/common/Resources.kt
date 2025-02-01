@@ -99,6 +99,8 @@ object Resources {
 
     val DEPTH_WALL_BG_DIR = "$XPOSED_RESOURCE_TEMP_DIR/depth_wallpaper_bg.png"
 
+    val LOCKSCREEN_WEATHER_FONT_DIR = "$XPOSED_RESOURCE_TEMP_DIR/lockscreen_weather_font.ttf"
+
     // Resource names
     const val HEADER_CLOCK_LAYOUT = "preview_header_clock_"
     const val LOCKSCREEN_CLOCK_LAYOUT = "preview_lockscreen_clock_"
