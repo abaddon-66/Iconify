@@ -548,13 +548,16 @@ object ViewHelper {
 
     fun ViewGroup.reAddView(childView: View?, index: Int) {
         childView?.let { view ->
-            val adjustedIndex = if (index >= childCount) childCount - 1 else index
             val currentIndex = indexOfChild(view)
 
-            if (currentIndex != -1 &&
-                ((index != -1 && currentIndex == adjustedIndex)
-                        || (index == -1 && currentIndex == childCount - 1))
-            ) return
+            if (currentIndex != -1) {
+                val tempChildCount = childCount
+                val adjustedIndex = if (index >= tempChildCount) tempChildCount - 1 else index
+
+                if ((index != -1 && currentIndex == adjustedIndex) ||
+                    (index == -1 && currentIndex == tempChildCount - 1)
+                ) return
+            }
 
             (view.parent as? ViewGroup)?.removeView(view)
             addView(view, index.coerceAtMost(childCount))
