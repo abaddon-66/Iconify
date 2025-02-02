@@ -455,7 +455,7 @@
     <string name="oneplus_qs_header_fade_level">Livello Dissolvenza</string>
     <string name="oneplus_qs_header_top_margin">Margine Superiore</string>
     <string name="oneplus_qs_header_expansion_y">Quantità Espansione</string>
-    <string name="oneplus_qs_header_gap">Expanded Gap</string>
+    <string name="oneplus_qs_header_gap">Divario Espando</string>
     <!-- Lockscreen Widgets -->
     <string name="lockscreen_widgets_title">Widget Schermata di Blocco</string>
     <string name="lockscreen_widgets_enabled_title">Abilita Widget Schermata di Blocco</string>
@@ -805,8 +805,8 @@
     <string name="hide_ls_carrier_desc">Nascondi nome operatore nella schermata di blocco</string>
     <string name="hide_ls_statusbar_title">Nascondi Barra Di Stato LS</string>
     <string name="hide_ls_statusbar_desc">Nascondi barra di stato nella schermata di blocco</string>
-    <string name="sb_swap_wifi_cellular_title">Swap Wifi and Cellular</string>
-    <string name="sb_swap_wifi_cellular_desc">Swap wifi and cellular icons</string>
+    <string name="sb_swap_wifi_cellular_title">Scambia Wifi e Cellulare</string>
+    <string name="sb_swap_wifi_cellular_desc">Scambia icone wifi e cellulare</string>
     <!-- Xposed Others -->
     <string name="qs_header">Intestazione QS</string>
     <string name="hide_carrier_group_title">Nascondi Gruppo Operatore</string>
@@ -833,7 +833,7 @@
     <string name="view_changelog">Visualizza Changelog</string>
     <string name="hide_changelog">Nascondi Changelog</string>
     <string name="already_up_to_date">Sei già aggiornato.</string>
-    <string name="auto_update_disabled">Auto update is disabled for debug build.</string>
+    <string name="auto_update_disabled">L\'aggiornamento automatico è disabilitato per la versione debug.</string>
     <string name="current_version">Versione Attuale:</string>
     <string name="latest_version">Ultima Versione:</string>
     <string name="update_checking_failed">Controllo dell\'aggiornamento non riuscito!</string>
@@ -1186,6 +1186,8 @@
     <string name="lockscreen_weather_selection_str_gradient">Gradiente</string>
     <string name="lockscreen_weather_selection_str_border_accent">Scuro con bordi accentati</string>
     <string name="lockscreen_weather_selection_str_border_gradient">Scuro con bordi gradienti</string>
+    <string name="lockscreen_weather_font_title">Weather Font</string>
+    <string name="lockscreen_weather_font_desc">Use custom font for weather text</string>
     <!-- Alert Dialogs -->
     <string name="systemui_restart_required_title">Riavvio SystemUI Necessario</string>
     <string name="systemui_restart_required_desc">Per rendere effettiva questa modifica è necessario un riavvio del SystemUI.</string>

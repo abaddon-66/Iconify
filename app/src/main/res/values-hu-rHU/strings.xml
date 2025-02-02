@@ -1186,6 +1186,8 @@
     <string name="lockscreen_weather_selection_str_gradient">Színátmenetes</string>
     <string name="lockscreen_weather_selection_str_border_accent">Sötét, kiemelt szegéllyel</string>
     <string name="lockscreen_weather_selection_str_border_gradient">Sötét, színátmenetes szegéllyel</string>
+    <string name="lockscreen_weather_font_title">Weather Font</string>
+    <string name="lockscreen_weather_font_desc">Use custom font for weather text</string>
     <!-- Alert Dialogs -->
     <string name="systemui_restart_required_title">Rendszerfelület-újraindítás szükséges</string>
     <string name="systemui_restart_required_desc">A változtatás életbe lépéséhez rendszerfelület-újraindítás szükséges.</string>
