@@ -1171,7 +1171,20 @@ class OpQsHeader(context: Context) : ModPack(context) {
     private fun toggleBluetoothState(v: View) {
         mHandler.post {
             if (!ControllersProvider.showBluetoothDialog(mContext, v)) {
-                mBluetoothController.callMethod("setBluetoothEnabled", !isBluetoothEnabled)
+                try {
+                    mBluetoothController.callMethod("setBluetoothEnabled", !isBluetoothEnabled)
+                } catch (throwable: Throwable) {
+                    val localBluetoothAdapter = mBluetoothController
+                        .getField("mLocalBluetoothManager")
+                        .getField("mLocalAdapter")
+
+                    localBluetoothAdapter.callMethod(
+                        "setBluetoothStateInt",
+                        localBluetoothAdapter
+                            .getField("mAdapter")
+                            .callMethod("getState")
+                    )
+                }
             }
         }
 
