@@ -9,7 +9,7 @@
     <string name="module_installation_step2">Notwendige Dateien extrahieren</string>
     <string name="module_installation_step3">Overlay-APKs erstellen</string>
     <string name="module_installation_step4">Overlay-APKs ausrichten</string>
-    <string name="module_installation_step5">Signiere-Overlay APKs</string>
+    <string name="module_installation_step5">Overlay-APKs Signieren</string>
     <string name="module_installation_step6">Bereinige Verzeichnis</string>
     <string name="onboarding_title_1">Bist du gelangweilt von deiner Stock UI?</string>
     <string name="onboarding_subtitle_1">Du kannst alles nach deinen Wünschen anpassen.</string>
@@ -137,7 +137,7 @@
     <string name="settings_github_repository_title">Github Repository</string>
     <string name="settings_telegram_group_title">Telegram Gruppe</string>
     <string name="settings_translate_title">Iconify übersetzen</string>
-    <string name="settings_translate_desc">Iconify übersetzen.</string>
+    <string name="settings_translate_desc">Helfe dabei Iconify in deiner Sprache zu übersetzen.</string>
     <string name="settings_credits_title">Credits</string>
     <string name="settings_credits_desc">Danke an alle, die dieses Projekt ermöglicht haben.</string>
     <!-- Icon Pack -->
@@ -1058,7 +1058,7 @@ transparent machen</string>
     <string name="list_desc_use_light_accent">Verwende helle Akzentfarbe im hellen Design</string>
     <string name="disable_animation_title">Animationen deaktivieren</string>
     <string name="disable_animation_desc">Scrollanimation für Iconify deaktivieren</string>
-    <string name="custom_battery_title">Eigene Batterie</string>
+    <string name="custom_battery_title">Benutzerdefinierter Batterie</string>
     <string name="custom_battery_desc">Benutzerdefinierte Batteriestil</string>
     <string name="toast_message">Toast-Nachricht</string>
     <string name="created_by_drdisagree">Gemacht mit \u2764\uFE0E von DrDisagree</string>
@@ -1187,6 +1187,8 @@ transparent machen</string>
     <string name="lockscreen_weather_selection_str_gradient">Gradient</string>
     <string name="lockscreen_weather_selection_str_border_accent">Dark with accented borders</string>
     <string name="lockscreen_weather_selection_str_border_gradient">Dark with gradient borders</string>
+    <string name="lockscreen_weather_font_title">Weather Font</string>
+    <string name="lockscreen_weather_font_desc">Use custom font for weather text</string>
     <!-- Alert Dialogs -->
     <string name="systemui_restart_required_title">SystemUI Restart Needed</string>
     <string name="systemui_restart_required_desc">A SystemUI restart is needed for this change to take effect.</string>

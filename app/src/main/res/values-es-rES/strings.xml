@@ -1186,6 +1186,8 @@
     <string name="lockscreen_weather_selection_str_gradient">Degradado</string>
     <string name="lockscreen_weather_selection_str_border_accent">Oscuro con bordes acentuados</string>
     <string name="lockscreen_weather_selection_str_border_gradient">Oscuro con bordes degradados</string>
+    <string name="lockscreen_weather_font_title">Weather Font</string>
+    <string name="lockscreen_weather_font_desc">Use custom font for weather text</string>
     <!-- Alert Dialogs -->
     <string name="systemui_restart_required_title">Se requiere un reinicio de la IU del sistema</string>
     <string name="systemui_restart_required_desc">Es necesario reiniciar la IU del sistema para que este cambio surta efecto.</string>
