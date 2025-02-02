@@ -12,7 +12,7 @@
     <string name="module_installation_step5">Signature des surcouches APK</string>
     <string name="module_installation_step6">Nettoyage</string>
     <string name="onboarding_title_1">Lassé de l\'interface par défaut ?</string>
-    <string name="onboarding_subtitle_1">Modifions tout selon vos préférences.</string>
+    <string name="onboarding_subtitle_1">Modifions tout selon nos préférences.</string>
     <string name="onboarding_desc_1">Abandonnez la monotonie de l’interface utilisateur d’origine. Personnalisez chaque détail technique en fonction de votre style et de vos préférences.</string>
     <string name="onboarding_title_2">Mon appareil est-il supporté ?</string>
     <string name="onboarding_subtitle_2">Iconify prend en charge toutes les ROM Pixel et AOSP.</string>
@@ -420,7 +420,7 @@
     <string name="activity_desc_themes">Personnaliser avec des thèmes</string>
     <string name="activity_title_quick_settings">Paramètres rapides</string>
     <string name="activity_desc_quick_settings">Ajustements liés au panneau QS</string>
-    <string name="activity_title_lockscreen">Ecran de vérouillage</string>
+    <string name="activity_title_lockscreen">Écran de verrouillage</string>
     <string name="activity_desc_lockscreen">Personnaliser l\'apparence de l\'écran de verrouillage</string>
     <string name="activity_title_battery_style">Style de la batterie</string>
     <string name="activity_desc_battery_style">Personnaliser la vue de l\'icône de la batterie</string>
@@ -805,8 +805,8 @@
     <string name="hide_ls_carrier_desc">Masquer le nom de l\'opérateur sur l\'écran de verrouillage</string>
     <string name="hide_ls_statusbar_title">Masquer la barre d\'état sur l\'écran de verrouillage</string>
     <string name="hide_ls_statusbar_desc">Masquer la barre d\'état sur l\'écran de verrouillage</string>
-    <string name="sb_swap_wifi_cellular_title">Swap Wifi and Cellular</string>
-    <string name="sb_swap_wifi_cellular_desc">Swap wifi and cellular icons</string>
+    <string name="sb_swap_wifi_cellular_title">Interchanger le wifi et cellulaire</string>
+    <string name="sb_swap_wifi_cellular_desc">Interchanger l\'icône du wifi et cellulaire</string>
     <!-- Xposed Others -->
     <string name="qs_header">En-tête du panneau d\'accès rapide</string>
     <string name="hide_carrier_group_title">Cacher le groupe d\'opérateur</string>
@@ -833,7 +833,7 @@
     <string name="view_changelog">Voir la liste des changements</string>
     <string name="hide_changelog">Masquer le journal des modifications</string>
     <string name="already_up_to_date">Vous êtes déjà à jour.</string>
-    <string name="auto_update_disabled">Auto update is disabled for debug build.</string>
+    <string name="auto_update_disabled">La mise à jour automatique est désactivée pour les versions bêta.</string>
     <string name="current_version">Version actuelle :</string>
     <string name="latest_version">Dernière Version :</string>
     <string name="update_checking_failed">Échec de la vérification des mises à jour !</string>
@@ -1186,6 +1186,8 @@
     <string name="lockscreen_weather_selection_str_gradient">Dégradé</string>
     <string name="lockscreen_weather_selection_str_border_accent">Sombre avec bordures accentuées</string>
     <string name="lockscreen_weather_selection_str_border_gradient">Sombre avec bordures en dégradé</string>
+    <string name="lockscreen_weather_font_title">Weather Font</string>
+    <string name="lockscreen_weather_font_desc">Use custom font for weather text</string>
     <!-- Alert Dialogs -->
     <string name="systemui_restart_required_title">Redémarrage de l\'interface utilisateur système nécessaire</string>
     <string name="systemui_restart_required_desc">Un redémarrage de l\'interface utilisateur est nécessaire pour que cette modification prenne effet.</string>

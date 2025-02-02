@@ -1186,6 +1186,8 @@
     <string name="lockscreen_weather_selection_str_gradient">گرادیان</string>
     <string name="lockscreen_weather_selection_str_border_accent">تیره با حاشیه های برجسته</string>
     <string name="lockscreen_weather_selection_str_border_gradient">تاریک با حاشیه های گرادیان</string>
+    <string name="lockscreen_weather_font_title">Weather Font</string>
+    <string name="lockscreen_weather_font_desc">Use custom font for weather text</string>
     <!-- Alert Dialogs -->
     <string name="systemui_restart_required_title">راه‌اندازی مجدد رابط کاربری نیاز است</string>
     <string name="systemui_restart_required_desc">برای اعمال این تغییر به یک راه‌اندازی مجدد رابط سیستم نیاز است.</string>

@@ -1186,6 +1186,8 @@
     <string name="lockscreen_weather_selection_str_gradient">Градиент</string>
     <string name="lockscreen_weather_selection_str_border_accent">Темный с акцентом границ</string>
     <string name="lockscreen_weather_selection_str_border_gradient">Тёмный с градиентными границами</string>
+    <string name="lockscreen_weather_font_title">Weather Font</string>
+    <string name="lockscreen_weather_font_desc">Use custom font for weather text</string>
     <!-- Alert Dialogs -->
     <string name="systemui_restart_required_title">Требуется перезапуск SystemUI</string>
     <string name="systemui_restart_required_desc">Чтобы изменения вступили в силу, необходимо перезапустить SystemUI.</string>

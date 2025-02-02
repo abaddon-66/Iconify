@@ -1186,6 +1186,8 @@
     <string name="lockscreen_weather_selection_str_gradient">渐变</string>
     <string name="lockscreen_weather_selection_str_border_accent">深色主题边界</string>
     <string name="lockscreen_weather_selection_str_border_gradient">深色带渐变边框</string>
+    <string name="lockscreen_weather_font_title">Weather Font</string>
+    <string name="lockscreen_weather_font_desc">Use custom font for weather text</string>
     <!-- Alert Dialogs -->
     <string name="systemui_restart_required_title">系统界面需要重启</string>
     <string name="systemui_restart_required_desc">需要重启系统界面才能使此更改生效。</string>
