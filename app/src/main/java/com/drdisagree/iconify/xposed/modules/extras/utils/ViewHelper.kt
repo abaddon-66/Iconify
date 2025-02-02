@@ -464,20 +464,32 @@ object ViewHelper {
     fun View?.hideView() {
         if (this == null) return
 
-        fun hide() {
+        fun makeInvisible() {
             apply {
-                layoutParams.height = 0
-                layoutParams.width = 0
-                visibility = View.INVISIBLE
+                if (visibility == View.VISIBLE) {
+                    visibility = View.INVISIBLE
+                }
             }
         }
 
-        hide()
+        fun makeSizeZero() {
+            apply {
+                layoutParams.apply {
+                    if (height != 0) height = 0
+                    if (width != 0) width = 0
+                }
+            }
+        }
+
+        makeSizeZero()
+        makeInvisible()
+
         viewTreeObserver?.addOnGlobalLayoutListener {
-            hide()
+            makeSizeZero()
+            makeInvisible()
         }
         viewTreeObserver?.addOnDrawListener {
-            hide()
+            makeInvisible()
         }
     }
 

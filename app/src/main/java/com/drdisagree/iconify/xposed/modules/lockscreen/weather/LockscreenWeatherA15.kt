@@ -318,6 +318,17 @@ class LockscreenWeatherA15(context: Context) : ModPack(context) {
         val smartspaceSectionClass =
             findClass("$SYSTEMUI_PACKAGE.keyguard.ui.view.layout.sections.SmartspaceSection")
 
+        val bcSmartSpaceViewId = mContext.resources.getIdentifier(
+            "bc_smartspace_view",
+            "id",
+            mContext.packageName
+        )
+        val dateSmartSpaceViewId = mContext.resources.getIdentifier(
+            "date_smartspace_view",
+            "id",
+            mContext.packageName
+        )
+
         smartspaceSectionClass
             .hookMethod("applyConstraints")
             .runAfter { param ->
@@ -325,19 +336,11 @@ class LockscreenWeatherA15(context: Context) : ModPack(context) {
 
                 val constraintSet = param.args[0]
 
-                val dateSmartSpaceViewId = if (dateSmartSpaceViewAvailable) {
-                    mContext.resources.getIdentifier(
-                        "date_smartspace_view",
-                        "id",
-                        mContext.packageName
-                    )
+                val smartSpaceViewId = if (dateSmartSpaceViewAvailable) {
+                    dateSmartSpaceViewId
                 } else {
                     // Some ROMs don't have date smartspace view
-                    mContext.resources.getIdentifier(
-                        "bc_smartspace_view",
-                        "id",
-                        mContext.packageName
-                    )
+                    bcSmartSpaceViewId
                 }
 
                 // Connect weather view to bottom of date smartspace
@@ -349,7 +352,7 @@ class LockscreenWeatherA15(context: Context) : ModPack(context) {
                     constraintSet.connect(
                         mLsItemsContainer!!.id,
                         ConstraintSet.TOP,
-                        dateSmartSpaceViewId,
+                        smartSpaceViewId,
                         ConstraintSet.BOTTOM
                     )
                 } else if (mLockscreenClockEnabled && mLsItemsContainer != null) {
@@ -363,7 +366,7 @@ class LockscreenWeatherA15(context: Context) : ModPack(context) {
                         ConstraintSet.PARENT_ID,
                         ConstraintSet.TOP
                     )
-                } else if (!mLockscreenClockEnabled && !mWeatherEnabled) {
+                } else if (!mLockscreenClockEnabled && !mWidgetsEnabled) {
                     constraintSet.clear(
                         mWeatherContainer.id,
                         ConstraintSet.TOP
@@ -371,7 +374,7 @@ class LockscreenWeatherA15(context: Context) : ModPack(context) {
                     constraintSet.connect(
                         mWeatherContainer.id,
                         ConstraintSet.TOP,
-                        dateSmartSpaceViewId,
+                        smartSpaceViewId,
                         ConstraintSet.BOTTOM
                     )
                 }

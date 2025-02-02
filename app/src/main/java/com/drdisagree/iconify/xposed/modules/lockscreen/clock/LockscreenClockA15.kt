@@ -362,6 +362,14 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
             mContext.packageName
         )
 
+        val keyguardStatusViewBottomMarginId = mContext.resources.getDimensionPixelSize(
+            mContext.resources.getIdentifier(
+                "keyguard_status_view_bottom_margin",
+                "dimen",
+                mContext.packageName
+            )
+        )
+
         aodNotificationIconsSectionClass
             .hookMethod("applyConstraints")
             .runAfter { param ->
@@ -379,13 +387,7 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
                         ConstraintSet.TOP,
                         mLsItemsContainer!!.id,
                         ConstraintSet.BOTTOM,
-                        mContext.resources.getDimensionPixelSize(
-                            mContext.resources.getIdentifier(
-                                "keyguard_status_view_bottom_margin",
-                                "dimen",
-                                mContext.packageName
-                            )
-                        )
+                        keyguardStatusViewBottomMarginId
                     )
                 }
             }
@@ -393,42 +395,33 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
         val smartspaceSectionClass =
             findClass("$SYSTEMUI_PACKAGE.keyguard.ui.view.layout.sections.SmartspaceSection")
 
+        val bcSmartSpaceViewId = mContext.resources.getIdentifier(
+            "bc_smartspace_view",
+            "id",
+            mContext.packageName
+        )
+        val dateSmartSpaceViewId = mContext.resources.getIdentifier(
+            "date_smartspace_view",
+            "id",
+            mContext.packageName
+        )
+        val keyguardSliceViewId = mContext.resources.getIdentifier(
+            "keyguard_slice_view",
+            "id",
+            mContext.packageName
+        )
+        val smartspaceViewIds = listOf(
+            bcSmartSpaceViewId,
+            dateSmartSpaceViewId,
+            keyguardSliceViewId
+        ).filter { it != -1 }
+
         smartspaceSectionClass
             .hookMethod("applyConstraints")
             .runAfter { param ->
                 if (!showLockscreenClock) return@runAfter
 
                 val constraintSet = param.args[0]
-
-                val smartspaceViewIdNames = listOf(
-                    "bc_smartspace_view",
-                    "date_smartspace_view",
-                    "keyguard_slice_view"
-                )
-
-                val bcSmartSpaceViewId = mContext.resources.getIdentifier(
-                    smartspaceViewIdNames[0],
-                    "id",
-                    mContext.packageName
-                )
-
-                val dateSmartSpaceViewId = mContext.resources.getIdentifier(
-                    smartspaceViewIdNames[1],
-                    "id",
-                    mContext.packageName
-                )
-
-                val keyguardSliceViewId = mContext.resources.getIdentifier(
-                    smartspaceViewIdNames[2],
-                    "id",
-                    mContext.packageName
-                )
-
-                val smartspaceViewIds = listOf(
-                    bcSmartSpaceViewId,
-                    dateSmartSpaceViewId,
-                    keyguardSliceViewId
-                ).filter { it != -1 }
 
                 // Connect bc smartspace to bottom of date smartspace
                 constraintSet.clear(
