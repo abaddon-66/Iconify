@@ -133,8 +133,7 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
     private var customTypeface: Typeface? = null
     private val customFontDirectory =
         "${Environment.getExternalStorageDirectory()}/.iconify_files/lsclock_font.ttf"
-    private val job = Job()
-    private val coroutineScope = CoroutineScope(Dispatchers.Main + job)
+    private val coroutineScope = CoroutineScope(Dispatchers.Main + Job())
     private var aodBurnInProtection: AodBurnInProtection? = null
 
     private val mBatteryReceiver: BroadcastReceiver = object : BroadcastReceiver() {

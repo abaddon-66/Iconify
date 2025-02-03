@@ -92,8 +92,7 @@ class LockscreenWeatherA15(context: Context) : ModPack(context) {
     private var mWidgetsEnabled = false
     private var dateSmartSpaceViewAvailable = false
     private lateinit var mWeatherContainer: LinearLayout
-    private val job = Job()
-    private val coroutineScope = CoroutineScope(Dispatchers.Main + job)
+    private val coroutineScope = CoroutineScope(Dispatchers.Main + Job())
     private var aodBurnInProtection: AodBurnInProtection? = null
     private var mCustomFontEnabled = false
     private val mCustomFontLocation = Environment.getExternalStorageDirectory().toString() +

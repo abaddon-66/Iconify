@@ -115,8 +115,7 @@ class LockscreenWidgetsA15(context: Context) : ModPack(context) {
     private var mBottomMargin = 0
     private var mWidgetsScale = 1.0f
     private var dateSmartSpaceViewAvailable = false
-    private val job = Job()
-    private val coroutineScope = CoroutineScope(Dispatchers.Main + job)
+    private val coroutineScope = CoroutineScope(Dispatchers.Main + Job())
     private var aodBurnInProtection: AodBurnInProtection? = null
 
     private var mBroadcastRegistered = false
