@@ -121,10 +121,6 @@ object ModuleUtils {
         Shell.cmd("mkdir -p $TEMP_MODULE_DIR/system/product").exec()
         Shell.cmd("mkdir -p $TEMP_MODULE_DIR/system/product/overlay").exec()
 
-        if (RootUtils.isSusfsBinaryAvailable) {
-            Shell.cmd("touch $TEMP_MODULE_DIR/skip_mount").exec()
-        }
-
         createMETAINF()
         writePostExec()
         symLinkBinaries()
