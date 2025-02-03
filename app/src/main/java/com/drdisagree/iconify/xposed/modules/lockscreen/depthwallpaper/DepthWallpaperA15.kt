@@ -252,9 +252,8 @@ class DepthWallpaperA15(context: Context) : ModPack(context) {
 
                         rootView.apply {
                             val idx = if (isComposeLockscreen) {
-                                val tempIdx = lsItemTags.map { findViewIdContainsTag(it) }
-                                    .firstOrNull { it != -1 } ?: 0
-                                tempIdx + 1
+                                lsItemTags.map { findViewIdContainsTag(it) }
+                                    .firstOrNull { it != -1 }?.plus(1) ?: 0
                             } else {
                                 0
                             }
@@ -340,9 +339,8 @@ class DepthWallpaperA15(context: Context) : ModPack(context) {
                 }
 
                 val idx = if (isComposeLockscreen) {
-                    val tempIdx = lsItemTags.map { targetView.findViewIdContainsTag(it) }
-                        .firstOrNull { it != -1 } ?: 1
-                    tempIdx + 1
+                    lsItemTags.map { targetView.findViewIdContainsTag(it) }
+                        .firstOrNull { it != -1 }?.plus(1) ?: 1
                 } else {
                     1
                 }
