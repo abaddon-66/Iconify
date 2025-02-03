@@ -119,6 +119,10 @@ object Const {
             modid="Iconify"
             SUSFS_BIN=/data/adb/ksu/bin/ksu_susfs
             
+            if [ ${'$'}KSU_MAGIC_MOUNT = true ]; then
+            	exit 0
+            fi
+
             [ ! -f ${'$'}MODDIR/skip_mount ] && touch ${'$'}MODDIR/skip_mount
             
             [ -w /mnt ] && basefolder=/mnt
