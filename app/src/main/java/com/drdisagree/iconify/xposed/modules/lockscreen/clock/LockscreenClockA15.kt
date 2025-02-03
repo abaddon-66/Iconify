@@ -74,6 +74,7 @@ import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.findViewCon
 import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.findViewWithTagAndChangeColor
 import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.getLsItemsContainer
 import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.hideView
+import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.reAddView
 import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.setMargins
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.XposedHook.Companion.findClass
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.getFieldSilently
@@ -789,7 +790,7 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
                         setProgressType(ArcProgressImageView.ProgressType.VOLUME)
                     }
                 }
-                container?.addView(mVolumeLevelArcProgress)
+                container?.reAddView(mVolumeLevelArcProgress)
             }
 
             "ram_usage_info" -> {
@@ -798,7 +799,7 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
                         setProgressType(ArcProgressImageView.ProgressType.MEMORY)
                     }
                 }
-                container?.addView(mRamUsageArcProgress)
+                container?.reAddView(mRamUsageArcProgress)
             }
 
             "battery_progress_arc" -> {
@@ -807,7 +808,7 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
                         setProgressType(ArcProgressImageView.ProgressType.BATTERY)
                     }
                 }
-                container?.addView(mBatteryLevelArcProgress)
+                container?.reAddView(mBatteryLevelArcProgress)
             }
 
             "temperature_progress" -> {
@@ -816,7 +817,7 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
                         setProgressType(ArcProgressImageView.ProgressType.TEMPERATURE)
                     }
                 }
-                container?.addView(mTemperatureArcProgress)
+                container?.reAddView(mTemperatureArcProgress)
             }
         }
     }
