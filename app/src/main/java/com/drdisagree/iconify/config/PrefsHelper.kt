@@ -96,8 +96,9 @@ import com.drdisagree.iconify.common.Preferences.LOCKSCREEN_WIDGETS_CUSTOM_COLOR
 import com.drdisagree.iconify.common.Preferences.LOCKSCREEN_WIDGETS_DEVICE_WIDGET
 import com.drdisagree.iconify.common.Preferences.LOCKSCREEN_WIDGETS_DEVICE_WIDGET_CIRCULAR_COLOR
 import com.drdisagree.iconify.common.Preferences.LOCKSCREEN_WIDGETS_DEVICE_WIDGET_CUSTOM_COLOR_SWITCH
-import com.drdisagree.iconify.common.Preferences.LOCKSCREEN_WIDGETS_DEVICE_WIDGET_DEVICE
 import com.drdisagree.iconify.common.Preferences.LOCKSCREEN_WIDGETS_DEVICE_WIDGET_LINEAR_COLOR
+import com.drdisagree.iconify.common.Preferences.LOCKSCREEN_WIDGETS_DEVICE_WIDGET_DEVICE_NAME
+import com.drdisagree.iconify.common.Preferences.LOCKSCREEN_WIDGETS_DEVICE_WIDGET_STYLE
 import com.drdisagree.iconify.common.Preferences.LOCKSCREEN_WIDGETS_DEVICE_WIDGET_TEXT_COLOR
 import com.drdisagree.iconify.common.Preferences.LOCKSCREEN_WIDGETS_SMALL_ACTIVE
 import com.drdisagree.iconify.common.Preferences.LOCKSCREEN_WIDGETS_SMALL_ICON_ACTIVE
@@ -233,13 +234,16 @@ object PrefsHelper {
                     Build.VERSION.SDK_INT <= Build.VERSION_CODES.TIRAMISU
 
             LOCKSCREEN_WIDGETS_DEVICE_WIDGET_CUSTOM_COLOR_SWITCH,
-            LOCKSCREEN_WIDGETS_DEVICE_WIDGET_DEVICE -> getBoolean(LOCKSCREEN_WIDGETS_DEVICE_WIDGET)
+            LOCKSCREEN_WIDGETS_DEVICE_WIDGET_DEVICE_NAME -> getBoolean(LOCKSCREEN_WIDGETS_DEVICE_WIDGET)
 
-            LOCKSCREEN_WIDGETS_DEVICE_WIDGET_LINEAR_COLOR,
             LOCKSCREEN_WIDGETS_DEVICE_WIDGET_CIRCULAR_COLOR,
-            LOCKSCREEN_WIDGETS_DEVICE_WIDGET_TEXT_COLOR -> getBoolean(
-                LOCKSCREEN_WIDGETS_DEVICE_WIDGET_CUSTOM_COLOR_SWITCH
-            )
+            LOCKSCREEN_WIDGETS_DEVICE_WIDGET_TEXT_COLOR ->
+                getBoolean(LOCKSCREEN_WIDGETS_DEVICE_WIDGET_CUSTOM_COLOR_SWITCH)
+
+            LOCKSCREEN_WIDGETS_DEVICE_WIDGET_LINEAR_COLOR -> {
+                return getBoolean(LOCKSCREEN_WIDGETS_DEVICE_WIDGET_CUSTOM_COLOR_SWITCH) &&
+                        getString(LOCKSCREEN_WIDGETS_DEVICE_WIDGET_STYLE, "0") == "0"
+            }
 
             LOCKSCREEN_WIDGETS_BIG_ACTIVE,
             LOCKSCREEN_WIDGETS_BIG_INACTIVE,

@@ -53,76 +53,43 @@
             android:orientation="horizontal">
 
             <LinearLayout
-                android:layout_width="120dp"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="start|center"
-                    android:layout_marginBottom="3dp"
-                    android:alpha="0.9"
-                    android:drawableStart="@drawable/ic_ios_device_scaled"
-                    android:drawablePadding="3dp"
-                    android:drawableTint="@android:color/white"
-                    android:ellipsize="end"
-                    android:gravity="start|center"
-                    android:includeFontPadding="false"
-                    android:singleLine="true"
-                    android:tag="text1|battery_percentage"
-                    android:text="40%"
-                    android:textColor="@android:color/white"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="start|center"
-                    android:alpha="0.9"
-                    android:drawablePadding="3dp"
-                    android:ellipsize="end"
-                    android:gravity="start"
-                    android:includeFontPadding="false"
-                    android:singleLine="true"
-                    android:tag="text1|device_name"
-                    android:text="Device Name"
-                    android:textColor="@android:color/white"
-                    android:textSize="14sp"
-                    android:textStyle="bold" />
-
-                <ProgressBar
-                    android:layout_width="match_parent"
-                    android:layout_height="10dp"
-                    android:layout_marginTop="4dp"
-                    android:alpha="0.9"
-                    android:indeterminateDrawable="@drawable/ios_widget_line_progress_track"
-                    android:indeterminateOnly="false"
-                    android:progress="40"
-                    android:progressDrawable="@drawable/ios_widget_line_progress_track"
-                    android:progressTint="@android:color/white"
-                    android:tag="text1|battery_progressbar" />
-
-            </LinearLayout>
-
-            <LinearLayout
                 android:layout_width="60dp"
                 android:layout_height="60dp"
-                android:layout_marginHorizontal="24dp"
+                android:layout_marginEnd="12dp"
                 android:adjustViewBounds="true"
                 android:alpha="0.9"
                 android:background="@drawable/arc_progress"
-                android:tag="text1|volume_progress"
+                android:tag="text1|battery_progress_arc"
                 app:tint="@android:color/white" />
 
             <LinearLayout
                 android:layout_width="60dp"
                 android:layout_height="60dp"
+                android:layout_marginHorizontal="12dp"
                 android:adjustViewBounds="true"
                 android:alpha="0.9"
                 android:background="@drawable/arc_progress"
                 android:tag="text1|ram_usage_info"
+                app:tint="@android:color/white" />
+
+            <LinearLayout
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_marginHorizontal="12dp"
+                android:adjustViewBounds="true"
+                android:alpha="0.9"
+                android:background="@drawable/arc_progress"
+                android:tag="text1|temperature_progress"
+                app:tint="@android:color/white" />
+
+            <LinearLayout
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_marginStart="12dp"
+                android:adjustViewBounds="true"
+                android:alpha="0.9"
+                android:background="@drawable/arc_progress"
+                android:tag="text1|volume_progress"
                 app:tint="@android:color/white" />
 
         </LinearLayout>

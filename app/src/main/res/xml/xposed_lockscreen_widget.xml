@@ -21,6 +21,17 @@
             android:title="@string/lockscreen_display_widgets_title"
             app:iconSpaceReserved="false" />
 
+        <com.drdisagree.iconify.ui.preferences.ListPreference
+            android:defaultValue="0"
+            android:dependency="lockscreen_widgets_enabled"
+            android:dialogTitle="@string/lockscreen_device_widget_style_title"
+            android:entries="@array/lockscreen_device_widget_entries"
+            android:entryValues="@array/lockscreen_device_widget_values"
+            android:key="lockscreen_device_widget_style"
+            android:title="@string/lockscreen_device_widget_style_title"
+            app:iconSpaceReserved="false"
+            app:useSimpleSummaryProvider="true" />
+
         <com.drdisagree.iconify.ui.preferences.SwitchPreference
             android:dependency="lockscreen_device_widget"
             android:key="lockscreen_device_widget_custom_color"

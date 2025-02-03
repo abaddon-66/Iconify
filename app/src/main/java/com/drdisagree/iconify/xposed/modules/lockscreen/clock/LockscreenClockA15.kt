@@ -29,7 +29,6 @@ import android.widget.ProgressBar
 import android.widget.TextClock
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintSet
-import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import com.drdisagree.iconify.BuildConfig
 import com.drdisagree.iconify.R
@@ -82,7 +81,7 @@ import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookConstructo
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookMethod
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.log
 import com.drdisagree.iconify.xposed.modules.extras.views.AodBurnInProtection
-import com.drdisagree.iconify.xposed.modules.extras.views.ArcProgressWidget.generateBitmap
+import com.drdisagree.iconify.xposed.modules.extras.views.ArcProgressImageView
 import com.drdisagree.iconify.xposed.modules.lockscreen.Lockscreen.Companion.isComposeLockscreen
 import com.drdisagree.iconify.xposed.utils.XPrefs.Xprefs
 import com.drdisagree.iconify.xposed.utils.XPrefs.XprefsIsInitialized
@@ -114,17 +113,20 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
     private var mVolumeProgress: ProgressBar? = null
     private var mBatteryStatus = 1
     private var mBatteryPercentage = 1
-    private var mVolumeLevelArcProgress: ImageView? = null
-    private var mRamUsageArcProgress: ImageView? = null
+    private var mVolumeLevelArcProgress: ArcProgressImageView? = null
+    private var mRamUsageArcProgress: ArcProgressImageView? = null
+    private var mBatteryLevelArcProgress: ArcProgressImageView? = null
+    private var mTemperatureArcProgress: ArcProgressImageView? = null
     private var mAccentColor1 = 0
     private var mAccentColor2 = 0
     private var mAccentColor3 = 0
-    private var mTextColor1 = 0
-    private var mTextColor2 = 0
+    private var mTextColor1 = Color.WHITE
+    private var mTextColor2 = Color.BLACK
     private var clockStyle = 0
     private var topMargin = 100
     private var bottomMargin = 40
     private var textScaleFactor = 1f
+    private var reduceFactor = 1f
     private var lineHeight = 0
     private var customColorEnabled = false
     private var customUserName = ""
@@ -181,13 +183,16 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
             topMargin = getSliderInt(LSCLOCK_TOPMARGIN, 100)
             bottomMargin = getSliderInt(LSCLOCK_BOTTOMMARGIN, 40)
             textScaleFactor = getSliderInt(LSCLOCK_FONT_TEXT_SCALING, 10) / 10.0f
+            reduceFactor = if (textScaleFactor > 1f) 0.91f else 1f
             lineHeight = getSliderInt(LSCLOCK_FONT_LINEHEIGHT, 0)
             customColorEnabled = getBoolean(LSCLOCK_COLOR_SWITCH, false)
             customUserName = getString(LSCLOCK_USERNAME, "")!!
             customDeviceName = getString(LSCLOCK_DEVICENAME, "")!!
             customFontEnabled = getBoolean(LSCLOCK_FONT_SWITCH, false)
-            if (customFontEnabled && File(customFontDirectory).exists()) {
-                customTypeface = Typeface.createFromFile(File(customFontDirectory))
+            customTypeface = if (customFontEnabled && File(customFontDirectory).exists()) {
+                Typeface.createFromFile(File(customFontDirectory))
+            } else {
+                null
             }
         }
 
@@ -651,6 +656,14 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
             )
         }
 
+    private val allArcProgressImageViews: List<ArcProgressImageView?>
+        get() = listOf(
+            mVolumeLevelArcProgress,
+            mRamUsageArcProgress,
+            mBatteryLevelArcProgress,
+            mTemperatureArcProgress
+        )
+
     private fun modifyClockView(clockView: View) {
         if (!XprefsIsInitialized || mLsItemsContainer == null) return
 
@@ -676,40 +689,56 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
             TextUtils.convertTextViewsToTitleCase(clockView)
         }
 
-        when (clockStyle) {
-            5 -> {
-                mBatteryStatusView = clockView.findViewContainsTag("battery_status") as TextView?
-                mBatteryLevelView = clockView.findViewContainsTag("battery_percentage") as TextView?
-                mVolumeLevelView = clockView.findViewContainsTag("volume_level") as TextView?
-                mBatteryProgress =
-                    clockView.findViewContainsTag("battery_progressbar") as ProgressBar?
-                mVolumeProgress =
-                    clockView.findViewContainsTag("volume_progressbar") as ProgressBar?
+        mBatteryLevelView = null
+        mBatteryProgress = null
+        mBatteryStatusView = null
+        mVolumeLevelView = null
+        mVolumeProgress = null
+        mVolumeLevelArcProgress = null
+        mRamUsageArcProgress = null
+
+        clockView.apply {
+            when (clockStyle) {
+                5 -> {
+                    mBatteryStatusView = findViewContainsTag("battery_status") as TextView?
+                    mBatteryLevelView = findViewContainsTag("battery_percentage") as TextView?
+                    mVolumeLevelView = findViewContainsTag("volume_level") as TextView?
+                    mBatteryProgress = findViewContainsTag("battery_progressbar") as ProgressBar?
+                    mVolumeProgress = findViewContainsTag("volume_progressbar") as ProgressBar?
+                }
+
+                19 -> {
+                    mBatteryLevelView = findViewContainsTag("battery_percentage") as TextView?
+                    mBatteryProgress = findViewContainsTag("battery_progressbar") as ProgressBar?
+                    addArcProgressView("volume_progress")
+                    addArcProgressView("ram_usage_info")
+                }
+
+                22 -> {
+                    val hourView = findViewContainsTag("textHour") as TextView
+                    val minuteView = findViewContainsTag("textMinute") as TextView
+                    val tickIndicator = findViewContainsTag("tickIndicator") as TextClock
+
+                    TimeUtils.setCurrentTimeTextClock(mContext, tickIndicator, hourView, minuteView)
+                }
+
+                56 -> {
+                    addArcProgressView("volume_progress")
+                    addArcProgressView("ram_usage_info")
+                    addArcProgressView("battery_progress_arc")
+                    addArcProgressView("temperature_progress")
+                }
+
+                else -> {}
             }
+        }
 
-            19 -> {
-                mBatteryLevelView = clockView.findViewContainsTag("battery_percentage") as TextView?
-                mBatteryProgress =
-                    clockView.findViewContainsTag("battery_progressbar") as ProgressBar?
-                mVolumeLevelArcProgress =
-                    clockView.findViewContainsTag("volume_progress") as ImageView?
-                mRamUsageArcProgress = clockView.findViewContainsTag("ram_usage_info") as ImageView?
-            }
-
-            22 -> {
-                val hourView = clockView.findViewContainsTag("textHour") as TextView
-                val minuteView = clockView.findViewContainsTag("textMinute") as TextView
-                val tickIndicator = clockView.findViewContainsTag("tickIndicator") as TextClock
-
-                TimeUtils.setCurrentTimeTextClock(mContext, tickIndicator, hourView, minuteView)
-            }
-
-            else -> {
-                mBatteryStatusView = null
-                mBatteryLevelView = null
-                mVolumeLevelView = null
-                mBatteryProgress = null
-                mVolumeProgress = null
+        allArcProgressImageViews.forEach { arcProgressImageView ->
+            arcProgressImageView?.apply {
+                if (customColorEnabled) {
+                    setColors(mTextColor1, mTextColor1)
+                }
+                customTypeface?.let { setTypeFace(it) }
             }
         }
 
@@ -725,16 +754,11 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
         if (textScaleFactor != 1f) {
             applyTextScalingRecursively(clockView, textScaleFactor)
 
-            val reduceFactor = if (textScaleFactor > 1f) 0.91f else 1f
-
-            mVolumeLevelArcProgress?.layoutParams?.apply {
-                width = (width * textScaleFactor * reduceFactor).toInt()
-                height = (height * textScaleFactor * reduceFactor).toInt()
-            }
-
-            mRamUsageArcProgress?.layoutParams?.apply {
-                width = (width * textScaleFactor * reduceFactor).toInt()
-                height = (height * textScaleFactor * reduceFactor).toInt()
+            allArcProgressImageViews.forEach { arcProgressImageView ->
+                (arcProgressImageView?.parent as? ViewGroup)?.layoutParams?.apply {
+                    width = (width * textScaleFactor * reduceFactor).toInt()
+                    height = (height * textScaleFactor * reduceFactor).toInt()
+                }
             }
 
             (mBatteryProgress?.parent as ViewGroup?)?.apply {
@@ -742,6 +766,57 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
                     width = (width * textScaleFactor * reduceFactor).toInt()
                 }
                 requestLayout()
+            }
+        }
+    }
+
+    private fun View.addArcProgressView(parentTag: String) {
+        val container = findViewContainsTag(parentTag) as LinearLayout?
+        container?.setBackgroundResource(0)
+        container?.removeAllViews()
+
+        fun newArcProgress() = ArcProgressImageView(mContext).apply {
+            layoutParams = LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT
+            )
+        }
+
+        when (parentTag) {
+            "volume_progress" -> {
+                if (mVolumeLevelArcProgress == null) {
+                    mVolumeLevelArcProgress = newArcProgress().apply {
+                        setProgressType(ArcProgressImageView.ProgressType.VOLUME)
+                    }
+                }
+                container?.addView(mVolumeLevelArcProgress)
+            }
+
+            "ram_usage_info" -> {
+                if (mRamUsageArcProgress == null) {
+                    mRamUsageArcProgress = newArcProgress().apply {
+                        setProgressType(ArcProgressImageView.ProgressType.MEMORY)
+                    }
+                }
+                container?.addView(mRamUsageArcProgress)
+            }
+
+            "battery_progress_arc" -> {
+                if (mBatteryLevelArcProgress == null) {
+                    mBatteryLevelArcProgress = newArcProgress().apply {
+                        setProgressType(ArcProgressImageView.ProgressType.BATTERY)
+                    }
+                }
+                container?.addView(mBatteryLevelArcProgress)
+            }
+
+            "temperature_progress" -> {
+                if (mTemperatureArcProgress == null) {
+                    mTemperatureArcProgress = newArcProgress().apply {
+                        setProgressType(ArcProgressImageView.ProgressType.TEMPERATURE)
+                    }
+                }
+                container?.addView(mTemperatureArcProgress)
             }
         }
     }
@@ -883,83 +958,28 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
             }
         }
 
-        if (mBatteryProgress != null) {
-            mBatteryProgress!!.progress = mBatteryPercentage
-        }
+        mBatteryProgress?.progress = mBatteryPercentage
 
-        if (mBatteryLevelView != null) {
-            mBatteryLevelView!!.text =
-                appContext.resources.getString(R.string.percentage_text, mBatteryPercentage)
-        }
-
-        initRamUsage()
+        mBatteryLevelView?.text = appContext.resources.getString(
+            R.string.percentage_text,
+            mBatteryPercentage
+        )
     }
 
     private fun initSoundManager() {
         val volLevel = mAudioManager!!.getStreamVolume(AudioManager.STREAM_MUSIC)
         val maxVolLevel = mAudioManager!!.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
         val volPercent = (volLevel.toFloat() / maxVolLevel * 100).toInt()
-        val textScaleFactor: Float =
-            (Xprefs.getSliderInt(LSCLOCK_FONT_TEXT_SCALING, 10) / 10.0).toFloat()
-        val reduceFactor = if (textScaleFactor > 1f) 0.91f else 1f
 
-        mVolumeProgress?.progress = volPercent
-
-        mVolumeLevelView?.text =
-            appContext.resources.getString(R.string.percentage_text, volPercent)
-
-        mVolumeLevelArcProgress?.setImageBitmap(
-            generateBitmap(
-                context = mContext,
-                percentage = volPercent,
-                textInside = appContext.resources.getString(
-                    R.string.percentage_text,
-                    volPercent
-                ),
-                textInsideSizePx = (40 * textScaleFactor * reduceFactor).toInt(),
-                iconDrawable = ContextCompat.getDrawable(
-                    appContext,
-                    R.drawable.ic_volume_up
-                ),
-                iconSizePx = 38,
-                typeface = if (customFontEnabled && File(customFontDirectory).exists()) {
-                    Typeface.createFromFile(File(customFontDirectory))
-                } else {
-                    Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
-                }
+        mVolumeProgress?.post {
+            mVolumeProgress?.progress = volPercent
+        }
+        mVolumeLevelView?.post {
+            mVolumeLevelView?.text = appContext.resources.getString(
+                R.string.percentage_text,
+                volPercent
             )
-        )
-    }
-
-    private fun initRamUsage() {
-        if (mActivityManager == null) return
-
-        val memoryInfo = ActivityManager.MemoryInfo()
-        mActivityManager!!.getMemoryInfo(memoryInfo)
-        val usedMemory = memoryInfo.totalMem - memoryInfo.availMem
-        val usedMemoryPercentage = (usedMemory * 100 / memoryInfo.totalMem).toInt()
-        val textScaleFactor: Float =
-            (Xprefs.getSliderInt(LSCLOCK_FONT_TEXT_SCALING, 10) / 10.0).toFloat()
-        val reduceFactor = if (textScaleFactor > 1f) 0.91f else 1f
-
-        mRamUsageArcProgress?.setImageBitmap(
-            generateBitmap(
-                context = mContext,
-                percentage = usedMemoryPercentage,
-                textInside = appContext.resources.getString(
-                    R.string.percentage_text,
-                    usedMemoryPercentage
-                ),
-                textInsideSizePx = (40 * textScaleFactor * reduceFactor).toInt(),
-                textBottom = "RAM",
-                textBottomSizePx = 28,
-                typeface = if (customFontEnabled && File(customFontDirectory).exists()) {
-                    Typeface.createFromFile(File(customFontDirectory))
-                } else {
-                    Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
-                }
-            )
-        )
+        }
     }
 
     private val userName: String

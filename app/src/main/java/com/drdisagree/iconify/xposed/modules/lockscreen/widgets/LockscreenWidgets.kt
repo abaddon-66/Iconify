@@ -21,8 +21,9 @@ import com.drdisagree.iconify.common.Preferences.LOCKSCREEN_WIDGETS_CUSTOM_COLOR
 import com.drdisagree.iconify.common.Preferences.LOCKSCREEN_WIDGETS_DEVICE_WIDGET
 import com.drdisagree.iconify.common.Preferences.LOCKSCREEN_WIDGETS_DEVICE_WIDGET_CIRCULAR_COLOR
 import com.drdisagree.iconify.common.Preferences.LOCKSCREEN_WIDGETS_DEVICE_WIDGET_CUSTOM_COLOR_SWITCH
-import com.drdisagree.iconify.common.Preferences.LOCKSCREEN_WIDGETS_DEVICE_WIDGET_DEVICE
+import com.drdisagree.iconify.common.Preferences.LOCKSCREEN_WIDGETS_DEVICE_WIDGET_DEVICE_NAME
 import com.drdisagree.iconify.common.Preferences.LOCKSCREEN_WIDGETS_DEVICE_WIDGET_LINEAR_COLOR
+import com.drdisagree.iconify.common.Preferences.LOCKSCREEN_WIDGETS_DEVICE_WIDGET_STYLE
 import com.drdisagree.iconify.common.Preferences.LOCKSCREEN_WIDGETS_DEVICE_WIDGET_TEXT_COLOR
 import com.drdisagree.iconify.common.Preferences.LOCKSCREEN_WIDGETS_ENABLED
 import com.drdisagree.iconify.common.Preferences.LOCKSCREEN_WIDGETS_EXTRAS
@@ -90,6 +91,7 @@ class LockscreenWidgets(context: Context) : ModPack(context) {
     private var mTopMargin = 0
     private var mBottomMargin = 0
     private var mWidgetsScale = 1.0f
+    private var mDeviceWidgetStyle = 0
 
     private var mBroadcastRegistered = false
     private val mReceiver: BroadcastReceiver = object : BroadcastReceiver() {
@@ -124,7 +126,7 @@ class LockscreenWidgets(context: Context) : ModPack(context) {
             mDeviceCircularColor =
                 getInt(LOCKSCREEN_WIDGETS_DEVICE_WIDGET_CIRCULAR_COLOR, Color.WHITE)
             mDeviceTextColor = getInt(LOCKSCREEN_WIDGETS_DEVICE_WIDGET_TEXT_COLOR, Color.WHITE)
-            mDeviceName = getString(LOCKSCREEN_WIDGETS_DEVICE_WIDGET_DEVICE, "")!!
+            mDeviceName = getString(LOCKSCREEN_WIDGETS_DEVICE_WIDGET_DEVICE_NAME, "")!!
             mWidgetsCustomColor = getBoolean(LOCKSCREEN_WIDGETS_CUSTOM_COLOR, false)
             mBigInactiveColor = getInt(LOCKSCREEN_WIDGETS_BIG_INACTIVE, Color.BLACK)
             mBigActiveColor = getInt(LOCKSCREEN_WIDGETS_BIG_ACTIVE, Color.WHITE)
@@ -137,6 +139,7 @@ class LockscreenWidgets(context: Context) : ModPack(context) {
             mTopMargin = getSliderInt(LOCKSCREEN_WIDGETS_TOP_MARGIN, 0)
             mBottomMargin = getSliderInt(LOCKSCREEN_WIDGETS_BOTTOM_MARGIN, 0)
             mWidgetsScale = getSliderFloat(LOCKSCREEN_WIDGETS_SCALE, 1.0f)
+            mDeviceWidgetStyle = getString(LOCKSCREEN_WIDGETS_DEVICE_WIDGET_STYLE, "0")!!.toInt()
         }
 
         when (key.firstOrNull()) {
@@ -152,7 +155,8 @@ class LockscreenWidgets(context: Context) : ModPack(context) {
                 LOCKSCREEN_WIDGETS_DEVICE_WIDGET_LINEAR_COLOR,
                 LOCKSCREEN_WIDGETS_DEVICE_WIDGET_CIRCULAR_COLOR,
                 LOCKSCREEN_WIDGETS_DEVICE_WIDGET_TEXT_COLOR,
-                LOCKSCREEN_WIDGETS_DEVICE_WIDGET_DEVICE
+                LOCKSCREEN_WIDGETS_DEVICE_WIDGET_DEVICE_NAME,
+                LOCKSCREEN_WIDGETS_DEVICE_WIDGET_STYLE
             ) -> updateLsDeviceWidget()
 
             in setOf(
@@ -279,15 +283,17 @@ class LockscreenWidgets(context: Context) : ModPack(context) {
     }
 
     private fun placeWidgets() {
-        if (!mWidgetsEnabled || isComposeLockscreen) return
-        if (mStatusViewContainer == null || mStatusArea == null) return
-        if (lsWeather && !lsWeatherInflated) return
-        try {
-            val lsWidgets = LockscreenWidgetsView.getInstance(mContext, mActivityStarter)
-            (lsWidgets.parent as ViewGroup?)?.removeView(lsWidgets)
-            (mWidgetsContainer.parent as ViewGroup?)?.removeView(mWidgetsContainer)
+        if (!mWidgetsEnabled || isComposeLockscreen ||
+            (mStatusViewContainer == null || mStatusArea == null) ||
+            (lsWeather && !lsWeatherInflated)
+        ) return
 
-            mWidgetsContainer.addView(lsWidgets)
+        try {
+            LockscreenWidgetsView.getInstance(mContext, mActivityStarter).apply {
+                (parent as ViewGroup?)?.removeView(this)
+                (mWidgetsContainer.parent as ViewGroup?)?.removeView(mWidgetsContainer)
+                mWidgetsContainer.addView(this)
+            }
 
             if (customLockscreenClock) {
                 mStatusViewContainer?.addView(mWidgetsContainer)
@@ -296,6 +302,7 @@ class LockscreenWidgets(context: Context) : ModPack(context) {
                 // But before notifications
                 mStatusArea?.addView(mWidgetsContainer, mStatusArea!!.childCount - 1)
             }
+
             updateLockscreenWidgets()
             updateLsDeviceWidget()
             updateLockscreenWidgetsColors()
@@ -306,18 +313,23 @@ class LockscreenWidgets(context: Context) : ModPack(context) {
     }
 
     private fun updateLockscreenWidgets() {
-        val lsWidgets = LockscreenWidgetsView.getInstance() ?: return
-        lsWidgets.setOptions(mWidgetsEnabled, mDeviceWidgetEnabled, mMainWidgets, mExtraWidgets)
+        LockscreenWidgetsView.getInstance()?.setOptions(
+            mWidgetsEnabled,
+            mDeviceWidgetEnabled,
+            mMainWidgets,
+            mExtraWidgets
+        )
     }
 
     private fun updateLockscreenWidgetsOnClock(isLargeClock: Boolean) {
-        val lsWidgets = LockscreenWidgetsView.getInstance() ?: return
-        lsWidgets.setIsLargeClock(if (customLockscreenClock) false else isLargeClock)
+        LockscreenWidgetsView.getInstance()?.setIsLargeClock(
+            if (customLockscreenClock) false else isLargeClock
+        )
     }
 
     private fun updateLsDeviceWidget() {
-        val lsWidgets = LockscreenWidgetsView.getInstance() ?: return
-        lsWidgets.setDeviceWidgetOptions(
+        LockscreenWidgetsView.getInstance()?.setDeviceWidgetOptions(
+            mDeviceWidgetStyle,
             mDeviceCustomColor,
             mDeviceLinearColor,
             mDeviceCircularColor,
@@ -327,8 +339,7 @@ class LockscreenWidgets(context: Context) : ModPack(context) {
     }
 
     private fun updateLockscreenWidgetsColors() {
-        val lsWidgets = LockscreenWidgetsView.getInstance() ?: return
-        lsWidgets.setCustomColors(
+        LockscreenWidgetsView.getInstance()?.setCustomColors(
             mWidgetsCustomColor,
             mBigInactiveColor, mBigActiveColor,
             mSmallInactiveColor, mSmallActiveColor,
@@ -349,18 +360,17 @@ class LockscreenWidgets(context: Context) : ModPack(context) {
     }
 
     private fun updateLockscreenWidgetsScale() {
-        val lsWidgets = LockscreenWidgetsView.getInstance() ?: return
-        lsWidgets.setScale(mWidgetsScale)
+        LockscreenWidgetsView.getInstance()?.setScale(mWidgetsScale)
     }
 
     private fun updateDozingState(isDozing: Boolean) {
-        val lsWidgets = LockscreenWidgetsView.getInstance() ?: return
-        lsWidgets.setDozingState(isDozing)
+        LockscreenWidgetsView.getInstance()?.setDozingState(isDozing)
     }
 
     private fun setActivityStarter() {
-        val lsWidgets = LockscreenWidgetsView.getInstance() ?: return
-        if (mActivityStarter != null) lsWidgets.setActivityStarter(mActivityStarter)
+        if (mActivityStarter != null) {
+            LockscreenWidgetsView.getInstance()?.setActivityStarter(mActivityStarter)
+        }
     }
 
     companion object {
