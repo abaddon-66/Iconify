@@ -77,7 +77,12 @@ jobs:
       - name: Get Commit Messages
         id: get_commit_message
         run: |
-          COMMIT_MESSAGE_HEADER=$(git log -1 --pretty=%B | head -n 1)
+          COMMIT_MESSAGE_HEADER=""
+          COMMIT_INDEX=0
+          while [[ "$COMMIT_MESSAGE_HEADER" =~ ^Merge\ remote-tracking\ branch ]]; do
+            COMMIT_MESSAGE_HEADER=$(git log -1 --skip=$COMMIT_INDEX --pretty=%B | head -n 1)
+            COMMIT_INDEX=$((COMMIT_INDEX + 1))
+          done
           ESCAPED_MESSAGE=$(echo "$COMMIT_MESSAGE_HEADER" | jq -Rsa . | sed 's/^"\(.*\)"$/\1/')
           echo "COMMIT_MESSAGE_HEADER=${ESCAPED_MESSAGE}" >> $GITHUB_ENV
 
