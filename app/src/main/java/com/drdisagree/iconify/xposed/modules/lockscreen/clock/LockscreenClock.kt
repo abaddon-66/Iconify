@@ -315,6 +315,8 @@ class LockscreenClock(context: Context) : ModPack(context) {
         legacyNotificationIconAreaControllerImplClass
             .hookMethod("setupAodIcons")
             .runBefore { param ->
+                if (!showLockscreenClock) return@runBefore
+
                 if (param.args[0] == null && mClockViewContainer != null) {
                     param.args[0] = mClockViewContainer!!.findViewById(
                         mContext.resources.getIdentifier(
@@ -324,6 +326,19 @@ class LockscreenClock(context: Context) : ModPack(context) {
                         )
                     )
                 }
+            }
+
+        val ntWidgetContainerControllerClass = findClass(
+            "com.nothing.systemui.widget.NTWidgetContainerController",
+            suppressError = true
+        )
+
+        ntWidgetContainerControllerClass
+            .hookMethod("updateWidgetViewPosistion")
+            .runBefore { param ->
+                if (!showLockscreenClock) return@runBefore
+
+                param.result = null
             }
 
         try {
