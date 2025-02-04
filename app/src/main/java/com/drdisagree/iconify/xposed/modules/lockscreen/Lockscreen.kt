@@ -188,11 +188,25 @@ class Lockscreen(context: Context) : ModPack(context) {
     }
 
     companion object {
-        val isComposeLockscreen = findClass(
-            "$SYSTEMUI_PACKAGE.keyguard.ui.view.layout.sections.AodBurnInLayer",
-            suppressError = true
-        ) != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM && isSecurityPatchAfter(
-            Calendar.getInstance().apply { set(2024, Calendar.NOVEMBER, 30) }
-        )
+        val isComposeLockscreen: Boolean = run {
+            val hasAodBurnInLayer = findClass(
+                "$SYSTEMUI_PACKAGE.keyguard.ui.view.layout.sections.AodBurnInLayer",
+                suppressError = true
+            ) != null
+
+            val hasBatteryMeterViewEx = findClass(
+                "com.nothing.systemui.battery.BatteryMeterViewEx",
+                suppressError = true
+            ) != null
+
+            val isSupportedAndroidVersion =
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM
+
+            val isAfterSecurityPatch = isSecurityPatchAfter(
+                Calendar.getInstance().apply { set(2024, Calendar.NOVEMBER, 30) }
+            )
+
+            hasAodBurnInLayer && !hasBatteryMeterViewEx && isSupportedAndroidVersion && isAfterSecurityPatch
+        }
     }
 }
