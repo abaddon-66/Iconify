@@ -211,13 +211,15 @@ class LockscreenWidgets(context: Context) : ModPack(context) {
             ViewGroup.LayoutParams.WRAP_CONTENT
         )
 
-        LaunchableImageView = findClass("com.android.systemui.animation.view.LaunchableImageView")
+        launchableImageViewClass = findClass("$SYSTEMUI_PACKAGE.animation.view.LaunchableImageView")
 
-        LaunchableLinearLayout =
-            findClass("com.android.systemui.animation.view.LaunchableLinearLayout")
+        launchableLinearLayoutClass =
+            findClass("$SYSTEMUI_PACKAGE.animation.view.LaunchableLinearLayout")
+
+        expandableClass = findClass("$SYSTEMUI_PACKAGE.animation.Expandable")
 
         val keyguardQuickAffordanceInteractor =
-            findClass("com.android.systemui.keyguard.domain.interactor.KeyguardQuickAffordanceInteractor")
+            findClass("$SYSTEMUI_PACKAGE.keyguard.domain.interactor.KeyguardQuickAffordanceInteractor")
 
         keyguardQuickAffordanceInteractor
             .hookConstructor()
@@ -374,7 +376,8 @@ class LockscreenWidgets(context: Context) : ModPack(context) {
     }
 
     companion object {
-        var LaunchableImageView: Class<*>? = null
-        var LaunchableLinearLayout: Class<*>? = null
+        var launchableImageViewClass: Class<*>? = null
+        var launchableLinearLayoutClass: Class<*>? = null
+        var expandableClass: Class<*>? = null
     }
 }

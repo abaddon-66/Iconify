@@ -455,6 +455,18 @@ class ControllersProvider(context: Context) : ModPack(context) {
                             return true
                         }
 
+                        expandableClassAvailable && isMethodAvailable(
+                            cellularTile,
+                            "handleClick",
+                            expandableClass!!
+                        ) -> {
+                            cellularTile.callMethod(
+                                "handleClick",
+                                expandableClass.callStaticMethod("fromView", view)
+                            )
+                            return true
+                        }
+
                         else -> {
                             log(ControllersProvider, "No internet tile available")
                             return false

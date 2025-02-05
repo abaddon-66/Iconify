@@ -50,10 +50,12 @@ import com.drdisagree.iconify.xposed.modules.extras.callbacks.ThemeChange
 import com.drdisagree.iconify.xposed.modules.extras.utils.ActivityLauncherUtils
 import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.toPx
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.callMethod
+import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.callStaticMethod
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.getField
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.log
-import com.drdisagree.iconify.xposed.modules.lockscreen.widgets.LockscreenWidgets.Companion.LaunchableImageView
-import com.drdisagree.iconify.xposed.modules.lockscreen.widgets.LockscreenWidgets.Companion.LaunchableLinearLayout
+import com.drdisagree.iconify.xposed.modules.lockscreen.widgets.LockscreenWidgets.Companion.expandableClass
+import com.drdisagree.iconify.xposed.modules.lockscreen.widgets.LockscreenWidgets.Companion.launchableImageViewClass
+import com.drdisagree.iconify.xposed.modules.lockscreen.widgets.LockscreenWidgets.Companion.launchableLinearLayoutClass
 import java.lang.reflect.Method
 import java.util.Locale
 import kotlin.math.abs
@@ -265,7 +267,7 @@ class LockscreenWidgetsView(context: Context, activityStarter: Any?) :
 
     private fun createMainWidgetsContainer(context: Context): LinearLayout {
         val mainWidgetsContainer: LinearLayout = try {
-            LaunchableLinearLayout!!.getConstructor(Context::class.java)
+            launchableLinearLayoutClass!!.getConstructor(Context::class.java)
                 .newInstance(context) as LinearLayout
         } catch (e: Exception) {
             // LaunchableLinearLayout not found or other error, ensure the creation of our ImageView
@@ -318,7 +320,7 @@ class LockscreenWidgetsView(context: Context, activityStarter: Any?) :
 
     private fun createSecondaryWidgetsContainer(context: Context): LinearLayout {
         val secondaryWidgetsContainer: LinearLayout = try {
-            LaunchableLinearLayout!!.getConstructor(Context::class.java)
+            launchableLinearLayoutClass!!.getConstructor(Context::class.java)
                 .newInstance(context) as LinearLayout
         } catch (e: Exception) {
             // LaunchableLinearLayout not found or other error, ensure the creation of our ImageView
@@ -353,7 +355,7 @@ class LockscreenWidgetsView(context: Context, activityStarter: Any?) :
 
     private fun createImageView(context: Context): ImageView {
         val imageView = try {
-            LaunchableImageView!!.getConstructor(Context::class.java)
+            launchableImageViewClass!!.getConstructor(Context::class.java)
                 .newInstance(context) as ImageView
         } catch (e: Exception) {
             // LaunchableImageView not found or other error, ensure the creation of our ImageView
@@ -1118,31 +1120,42 @@ class LockscreenWidgetsView(context: Context, activityStarter: Any?) :
 
     private fun launchHomeControls(view: View) {
         val controlsTile: Any = ControllersProvider.mDeviceControlsTile ?: return
-        val finalView: View = if (view is ExtendedFAB) {
-            view.parent as View
-        } else {
-            view
-        }
+        val finalView: View = if (view is ExtendedFAB) view.parent as View else view
+
         post {
-            controlsTile.callMethod("handleClick", finalView)
+            try {
+                controlsTile.callMethod("handleClick", finalView)
+            } catch (ignored: Throwable) {
+                controlsTile.callMethod(
+                    "handleClick",
+                    expandableClass!!.callStaticMethod("fromView", finalView)
+                )
+            }
         }
+
         vibrate(1)
     }
 
     private fun launchWallet(view: View) {
         val mWalletTile: Any? = ControllersProvider.mWalletTile
+
         if (mWalletTile != null) {
-            val finalView: View = if (view is ExtendedFAB) {
-                view.parent as View
-            } else {
-                view
-            }
+            val finalView: View = if (view is ExtendedFAB) view.parent as View else view
+
             post {
-                mWalletTile.callMethod("handleClick", finalView)
+                try {
+                    mWalletTile.callMethod("handleClick", finalView)
+                } catch (ignored: Throwable) {
+                    mWalletTile.callMethod(
+                        "handleClick",
+                        expandableClass!!.callStaticMethod("fromView", finalView)
+                    )
+                }
             }
         } else {
             mActivityLauncherUtils.launchWallet()
         }
+
         vibrate(1)
     }
 
@@ -1161,11 +1174,19 @@ class LockscreenWidgetsView(context: Context, activityStarter: Any?) :
     }
 
     private fun toggleHotspot() {
-        val mHotspotTile = ControllersProvider.mHotspotTile
-        if (mHotspotTile != null) {
-            val finalView = hotspotButton ?: hotspotButtonFab
-            mHotspotTile.callMethod("handleClick", finalView)
+        val finalView = hotspotButton ?: hotspotButtonFab
+
+        post {
+            try {
+                ControllersProvider.mHotspotTile!!.callMethod("handleClick", finalView)
+            } catch (ignored: Throwable) {
+                ControllersProvider.mHotspotController!!.callMethod(
+                    "handleClick",
+                    expandableClass!!.callStaticMethod("fromView", finalView)
+                )
+            }
         }
+
         updateHotspotButtonState(0)
         postDelayed({ updateHotspotButtonState(0) }, 350L)
         vibrate(1)
