@@ -8,6 +8,7 @@ import com.drdisagree.iconify.common.Const.SYSTEMUI_PACKAGE
 import com.drdisagree.iconify.xposed.ModPack
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.XposedHook.Companion.findClass
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.callMethod
+import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.callStaticMethod
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.getField
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.getFieldSilently
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookConstructor
@@ -348,7 +349,8 @@ class ControllersProvider(context: Context) : ModPack(context) {
                 return false
             }
 
-            val expandableClassAvailable = instance.mExpandableClass != null
+            val expandableClass = instance.mExpandableClass
+            val expandableClassAvailable = expandableClass != null
 
             instance.mAccessPointController?.let { accessPointController ->
                 when {
@@ -407,13 +409,13 @@ class ControllersProvider(context: Context) : ModPack(context) {
                         "create",
                         Boolean::class.java,
                         Boolean::class.java,
-                        instance.mExpandableClass!!
+                        expandableClass!!
                     ) -> {
                         instance.mInternetDialogManager.callMethod(
                             "create",
                             accessPointController.callMethod("canConfigMobileData"),
                             accessPointController.callMethod("canConfigWifi"),
-                            null
+                            expandableClass.callStaticMethod("fromView", view)
                         )
                         return true
                     }
@@ -424,14 +426,14 @@ class ControllersProvider(context: Context) : ModPack(context) {
                         Boolean::class.java,
                         Boolean::class.java,
                         Boolean::class.java,
-                        instance.mExpandableClass!!
+                        expandableClass!!
                     ) -> {
                         instance.mInternetDialogManager.callMethod(
                             "create",
                             true,
                             accessPointController.callMethod("canConfigMobileData"),
                             accessPointController.callMethod("canConfigWifi"),
-                            null
+                            expandableClass.callStaticMethod("fromView", view)
                         )
                         return true
                     }
@@ -470,7 +472,8 @@ class ControllersProvider(context: Context) : ModPack(context) {
                 return false
             }
 
-            val expandableClassAvailable = instance.mExpandableClass != null
+            val expandableClass = instance.mExpandableClass
+            val expandableClassAvailable = expandableClass != null
 
             when {
                 isMethodAvailable(
@@ -510,14 +513,17 @@ class ControllersProvider(context: Context) : ModPack(context) {
                 expandableClassAvailable && isMethodAvailable(
                     instance.mBluetoothTileDialogViewModel,
                     "showDialog",
-                    instance.mExpandableClass!!
+                    expandableClass!!
                 ) -> {
                     // it's invoking wrong callMethod() so we have to call it manually
                     return try {
                         instance.mBluetoothTileDialogViewModel!!::class.java.getMethod(
                             "showDialog",
                             instance.mExpandableClass!!
-                        ).invoke(instance.mBluetoothTileDialogViewModel!!, null)
+                        ).invoke(
+                            instance.mBluetoothTileDialogViewModel!!,
+                            expandableClass.callStaticMethod("fromView", view)
+                        )
                         true
                     } catch (e: Exception) {
                         log(ControllersProvider, e)
@@ -537,9 +543,12 @@ class ControllersProvider(context: Context) : ModPack(context) {
                 expandableClassAvailable && isMethodAvailable(
                     instance.mBluetoothTile,
                     "handleClick",
-                    instance.mExpandableClass!!
+                    expandableClass!!
                 ) -> {
-                    instance.mBluetoothTile.callMethod("handleClick", null)
+                    instance.mBluetoothTile.callMethod(
+                        "handleClick",
+                        expandableClass.callStaticMethod("fromView", view)
+                    )
                     return true
                 }
 
