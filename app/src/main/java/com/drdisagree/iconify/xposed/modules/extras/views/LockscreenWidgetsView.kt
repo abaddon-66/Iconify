@@ -48,12 +48,11 @@ import com.drdisagree.iconify.xposed.HookRes.Companion.modRes
 import com.drdisagree.iconify.xposed.modules.extras.callbacks.ControllersProvider
 import com.drdisagree.iconify.xposed.modules.extras.callbacks.ThemeChange
 import com.drdisagree.iconify.xposed.modules.extras.utils.ActivityLauncherUtils
+import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.getExpandableView
 import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.toPx
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.callMethod
-import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.callStaticMethod
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.getField
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.log
-import com.drdisagree.iconify.xposed.modules.lockscreen.widgets.LockscreenWidgets.Companion.expandableClass
 import com.drdisagree.iconify.xposed.modules.lockscreen.widgets.LockscreenWidgets.Companion.launchableImageViewClass
 import com.drdisagree.iconify.xposed.modules.lockscreen.widgets.LockscreenWidgets.Companion.launchableLinearLayoutClass
 import java.lang.reflect.Method
@@ -1128,7 +1127,7 @@ class LockscreenWidgetsView(context: Context, activityStarter: Any?) :
             } catch (ignored: Throwable) {
                 controlsTile.callMethod(
                     "handleClick",
-                    expandableClass!!.callStaticMethod("fromView", finalView)
+                    finalView.getExpandableView()
                 )
             }
         }
@@ -1148,7 +1147,7 @@ class LockscreenWidgetsView(context: Context, activityStarter: Any?) :
                 } catch (ignored: Throwable) {
                     mWalletTile.callMethod(
                         "handleClick",
-                        expandableClass!!.callStaticMethod("fromView", finalView)
+                        finalView.getExpandableView()
                     )
                 }
             }
@@ -1182,7 +1181,7 @@ class LockscreenWidgetsView(context: Context, activityStarter: Any?) :
             } catch (ignored: Throwable) {
                 ControllersProvider.mHotspotController!!.callMethod(
                     "handleClick",
-                    expandableClass!!.callStaticMethod("fromView", finalView)
+                    finalView.getExpandableView()
                 )
             }
         }

@@ -25,9 +25,13 @@ import android.widget.ProgressBar
 import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
+import com.drdisagree.iconify.common.Const.SYSTEMUI_PACKAGE
 import com.drdisagree.iconify.common.Preferences.DEPTH_WALLPAPER_SWITCH
 import com.drdisagree.iconify.common.Preferences.ICONIFY_DEPTH_WALLPAPER_FOREGROUND_TAG
 import com.drdisagree.iconify.common.Preferences.ICONIFY_LOCKSCREEN_CONTAINER_TAG
+import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.XposedHook.Companion.findClass
+import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.callStaticMethod
+import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.isMethodAvailable
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.log
 import com.drdisagree.iconify.xposed.utils.XPrefs.Xprefs
 
@@ -573,6 +577,28 @@ object ViewHelper {
 
             (view.parent as? ViewGroup)?.removeView(view)
             addView(view, index.coerceAtMost(childCount))
+        }
+    }
+
+    fun View?.getExpandableView(): Any? {
+        if (this == null) {
+            log("getExpandableView", "View is null")
+            return null
+        }
+
+        val expandableClass = findClass("$SYSTEMUI_PACKAGE.animation.Expandable")
+        val expandableCompanionFromViewClass = findClass(
+            "$SYSTEMUI_PACKAGE.animation.Expandable\$Companion\$fromView",
+            "$SYSTEMUI_PACKAGE.animation.Expandable\$Companion\$fromView\$1",
+            "$SYSTEMUI_PACKAGE.animation.Expandable\$Companion\$fromView\$2",
+            "$SYSTEMUI_PACKAGE.animation.Expandable\$Companion\$fromView\$3",
+            suppressError = true
+        )
+
+        return if (isMethodAvailable(expandableClass, "fromView", View::class.java)) {
+            expandableClass!!.callStaticMethod("fromView", this)
+        } else {
+            expandableCompanionFromViewClass!!.getConstructor(View::class.java).newInstance(this)
         }
     }
 }

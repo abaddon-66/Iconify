@@ -6,9 +6,9 @@ import android.provider.Settings
 import android.view.View
 import com.drdisagree.iconify.common.Const.SYSTEMUI_PACKAGE
 import com.drdisagree.iconify.xposed.ModPack
+import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.getExpandableView
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.XposedHook.Companion.findClass
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.callMethod
-import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.callStaticMethod
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.getField
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.getFieldSilently
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookConstructor
@@ -415,7 +415,7 @@ class ControllersProvider(context: Context) : ModPack(context) {
                             "create",
                             accessPointController.callMethod("canConfigMobileData"),
                             accessPointController.callMethod("canConfigWifi"),
-                            expandableClass.callStaticMethod("fromView", view)
+                            view.getExpandableView()
                         )
                         return true
                     }
@@ -433,7 +433,7 @@ class ControllersProvider(context: Context) : ModPack(context) {
                             true,
                             accessPointController.callMethod("canConfigMobileData"),
                             accessPointController.callMethod("canConfigWifi"),
-                            expandableClass.callStaticMethod("fromView", view)
+                            view.getExpandableView()
                         )
                         return true
                     }
@@ -460,10 +460,7 @@ class ControllersProvider(context: Context) : ModPack(context) {
                             "handleClick",
                             expandableClass!!
                         ) -> {
-                            cellularTile.callMethod(
-                                "handleClick",
-                                expandableClass.callStaticMethod("fromView", view)
-                            )
+                            cellularTile.callMethod("handleClick", view.getExpandableView())
                             return true
                         }
 
@@ -534,7 +531,7 @@ class ControllersProvider(context: Context) : ModPack(context) {
                             instance.mExpandableClass!!
                         ).invoke(
                             instance.mBluetoothTileDialogViewModel!!,
-                            expandableClass.callStaticMethod("fromView", view)
+                            view.getExpandableView()
                         )
                         true
                     } catch (e: Exception) {
@@ -557,10 +554,7 @@ class ControllersProvider(context: Context) : ModPack(context) {
                     "handleClick",
                     expandableClass!!
                 ) -> {
-                    instance.mBluetoothTile.callMethod(
-                        "handleClick",
-                        expandableClass.callStaticMethod("fromView", view)
-                    )
+                    instance.mBluetoothTile.callMethod("handleClick", view.getExpandableView())
                     return true
                 }
 

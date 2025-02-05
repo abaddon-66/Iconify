@@ -216,8 +216,6 @@ class LockscreenWidgets(context: Context) : ModPack(context) {
         launchableLinearLayoutClass =
             findClass("$SYSTEMUI_PACKAGE.animation.view.LaunchableLinearLayout")
 
-        expandableClass = findClass("$SYSTEMUI_PACKAGE.animation.Expandable")
-
         val keyguardQuickAffordanceInteractor =
             findClass("$SYSTEMUI_PACKAGE.keyguard.domain.interactor.KeyguardQuickAffordanceInteractor")
 
@@ -378,6 +376,5 @@ class LockscreenWidgets(context: Context) : ModPack(context) {
     companion object {
         var launchableImageViewClass: Class<*>? = null
         var launchableLinearLayoutClass: Class<*>? = null
-        var expandableClass: Class<*>? = null
     }
 }
