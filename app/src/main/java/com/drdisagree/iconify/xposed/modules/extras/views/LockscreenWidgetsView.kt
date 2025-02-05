@@ -1173,13 +1173,14 @@ class LockscreenWidgetsView(context: Context, activityStarter: Any?) :
     }
 
     private fun toggleHotspot() {
+        val hotspotTile: Any = ControllersProvider.mHotspotTile ?: return
         val finalView = hotspotButton ?: hotspotButtonFab
 
         post {
             try {
-                ControllersProvider.mHotspotTile!!.callMethod("handleClick", finalView)
+                hotspotTile.callMethod("handleClick", finalView)
             } catch (ignored: Throwable) {
-                ControllersProvider.mHotspotController!!.callMethod(
+                hotspotTile.callMethod(
                     "handleClick",
                     finalView.getExpandableView()
                 )
