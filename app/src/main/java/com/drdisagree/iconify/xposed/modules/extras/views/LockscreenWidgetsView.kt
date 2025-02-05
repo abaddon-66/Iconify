@@ -1518,21 +1518,13 @@ class LockscreenWidgetsView(context: Context, activityStarter: Any?) :
         }
 
     private fun toggleBluetoothState() {
-        val bluetoothController: Any = ControllersProvider.mBluetoothController ?: return
+        val bluetoothTile: Any? = ControllersProvider.mBluetoothTile
+        val bluetoothController: Any? = ControllersProvider.mBluetoothController
 
         try {
             bluetoothController.callMethod("setBluetoothEnabled", !isBluetoothEnabled)
         } catch (throwable: Throwable) {
-            val bluetoothAdapter = bluetoothController
-                .getField("mLocalBluetoothManager")
-                .getField("mLocalAdapter")
-
-            bluetoothAdapter.callMethod(
-                "setBluetoothStateInt",
-                bluetoothAdapter
-                    .getField("mAdapter")
-                    .callMethod("getState")
-            )
+            bluetoothTile.callMethod("toggleBluetooth")
         }
 
         updateBtState()

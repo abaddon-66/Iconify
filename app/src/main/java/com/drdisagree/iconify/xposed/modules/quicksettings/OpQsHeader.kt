@@ -167,6 +167,7 @@ class OpQsHeader(context: Context) : ModPack(context) {
     private var mActivityStarter: Any? = null
     private var mMediaOutputDialogFactory: Any? = null
     private var mNotificationMediaManager: Any? = null
+    private var mBluetoothTile: Any? = null
     private var mBluetoothController: Any? = null
     private var qsTileViewImplInstance: Any? = null
     private lateinit var mConnectivityManager: ConnectivityManager
@@ -229,6 +230,7 @@ class OpQsHeader(context: Context) : ModPack(context) {
         )
         val dependencyClass = findClass("$SYSTEMUI_PACKAGE.Dependency")
         val activityStarterClass = findClass("$SYSTEMUI_PACKAGE.plugins.ActivityStarter")
+        val bluetoothTileClass = findClass("$SYSTEMUI_PACKAGE.qs.tiles.BluetoothTile")
         val bluetoothControllerImplClass =
             findClass("$SYSTEMUI_PACKAGE.statusbar.policy.BluetoothControllerImpl")
         val notificationMediaManagerClass =
@@ -263,6 +265,10 @@ class OpQsHeader(context: Context) : ModPack(context) {
                 mActivityStarter = param.thisObject.getField("mActivityStarter")
                 mActivityLauncherUtils = ActivityLauncherUtils(mContext, mActivityStarter)
             }
+
+        bluetoothTileClass
+            .hookConstructor()
+            .runAfter { param -> mBluetoothTile = param.thisObject }
 
         bluetoothControllerImplClass
             .hookConstructor()
@@ -1174,16 +1180,7 @@ class OpQsHeader(context: Context) : ModPack(context) {
                 try {
                     mBluetoothController.callMethod("setBluetoothEnabled", !isBluetoothEnabled)
                 } catch (throwable: Throwable) {
-                    val localBluetoothAdapter = mBluetoothController
-                        .getField("mLocalBluetoothManager")
-                        .getField("mLocalAdapter")
-
-                    localBluetoothAdapter.callMethod(
-                        "setBluetoothStateInt",
-                        localBluetoothAdapter
-                            .getField("mAdapter")
-                            .callMethod("getState")
-                    )
+                    mBluetoothTile.callMethod("toggleBluetooth")
                 }
             }
         }

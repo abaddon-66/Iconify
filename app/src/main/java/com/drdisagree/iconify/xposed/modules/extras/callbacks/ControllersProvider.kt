@@ -27,7 +27,6 @@ class ControllersProvider(context: Context) : ModPack(context) {
     private var mBluetoothTileDialogViewModel: Any? = null
 
     private var mCellularTile: Any? = null
-    private var mBluetoothTile: Any? = null
 
     private val mMobileDataChangedListeners = ArrayList<OnMobileDataChanged>()
     private val mWifiChangedListeners = ArrayList<OnWifiChanged>()
@@ -335,6 +334,7 @@ class ControllersProvider(context: Context) : ModPack(context) {
         var mBluetoothController: Any? = null
         var mHotspotController: Any? = null
 
+        var mBluetoothTile: Any? = null
         var mHotspotTile: Any? = null
         var mDeviceControlsTile: Any? = null
         var mWalletTile: Any? = null
@@ -541,20 +541,20 @@ class ControllersProvider(context: Context) : ModPack(context) {
                 }
 
                 isMethodAvailable(
-                    instance.mBluetoothTile,
+                    mBluetoothTile,
                     "handleClick",
                     View::class.java
                 ) -> {
-                    instance.mBluetoothTile.callMethod("handleClick", view)
+                    mBluetoothTile.callMethod("handleClick", view)
                     return true
                 }
 
                 expandableClassAvailable && isMethodAvailable(
-                    instance.mBluetoothTile,
+                    mBluetoothTile,
                     "handleClick",
                     expandableClass!!
                 ) -> {
-                    instance.mBluetoothTile.callMethod("handleClick", view.getExpandableView())
+                    mBluetoothTile.callMethod("handleClick", view.getExpandableView())
                     return true
                 }
 
