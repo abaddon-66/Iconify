@@ -133,10 +133,10 @@ class MethodHookHelper(
                     clazz?.declaredMethods?.find { it.name == methodName }?.let { method ->
                         hookMethod(method, callback)
                     } ?: run {
-                        if (printError && methodNames!!.size == 1) {
+                        if (clazz != null && printError && methodNames!!.size == 1) {
                             log(
                                 XposedHook,
-                                "Method not found: $methodName${if (clazz?.simpleName != null) " in ${clazz.simpleName}" else ""}"
+                                "Method not found: $methodName in ${clazz.simpleName}"
                             )
                         }
                     }
@@ -165,10 +165,10 @@ class MethodHookHelper(
                     clazz?.declaredMethods?.find { it.name == methodName }?.let { method ->
                         hookMethodBefore(method, callback)
                     } ?: run {
-                        if (printError && methodNames!!.size == 1) {
+                        if (clazz != null && printError && methodNames!!.size == 1) {
                             log(
                                 XposedHook,
-                                "Method not found: $methodName${if (clazz?.simpleName != null) " in ${clazz.simpleName}" else ""}"
+                                "Method not found: $methodName in ${clazz.simpleName}"
                             )
                         }
                     }
@@ -197,10 +197,10 @@ class MethodHookHelper(
                     clazz?.declaredMethods?.find { it.name == methodName }?.let { method ->
                         hookMethodAfter(method, callback)
                     } ?: run {
-                        if (printError && methodNames!!.size == 1) {
+                        if (clazz != null && printError && methodNames!!.size == 1) {
                             log(
                                 XposedHook,
-                                "Method not found: $methodName${if (clazz?.simpleName != null) " in ${clazz.simpleName}" else ""}"
+                                "Method not found: $methodName in ${clazz.simpleName}"
                             )
                         }
                     }
@@ -227,10 +227,10 @@ class MethodHookHelper(
                     clazz?.declaredMethods?.find { it.name == methodName }?.let { method ->
                         hookMethodReplace(method, callback)
                     } ?: run {
-                        if (printError && methodNames!!.size == 1) {
+                        if (clazz != null && printError && methodNames!!.size == 1) {
                             log(
                                 XposedHook,
-                                "Method not found: $methodName${if (clazz?.simpleName != null) " in ${clazz.simpleName}" else ""}"
+                                "Method not found: $methodName in ${clazz.simpleName}"
                             )
                         }
                     }
