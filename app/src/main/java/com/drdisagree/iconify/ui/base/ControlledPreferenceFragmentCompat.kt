@@ -219,7 +219,7 @@ abstract class ControlledPreferenceFragmentCompat : PreferenceFragmentCompat() {
                 if (searchableFragment.xml == result.resourceFile) {
                     replaceFragment(parentFragmentManager, searchableFragment.fragment)
                     val fragment = searchableFragment.fragment
-                    var resultFragment: ControlledPreferenceFragmentCompat? = null
+                    val resultFragment: ControlledPreferenceFragmentCompat?
                     if (fragment is LockscreenClockParent) {
                         resultFragment = LockscreenClockParent.getPreferenceFragment()
                         fragment.scrollToPreference()
@@ -231,6 +231,11 @@ abstract class ControlledPreferenceFragmentCompat : PreferenceFragmentCompat() {
                 }
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        updateScreen(null)
     }
 
     override fun onDestroy() {

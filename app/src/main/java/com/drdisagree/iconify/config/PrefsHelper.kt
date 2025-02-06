@@ -57,7 +57,6 @@ import com.drdisagree.iconify.common.Preferences.CUSTOM_BATTERY_STYLE
 import com.drdisagree.iconify.common.Preferences.CUSTOM_BATTERY_SWAP_PERCENTAGE
 import com.drdisagree.iconify.common.Preferences.CUSTOM_BATTERY_WIDTH
 import com.drdisagree.iconify.common.Preferences.CUSTOM_DEPTH_WALLPAPER_SWITCH
-import com.drdisagree.iconify.common.Preferences.CUSTOM_QS_MARGIN
 import com.drdisagree.iconify.common.Preferences.DEPTH_WALLPAPER_AI_MODE
 import com.drdisagree.iconify.common.Preferences.DEPTH_WALLPAPER_AI_STATUS
 import com.drdisagree.iconify.common.Preferences.DEPTH_WALLPAPER_BACKGROUND_MOVEMENT_MULTIPLIER
@@ -96,8 +95,8 @@ import com.drdisagree.iconify.common.Preferences.LOCKSCREEN_WIDGETS_CUSTOM_COLOR
 import com.drdisagree.iconify.common.Preferences.LOCKSCREEN_WIDGETS_DEVICE_WIDGET
 import com.drdisagree.iconify.common.Preferences.LOCKSCREEN_WIDGETS_DEVICE_WIDGET_CIRCULAR_COLOR
 import com.drdisagree.iconify.common.Preferences.LOCKSCREEN_WIDGETS_DEVICE_WIDGET_CUSTOM_COLOR_SWITCH
-import com.drdisagree.iconify.common.Preferences.LOCKSCREEN_WIDGETS_DEVICE_WIDGET_LINEAR_COLOR
 import com.drdisagree.iconify.common.Preferences.LOCKSCREEN_WIDGETS_DEVICE_WIDGET_DEVICE_NAME
+import com.drdisagree.iconify.common.Preferences.LOCKSCREEN_WIDGETS_DEVICE_WIDGET_LINEAR_COLOR
 import com.drdisagree.iconify.common.Preferences.LOCKSCREEN_WIDGETS_DEVICE_WIDGET_STYLE
 import com.drdisagree.iconify.common.Preferences.LOCKSCREEN_WIDGETS_DEVICE_WIDGET_TEXT_COLOR
 import com.drdisagree.iconify.common.Preferences.LOCKSCREEN_WIDGETS_SMALL_ACTIVE
@@ -122,12 +121,8 @@ import com.drdisagree.iconify.common.Preferences.LSCLOCK_USERNAME
 import com.drdisagree.iconify.common.Preferences.NEW_UPDATE_FOUND
 import com.drdisagree.iconify.common.Preferences.NOTIF_TRANSPARENCY_SWITCH
 import com.drdisagree.iconify.common.Preferences.PREF_KEY_UPDATE_STATUS
-import com.drdisagree.iconify.common.Preferences.QQS_TOPMARGIN
-import com.drdisagree.iconify.common.Preferences.QQS_TOPMARGIN_LANDSCAPE
 import com.drdisagree.iconify.common.Preferences.QSALPHA_LEVEL
 import com.drdisagree.iconify.common.Preferences.QSPANEL_BLUR_SWITCH
-import com.drdisagree.iconify.common.Preferences.QS_TOPMARGIN
-import com.drdisagree.iconify.common.Preferences.QS_TOPMARGIN_LANDSCAPE
 import com.drdisagree.iconify.common.Preferences.QS_TRANSPARENCY_SWITCH
 import com.drdisagree.iconify.common.Preferences.SB_CLOCK_SIZE
 import com.drdisagree.iconify.common.Preferences.SB_CLOCK_SIZE_SWITCH
@@ -152,6 +147,7 @@ import com.drdisagree.iconify.config.RPrefs.getInt
 import com.drdisagree.iconify.config.RPrefs.getSliderFloat
 import com.drdisagree.iconify.config.RPrefs.getString
 import com.drdisagree.iconify.config.RPrefs.getStringSet
+import com.drdisagree.iconify.ui.preferences.TwoTargetSwitchPreference
 import com.drdisagree.iconify.utils.weather.WeatherConfig
 
 object PrefsHelper {
@@ -177,13 +173,6 @@ object PrefsHelper {
             AGGRESSIVE_QSPANEL_BLUR_SWITCH -> getBoolean(QSPANEL_BLUR_SWITCH)
 
             HIDE_QSLABEL_SWITCH -> getBoolean(VERTICAL_QSTILE_SWITCH)
-
-            QQS_TOPMARGIN,
-            QS_TOPMARGIN,
-            QQS_TOPMARGIN_LANDSCAPE,
-            QS_TOPMARGIN_LANDSCAPE,
-            "xposedQuickSettingsQsMarginPortrait",
-            "xposedQuickSettingsQsMarginLandscape" -> getBoolean(CUSTOM_QS_MARGIN)
 
             SB_CLOCK_SIZE -> getBoolean(SB_CLOCK_SIZE_SWITCH)
 
@@ -490,6 +479,7 @@ object PrefsHelper {
 
     fun setupAllPreferences(group: PreferenceGroup) {
         var i = 0
+
         while (true) {
             try {
                 val thisPreference = group.getPreference(i)
@@ -498,10 +488,14 @@ object PrefsHelper {
 
                 if (thisPreference is PreferenceGroup) {
                     setupAllPreferences(thisPreference)
+                } else if (thisPreference is TwoTargetSwitchPreference) {
+                    val switchPreference: TwoTargetSwitchPreference = thisPreference
+                    switchPreference.isChecked = getBoolean(switchPreference.key)
                 }
             } catch (ignored: Throwable) {
                 break
             }
+
             i++
         }
     }
