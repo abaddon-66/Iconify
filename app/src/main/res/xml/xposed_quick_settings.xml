@@ -180,6 +180,20 @@
     </com.drdisagree.iconify.ui.preferences.PreferenceCategory>
 
     <com.drdisagree.iconify.ui.preferences.PreferenceCategory
+        android:key="xposedQuickSettingsMediaPlayer"
+        android:title="@string/section_title_media_player"
+        app:iconSpaceReserved="false"
+        search:ignore="true">
+
+        <com.drdisagree.iconify.ui.preferences.SwitchPreference
+            android:key="xposed_compactmediaplayer"
+            android:summary="@string/compact_media_player_desc"
+            android:title="@string/compact_media_player_title"
+            app:iconSpaceReserved="false" />
+
+    </com.drdisagree.iconify.ui.preferences.PreferenceCategory>
+
+    <com.drdisagree.iconify.ui.preferences.PreferenceCategory
         android:key="xposedQuickSettingsQsElements"
         android:title="@string/section_title_qs_elements"
         app:iconSpaceReserved="false"

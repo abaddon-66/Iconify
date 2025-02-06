@@ -437,7 +437,6 @@
     <string name="section_title_privacy_chip">Privacy Chip</string>
     <string name="accent_privacy_chip_title">Accent Privacy Chip</string>
     <string name="accent_privacy_chip_desc">Make privacy chip accent colored</string>
-    <string name="section_title_media_player">Media Player</string>
     <string name="disable_progress_wave_title">Disable Progress Wave</string>
     <string name="disable_progress_wave_desc">Disable progress bar wave animation</string>
 
@@ -596,6 +595,9 @@
     <string name="colored_qs_notification_title">Colored Notification Icon</string>
     <string name="colored_qs_notification_desc">Show app icon as notification icon</string>
     <string name="section_title_qs_margin">QS Margin</string>
+    <string name="section_title_media_player">Media Player</string>
+    <string name="compact_media_player_title">Compact Media Player</string>
+    <string name="compact_media_player_desc">Make media player compact</string>
     <string name="section_title_qs_elements">QS Elements</string>
     <string name="hide_qs_on_lockscreen_title">Hide QS on Lockscreen</string>
     <string name="hide_qs_on_lockscreen_desc">Disable quick settings panel on secured lockscreen</string>

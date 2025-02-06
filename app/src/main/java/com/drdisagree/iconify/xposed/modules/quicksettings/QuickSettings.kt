@@ -25,6 +25,7 @@ import android.widget.TextView
 import androidx.annotation.ColorInt
 import com.drdisagree.iconify.common.Const.FRAMEWORK_PACKAGE
 import com.drdisagree.iconify.common.Const.SYSTEMUI_PACKAGE
+import com.drdisagree.iconify.common.Preferences.COMPACT_MEDIA_PLAYER
 import com.drdisagree.iconify.common.Preferences.CUSTOM_QS_MARGIN
 import com.drdisagree.iconify.common.Preferences.FIX_NOTIFICATION_COLOR
 import com.drdisagree.iconify.common.Preferences.FIX_NOTIFICATION_FOOTER_BUTTON_COLOR
@@ -91,6 +92,7 @@ class QuickSettings(context: Context) : ModPack(context) {
     private var customQsMarginsEnabled = false
     private var qsTilePrimaryTextSize: Float? = null
     private var qsTileSecondaryTextSize: Float? = null
+    private var compactMediaPlayerEnabled = false
     private var showHeaderClock = false
 
     override fun updatePrefs(vararg key: String) {
@@ -116,6 +118,7 @@ class QuickSettings(context: Context) : ModPack(context) {
             hideSilentText = getBoolean(HIDE_QS_SILENT_TEXT, false)
             hideFooterButtons = getBoolean(HIDE_QS_FOOTER_BUTTONS, false)
             showHeaderClock = getBoolean(HEADER_CLOCK_SWITCH, false)
+            compactMediaPlayerEnabled = getBoolean(COMPACT_MEDIA_PLAYER, false)
         }
 
         triggerQsElementVisibility()
@@ -129,6 +132,7 @@ class QuickSettings(context: Context) : ModPack(context) {
         fixNotificationColorA14()
         manageQsElementVisibility()
         disableQsOnSecureLockScreen()
+        compactMediaPlayer()
     }
 
     private fun setVerticalTiles() {
@@ -786,6 +790,38 @@ class QuickSettings(context: Context) : ModPack(context) {
                 } else {
                     param.args[0]
                 }
+            }
+    }
+
+    private fun compactMediaPlayer() {
+        val mediaViewControllerClass =
+            findClass("$SYSTEMUI_PACKAGE.media.controls.ui.controller.MediaViewController")
+
+        mediaViewControllerClass
+            .hookMethod("obtainViewState")
+            .runBefore { param ->
+                if (!compactMediaPlayerEnabled) return@runBefore
+
+                val mediaHostState = param.args[0] ?: return@runBefore
+
+                // for a14 and above
+                mediaHostState.javaClass
+                    .hookMethod("getExpansion")
+                    .suppressError()
+                    .runBefore runBefore2@{ param2 ->
+                        if (!compactMediaPlayerEnabled) return@runBefore2
+
+                        param2.result = 0f
+                    }
+
+                // for a13 and below
+                mediaHostState.javaClass
+                    .hookConstructor()
+                    .runAfter { param2 ->
+                        if (!compactMediaPlayerEnabled) return@runAfter
+
+                        param2.thisObject.setFieldSilently("expansion", 0f)
+                    }
             }
     }
 
