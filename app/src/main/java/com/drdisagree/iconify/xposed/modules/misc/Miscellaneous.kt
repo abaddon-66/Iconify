@@ -3,6 +3,7 @@ package com.drdisagree.iconify.xposed.modules.misc
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.XResources
+import android.graphics.Color
 import android.os.Build
 import android.util.TypedValue
 import android.view.Gravity
@@ -21,6 +22,7 @@ import com.drdisagree.iconify.common.Preferences.HIDE_STATUS_ICONS_SWITCH
 import com.drdisagree.iconify.common.Preferences.QSPANEL_HIDE_CARRIER
 import com.drdisagree.iconify.xposed.HookRes.Companion.resParams
 import com.drdisagree.iconify.xposed.ModPack
+import com.drdisagree.iconify.xposed.modules.extras.utils.coloredStatusbarOverlayEnabled
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.XposedHook.Companion.findClass
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.callMethod
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.getField
@@ -91,6 +93,7 @@ class Miscellaneous(context: Context) : ModPack(context) {
         hideStatusIcons()
         fixedStatusIconsA12()
         hideDataDisabledIcon()
+        fixRotationViewColor()
     }
 
     private fun hideElements() {
@@ -562,6 +565,19 @@ class Miscellaneous(context: Context) : ModPack(context) {
                         privacyContainer.addView(statusIconContainer)
                     }
                 } catch (ignored: Throwable) {
+                }
+            }
+    }
+
+    private fun fixRotationViewColor() {
+        val floatingRotationButtonClass =
+            findClass("$SYSTEMUI_PACKAGE.shared.rotation.FloatingRotationButton")
+
+        floatingRotationButtonClass
+            .hookMethod("updateIcon")
+            .runBefore { param ->
+                if (coloredStatusbarOverlayEnabled) {
+                    param.args[1] = Color.BLACK
                 }
             }
     }
