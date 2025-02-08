@@ -109,6 +109,102 @@ class Statusbar(context: Context) : ModPack(context) {
             findClass("$SYSTEMUI_PACKAGE.statusbar.ScalingDrawableWrapper")!!
         val statusBarIconViewClass = findClass("$SYSTEMUI_PACKAGE.statusbar.StatusBarIconView")
 
+        fun removeTintForStatusbarIcon(icon: View, isNotification: Boolean = false) {
+            try {
+                val pkgName = icon
+                    .getField("mIcon")
+                    .getField("pkg") as String
+
+                if (isNotification && !pkgName.contains("systemui")) {
+                    icon.setField("mCurrentSetColor", 0) // StatusBarIconView.NO_COLOR
+                    icon.callMethod("updateIconColor")
+                }
+            } catch (ignored: Throwable) {
+                log(this@Statusbar, ignored)
+            }
+        }
+
+        fun removeTintForStatusbarIcon(param: MethodHookParam) {
+            val icon = param.args[0] as View
+            val isNotification = param.thisObject.getFieldSilently("mNotification") != null
+
+            removeTintForStatusbarIcon(icon, isNotification)
+        }
+
+        fun setNotificationIcon(
+            statusBarIcon: Any?,
+            context: Context,
+            sysuiContext: Context,
+            drawableSize: Class<*>?,
+            param: MethodHookParam,
+            scalingDrawableWrapper: Class<*>
+        ) {
+            var icon: Drawable
+            val res = sysuiContext.resources
+            val pkgName = statusBarIcon.getField("pkg") as String
+
+            if (listOf("com.android", "systemui").any { pkgName.contains(it) }) {
+                return
+            }
+
+            try {
+                icon = context.packageManager.getApplicationIcon(pkgName)
+            } catch (e: Throwable) {
+                return
+            }
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                val isLowRamDevice = callStaticMethod(
+                    ActivityManager::class.java,
+                    "isLowRamDeviceStatic"
+                ) as Boolean
+
+                val maxIconSize = res.getDimensionPixelSize(
+                    res.getIdentifier(
+                        if (isLowRamDevice) {
+                            "notification_small_icon_size_low_ram"
+                        } else {
+                            "notification_small_icon_size"
+                        },
+                        "dimen",
+                        FRAMEWORK_PACKAGE
+                    )
+                )
+
+                if (drawableSize != null) {
+                    icon = callStaticMethod(
+                        drawableSize,
+                        "downscaleToSize",
+                        res,
+                        icon,
+                        maxIconSize,
+                        maxIconSize
+                    ) as Drawable
+                }
+            }
+
+            val typedValue = TypedValue()
+            res.getValue(
+                res.getIdentifier(
+                    "status_bar_icon_scale_factor",
+                    "dimen",
+                    SYSTEMUI_PACKAGE
+                ),
+                typedValue,
+                true
+            )
+            val scaleFactor = typedValue.float
+
+            if (scaleFactor == 1f) {
+                param.result = icon
+            } else {
+                param.result = scalingDrawableWrapper.getConstructor(
+                    Drawable::class.java,
+                    Float::class.javaPrimitiveType
+                ).newInstance(icon, scaleFactor)
+            }
+        }
+
         @Suppress("UNCHECKED_CAST")
         notificationIconContainerClass
             .hookMethod("applyIconStates")
@@ -131,19 +227,22 @@ class Statusbar(context: Context) : ModPack(context) {
 
         statusBarIconViewClass
             .hookMethod("updateIconColor")
-            .replace { }
+            .runBefore { param ->
+                val isNotification = param.thisObject.getFieldSilently("mNotification") != null
+
+                if (isNotification) {
+                    param.result = null
+                }
+            }
 
         legacyNotificationIconAreaControllerImplClass
             .hookMethod("updateTintForIcon")
             .runAfter { param ->
                 removeTintForStatusbarIcon(param)
 
-                try {
-                    val view = param.args[0] as View
-                    view.callMethod("setStaticDrawableColor", 0) // StatusBarIconView.NO_COLOR
-                    view.callMethod("setDecorColor", Color.WHITE)
-                } catch (ignored: Throwable) {
-                }
+                val view = param.args[0] as? View
+                view.callMethod("setStaticDrawableColor", 0) // StatusBarIconView.NO_COLOR
+                view.callMethod("setDecorColor", Color.WHITE)
             }
 
         try {
@@ -154,6 +253,7 @@ class Statusbar(context: Context) : ModPack(context) {
                     Context::class.java,
                     "com.android.internal.statusbar.StatusBarIcon"
                 )
+                .throwError()
                 .runBefore { param ->
                     val sysuiContext = param.args[0] as Context
                     val context = param.args[1] as Context
@@ -198,100 +298,6 @@ class Statusbar(context: Context) : ModPack(context) {
                         scalingDrawableWrapperClass
                     )
                 }
-        }
-    }
-
-    private fun removeTintForStatusbarIcon(param: MethodHookParam) {
-        val icon = param.args[0] as View
-        removeTintForStatusbarIcon(icon)
-    }
-
-    private fun removeTintForStatusbarIcon(icon: View) {
-        try {
-            val pkgName = icon
-                .getField("mIcon")
-                .getField("pkg") as String
-
-            if (!pkgName.contains("systemui")) {
-                icon.setField("mCurrentSetColor", 0) // StatusBarIconView.NO_COLOR
-                icon.callMethod("updateIconColor")
-            }
-        } catch (ignored: Throwable) {
-            log(this@Statusbar, ignored)
-        }
-    }
-
-    private fun setNotificationIcon(
-        statusBarIcon: Any?,
-        context: Context,
-        sysuiContext: Context,
-        drawableSize: Class<*>?,
-        param: MethodHookParam,
-        scalingDrawableWrapper: Class<*>
-    ) {
-        var icon: Drawable
-        val res = sysuiContext.resources
-        val pkgName = statusBarIcon.getField("pkg") as String
-
-        if (listOf("com.android", "systemui").any { pkgName.contains(it) }) {
-            return
-        }
-
-        try {
-            icon = context.packageManager.getApplicationIcon(pkgName)
-        } catch (e: Throwable) {
-            return
-        }
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            val isLowRamDevice = callStaticMethod(
-                ActivityManager::class.java,
-                "isLowRamDeviceStatic"
-            ) as Boolean
-
-            val maxIconSize = res.getDimensionPixelSize(
-                res.getIdentifier(
-                    if (isLowRamDevice) {
-                        "notification_small_icon_size_low_ram"
-                    } else {
-                        "notification_small_icon_size"
-                    },
-                    "dimen",
-                    FRAMEWORK_PACKAGE
-                )
-            )
-
-            if (drawableSize != null) {
-                icon = callStaticMethod(
-                    drawableSize,
-                    "downscaleToSize",
-                    res,
-                    icon,
-                    maxIconSize,
-                    maxIconSize
-                ) as Drawable
-            }
-        }
-
-        val typedValue = TypedValue()
-        res.getValue(
-            res.getIdentifier(
-                "status_bar_icon_scale_factor",
-                "dimen",
-                SYSTEMUI_PACKAGE
-            ),
-            typedValue,
-            true
-        )
-        val scaleFactor = typedValue.float
-
-        if (scaleFactor == 1f) {
-            param.result = icon
-        } else {
-            param.result = scalingDrawableWrapper.getConstructor(
-                Drawable::class.java,
-                Float::class.javaPrimitiveType
-            ).newInstance(icon, scaleFactor)
         }
     }
 

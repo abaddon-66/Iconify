@@ -108,6 +108,7 @@ class MethodHookHelper(
 
     private var parameterTypes: Array<Any?>? = null
     private var printError: Boolean = true
+    private var throwError: Boolean = false
 
     @Suppress("UNCHECKED_CAST")
     fun parameters(vararg parameterTypes: Any?): MethodHookHelper {
@@ -133,11 +134,15 @@ class MethodHookHelper(
                     clazz?.declaredMethods?.find { it.name == methodName }?.let { method ->
                         hookMethod(method, callback)
                     } ?: run {
-                        if (clazz != null && printError && methodNames!!.size == 1) {
-                            log(
-                                XposedHook,
-                                "Method not found: $methodName in ${clazz.simpleName}"
-                            )
+                        if (printError) {
+                            if (clazz != null && methodNames!!.size == 1) {
+                                log(
+                                    XposedHook,
+                                    "Method not found: $methodName in ${clazz.simpleName}"
+                                )
+                            }
+                        } else if (throwError) {
+                            throw Throwable("Method not found: $methodName in ${clazz?.simpleName}")
                         }
                     }
                 }
@@ -165,11 +170,15 @@ class MethodHookHelper(
                     clazz?.declaredMethods?.find { it.name == methodName }?.let { method ->
                         hookMethodBefore(method, callback)
                     } ?: run {
-                        if (clazz != null && printError && methodNames!!.size == 1) {
-                            log(
-                                XposedHook,
-                                "Method not found: $methodName in ${clazz.simpleName}"
-                            )
+                        if (printError) {
+                            if (clazz != null && methodNames!!.size == 1) {
+                                log(
+                                    XposedHook,
+                                    "Method not found: $methodName in ${clazz.simpleName}"
+                                )
+                            }
+                        } else if (throwError) {
+                            throw Throwable("Method not found: $methodName in ${clazz?.simpleName}")
                         }
                     }
                 }
@@ -197,11 +206,15 @@ class MethodHookHelper(
                     clazz?.declaredMethods?.find { it.name == methodName }?.let { method ->
                         hookMethodAfter(method, callback)
                     } ?: run {
-                        if (clazz != null && printError && methodNames!!.size == 1) {
-                            log(
-                                XposedHook,
-                                "Method not found: $methodName in ${clazz.simpleName}"
-                            )
+                        if (printError) {
+                            if (clazz != null && methodNames!!.size == 1) {
+                                log(
+                                    XposedHook,
+                                    "Method not found: $methodName in ${clazz.simpleName}"
+                                )
+                            }
+                        } else if (throwError) {
+                            throw Throwable("Method not found: $methodName in ${clazz?.simpleName}")
                         }
                     }
                 }
@@ -227,11 +240,15 @@ class MethodHookHelper(
                     clazz?.declaredMethods?.find { it.name == methodName }?.let { method ->
                         hookMethodReplace(method, callback)
                     } ?: run {
-                        if (clazz != null && printError && methodNames!!.size == 1) {
-                            log(
-                                XposedHook,
-                                "Method not found: $methodName in ${clazz.simpleName}"
-                            )
+                        if (printError) {
+                            if (clazz != null && methodNames!!.size == 1) {
+                                log(
+                                    XposedHook,
+                                    "Method not found: $methodName in ${clazz.simpleName}"
+                                )
+                            }
+                        } else if (throwError) {
+                            throw Throwable("Method not found: $methodName in ${clazz?.simpleName}")
                         }
                     }
                 }
@@ -411,6 +428,14 @@ class MethodHookHelper(
         printError = false
         return this
     }
+
+    /*
+     * Call before running any hook
+     */
+    fun throwError(): MethodHookHelper {
+        throwError = true
+        return this
+    }
 }
 
 fun Method.run(callback: XC_MethodHook): MethodHookHelper {
@@ -443,6 +468,7 @@ class LayoutHookHelper(private val xResources: XResources) {
     private var resourceType: String? = null
     private var resourceName: String? = null
     private var printError: Boolean = true
+    private var throwError: Boolean = false
 
     fun packageName(packageName: String): LayoutHookHelper {
         this.packageName = packageName
@@ -477,6 +503,8 @@ class LayoutHookHelper(private val xResources: XResources) {
         } catch (throwable: Throwable) {
             if (printError) {
                 log(XposedHook, throwable)
+            } else if (throwError) {
+                throw throwable
             }
         }
 
@@ -488,6 +516,14 @@ class LayoutHookHelper(private val xResources: XResources) {
      */
     fun suppressError(): LayoutHookHelper {
         printError = false
+        return this
+    }
+
+    /*
+     * Call before running any hook
+     */
+    fun throwError(): LayoutHookHelper {
+        throwError = true
         return this
     }
 }
