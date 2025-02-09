@@ -57,7 +57,6 @@ import com.drdisagree.iconify.common.Preferences.ICONIFY_QS_HEADER_CONTAINER_TAG
 import com.drdisagree.iconify.common.Preferences.OP_QS_HEADER_BLUR_LEVEL
 import com.drdisagree.iconify.common.Preferences.OP_QS_HEADER_EXPANSION_Y
 import com.drdisagree.iconify.common.Preferences.OP_QS_HEADER_GAP_EXPANDED
-import com.drdisagree.iconify.common.Preferences.OP_QS_HEADER_HIDE_STOCK_MEDIA
 import com.drdisagree.iconify.common.Preferences.OP_QS_HEADER_SWITCH
 import com.drdisagree.iconify.common.Preferences.OP_QS_HEADER_TOP_MARGIN
 import com.drdisagree.iconify.common.Preferences.OP_QS_HEADER_VIBRATE
@@ -81,7 +80,6 @@ import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.ResourceHookMa
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.XposedHook.Companion.findClass
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.callMethod
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.getField
-import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.getFieldSilently
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookConstructor
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookMethod
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.isMethodAvailable
@@ -118,7 +116,6 @@ class OpQsHeader(context: Context) : ModPack(context) {
     // Preferences
     private var showOpQsHeaderView = false
     private var vibrateOnClick = false
-    private var hideStockMediaPlayer = false
     private var mediaBlurLevel = 10f
     private var topMarginValue = 0
     private var expansionAmount = 0
@@ -192,7 +189,6 @@ class OpQsHeader(context: Context) : ModPack(context) {
         Xprefs.apply {
             showOpQsHeaderView = getBoolean(OP_QS_HEADER_SWITCH, false)
             vibrateOnClick = getBoolean(OP_QS_HEADER_VIBRATE, false)
-            hideStockMediaPlayer = getBoolean(OP_QS_HEADER_HIDE_STOCK_MEDIA, false)
             mediaBlurLevel = getSliderInt(OP_QS_HEADER_BLUR_LEVEL, 10).toFloat()
             topMarginValue = getSliderInt(OP_QS_HEADER_TOP_MARGIN, 0)
             expansionAmount = getSliderInt(OP_QS_HEADER_EXPANSION_Y, 0)
@@ -211,7 +207,6 @@ class OpQsHeader(context: Context) : ModPack(context) {
 
     override fun handleLoadPackage(loadPackageParam: LoadPackageParam) {
         val qsPanelClass = findClass("$SYSTEMUI_PACKAGE.qs.QSPanel")
-        val quickQsPanelClass = findClass("$SYSTEMUI_PACKAGE.qs.QuickQSPanel")!!
         val qsImplClass = findClass(
             "$SYSTEMUI_PACKAGE.qs.QSImpl",
             "$SYSTEMUI_PACKAGE.qs.QSFragment"
@@ -492,180 +487,21 @@ class OpQsHeader(context: Context) : ModPack(context) {
             .run(updateQsTopMargin)
 
         // Hide stock media player
-        val reAttachMediaHostAvailable = qsPanelClass!!.declaredMethods.any {
-            it.name == "reAttachMediaHost"
-        }
+        qsPanelClass
+            .hookConstructor()
+            .runAfter { param ->
+                if (!showOpQsHeaderView) return@runAfter
 
-        if (showOpQsHeaderView && hideStockMediaPlayer && reAttachMediaHostAvailable) {
-            qsPanelClass
-                .hookMethod("reAttachMediaHost")
-                .replace { }
+                param.thisObject.setField("mUsingMediaPlayer", false)
+            }
 
-            // Ensure stock media player is hidden
-            qsImplClass
-                .hookMethod("onComponentCreated")
-                .runAfter { param ->
-                    if (!showOpQsHeaderView) return@runAfter
+        qsPanelControllerBaseClass
+            .hookConstructor()
+            .runAfter { param ->
+                if (!showOpQsHeaderView) return@runAfter
 
-                    try {
-                        val mQSPanelController = param.thisObject.getField("mQSPanelController")
-
-                        val listener = Runnable {
-                            val mediaHost = mQSPanelController.callMethod("getMediaHost")
-                            val hostView = mediaHost.callMethod("getHostView")
-
-                            hostView.callMethod("setAlpha", 0.0f)
-
-                            try {
-                                mQSPanelController.callMethod("requestAnimatorUpdate")
-                            } catch (ignored: Throwable) {
-                                val mQSAnimator = param.thisObject.getField("mQSAnimator")
-                                mQSAnimator.callMethod("requestAnimatorUpdate")
-                            }
-                        }
-
-                        mQSPanelController.callMethod(
-                            "setUsingHorizontalLayoutChangeListener",
-                            listener
-                        )
-                    } catch (ignored: Throwable) {
-                    }
-                }
-        } else if (hideStockMediaPlayer) { // If reAttachMediaHost is not available, we need to hook switchTileLayout()
-            qsPanelControllerBaseClass
-                .hookMethod("switchTileLayout")
-                .runBefore { param ->
-                    if (!showOpQsHeaderView) return@runBefore
-
-                    val force = param.args[0] as Boolean
-                    val horizontal = param.thisObject.callMethod(
-                        "shouldUseHorizontalLayout"
-                    ) as Boolean
-                    val mUsingHorizontalLayout = param.thisObject.getField(
-                        "mUsingHorizontalLayout"
-                    ) as Boolean
-
-                    if (horizontal != mUsingHorizontalLayout || force) {
-                        val mQSLogger = param.thisObject.getField("mQSLogger")
-                        val qsPanel = param.thisObject.getField("mView")
-                        val qsPanelTag = qsPanel.callMethod("getDumpableTag")
-
-                        try {
-                            mQSLogger.callMethod(
-                                "logSwitchTileLayout",
-                                horizontal,
-                                mUsingHorizontalLayout,
-                                force,
-                                qsPanelTag
-                            )
-                        } catch (ignored: Throwable) {
-                            mQSLogger.callMethod(
-                                "logSwitchTileLayout",
-                                qsPanelTag,
-                                horizontal,
-                                mUsingHorizontalLayout,
-                                force
-                            )
-                        }
-
-                        param.thisObject.setField(
-                            "mUsingHorizontalLayout",
-                            horizontal
-                        )
-
-                        val mUsingHorizontalLayout2 = qsPanel.getField(
-                            "mUsingHorizontalLayout"
-                        ) as Boolean
-
-                        if (horizontal != mUsingHorizontalLayout2 || force) {
-                            qsPanel.setField(
-                                "mUsingHorizontalLayout",
-                                horizontal
-                            )
-
-                            val mHorizontalContentContainer = qsPanel.getField(
-                                "mHorizontalContentContainer"
-                            ) as LinearLayout
-
-                            val newParent: ViewGroup = if (horizontal) {
-                                mHorizontalContentContainer
-                            } else {
-                                qsPanel as ViewGroup
-                            }
-                            val mTileLayout = qsPanel.getField("mTileLayout")
-                            val index = if (!horizontal) {
-                                qsPanel.getField("mMovableContentStartIndex")
-                            } else {
-                                0
-                            } as Int
-
-                            callStaticMethod(
-                                qsPanelClass,
-                                "switchToParent",
-                                mTileLayout,
-                                newParent,
-                                index,
-                                qsPanelTag
-                            )
-
-                            val mFooter = qsPanel.getFieldSilently("mFooter") as? View
-
-                            if (mFooter != null) {
-                                callStaticMethod(
-                                    qsPanelClass,
-                                    "switchToParent",
-                                    mFooter,
-                                    newParent,
-                                    index + 1,
-                                    qsPanelTag
-                                )
-                            }
-
-                            mTileLayout.callMethod(
-                                "setMinRows",
-                                if (horizontal) 2 else 1
-                            )
-                            mTileLayout.callMethod(
-                                "setMaxColumns",
-                                if (horizontal) 2 else 4
-                            )
-
-                            val mHorizontalLinearLayout = qsPanel.getFieldSilently(
-                                "mHorizontalLinearLayout"
-                            ) as? LinearLayout
-
-                            if (mHorizontalLinearLayout != null &&
-                                quickQsPanelClass.isInstance(qsPanel)
-                            ) {
-                                val mMediaTotalBottomMargin =
-                                    qsPanel.getField("mMediaTotalBottomMargin") as Int
-                                val mQsPanelBottomPadding = (qsPanel as LinearLayout).paddingBottom
-
-                                val layoutParams =
-                                    mHorizontalLinearLayout.layoutParams as LinearLayout.LayoutParams
-                                layoutParams.bottomMargin =
-                                    (mMediaTotalBottomMargin - mQsPanelBottomPadding)
-                                        .coerceAtLeast(0)
-                                mHorizontalLinearLayout.layoutParams = layoutParams
-                            }
-
-                            qsPanel.callMethod("updatePadding")
-
-                            mHorizontalLinearLayout?.visibility = if (!horizontal) {
-                                View.GONE
-                            } else {
-                                View.VISIBLE
-                            }
-                        }
-
-                        (param.thisObject.getFieldSilently(
-                            "mUsingHorizontalLayoutChangedListener"
-                        ) as? Runnable)?.run()
-                    }
-
-                    param.result = true
-                }
-        }
+                param.thisObject.setField("mUsingMediaPlayer", false)
+            }
 
         qsPanelControllerBaseClass
             .hookMethod("onInit")
