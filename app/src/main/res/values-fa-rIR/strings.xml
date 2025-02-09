@@ -406,7 +406,6 @@
     <string name="section_title_privacy_chip">تراشه حریم خصوصی</string>
     <string name="accent_privacy_chip_title">لهجه تراشه حریم خصوصی</string>
     <string name="accent_privacy_chip_desc">لهجه تراشه حریم خصوصی را رنگی کنید</string>
-    <string name="section_title_media_player">پخش‌کننده رسانه</string>
     <string name="disable_progress_wave_title">غیرفعال کردن موج پیشرفت</string>
     <string name="disable_progress_wave_desc">غیرفعال کردن انیمیشن موج نوار پیشرفت</string>
     <!-- Xposed Menu -->
@@ -487,6 +486,9 @@
     <string name="mini_widget_icon_inactive">رنگ غیر‌فعال ابزارک کوچک</string>
     <string name="weather_settings">تنظیمات آب و هوا</string>
     <string name="lockscreen_widgets_scale">مقیاس ابزارک ها</string>
+    <string name="lockscreen_device_widget_style_title">Device Widget Style</string>
+    <string name="lockscreen_device_widget_style_classic">Bar with Two Arcs</string>
+    <string name="lockscreen_device_widget_style_arcs">Four Arcs</string>
     <!-- LS Widgets Actions -->
     <string name="camera">دوربین</string>
     <string name="clock_timer">ساعت/تایمر</string>
@@ -555,6 +557,9 @@
     <string name="colored_qs_notification_title">نماد اعلان رنگی</string>
     <string name="colored_qs_notification_desc">نمایش نماد برنامه به عنوان نماد اعلان</string>
     <string name="section_title_qs_margin">حاشیه تنظیم‌سریع</string>
+    <string name="section_title_media_player">پخش‌کننده رسانه</string>
+    <string name="compact_media_player_title">Compact Media Player</string>
+    <string name="compact_media_player_desc">Make media player compact</string>
     <string name="section_title_qs_elements">عناصر تنظیم‌سریع</string>
     <string name="hide_qs_on_lockscreen_title">تنظیم‌سریع را در صفحه قفل مخفی کنید</string>
     <string name="hide_qs_on_lockscreen_desc">پانل تنظیمات سریع را در صفحه قفل ایمن غیرفعال کنید</string>

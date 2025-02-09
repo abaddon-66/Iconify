@@ -406,7 +406,6 @@
     <string name="section_title_privacy_chip">Чип конфиденциальности</string>
     <string name="accent_privacy_chip_title">Акцентная фишка конфиденциальности</string>
     <string name="accent_privacy_chip_desc">Сделать фишку конфиденциальности в цвет акцента</string>
-    <string name="section_title_media_player">Медиаплеер</string>
     <string name="disable_progress_wave_title">Отключить прогресс-волну</string>
     <string name="disable_progress_wave_desc">Отключить анимацию волны на прогресс-баре медиаплеера</string>
     <!-- Xposed Menu -->
@@ -487,6 +486,9 @@
     <string name="mini_widget_icon_inactive">Иконка мини-виджета неактивный цвет</string>
     <string name="weather_settings">Настройки погоды</string>
     <string name="lockscreen_widgets_scale">Масштаб виджетов</string>
+    <string name="lockscreen_device_widget_style_title">Device Widget Style</string>
+    <string name="lockscreen_device_widget_style_classic">Bar with Two Arcs</string>
+    <string name="lockscreen_device_widget_style_arcs">Four Arcs</string>
     <!-- LS Widgets Actions -->
     <string name="camera">Камера</string>
     <string name="clock_timer">Часы/Таймер</string>
@@ -555,6 +557,9 @@
     <string name="colored_qs_notification_title">Цветной значок уведомления</string>
     <string name="colored_qs_notification_desc">Показывать значок приложения как значок уведомления</string>
     <string name="section_title_qs_margin">Отступ быстрых настроек</string>
+    <string name="section_title_media_player">Медиаплеер</string>
+    <string name="compact_media_player_title">Compact Media Player</string>
+    <string name="compact_media_player_desc">Make media player compact</string>
     <string name="section_title_qs_elements">Элементы быстрых настроек</string>
     <string name="hide_qs_on_lockscreen_title">Скрыть QS на экране блокировки</string>
     <string name="hide_qs_on_lockscreen_desc">Отключить панель быстрых настроек на заблокированном экране блокировки</string>

@@ -406,7 +406,6 @@
     <string name="section_title_privacy_chip">Adatvédelmi háttérlap</string>
     <string name="accent_privacy_chip_title">Kiemelt adatvédelmi háttérlap</string>
     <string name="accent_privacy_chip_desc">Kiemelőszinnel színezi ki a háttérlapot</string>
-    <string name="section_title_media_player">Médialejátszó</string>
     <string name="disable_progress_wave_title">Eltünteti a haladási hullámot</string>
     <string name="disable_progress_wave_desc">Letiltja a haladási hullám animációját</string>
     <!-- Xposed Menu -->
@@ -487,6 +486,9 @@
     <string name="mini_widget_icon_inactive">A mini ikon színe, mikor inaktív</string>
     <string name="weather_settings">Időjárás-beállítások</string>
     <string name="lockscreen_widgets_scale">Kisalkalmazások méretskálázása</string>
+    <string name="lockscreen_device_widget_style_title">Device Widget Style</string>
+    <string name="lockscreen_device_widget_style_classic">Bar with Two Arcs</string>
+    <string name="lockscreen_device_widget_style_arcs">Four Arcs</string>
     <!-- LS Widgets Actions -->
     <string name="camera">Kamera</string>
     <string name="clock_timer">Óra/Időzítő</string>
@@ -555,6 +557,9 @@
     <string name="colored_qs_notification_title">Színezett értesítésikon</string>
     <string name="colored_qs_notification_desc">Az alkalmazásikon megjelenítése értesítési ikonként</string>
     <string name="section_title_qs_margin">Csempemargók</string>
+    <string name="section_title_media_player">Médialejátszó</string>
+    <string name="compact_media_player_title">Compact Media Player</string>
+    <string name="compact_media_player_desc">Make media player compact</string>
     <string name="section_title_qs_elements">Gyorsbeállítások elemei</string>
     <string name="hide_qs_on_lockscreen_title">Nincs gyorsbeállítás a záróképernyőn</string>
     <string name="hide_qs_on_lockscreen_desc">Letiltja a gyorbeállítások panelét a biztonságos záróképernyőn</string>
