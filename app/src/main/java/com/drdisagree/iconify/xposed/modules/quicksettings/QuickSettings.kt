@@ -3,7 +3,6 @@ package com.drdisagree.iconify.xposed.modules.quicksettings
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.ColorStateList
-import android.content.res.Resources
 import android.graphics.Color
 import android.graphics.PorterDuff
 import android.graphics.drawable.Drawable
@@ -46,6 +45,7 @@ import com.drdisagree.iconify.xposed.ModPack
 import com.drdisagree.iconify.xposed.modules.extras.utils.DisplayUtils.isLandscape
 import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.toPx
 import com.drdisagree.iconify.xposed.modules.extras.utils.isPixelVariant
+import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.ResourceHookManager
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.XposedHook.Companion.findClass
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.callMethod
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.callMethodSilently
@@ -76,10 +76,10 @@ class QuickSettings(context: Context) : ModPack(context) {
     private var hideQsOnLockscreen = false
     private var hideSilentText = false
     private var hideFooterButtons = false
-    private var qqsTopMarginPortrait = 100
-    private var qsTopMarginPortrait = 100
-    private var qqsTopMarginLandscape = 0
-    private var qsTopMarginLandscape = 0
+    private var qqsTopMarginPort = 100
+    private var qsTopMarginPort = 100
+    private var qqsTopMarginLand = 0
+    private var qsTopMarginLand = 0
     private var mParam: Any? = null
     private var mFooterButtonsContainer: ViewGroup? = null
     private var mFooterButtonsOnDrawListener: OnDrawListener? = null
@@ -102,10 +102,10 @@ class QuickSettings(context: Context) : ModPack(context) {
             isVerticalQSTileActive = getBoolean(VERTICAL_QSTILE_SWITCH, false)
             isHideLabelActive = getBoolean(HIDE_QSLABEL_SWITCH, false)
             customQsMarginsEnabled = getBoolean(CUSTOM_QS_MARGIN, false)
-            qqsTopMarginPortrait = getSliderInt(QQS_TOPMARGIN_PORTRAIT, 100)
-            qsTopMarginPortrait = getSliderInt(QS_TOPMARGIN_PORTRAIT, 100)
-            qqsTopMarginLandscape = getSliderInt(QQS_TOPMARGIN_LANDSCAPE, 0)
-            qsTopMarginLandscape = getSliderInt(QS_TOPMARGIN_LANDSCAPE, 0)
+            qqsTopMarginPort = getSliderInt(QQS_TOPMARGIN_PORTRAIT, 100)
+            qsTopMarginPort = getSliderInt(QS_TOPMARGIN_PORTRAIT, 100)
+            qqsTopMarginLand = getSliderInt(QQS_TOPMARGIN_LANDSCAPE, 0)
+            qsTopMarginLand = getSliderInt(QS_TOPMARGIN_LANDSCAPE, 0)
             fixQsTileColor = isAtLeastAndroid14 &&
                     getBoolean(FIX_QS_TILE_COLOR, false)
             fixNotificationColor = isAtLeastAndroid14 &&
@@ -231,75 +231,23 @@ class QuickSettings(context: Context) : ModPack(context) {
     }
 
     private fun setQsMargin() {
-        fun replaceDimens(param: MethodHookParam, multiplyDensity: Boolean) {
-            if (!customQsMarginsEnabled) return
+        fun getQqsMargin() = if (mContext.isLandscape) qqsTopMarginLand else qqsTopMarginPort
+        fun getQsMargin() = if (mContext.isLandscape) qsTopMarginLand else qsTopMarginPort
 
-            fun getQqsMargin() = if (mContext.isLandscape) {
-                if (multiplyDensity) mContext.toPx(qqsTopMarginLandscape) else qqsTopMarginLandscape
-            } else {
-                if (multiplyDensity) mContext.toPx(qqsTopMarginPortrait) else qqsTopMarginPortrait
-            }
-
-            fun getQsMargin() = if (mContext.isLandscape) {
-                if (multiplyDensity) mContext.toPx(qsTopMarginLandscape) else qsTopMarginLandscape
-            } else {
-                if (multiplyDensity) mContext.toPx(qsTopMarginPortrait) else qsTopMarginPortrait
-            }
-
-            mapOf(
-                arrayOf( // QQS
-                    "qs_header_system_icons_area_height",
-                    "qqs_layout_margin_top",
-                    "qs_header_row_min_height"
-                ) to getQqsMargin(),
-                arrayOf( // QS
-                    "qs_panel_padding_top",
-                    "qs_panel_padding_top_combined_headers",
-                    "qs_header_height"
-                ) to getQsMargin()
-            ).forEach { (resNames, value) ->
-                resNames.forEach { resName ->
-                    val resId = mContext.resources.getIdentifier(
-                        resName,
-                        "dimen",
-                        SYSTEMUI_PACKAGE
-                    )
-
-                    if (resId != 0 && param.args[0] == resId) {
-                        param.result = value
-                    }
-                }
-            }
-
-            mapOf(
-                "quick_qs_offset_height" to getQqsMargin(), // QQS
-                "quick_qs_total_height" to getQsMargin() // QS
-            ).forEach { (resName, value) ->
-                val resId = mContext.resources.getIdentifier(
-                    resName,
-                    "dimen",
-                    FRAMEWORK_PACKAGE
-                )
-
-                if (resId != 0 && param.args[0] == resId) {
-                    param.result = value
-                }
-            }
-        }
-
-        Resources::class.java
-            .hookMethod("getDimensionPixelSize")
-            .suppressError()
-            .runBefore { param ->
-                replaceDimens(param, true)
-            }
-
-        Resources::class.java
-            .hookMethod("getDimension", "getDimensionPixelOffset")
-            .suppressError()
-            .runBefore { param ->
-                replaceDimens(param, false)
-            }
+        ResourceHookManager
+            .hookDimen()
+            .whenCondition { customQsMarginsEnabled }
+            .forPackageName(SYSTEMUI_PACKAGE)
+            .addResource("qs_header_system_icons_area_height") { getQqsMargin() }
+            .addResource("qqs_layout_margin_top") { getQqsMargin() }
+            .addResource("qs_header_row_min_height") { getQqsMargin() }
+            .addResource("qs_panel_padding_top") { getQsMargin() }
+            .addResource("qs_panel_padding_top_combined_headers") { getQsMargin() }
+            .addResource("qs_header_height") { getQsMargin() }
+            .forPackageName(FRAMEWORK_PACKAGE)
+            .addResource("quick_qs_offset_height") { getQqsMargin() }
+            .addResource("quick_qs_total_height") { getQsMargin() }
+            .apply()
 
         val quickStatusBarHeader = findClass("$SYSTEMUI_PACKAGE.qs.QuickStatusBarHeader")
 

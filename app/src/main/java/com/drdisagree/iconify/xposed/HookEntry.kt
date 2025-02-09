@@ -13,6 +13,7 @@ import com.drdisagree.iconify.BuildConfig
 import com.drdisagree.iconify.IRootProviderProxy
 import com.drdisagree.iconify.R
 import com.drdisagree.iconify.common.Const.FRAMEWORK_PACKAGE
+import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.ResourceHookManager
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.XposedHook.Companion.findClass
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookMethod
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.log
@@ -64,6 +65,7 @@ class HookEntry : ServiceConnection {
                                 ).resources
 
                                 XPrefs.init(mContext)
+                                ResourceHookManager.init(mContext)
 
                                 CompletableFuture.runAsync { waitForXprefsLoad(loadPackageParam) }
                             }
@@ -93,6 +95,7 @@ class HookEntry : ServiceConnection {
                                     ).resources
 
                                     XPrefs.init(mContext)
+                                    ResourceHookManager.init(mContext)
 
                                     waitForXprefsLoad(loadPackageParam)
                                 }
