@@ -2,7 +2,6 @@ package com.drdisagree.iconify.xposed.modules.quicksettings
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.res.Resources
 import android.graphics.Color
 import android.widget.LinearLayout
 import com.drdisagree.iconify.common.Const.SYSTEMUI_PACKAGE
@@ -13,6 +12,7 @@ import com.drdisagree.iconify.common.Preferences.QSALPHA_LEVEL
 import com.drdisagree.iconify.common.Preferences.QSPANEL_BLUR_SWITCH
 import com.drdisagree.iconify.common.Preferences.QS_TRANSPARENCY_SWITCH
 import com.drdisagree.iconify.xposed.ModPack
+import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.ResourceHookManager
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.XposedHook.Companion.findClass
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.callMethod
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.getField
@@ -180,25 +180,12 @@ class QSTransparency(context: Context) : ModPack(context) {
             .hookConstructor()
             .runAfter { param -> quickSettingsController = param.thisObject }
 
-        Resources::class.java
-            .hookMethod("getDimensionPixelSize")
-            .suppressError()
-            .runBefore { param ->
-                if (!qsTransparencyActive || onlyNotifTransparencyActive || (alpha * 100).toInt() != 0) return@runBefore
-
-                try {
-                    val resId = mContext.resources.getIdentifier(
-                        "notification_scrim_corner_radius",
-                        "dimen",
-                        mContext.packageName
-                    )
-
-                    if (param.args[0] == resId) {
-                        param.result = 0
-                    }
-                } catch (ignored: Throwable) {
-                }
-            }
+        ResourceHookManager
+            .hookDimen()
+            .whenCondition { qsTransparencyActive && !onlyNotifTransparencyActive && alpha.toInt() == 0 }
+            .forPackageName(SYSTEMUI_PACKAGE)
+            .addResource("notification_scrim_corner_radius") { 0 }
+            .apply()
     }
 
     private fun updateQsScrimRadius() {
@@ -218,27 +205,12 @@ class QSTransparency(context: Context) : ModPack(context) {
         quickSettingsController.callMethod("setClippingBounds")
     }
 
-    @SuppressLint("DiscouragedApi")
     private fun setBlurRadius() {
-        Resources::class.java
-            .hookMethod("getDimensionPixelSize")
-            .suppressError()
-            .runBefore { param ->
-                if (!blurEnabled) return@runBefore
-
-                try {
-                    val resId = mContext.resources.getIdentifier(
-                        "max_window_blur_radius",
-                        "dimen",
-                        mContext.packageName
-                    )
-
-                    if (param.args[0] == resId) {
-                        param.result = blurRadius
-                    }
-                } catch (throwable: Throwable) {
-                    log(this@QSTransparency, throwable)
-                }
-            }
+        ResourceHookManager
+            .hookDimen()
+            .whenCondition { blurEnabled }
+            .forPackageName(SYSTEMUI_PACKAGE)
+            .addResource("max_window_blur_radius") { blurRadius }
+            .apply()
     }
 }

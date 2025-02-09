@@ -5,7 +5,6 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.Typeface
 import android.graphics.drawable.BitmapDrawable
@@ -68,6 +67,7 @@ import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.reAddView
 import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.setMargins
 import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.toPx
 import com.drdisagree.iconify.xposed.modules.extras.utils.getColorResCompat
+import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.ResourceHookManager
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.XposedHook.Companion.findClass
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.callMethod
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.callStaticMethodSilently
@@ -370,45 +370,20 @@ class HeaderClockA14(context: Context) : ModPack(context) {
                 setExpansion(onKeyguardAndExpanded, expansion)
             }
 
-        Resources::class.java
-            .hookMethod("getBoolean")
-            .runBefore { param ->
-                if (!showHeaderClock) return@runBefore
+        ResourceHookManager
+            .hookBoolean()
+            .whenCondition { showHeaderClock }
+            .forPackageName(SYSTEMUI_PACKAGE)
+            .addResource("config_use_split_notification_shade") { mContext.isLandscape }
+            .addResource("config_skinnyNotifsInLandscape") { false }
+            .apply()
 
-                val resId1 = mContext.resources.getIdentifier(
-                    "config_use_split_notification_shade",
-                    "bool",
-                    SYSTEMUI_PACKAGE
-                )
-
-                val resId2 = mContext.resources.getIdentifier(
-                    "config_skinnyNotifsInLandscape",
-                    "bool",
-                    SYSTEMUI_PACKAGE
-                )
-
-                if (param.args[0] == resId1) {
-                    param.result = mContext.isLandscape
-                } else if (param.args[0] == resId2) {
-                    param.result = false
-                }
-            }
-
-        Resources::class.java
-            .hookMethod("getDimensionPixelSize")
-            .runBefore { param ->
-                if (!showHeaderClock) return@runBefore
-
-                val res1 = mContext.resources.getIdentifier(
-                    "qs_brightness_margin_top",
-                    "dimen",
-                    SYSTEMUI_PACKAGE
-                )
-
-                if (res1 != 0 && param.args[0] == res1) {
-                    param.result = 0
-                }
-            }
+        ResourceHookManager
+            .hookDimen()
+            .whenCondition { showHeaderClock }
+            .forPackageName(SYSTEMUI_PACKAGE)
+            .addResource("qs_brightness_margin_top") { 0 }
+            .apply()
 
         shadeHeaderControllerClass
             .hookMethod("onInit")

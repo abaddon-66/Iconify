@@ -2,7 +2,6 @@ package com.drdisagree.iconify.xposed.modules.lockscreen.depthwallpaper
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.res.Resources
 import android.graphics.ImageDecoder
 import android.graphics.drawable.AnimatedImageDrawable
 import android.graphics.drawable.Drawable
@@ -31,6 +30,7 @@ import com.drdisagree.iconify.common.Preferences.ICONIFY_LOCKSCREEN_CLOCK_TAG
 import com.drdisagree.iconify.common.Preferences.UNZOOM_DEPTH_WALLPAPER
 import com.drdisagree.iconify.xposed.ModPack
 import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.toPx
+import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.ResourceHookManager
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.XposedHook.Companion.findClass
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.getField
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookMethod
@@ -365,58 +365,15 @@ class DepthWallpaper(context: Context) : ModPack(context) {
                 }
             })
 
-        Resources::class.java
-            .hookMethod(
-                "getDimensionPixelOffset",
-                "getDimensionPixelSize"
-            )
-            .suppressError()
-            .run(object : XC_MethodHook() {
-                override fun beforeHookedMethod(param: MethodHookParam) {
-                    if (showDepthWallpaper) {
-                        if (Build.VERSION.SDK_INT >= 33) {
-                            try {
-                                val resId = mContext.resources.getIdentifier(
-                                    "keyguard_indication_area_padding",
-                                    "dimen",
-                                    mContext.packageName
-                                )
-
-                                if (param.args[0] == resId) {
-                                    param.result = 0
-                                }
-                            } catch (ignored: Throwable) {
-                            }
-                        } else {
-                            // These resources are only available on Android 12L and below
-                            try {
-                                val resId = mContext.resources.getIdentifier(
-                                    "keyguard_indication_margin_bottom",
-                                    "dimen",
-                                    mContext.packageName
-                                )
-
-                                if (param.args[0] == resId) {
-                                    param.result = 0
-                                }
-                            } catch (ignored: Throwable) {
-                            }
-                            try {
-                                val resId = mContext.resources.getIdentifier(
-                                    "keyguard_indication_margin_bottom_fingerprint_in_display",
-                                    "dimen",
-                                    mContext.packageName
-                                )
-
-                                if (param.args[0] == resId) {
-                                    param.result = 0
-                                }
-                            } catch (ignored: Throwable) {
-                            }
-                        }
-                    }
-                }
-            })
+        ResourceHookManager
+            .hookDimen()
+            .forPackageName(SYSTEMUI_PACKAGE)
+            .whenCondition { showDepthWallpaper && Build.VERSION.SDK_INT >= 33 }
+            .addResource("keyguard_indication_area_padding") { 0 }
+            .whenCondition { showDepthWallpaper && Build.VERSION.SDK_INT < 33 } // These resources are only available on Android 12L and below
+            .addResource("keyguard_indication_margin_bottom") { 0 }
+            .addResource("keyguard_indication_margin_bottom_fingerprint_in_display") { 0 }
+            .apply()
 
         val dozeScrimControllerClass =
             findClass("$SYSTEMUI_PACKAGE.statusbar.phone.DozeScrimController")
