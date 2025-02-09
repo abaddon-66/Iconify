@@ -66,4 +66,10 @@
             app:valueFormat="dp" />
 
     </com.drdisagree.iconify.ui.preferences.PreferenceCategory>
+
+    <com.drdisagree.iconify.ui.preferences.FooterPreference
+        android:key="qs_margin_footer"
+        android:title="@string/qs_panel_top_margin_info"
+        search:ignore="true" />
+
 </PreferenceScreen>

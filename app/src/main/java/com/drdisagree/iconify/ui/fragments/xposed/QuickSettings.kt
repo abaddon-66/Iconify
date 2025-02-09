@@ -5,7 +5,6 @@ import com.drdisagree.iconify.R
 import com.drdisagree.iconify.common.Preferences.COLORED_NOTIFICATION_ALTERNATIVE_SWITCH
 import com.drdisagree.iconify.common.Preferences.COLORED_NOTIFICATION_ICON_SWITCH
 import com.drdisagree.iconify.common.Preferences.COLORED_NOTIFICATION_VIEW_SWITCH
-import com.drdisagree.iconify.common.Preferences.CUSTOM_QS_MARGIN
 import com.drdisagree.iconify.common.Preferences.FIX_NOTIFICATION_COLOR
 import com.drdisagree.iconify.common.Preferences.FIX_NOTIFICATION_FOOTER_BUTTON_COLOR
 import com.drdisagree.iconify.common.Preferences.FIX_QS_TILE_COLOR
@@ -45,7 +44,6 @@ class QuickSettings : ControlledPreferenceFragmentCompat() {
         when (key) {
             VERTICAL_QSTILE_SWITCH,
             HIDE_QSLABEL_SWITCH,
-            CUSTOM_QS_MARGIN,
             COLORED_NOTIFICATION_ICON_SWITCH,
             COLORED_NOTIFICATION_VIEW_SWITCH,
             COLORED_NOTIFICATION_ALTERNATIVE_SWITCH,

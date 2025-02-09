@@ -342,6 +342,7 @@
     <!-- QS Panel Margin -->
     <string name="qqs_panel_top_margin_title">QQS Panel Top Margin</string>
     <string name="qs_panel_top_margin_title">QS Panel Top Margin</string>
+    <string name="qs_panel_top_margin_info">Rotate device to see changes. If that doesn\'t work, restart SystemUI.</string>
 
     <!-- Statusbar -->
     <string name="section_title_spacing">Spacing</string>
@@ -1149,6 +1150,7 @@
     <string name="accent_tertiary">Accent Tertiary</string>
     <string name="text_color_primary">Text Color Primary</string>
     <string name="text_color_inverse">Text Color Inverse</string>
+    <string name="learn_more">Learn more</string>
 
     <!-- Weather -->
     <!-- Omni Jaws Strings -->
