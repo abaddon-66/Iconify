@@ -32,4 +32,10 @@
         android:title="@string/sb_swap_wifi_cellular_title"
         app:iconSpaceReserved="false" />
 
+    <com.drdisagree.iconify.ui.preferences.SwitchPreference
+        android:key="xposed_showclockonrightside"
+        android:summary="@string/sb_clock_on_right_side_desc"
+        android:title="@string/sb_clock_on_right_side_title"
+        app:iconSpaceReserved="false" />
+
 </PreferenceScreen>

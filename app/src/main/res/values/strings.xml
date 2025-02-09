@@ -866,6 +866,8 @@
     <string name="hide_ls_statusbar_desc">Hide statusbar on lockscreen</string>
     <string name="sb_swap_wifi_cellular_title">Swap Wifi and Cellular</string>
     <string name="sb_swap_wifi_cellular_desc">Swap wifi and cellular icons</string>
+    <string name="sb_clock_on_right_side_title">Clock on Right Side</string>
+    <string name="sb_clock_on_right_side_desc">Show clock on right side of statusbar</string>
 
     <!-- Xposed Others -->
     <string name="qs_header">QS Header</string>

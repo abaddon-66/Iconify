@@ -22,6 +22,7 @@ import com.drdisagree.iconify.common.Preferences.HIDE_LOCKSCREEN_CARRIER
 import com.drdisagree.iconify.common.Preferences.HIDE_LOCKSCREEN_STATUSBAR
 import com.drdisagree.iconify.common.Preferences.SB_CLOCK_SIZE
 import com.drdisagree.iconify.common.Preferences.SB_CLOCK_SIZE_SWITCH
+import com.drdisagree.iconify.common.Preferences.SHOW_CLOCK_ON_RIGHT_SIDE
 import com.drdisagree.iconify.common.Preferences.STATUSBAR_SWAP_WIFI_CELLULAR
 import com.drdisagree.iconify.xposed.HookRes.Companion.resParams
 import com.drdisagree.iconify.xposed.ModPack
@@ -60,6 +61,9 @@ class Statusbar(context: Context) : ModPack(context) {
     private var hideLockscreenCarrier = false
     private var hideLockscreenStatusbar = false
     private var swapWifiAndCellularIcon = false
+    private var clockOnRightSide = false
+    private var phoneStatusBarView: ViewGroup? = null
+    private var clockInitialPosition = -1
 
     override fun updatePrefs(vararg key: String) {
         if (!XprefsIsInitialized) return
@@ -71,6 +75,7 @@ class Statusbar(context: Context) : ModPack(context) {
             hideLockscreenCarrier = getBoolean(HIDE_LOCKSCREEN_CARRIER, false)
             hideLockscreenStatusbar = getBoolean(HIDE_LOCKSCREEN_STATUSBAR, false)
             swapWifiAndCellularIcon = getBoolean(STATUSBAR_SWAP_WIFI_CELLULAR, false)
+            clockOnRightSide = getBoolean(SHOW_CLOCK_ON_RIGHT_SIDE, false)
         }
 
         when (key.firstOrNull()) {
@@ -83,6 +88,8 @@ class Statusbar(context: Context) : ModPack(context) {
                 HIDE_LOCKSCREEN_CARRIER,
                 HIDE_LOCKSCREEN_STATUSBAR
             ) -> hideLockscreenCarrierOrStatusbar()
+
+            in setOf(SHOW_CLOCK_ON_RIGHT_SIDE) -> moveStatusBarClock()
         }
     }
 
@@ -91,6 +98,7 @@ class Statusbar(context: Context) : ModPack(context) {
         hideLockscreenCarrierOrStatusbar()
         applyClockSize()
         swapWifiAndCellularIcon()
+        clockOnRightSide()
     }
 
     private fun setColoredNotificationIcons() {
@@ -416,6 +424,38 @@ class Statusbar(context: Context) : ModPack(context) {
             }
     }
 
+    @SuppressLint("RtlHardcoded")
+    private fun setClockSize() {
+        val leftClockSize = if (sbClockSizeSwitch) sbClockSize else mLeftClockSize
+        val centerClockSize = if (sbClockSizeSwitch) sbClockSize else mCenterClockSize
+        val rightClockSize = if (sbClockSizeSwitch) sbClockSize else mRightClockSize
+        val unit = if (sbClockSizeSwitch) TypedValue.COMPLEX_UNIT_SP else TypedValue.COMPLEX_UNIT_PX
+
+        mClockView?.let {
+            it.setTextSize(unit, leftClockSize.toFloat())
+
+            if (sbClockSizeSwitch) {
+                setClockGravity(it, Gravity.LEFT or Gravity.CENTER)
+            }
+        }
+
+        mCenterClockView?.let {
+            it.setTextSize(unit, centerClockSize.toFloat())
+
+            if (sbClockSizeSwitch) {
+                setClockGravity(it, Gravity.CENTER)
+            }
+        }
+
+        mRightClockView?.let {
+            it.setTextSize(unit, rightClockSize.toFloat())
+
+            if (sbClockSizeSwitch) {
+                setClockGravity(it, Gravity.RIGHT or Gravity.CENTER)
+            }
+        }
+    }
+
     private fun swapWifiAndCellularIcon() {
         val statusBarIconListClass = findClass(
             "$SYSTEMUI_PACKAGE.statusbar.phone.StatusBarIconList",
@@ -527,35 +567,78 @@ class Statusbar(context: Context) : ModPack(context) {
             .runBefore { param -> handleSetIcon(param, true) }
     }
 
-    @SuppressLint("RtlHardcoded")
-    private fun setClockSize() {
-        val leftClockSize = if (sbClockSizeSwitch) sbClockSize else mLeftClockSize
-        val centerClockSize = if (sbClockSizeSwitch) sbClockSize else mCenterClockSize
-        val rightClockSize = if (sbClockSizeSwitch) sbClockSize else mRightClockSize
-        val unit = if (sbClockSizeSwitch) TypedValue.COMPLEX_UNIT_SP else TypedValue.COMPLEX_UNIT_PX
+    private fun clockOnRightSide() {
+        val phoneStatusBarViewClass =
+            findClass("$SYSTEMUI_PACKAGE.statusbar.phone.PhoneStatusBarView")
+        val shadeHeaderControllerClass =
+            findClass("$SYSTEMUI_PACKAGE.shade.ShadeHeaderController")
 
-        mClockView?.let {
-            it.setTextSize(unit, leftClockSize.toFloat())
+        phoneStatusBarViewClass
+            .hookMethod("onFinishInflate")
+            .runAfter { param ->
+                phoneStatusBarView = param.thisObject as ViewGroup
 
-            if (sbClockSizeSwitch) {
-                setClockGravity(it, Gravity.LEFT or Gravity.CENTER)
+                moveStatusBarClock()
             }
+
+        shadeHeaderControllerClass
+            .hookMethod("updateQQSPaddings")
+            .suppressError()
+            .runAfter { moveStatusBarClock() }
+    }
+
+    private fun moveStatusBarClock() {
+        if (phoneStatusBarView == null) return
+
+        val statusBarContents = phoneStatusBarView!!.findViewById<ViewGroup>(
+            mContext.resources.getIdentifier(
+                "status_bar_contents",
+                "id",
+                mContext.packageName
+            )
+        )
+        val statusBarStartSideExceptHeadsUp = phoneStatusBarView!!.findViewById<ViewGroup>(
+            mContext.resources.getIdentifier(
+                "status_bar_start_side_except_heads_up",
+                "id",
+                mContext.packageName
+            )
+        )
+        val statusBarClock = phoneStatusBarView!!.findViewById<View>(
+            mContext.resources.getIdentifier(
+                "clock",
+                "id",
+                mContext.packageName
+            )
+        )
+        val startPadding = mContext.resources.getDimensionPixelSize(
+            mContext.resources.getIdentifier(
+                "status_bar_left_clock_starting_padding",
+                "dimen",
+                mContext.packageName
+            )
+        )
+        val endPadding = mContext.resources.getDimensionPixelSize(
+            mContext.resources.getIdentifier(
+                "status_bar_left_clock_end_padding",
+                "dimen",
+                mContext.packageName
+            )
+        )
+
+        if (clockInitialPosition == -1) {
+            clockInitialPosition = (statusBarClock?.parent as? ViewGroup)
+                ?.indexOfChild(statusBarClock) ?: return
         }
 
-        mCenterClockView?.let {
-            it.setTextSize(unit, centerClockSize.toFloat())
+        (statusBarClock?.parent as? ViewGroup)?.removeView(statusBarClock)
 
-            if (sbClockSizeSwitch) {
-                setClockGravity(it, Gravity.CENTER)
-            }
-        }
-
-        mRightClockView?.let {
-            it.setTextSize(unit, rightClockSize.toFloat())
-
-            if (sbClockSizeSwitch) {
-                setClockGravity(it, Gravity.RIGHT or Gravity.CENTER)
-            }
+        if (clockOnRightSide) {
+            statusBarContents?.addView(statusBarClock)
+            statusBarClock?.setPaddingRelative(endPadding, 0, startPadding, 0)
+        } else {
+            statusBarStartSideExceptHeadsUp?.addView(statusBarClock, clockInitialPosition)
+            statusBarClock?.setPaddingRelative(startPadding, 0, endPadding, 0)
         }
     }
 }
