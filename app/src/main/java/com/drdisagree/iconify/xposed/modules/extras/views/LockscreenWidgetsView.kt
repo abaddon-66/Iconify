@@ -607,10 +607,7 @@ class LockscreenWidgetsView(context: Context, activityStarter: Any?) :
             if (isSecondaryWidgetsEmpty || mIsLargeClock) GONE else VISIBLE
 
         val shouldHideContainer = isEmpty || mDozing || !lockscreenWidgetsEnabled
-        layoutParams?.apply {
-            width = if (shouldHideContainer) 0 else ViewGroup.LayoutParams.MATCH_PARENT
-            height = if (shouldHideContainer) 0 else ViewGroup.LayoutParams.WRAP_CONTENT
-        }
+        visibility = if (shouldHideContainer) GONE else VISIBLE
     }
 
     private fun updateWidgetViews() {
