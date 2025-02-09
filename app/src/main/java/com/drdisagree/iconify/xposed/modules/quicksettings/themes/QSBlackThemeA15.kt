@@ -16,8 +16,7 @@ import android.widget.TextView
 import androidx.core.graphics.ColorUtils
 import com.drdisagree.iconify.common.Const.SYSTEMUI_PACKAGE
 import com.drdisagree.iconify.common.Preferences.BLACK_QSPANEL
-import com.drdisagree.iconify.common.Preferences.QS_TEXT_ALWAYS_WHITE
-import com.drdisagree.iconify.common.Preferences.QS_TEXT_FOLLOW_ACCENT
+import com.drdisagree.iconify.common.Preferences.CUSTOM_QS_TEXT_COLOR
 import com.drdisagree.iconify.xposed.ModPack
 import com.drdisagree.iconify.xposed.modules.extras.utils.SettingsLibUtils.Companion.getColorAttr
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.XposedHook.Companion.findClass
@@ -45,8 +44,7 @@ class QSBlackThemeA15(context: Context) : ModPack(context) {
     private var colorText: Int? = null
     private var colorTextAlpha: Int? = null
     private var mClockViewQSHeader: Any? = null
-    private var qsTextAlwaysWhite = false
-    private var qsTextFollowAccent = false
+    private var customQsTextColor = false
     private var shadeCarrierGroupController: Any? = null
     private val modernShadeCarrierGroupMobileViews = ArrayList<Any>()
     private var colorActive: Int? = null
@@ -65,8 +63,7 @@ class QSBlackThemeA15(context: Context) : ModPack(context) {
 
         Xprefs.apply {
             blackQSHeaderEnabled = getBoolean(BLACK_QSPANEL, false)
-            qsTextAlwaysWhite = getBoolean(QS_TEXT_ALWAYS_WHITE, false)
-            qsTextFollowAccent = getBoolean(QS_TEXT_FOLLOW_ACCENT, false)
+            customQsTextColor = getBoolean(CUSTOM_QS_TEXT_COLOR, false)
         }
 
         initColors(true)
@@ -558,7 +555,7 @@ class QSBlackThemeA15(context: Context) : ModPack(context) {
                         param.thisObject.getField("colorSecondaryLabelInactive") as Int
                     )
 
-                    if (!qsTextAlwaysWhite && !qsTextFollowAccent) {
+                    if (!customQsTextColor) {
                         param.thisObject.setField("colorLabelActive", colorText)
                         param.thisObject.setField(
                             "colorSecondaryLabelActive",
@@ -606,7 +603,7 @@ class QSBlackThemeA15(context: Context) : ModPack(context) {
 
                 if (isDisabledState) {
                     param.result = -0x7f000001
-                } else if (isActiveState && !qsTextAlwaysWhite && !qsTextFollowAccent) {
+                } else if (isActiveState && !customQsTextColor) {
                     param.result = colorText
                 } else if (!isActiveState) {
                     param.result = Color.WHITE
@@ -616,7 +613,7 @@ class QSBlackThemeA15(context: Context) : ModPack(context) {
         qsIconViewImplClass
             .hookMethod("updateIcon")
             .runAfter { param ->
-                if (!blackQSHeaderEnabled || qsTextAlwaysWhite || qsTextFollowAccent) return@runAfter
+                if (!blackQSHeaderEnabled || customQsTextColor) return@runAfter
 
                 val (isDisabledState: Boolean,
                     isActiveState: Boolean) = Utils.getTileState(param)
@@ -625,7 +622,7 @@ class QSBlackThemeA15(context: Context) : ModPack(context) {
 
                 if (isDisabledState) {
                     mIcon.imageTintList = ColorStateList.valueOf(-0x7f000001)
-                } else if (isActiveState && !qsTextAlwaysWhite && !qsTextFollowAccent) {
+                } else if (isActiveState && !customQsTextColor) {
                     mIcon.imageTintList = ColorStateList.valueOf(colorText!!)
                 } else if (!isActiveState) {
                     mIcon.imageTintList = ColorStateList.valueOf(Color.WHITE)

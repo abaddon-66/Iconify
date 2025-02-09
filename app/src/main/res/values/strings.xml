@@ -320,12 +320,17 @@
     <string name="section_title_qs_text_color">QS Text Color</string>
     <string name="qs_text_color_normal">Normal</string>
     <string name="qs_text_color_pixel">Pixel</string>
+    <string name="custom_qs_tile_text_color_title">Custom Text Color</string>
+    <string name="custom_qs_tile_text_color_desc">Enable custom QS tile text color</string>
+    <string name="custom_qs_tile_text_color_list_title">Text Color Options</string>
     <string name="label_always_white_title">Always White</string>
     <string name="label_always_white_desc">Title white, subtitle white</string>
     <string name="label_always_white_v2_title">Always White v2</string>
     <string name="label_always_white_v2_desc">Title white, subtitle accent</string>
     <string name="label_follow_system_title">Follow System</string>
     <string name="label_follow_system_desc">Title system, subtitle system</string>
+    <string name="label_follow_system_inverse_title">Follow System Inverse</string>
+    <!--<string name="label_follow_system_inverse_desc">Title system, subtitle system</string>-->
     <string name="label_follow_system_v2_title">Follow System v2</string>
     <string name="label_follow_system_v2_desc">Title system, subtitle accent</string>
     <string name="label_fix_text_color_title">Fix Text Color</string>

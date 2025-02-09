@@ -81,16 +81,20 @@
         search:ignore="true">
 
         <com.drdisagree.iconify.ui.preferences.SwitchPreference
-            android:key="xposed_qstextalwayswhite"
-            android:summary="@string/label_always_white_desc"
-            android:title="@string/label_always_white_title"
+            android:key="xposed_customqstextcolor"
+            android:summary="@string/custom_qs_tile_text_color_desc"
+            android:title="@string/custom_qs_tile_text_color_title"
             app:iconSpaceReserved="false" />
 
-        <com.drdisagree.iconify.ui.preferences.SwitchPreference
-            android:key="xposed_qstextfollowaccent"
-            android:summary="@string/label_follow_accent_desc"
-            android:title="@string/label_follow_accent_title"
-            app:iconSpaceReserved="false" />
+        <com.drdisagree.iconify.ui.preferences.ListPreference
+            android:defaultValue="0"
+            android:dependency="xposed_customqstextcolor"
+            android:entries="@array/qs_text_color_entries"
+            android:entryValues="@array/qs_text_color_values"
+            android:key="xposed_selectedqstextcolor"
+            android:title="@string/custom_qs_tile_text_color_list_title"
+            app:iconSpaceReserved="false"
+            app:useSimpleSummaryProvider="true" />
 
     </com.drdisagree.iconify.ui.preferences.PreferenceCategory>
 

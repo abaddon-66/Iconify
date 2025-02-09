@@ -52,6 +52,7 @@ import androidx.core.graphics.drawable.toBitmap
 import androidx.palette.graphics.Palette
 import com.drdisagree.iconify.common.Const.FRAMEWORK_PACKAGE
 import com.drdisagree.iconify.common.Const.SYSTEMUI_PACKAGE
+import com.drdisagree.iconify.common.Preferences.CUSTOM_QS_TEXT_COLOR
 import com.drdisagree.iconify.common.Preferences.ICONIFY_QS_HEADER_CONTAINER_SHADE_TAG
 import com.drdisagree.iconify.common.Preferences.ICONIFY_QS_HEADER_CONTAINER_TAG
 import com.drdisagree.iconify.common.Preferences.OP_QS_HEADER_BLUR_LEVEL
@@ -61,14 +62,14 @@ import com.drdisagree.iconify.common.Preferences.OP_QS_HEADER_HIDE_STOCK_MEDIA
 import com.drdisagree.iconify.common.Preferences.OP_QS_HEADER_SWITCH
 import com.drdisagree.iconify.common.Preferences.OP_QS_HEADER_TOP_MARGIN
 import com.drdisagree.iconify.common.Preferences.OP_QS_HEADER_VIBRATE
-import com.drdisagree.iconify.common.Preferences.QS_TEXT_ALWAYS_WHITE
-import com.drdisagree.iconify.common.Preferences.QS_TEXT_FOLLOW_ACCENT
+import com.drdisagree.iconify.common.Preferences.SELECTED_QS_TEXT_COLOR
 import com.drdisagree.iconify.utils.color.monet.quantize.QuantizerCelebi
 import com.drdisagree.iconify.utils.color.monet.score.Score
 import com.drdisagree.iconify.xposed.ModPack
 import com.drdisagree.iconify.xposed.modules.extras.callbacks.ControllersProvider
 import com.drdisagree.iconify.xposed.modules.extras.utils.ActivityLauncherUtils
 import com.drdisagree.iconify.xposed.modules.extras.utils.DisplayUtils.isLandscape
+import com.drdisagree.iconify.xposed.modules.extras.utils.DisplayUtils.isNightMode
 import com.drdisagree.iconify.xposed.modules.extras.utils.SettingsLibUtils.Companion.getColorAttrDefaultColor
 import com.drdisagree.iconify.xposed.modules.extras.utils.TouchAnimator
 import com.drdisagree.iconify.xposed.modules.extras.utils.VibrationUtils
@@ -121,8 +122,8 @@ class OpQsHeader(context: Context) : ModPack(context) {
     private var mediaBlurLevel = 10f
     private var topMarginValue = 0
     private var expansionAmount = 0
-    private var qsTextAlwaysWhite = false
-    private var qsTextFollowAccent = false
+    private var customQsTextColor = false
+    private var selectedQsTextColor = 0
     private var expandedQsGap = 0
 
     // Views
@@ -196,8 +197,8 @@ class OpQsHeader(context: Context) : ModPack(context) {
             topMarginValue = getSliderInt(OP_QS_HEADER_TOP_MARGIN, 0)
             expansionAmount = getSliderInt(OP_QS_HEADER_EXPANSION_Y, 0)
             expandedQsGap = getSliderInt(OP_QS_HEADER_GAP_EXPANDED, 0)
-            qsTextAlwaysWhite = getBoolean(QS_TEXT_ALWAYS_WHITE, false)
-            qsTextFollowAccent = getBoolean(QS_TEXT_FOLLOW_ACCENT, false)
+            customQsTextColor = getBoolean(CUSTOM_QS_TEXT_COLOR, false)
+            selectedQsTextColor = getString(SELECTED_QS_TEXT_COLOR, "0")!!.toInt()
         }
 
         when (key.firstOrNull()) {
@@ -2025,9 +2026,15 @@ class OpQsHeader(context: Context) : ModPack(context) {
             else thisObject.getField(
                 "colorInactive"
             ) as Int
-            colorLabelActive = if (qsTextAlwaysWhite) Color.WHITE
-            else if (qsTextFollowAccent) colorAccent
-            else thisObject.getField(
+            colorLabelActive = if (customQsTextColor) {
+                when (selectedQsTextColor) {
+                    0 -> Color.WHITE
+                    1 -> colorAccent
+                    2 -> if (mContext.isNightMode) Color.WHITE else Color.BLACK
+                    3 -> if (mContext.isNightMode) Color.BLACK else Color.WHITE
+                    else -> Color.WHITE
+                }
+            } else thisObject.getField(
                 "colorLabelActive"
             ) as Int
             colorLabelInactive = thisObject.getField(

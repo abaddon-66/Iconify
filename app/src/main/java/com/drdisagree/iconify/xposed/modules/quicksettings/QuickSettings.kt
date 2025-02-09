@@ -26,6 +26,7 @@ import com.drdisagree.iconify.common.Const.FRAMEWORK_PACKAGE
 import com.drdisagree.iconify.common.Const.SYSTEMUI_PACKAGE
 import com.drdisagree.iconify.common.Preferences.COMPACT_MEDIA_PLAYER
 import com.drdisagree.iconify.common.Preferences.CUSTOM_QS_MARGIN
+import com.drdisagree.iconify.common.Preferences.CUSTOM_QS_TEXT_COLOR
 import com.drdisagree.iconify.common.Preferences.FIX_NOTIFICATION_COLOR
 import com.drdisagree.iconify.common.Preferences.FIX_NOTIFICATION_FOOTER_BUTTON_COLOR
 import com.drdisagree.iconify.common.Preferences.FIX_QS_TILE_COLOR
@@ -36,13 +37,13 @@ import com.drdisagree.iconify.common.Preferences.HIDE_QS_ON_LOCKSCREEN
 import com.drdisagree.iconify.common.Preferences.HIDE_QS_SILENT_TEXT
 import com.drdisagree.iconify.common.Preferences.QQS_TOPMARGIN_LANDSCAPE
 import com.drdisagree.iconify.common.Preferences.QQS_TOPMARGIN_PORTRAIT
-import com.drdisagree.iconify.common.Preferences.QS_TEXT_ALWAYS_WHITE
-import com.drdisagree.iconify.common.Preferences.QS_TEXT_FOLLOW_ACCENT
 import com.drdisagree.iconify.common.Preferences.QS_TOPMARGIN_LANDSCAPE
 import com.drdisagree.iconify.common.Preferences.QS_TOPMARGIN_PORTRAIT
+import com.drdisagree.iconify.common.Preferences.SELECTED_QS_TEXT_COLOR
 import com.drdisagree.iconify.common.Preferences.VERTICAL_QSTILE_SWITCH
 import com.drdisagree.iconify.xposed.ModPack
 import com.drdisagree.iconify.xposed.modules.extras.utils.DisplayUtils.isLandscape
+import com.drdisagree.iconify.xposed.modules.extras.utils.DisplayUtils.isNightMode
 import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.toPx
 import com.drdisagree.iconify.xposed.modules.extras.utils.isPixelVariant
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.ResourceHookManager
@@ -70,8 +71,8 @@ class QuickSettings(context: Context) : ModPack(context) {
     private var fixQsTileColor = true
     private var fixNotificationColor = true
     private var fixNotificationFooterButtonsColor = true
-    private var qsTextAlwaysWhite = false
-    private var qsTextFollowAccent = false
+    private var customQsTextColor = false
+    private var selectedQsTextColor = 0
     private var qsTextAccentColor = Color.BLUE
     private var hideQsOnLockscreen = false
     private var hideSilentText = false
@@ -112,8 +113,8 @@ class QuickSettings(context: Context) : ModPack(context) {
                     getBoolean(FIX_NOTIFICATION_COLOR, false)
             fixNotificationFooterButtonsColor = isAtLeastAndroid14 &&
                     getBoolean(FIX_NOTIFICATION_FOOTER_BUTTON_COLOR, false)
-            qsTextAlwaysWhite = getBoolean(QS_TEXT_ALWAYS_WHITE, false)
-            qsTextFollowAccent = getBoolean(QS_TEXT_FOLLOW_ACCENT, false)
+            customQsTextColor = getBoolean(CUSTOM_QS_TEXT_COLOR, false)
+            selectedQsTextColor = getString(SELECTED_QS_TEXT_COLOR, "0")!!.toInt()
             hideQsOnLockscreen = getBoolean(HIDE_QS_ON_LOCKSCREEN, false)
             hideSilentText = getBoolean(HIDE_QS_SILENT_TEXT, false)
             hideFooterButtons = getBoolean(HIDE_QS_FOOTER_BUTTONS, false)
@@ -348,20 +349,14 @@ class QuickSettings(context: Context) : ModPack(context) {
         qsTileViewImplClass
             .hookConstructor()
             .runAfter { param ->
-                if (!qsTextAlwaysWhite && !qsTextFollowAccent) return@runAfter
+                if (!customQsTextColor) return@runAfter
 
                 @ColorInt val color: Int = qsIconLabelColor
                 @ColorInt val colorAlpha =
                     color and 0xFFFFFF or (Math.round(Color.alpha(color) * 0.8f) shl 24)
 
-                param.thisObject.setField(
-                    "colorLabelActive",
-                    color
-                )
-                param.thisObject.setField(
-                    "colorSecondaryLabelActive",
-                    colorAlpha
-                )
+                param.thisObject.setField("colorLabelActive", color)
+                param.thisObject.setField("colorSecondaryLabelActive", colorAlpha)
             }
 
         qsTileViewImplClass
@@ -412,7 +407,7 @@ class QuickSettings(context: Context) : ModPack(context) {
             .hookMethod("updateResources")
             .suppressError()
             .runAfter { param ->
-                if (!qsTextAlwaysWhite && !qsTextFollowAccent) return@runAfter
+                if (!customQsTextColor) return@runAfter
 
                 try {
                     val res = mContext.resources
@@ -459,7 +454,7 @@ class QuickSettings(context: Context) : ModPack(context) {
         footerActionsButtonViewModelClass
             .hookConstructor()
             .runBefore { param ->
-                if (!qsTextAlwaysWhite && !qsTextFollowAccent) return@runBefore
+                if (!customQsTextColor) return@runBefore
 
                 if (mContext.resources.getResourceName((param.args[0] as Int))
                         .split("/".toRegex()).dropLastWhile { it.isEmpty() }
@@ -487,7 +482,7 @@ class QuickSettings(context: Context) : ModPack(context) {
             .hookMethod("updateIcon")
             .suppressError()
             .runAfter { param ->
-                if (!qsTextAlwaysWhite && !qsTextFollowAccent) return@runAfter
+                if (!customQsTextColor) return@runAfter
 
                 @ColorInt val color: Int = qsIconLabelColor
                 try {
@@ -501,7 +496,7 @@ class QuickSettings(context: Context) : ModPack(context) {
         brightnessSliderControllerClass
             .hookConstructor()
             .runAfter { param ->
-                if (!qsTextAlwaysWhite && !qsTextFollowAccent) return@runAfter
+                if (!customQsTextColor) return@runAfter
 
                 initQsAccentColor()
 
@@ -523,7 +518,7 @@ class QuickSettings(context: Context) : ModPack(context) {
             .hookMethod("updateIcon")
             .suppressError()
             .runAfter { param ->
-                if (!qsTextAlwaysWhite && !qsTextFollowAccent) return@runAfter
+                if (!customQsTextColor) return@runAfter
 
                 @ColorInt val color: Int = qsIconLabelColor
 
@@ -776,7 +771,7 @@ class QuickSettings(context: Context) : ModPack(context) {
     private fun isQsIconLabelStateActive(param: MethodHookParam?, stateIndex: Int): Boolean {
         if (param?.args == null) return false
 
-        if (!qsTextAlwaysWhite && !qsTextFollowAccent) return false
+        if (!customQsTextColor) return false
 
         val isActiveState: Boolean = try {
             param.args[stateIndex].getField(
@@ -801,9 +796,11 @@ class QuickSettings(context: Context) : ModPack(context) {
     @get:ColorInt
     private val qsIconLabelColor: Int
         get() {
-            return when {
-                qsTextAlwaysWhite -> Color.WHITE
-                qsTextFollowAccent -> qsTextAccentColor
+            return when (selectedQsTextColor) {
+                0 -> Color.WHITE
+                1 -> qsTextAccentColor
+                2 -> if (mContext.isNightMode) Color.WHITE else Color.BLACK
+                3 -> if (mContext.isNightMode) Color.BLACK else Color.WHITE
                 else -> Color.WHITE
             }
         }

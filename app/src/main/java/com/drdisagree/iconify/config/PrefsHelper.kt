@@ -57,6 +57,7 @@ import com.drdisagree.iconify.common.Preferences.CUSTOM_BATTERY_STYLE
 import com.drdisagree.iconify.common.Preferences.CUSTOM_BATTERY_SWAP_PERCENTAGE
 import com.drdisagree.iconify.common.Preferences.CUSTOM_BATTERY_WIDTH
 import com.drdisagree.iconify.common.Preferences.CUSTOM_DEPTH_WALLPAPER_SWITCH
+import com.drdisagree.iconify.common.Preferences.CUSTOM_QS_TEXT_COLOR
 import com.drdisagree.iconify.common.Preferences.DEPTH_WALLPAPER_AI_MODE
 import com.drdisagree.iconify.common.Preferences.DEPTH_WALLPAPER_AI_STATUS
 import com.drdisagree.iconify.common.Preferences.DEPTH_WALLPAPER_BACKGROUND_MOVEMENT_MULTIPLIER
@@ -126,6 +127,7 @@ import com.drdisagree.iconify.common.Preferences.QSPANEL_BLUR_SWITCH
 import com.drdisagree.iconify.common.Preferences.QS_TRANSPARENCY_SWITCH
 import com.drdisagree.iconify.common.Preferences.SB_CLOCK_SIZE
 import com.drdisagree.iconify.common.Preferences.SB_CLOCK_SIZE_SWITCH
+import com.drdisagree.iconify.common.Preferences.SELECTED_QS_TEXT_COLOR
 import com.drdisagree.iconify.common.Preferences.SHOW_HOME_CARD
 import com.drdisagree.iconify.common.Preferences.UNZOOM_DEPTH_WALLPAPER
 import com.drdisagree.iconify.common.Preferences.UPDATE_OVER_WIFI
@@ -308,6 +310,8 @@ object PrefsHelper {
 
             LOCKSCREEN_WALLPAPER_BLUR_RADIUS -> Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE &&
                     getBoolean(LOCKSCREEN_WALLPAPER_BLUR)
+
+            SELECTED_QS_TEXT_COLOR -> getBoolean(CUSTOM_QS_TEXT_COLOR)
 
             else -> true
         }

@@ -306,4 +306,18 @@
         <item>1</item>
     </string-array>
 
+    <string-array name="qs_text_color_entries" translatable="false">
+        <item>@string/label_always_white_title</item>
+        <item>@string/label_follow_accent_title</item>
+        <item>@string/label_follow_system_title</item>
+        <item>@string/label_follow_system_inverse_title</item>
+    </string-array>
+
+    <string-array name="qs_text_color_values" translatable="false">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+    </string-array>
+
 </resources>
