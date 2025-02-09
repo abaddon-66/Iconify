@@ -541,7 +541,7 @@ class OpQsHeader(context: Context) : ModPack(context) {
                         return@runBefore
                     }
 
-                    parent.reAddView(mQsHeaderContainerShade, index)
+                    parent.reAddView(mQsHeaderContainerShade, 0)
                 }
 
                 parent.reAddView(child, (param.args[2] as Int) + 1)
