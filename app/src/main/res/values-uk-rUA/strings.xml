@@ -406,7 +406,6 @@
     <string name="section_title_privacy_chip">Індикатор приватності</string>
     <string name="accent_privacy_chip_title">Акцентований індикатор приватності</string>
     <string name="accent_privacy_chip_desc">Зробити колір індикатора приватності як в акценту</string>
-    <string name="section_title_media_player">Медіаплеєр</string>
     <string name="disable_progress_wave_title">Вимкнути хвилю прогресу</string>
     <string name="disable_progress_wave_desc">Вимкнути анімацію хвилі прогресу</string>
     <!-- Xposed Menu -->
@@ -487,6 +486,9 @@
     <string name="mini_widget_icon_inactive">Значок мінівіджета: неактивний колір</string>
     <string name="weather_settings">Налаштування погоди</string>
     <string name="lockscreen_widgets_scale">Масштаб віджетів</string>
+    <string name="lockscreen_device_widget_style_title">Device Widget Style</string>
+    <string name="lockscreen_device_widget_style_classic">Bar with Two Arcs</string>
+    <string name="lockscreen_device_widget_style_arcs">Four Arcs</string>
     <!-- LS Widgets Actions -->
     <string name="camera">Камера</string>
     <string name="clock_timer">Годинник / Таймер</string>
@@ -555,6 +557,9 @@
     <string name="colored_qs_notification_title">Colored Notification Icon</string>
     <string name="colored_qs_notification_desc">Show app icon as notification icon</string>
     <string name="section_title_qs_margin">Відступи швидких налаштувань</string>
+    <string name="section_title_media_player">Медіаплеєр</string>
+    <string name="compact_media_player_title">Compact Media Player</string>
+    <string name="compact_media_player_desc">Make media player compact</string>
     <string name="section_title_qs_elements">Елементи швидких налаштувань</string>
     <string name="hide_qs_on_lockscreen_title">Приховати швидкі налаштування на екрані блокування</string>
     <string name="hide_qs_on_lockscreen_desc">Вимкнути швидкі налаштування на заблокованому екрані</string>

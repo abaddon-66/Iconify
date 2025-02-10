@@ -406,7 +406,6 @@
     <string name="section_title_privacy_chip">Gizlilik Butonu</string>
     <string name="accent_privacy_chip_title">Vurgulu Gizlilik Butonu</string>
     <string name="accent_privacy_chip_desc">Gizlilik butonu vurgusunu renkli yap</string>
-    <string name="section_title_media_player">Medya Oynatıcı</string>
     <string name="disable_progress_wave_title">Çubuk Dalgasını Devre Dışı Bırak</string>
     <string name="disable_progress_wave_desc">Kaydırma çubuğu dalga animasyonunu devre dışı bırak</string>
     <!-- Xposed Menu -->
@@ -487,6 +486,9 @@
     <string name="mini_widget_icon_inactive">Mini Widget Simge Pasif Rengi</string>
     <string name="weather_settings">Hava Durumu Ayarları</string>
     <string name="lockscreen_widgets_scale">Widget boyutu</string>
+    <string name="lockscreen_device_widget_style_title">Device Widget Style</string>
+    <string name="lockscreen_device_widget_style_classic">Bar with Two Arcs</string>
+    <string name="lockscreen_device_widget_style_arcs">Four Arcs</string>
     <!-- LS Widgets Actions -->
     <string name="camera">Kamera</string>
     <string name="clock_timer">Saat/Zamanlayıcı</string>
@@ -555,6 +557,9 @@
     <string name="colored_qs_notification_title">Renkli Bildirim Simgesi</string>
     <string name="colored_qs_notification_desc">Uygulama simgesini bildirim simgesi olarak göster</string>
     <string name="section_title_qs_margin">QS Kenar Boşluğu</string>
+    <string name="section_title_media_player">Medya Oynatıcı</string>
+    <string name="compact_media_player_title">Compact Media Player</string>
+    <string name="compact_media_player_desc">Make media player compact</string>
     <string name="section_title_qs_elements">QS Öğeleri</string>
     <string name="hide_qs_on_lockscreen_title">Kilit Ekranında QS\'yi Gizle</string>
     <string name="hide_qs_on_lockscreen_desc">Güvenli kilit ekranında hızlı ayarlar panelini devre dışı bırak</string>

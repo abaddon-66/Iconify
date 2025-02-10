@@ -406,7 +406,6 @@
     <string name="section_title_privacy_chip">رقاقة الخصوصية</string>
     <string name="accent_privacy_chip_title">رقاقة الخصوصية بلون تمييز</string>
     <string name="accent_privacy_chip_desc">جعل رقاقة الخصوصية ملونة بلون التمييز</string>
-    <string name="section_title_media_player">مشغل الوسائط</string>
     <string name="disable_progress_wave_title">تعطيل موجة التقدم</string>
     <string name="disable_progress_wave_desc">تعطيل حركة موجة شريط التقدم</string>
     <!-- Xposed Menu -->
@@ -487,6 +486,9 @@
     <string name="mini_widget_icon_inactive">Mini Widget Icon Inactive Color</string>
     <string name="weather_settings">إعدادات الطقس</string>
     <string name="lockscreen_widgets_scale">Widgets Scale</string>
+    <string name="lockscreen_device_widget_style_title">Device Widget Style</string>
+    <string name="lockscreen_device_widget_style_classic">Bar with Two Arcs</string>
+    <string name="lockscreen_device_widget_style_arcs">Four Arcs</string>
     <!-- LS Widgets Actions -->
     <string name="camera">الكاميرا</string>
     <string name="clock_timer">الساعة/العداد</string>
@@ -555,6 +557,9 @@
     <string name="colored_qs_notification_title">Colored Notification Icon</string>
     <string name="colored_qs_notification_desc">Show app icon as notification icon</string>
     <string name="section_title_qs_margin">هامش QS</string>
+    <string name="section_title_media_player">مشغل الوسائط</string>
+    <string name="compact_media_player_title">Compact Media Player</string>
+    <string name="compact_media_player_desc">Make media player compact</string>
     <string name="section_title_qs_elements">عناصر QS</string>
     <string name="hide_qs_on_lockscreen_title">Hide QS on Lockscreen</string>
     <string name="hide_qs_on_lockscreen_desc">Disable quick settings panel on secured lockscreen</string>
