@@ -198,11 +198,16 @@ class ColorizeNotification(context: Context) : ModPack(context) {
             val paletteNeutral1 = colorScheme.getAnyField("neutral1", "mNeutral1")
             val paletteNeutral2 = colorScheme.getAnyField("neutral2", "mNeutral2")
 
-            val accent1 = paletteAccent1.getField("allShades") as List<Int>
-            val accent2 = paletteAccent2.getField("allShades") as List<Int>
-            val accent3 = paletteAccent3.getField("allShades") as List<Int>
-            val neutral1 = paletteNeutral1.getField("allShades") as List<Int>
-            val neutral2 = paletteNeutral2.getField("allShades") as List<Int>
+            val accent1 = (paletteAccent1.getFieldSilently("allShades")
+                ?: paletteAccent1) as List<Int>
+            val accent2 = (paletteAccent2.getFieldSilently("allShades")
+                ?: paletteAccent2) as List<Int>
+            val accent3 = (paletteAccent3.getFieldSilently("allShades")
+                ?: paletteAccent3) as List<Int>
+            val neutral1 = (paletteNeutral1.getFieldSilently("allShades")
+                ?: paletteNeutral1) as List<Int>
+            val neutral2 = (paletteNeutral2.getFieldSilently("allShades")
+                ?: paletteNeutral2) as List<Int>
 
             val bgColor = accent1[if (darkTheme) 10 else 2]
             val bgColorInverse = (if (darkTheme) 0xFFFFFFFF else 0xFF000000).toInt()
