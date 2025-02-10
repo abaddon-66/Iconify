@@ -3,6 +3,7 @@ package com.drdisagree.iconify.xposed.modules.launcher
 import android.content.Context
 import android.graphics.drawable.AdaptiveIconDrawable
 import android.graphics.drawable.Drawable
+import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import com.drdisagree.iconify.common.Preferences.APP_DRAWER_THEMED_ICONS
@@ -44,6 +45,8 @@ class ThemedIcons(context: Context) : ModPack(context) {
     }
 
     override fun handleLoadPackage(loadPackageParam: LoadPackageParam) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) return
+
         val baseIconCacheClass = findClass("com.android.launcher3.icons.cache.BaseIconCache")
 
         baseIconCacheClass

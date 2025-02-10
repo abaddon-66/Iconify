@@ -10,6 +10,7 @@ import com.drdisagree.iconify.Iconify.Companion.appContext
 import com.drdisagree.iconify.R
 import com.drdisagree.iconify.common.Dynamic.isAtleastA14
 import com.drdisagree.iconify.common.Preferences.AGGRESSIVE_QSPANEL_BLUR_SWITCH
+import com.drdisagree.iconify.common.Preferences.APP_DRAWER_THEMED_ICONS
 import com.drdisagree.iconify.common.Preferences.APP_LANGUAGE
 import com.drdisagree.iconify.common.Preferences.AUTO_UPDATE
 import com.drdisagree.iconify.common.Preferences.BATTERY_STYLE_CIRCLE
@@ -75,6 +76,7 @@ import com.drdisagree.iconify.common.Preferences.FIX_QS_TILE_COLOR
 import com.drdisagree.iconify.common.Preferences.FLUID_NOTIF_TRANSPARENCY
 import com.drdisagree.iconify.common.Preferences.FLUID_POWERMENU_TRANSPARENCY
 import com.drdisagree.iconify.common.Preferences.FLUID_QSPANEL
+import com.drdisagree.iconify.common.Preferences.FORCE_THEMED_ICONS
 import com.drdisagree.iconify.common.Preferences.HEADER_CLOCK_COLOR_CODE_ACCENT1
 import com.drdisagree.iconify.common.Preferences.HEADER_CLOCK_COLOR_CODE_ACCENT2
 import com.drdisagree.iconify.common.Preferences.HEADER_CLOCK_COLOR_CODE_ACCENT3
@@ -312,6 +314,8 @@ object PrefsHelper {
                     getBoolean(LOCKSCREEN_WALLPAPER_BLUR)
 
             SELECTED_QS_TEXT_COLOR -> getBoolean(CUSTOM_QS_TEXT_COLOR)
+
+            FORCE_THEMED_ICONS, APP_DRAWER_THEMED_ICONS -> Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
 
             else -> true
         }
