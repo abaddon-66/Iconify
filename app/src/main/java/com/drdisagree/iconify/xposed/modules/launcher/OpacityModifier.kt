@@ -104,8 +104,13 @@ class OpacityModifier(context: Context) : ModPack(context) {
                 baseDepthControllerInstance = param.thisObject
 
                 if (originalBlurValue == -1) {
-                    val mMaxBlurRadius = param.thisObject.getField("mMaxBlurRadius") as Int
-                    originalBlurValue = mMaxBlurRadius
+                    val mMaxBlurRadius = param.thisObject.getField("mMaxBlurRadius")
+
+                    originalBlurValue = if (mMaxBlurRadius is Float) {
+                        mMaxBlurRadius.toInt()
+                    } else {
+                        mMaxBlurRadius as Int
+                    }
                 }
 
                 reloadDepthAndBlur()
