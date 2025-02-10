@@ -123,6 +123,7 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
     private var mAccentColor3 = 0
     private var mTextColor1 = Color.WHITE
     private var mTextColor2 = Color.BLACK
+    private var mSystemAccent = 0
     private var clockStyle = 0
     private var topMargin = 100
     private var bottomMargin = 40
@@ -700,6 +701,20 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
 
         clockView.apply {
             when (clockStyle) {
+                2, 20 -> {
+                    val tickIndicator = findViewContainsTag("tickIndicator") as TextClock
+                    val hourView = findViewContainsTag("hours") as TextView
+
+                    tickIndicator.setTextColor(Color.TRANSPARENT)
+                    hourView.visibility = View.VISIBLE
+
+                    TimeUtils.setCurrentTimeTextClockRed(
+                        tickIndicator,
+                        hourView,
+                        if (customColorEnabled) mAccentColor1 else mSystemAccent
+                    )
+                }
+
                 5 -> {
                     mBatteryStatusView = findViewContainsTag("battery_status") as TextView?
                     mBatteryLevelView = findViewContainsTag("battery_percentage") as TextView?
@@ -934,6 +949,13 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
             mTextColor2 = getInt(
                 LSCLOCK_COLOR_CODE_TEXT2,
                 Color.BLACK
+            )
+            mSystemAccent = mContext.resources.getColor(
+                mContext.resources.getIdentifier(
+                    "android:color/system_accent1_300",
+                    "color",
+                    mContext.packageName
+                ), mContext.theme
             )
         }
     }
