@@ -124,7 +124,6 @@ class DeviceWidgetView(private val mContext: Context) : FrameLayout(mContext) {
 
         (findViewContainsTag("device_name") as TextView).text = Build.MODEL
 
-
         // Second Row
         mVolumeLevelContainerArc = findViewContainsTag("volume_progress_2") as LinearLayout
         mRamUsageContainerArc = findViewContainsTag("memory_progress") as LinearLayout
@@ -143,22 +142,17 @@ class DeviceWidgetView(private val mContext: Context) : FrameLayout(mContext) {
             mBatteryTempArc!!.setProgressType(ArcProgressImageView.ProgressType.TEMPERATURE)
         }
         batteryTemp.addView(mBatteryTempArc)
+
+        setupRows()
     }
 
     private fun setupRows() {
         val isClassicWidget = mDeviceWidgetStyle == DEVICE_WIDGET_CLASSIC
         val isCircularWidget = mDeviceWidgetStyle == DEVICE_WIDGET_CIRCULAR
 
-        val volumeContainer = if (isClassicWidget) {
-            mVolumeLevelContainer!!
-        } else {
-            mVolumeLevelContainerArc!!
-        }
-        val ramContainer = if (isClassicWidget) {
-            mRamUsageContainer!!
-        } else {
-            mRamUsageContainerArc!!
-        }
+        val volumeContainer =
+            if (isClassicWidget) mVolumeLevelContainer!! else mVolumeLevelContainerArc!!
+        val ramContainer = if (isClassicWidget) mRamUsageContainer!! else mRamUsageContainerArc!!
 
         (mVolumeLevelArcProgress?.parent as? ViewGroup)?.removeView(mVolumeLevelArcProgress)
         (mRamUsageArcProgress?.parent as? ViewGroup)?.removeView(mRamUsageArcProgress)

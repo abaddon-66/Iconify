@@ -94,6 +94,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
         android:gravity="center"
+        android:visibility="gone"
         android:orientation="horizontal"
         android:tag="device_widget_arc">
 
