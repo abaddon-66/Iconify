@@ -92,6 +92,7 @@ import com.drdisagree.iconify.xposed.modules.extras.views.OpQsMediaPlayerView.Co
 import com.drdisagree.iconify.xposed.utils.XPrefs.Xprefs
 import com.drdisagree.iconify.xposed.utils.XPrefs.XprefsIsInitialized
 import de.robv.android.xposed.XC_MethodHook
+import de.robv.android.xposed.XC_MethodHook.MethodHookParam
 import de.robv.android.xposed.XposedHelpers.callStaticMethod
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam
 import kotlinx.coroutines.CoroutineScope
@@ -167,7 +168,7 @@ class OpQsHeader(context: Context) : ModPack(context) {
     private var mNotificationMediaManager: Any? = null
     private var mBluetoothTile: Any? = null
     private var mBluetoothController: Any? = null
-    private var qsTileViewImplInstance: Any? = null
+    private var qsTileViewImplParam: MethodHookParam? = null
     private lateinit var mConnectivityManager: ConnectivityManager
     private lateinit var mTelephonyManager: TelephonyManager
     private lateinit var mWifiManager: WifiManager
@@ -295,8 +296,11 @@ class OpQsHeader(context: Context) : ModPack(context) {
             .run(getMediaOutputDialog)
 
         qsTileViewImplClass
-            .hookMethod("init")
-            .runBefore { param -> qsTileViewImplInstance = param.thisObject }
+            .hookConstructor()
+            .runAfter { param ->
+                qsTileViewImplParam = param
+                initResources()
+            }
 
         tileLayoutClass
             .hookConstructor()
@@ -324,7 +328,7 @@ class OpQsHeader(context: Context) : ModPack(context) {
                         "onThemeChanged"
                     )
                     .runAfter {
-                        if (showOpQsHeaderView && qsTileViewImplInstance != null) {
+                        if (showOpQsHeaderView) {
                             updateOpHeaderView()
                         }
                     }
@@ -1783,7 +1787,9 @@ class OpQsHeader(context: Context) : ModPack(context) {
     }
 
     private fun initResources() {
-        mContext.apply {
+        val context = qsTileViewImplParam?.args?.get(0) as? Context ?: mContext
+
+        context.apply {
             colorAccent = getColorAttrDefaultColor(
                 this,
                 android.R.attr.colorAccent
@@ -1815,31 +1821,23 @@ class OpQsHeader(context: Context) : ModPack(context) {
             )
         }
 
-        qsTileViewImplInstance?.let { thisObject ->
+        qsTileViewImplParam?.thisObject?.let { thisObject ->
             val qsTileOverlayEnabled = isQsTileOverlayEnabled
 
             colorActive = if (qsTileOverlayEnabled) Color.WHITE
-            else thisObject.getField(
-                "colorActive"
-            ) as Int
+            else thisObject.getField("colorActive") as Int
             colorInactive = if (qsTileOverlayEnabled) Color.TRANSPARENT
-            else thisObject.getField(
-                "colorInactive"
-            ) as Int
+            else thisObject.getField("colorInactive") as Int
             colorLabelActive = if (customQsTextColor) {
                 when (selectedQsTextColor) {
                     0 -> Color.WHITE
                     1 -> colorAccent
-                    2 -> if (mContext.isNightMode) Color.WHITE else Color.BLACK
-                    3 -> if (mContext.isNightMode) Color.BLACK else Color.WHITE
+                    2 -> if (context.isNightMode) Color.WHITE else Color.BLACK
+                    3 -> if (context.isNightMode) Color.BLACK else Color.WHITE
                     else -> Color.WHITE
                 }
-            } else thisObject.getField(
-                "colorLabelActive"
-            ) as Int
-            colorLabelInactive = thisObject.getField(
-                "colorLabelInactive"
-            ) as Int
+            } else thisObject.getField("colorLabelActive") as Int
+            colorLabelInactive = thisObject.getField("colorLabelInactive") as Int
         }
 
         opMediaBackgroundDrawable = if (colorInactive != null && colorInactive != 0) {
@@ -1850,8 +1848,8 @@ class OpQsHeader(context: Context) : ModPack(context) {
             }
         } else {
             ContextCompat.getDrawable(
-                mContext,
-                mContext.resources.getIdentifier(
+                context,
+                context.resources.getIdentifier(
                     "qs_tile_background_shape",
                     "drawable",
                     SYSTEMUI_PACKAGE
@@ -1859,11 +1857,11 @@ class OpQsHeader(context: Context) : ModPack(context) {
             )!!
         }
 
-        mContext.apply {
+        context.apply {
             mWifiManager = getSystemService(WifiManager::class.java)
             mTelephonyManager = getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
             mBluetoothManager = getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
-            mMediaSessionManager = mContext.getSystemService(MediaSessionManager::class.java)
+            mMediaSessionManager = context.getSystemService(MediaSessionManager::class.java)
             mConnectivityManager =
                 getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
             mSubscriptionManager =
