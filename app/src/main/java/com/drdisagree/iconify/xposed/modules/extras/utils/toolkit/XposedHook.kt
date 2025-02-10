@@ -438,6 +438,7 @@ class MethodHookHelper(
      * Call before running any hook
      */
     fun throwError(): MethodHookHelper {
+        suppressError()
         throwError = true
         return this
     }
