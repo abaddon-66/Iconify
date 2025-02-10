@@ -223,6 +223,11 @@ object Preferences {
     const val OP_QS_HEADER_TOP_MARGIN = "xposed_opqsheadertopmargin"
     const val OP_QS_HEADER_EXPANSION_Y = "xposed_opqsheaderexpansiony"
     const val OP_QS_HEADER_GAP_EXPANDED = "xposed_opqsheadergapexpanded"
+    const val FORCE_THEMED_ICONS = "xposed_forcethemedicons"
+    const val APP_DRAWER_THEMED_ICONS = "xposed_appdrawerthemedicons"
+    const val APP_DRAWER_BACKGROUND_OPACITY = "xposed_appdrawerbackgroundopacity"
+    const val RECENTS_BACKGROUND_OPACITY = "xposed_recentsbackgroundopacity"
+    const val DISABLE_RECENTS_BLUR = "xposed_disablerecentsblur"
 
     // Xposed view tags
     const val ICONIFY_HEADER_CLOCK_TAG = "iconify_header_clock"

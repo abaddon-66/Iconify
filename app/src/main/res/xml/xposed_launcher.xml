@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <com.drdisagree.iconify.ui.preferences.SwitchPreference
+        android:key="xposed_forcethemedicons"
+        android:summary="@string/force_themed_icons_desc"
+        android:title="@string/force_themed_icons_title"
+        app:iconSpaceReserved="false" />
+
+    <com.drdisagree.iconify.ui.preferences.SwitchPreference
+        android:key="xposed_appdrawerthemedicons"
+        android:summary="@string/app_drawer_themed_icons_desc"
+        android:title="@string/app_drawer_themed_icons_title"
+        app:iconSpaceReserved="false" />
+
+    <com.drdisagree.iconify.ui.preferences.SwitchPreference
+        android:key="xposed_disablerecentsblur"
+        android:summary="@string/disable_recents_blur_desc"
+        android:title="@string/disable_recents_blur_title"
+        app:iconSpaceReserved="false" />
+
+    <com.drdisagree.iconify.ui.preferences.SliderPreference
+        android:key="xposed_appdrawerbackgroundopacity"
+        android:title="@string/app_drawer_background_opacity_title"
+        app:defaultValue="100"
+        app:iconSpaceReserved="false"
+        app:maxVal="100"
+        app:minVal="0"
+        app:tickInterval="1"
+        app:valueFormat="%" />
+
+    <com.drdisagree.iconify.ui.preferences.SliderPreference
+        android:key="xposed_recentsbackgroundopacity"
+        android:title="@string/recents_background_opacity_title"
+        app:defaultValue="100"
+        app:iconSpaceReserved="false"
+        app:maxVal="100"
+        app:minVal="0"
+        app:tickInterval="1"
+        app:valueFormat="%" />
+
+</PreferenceScreen>

@@ -1,6 +1,7 @@
 package com.drdisagree.iconify.xposed
 
 import android.os.Build
+import com.drdisagree.iconify.common.Const.LAUNCHER3_PACKAGE
 import com.drdisagree.iconify.common.Const.PIXEL_LAUNCHER_PACKAGE
 import com.drdisagree.iconify.common.Const.SYSTEMUI_PACKAGE
 import com.drdisagree.iconify.xposed.modules.BackgroundChip
@@ -10,6 +11,8 @@ import com.drdisagree.iconify.xposed.modules.extras.callbacks.ThemeChange
 import com.drdisagree.iconify.xposed.modules.extras.utils.MyConstraintSet
 import com.drdisagree.iconify.xposed.modules.extras.utils.SettingsLibUtils
 import com.drdisagree.iconify.xposed.modules.launcher.IconUpdater
+import com.drdisagree.iconify.xposed.modules.launcher.OpacityModifier
+import com.drdisagree.iconify.xposed.modules.launcher.ThemedIcons
 import com.drdisagree.iconify.xposed.modules.lockscreen.Lockscreen
 import com.drdisagree.iconify.xposed.modules.lockscreen.clock.LockscreenClock
 import com.drdisagree.iconify.xposed.modules.lockscreen.clock.LockscreenClockA15
@@ -106,7 +109,14 @@ object EntryList {
     )
 
     private val pixelLauncherModPacks: List<Class<out ModPack>> = listOf(
-        IconUpdater::class.java
+        IconUpdater::class.java,
+        ThemedIcons::class.java,
+        OpacityModifier::class.java
+    )
+
+    private val launcher3ModPacks: List<Class<out ModPack>> = listOf(
+        ThemedIcons::class.java,
+        OpacityModifier::class.java
     )
 
     fun getEntries(packageName: String): ArrayList<Class<out ModPack>> {
@@ -141,6 +151,10 @@ object EntryList {
 
             PIXEL_LAUNCHER_PACKAGE -> {
                 modPacks.addAll(pixelLauncherModPacks)
+            }
+
+            LAUNCHER3_PACKAGE -> {
+                modPacks.addAll(launcher3ModPacks)
             }
         }
 

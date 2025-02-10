@@ -10,6 +10,7 @@ object Const {
     const val SYSTEMUI_PACKAGE = "com.android.systemui"
     const val FRAMEWORK_PACKAGE = "android"
     const val PIXEL_LAUNCHER_PACKAGE = "com.google.android.apps.nexuslauncher"
+    const val LAUNCHER3_PACKAGE = "com.android.launcher3"
     const val SETTINGS_PACKAGE = "com.android.settings"
     const val WELLBEING_PACKAGE = "com.google.android.apps.wellbeing"
     const val GMS_PACKAGE = "com.google.android.gms"
