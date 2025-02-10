@@ -325,10 +325,6 @@ class HeaderClockA14(context: Context) : ModPack(context) {
 
                 val child = param.args[0] as View
                 val parent = param.args[1] as? ViewGroup ?: return@runBefore
-                val mMovableContentStartIndex = mQsPanelView.getField(
-                    "mMovableContentStartIndex"
-                ) as Int
-                val index = if (parent === mQsPanelView) mMovableContentStartIndex else 0
                 val targetParentId = mContext.resources.getIdentifier(
                     "quick_settings_panel",
                     "id",
@@ -339,12 +335,14 @@ class HeaderClockA14(context: Context) : ModPack(context) {
                     parent.findViewWithTag<LinearLayout?>(ICONIFY_QS_HEADER_CONTAINER_SHADE_TAG)
                         ?.also { mQsHeaderContainerShade = it }
 
-                    if (parent.indexOfChild(mQsHeaderContainerShade) == index) {
-                        param.args[2] = ((param.args[2] as Int) + 1).coerceAtMost(parent.childCount)
+                    if (parent.indexOfChild(mQsHeaderContainerShade) == 0) {
+                        val index = ((param.args[2] as Int) + 1).coerceAtMost(parent.childCount)
+                        parent.reAddView(child, index)
+                        param.result = null
                         return@runBefore
                     }
 
-                    parent.reAddView(mQsHeaderContainerShade, index)
+                    parent.reAddView(mQsHeaderContainerShade, 0)
                 }
 
                 parent.reAddView(child, (param.args[2] as Int) + 1)
