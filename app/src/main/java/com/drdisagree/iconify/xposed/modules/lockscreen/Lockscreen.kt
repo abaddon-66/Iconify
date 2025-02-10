@@ -22,6 +22,7 @@ import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.applyBlur
 import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.hideView
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.XposedHook.Companion.findClass
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.callMethod
+import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.callMethodSilently
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookConstructor
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookLayout
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookMethod
@@ -62,9 +63,9 @@ class Lockscreen(context: Context) : ModPack(context) {
             .parameters(Bitmap::class.java)
             .runBefore { param ->
                 val canvasEngine = param.thisObject
-                val isLockscreenWallpaper = canvasEngine.callMethod(
+                val isLockscreenWallpaper = (canvasEngine.callMethodSilently(
                     "getWallpaperFlags"
-                ) as Int == WallpaperManager.FLAG_LOCK
+                ) as? Int ?: WallpaperManager.FLAG_LOCK) == WallpaperManager.FLAG_LOCK
 
                 if (wallpaperBlurEnabled && wallpaperBlurRadius > 0 && isLockscreenWallpaper) {
                     val bitmap = param.args[0] as Bitmap
