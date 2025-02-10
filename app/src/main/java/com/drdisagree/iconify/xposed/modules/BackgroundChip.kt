@@ -79,6 +79,7 @@ import com.drdisagree.iconify.xposed.modules.extras.utils.StatusBarClock.setCloc
 import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.toPx
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.XposedHook.Companion.findClass
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.callMethod
+import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.callStaticMethod
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.getField
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.getStaticField
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookLayout
@@ -88,7 +89,6 @@ import com.drdisagree.iconify.xposed.modules.extras.views.ChipDrawable
 import com.drdisagree.iconify.xposed.modules.extras.views.ChipDrawable.GradientDirection.Companion.toIndex
 import com.drdisagree.iconify.xposed.utils.XPrefs.Xprefs
 import com.drdisagree.iconify.xposed.utils.XPrefs.XprefsIsInitialized
-import de.robv.android.xposed.XposedHelpers.callStaticMethod
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam
 
 @SuppressLint("DiscouragedApi")
@@ -267,6 +267,8 @@ class BackgroundChip(context: Context) : ModPack(context) {
             "$SYSTEMUI_PACKAGE.statusbar.phone.CollapsedStatusBarFragment",
             "$SYSTEMUI_PACKAGE.statusbar.phone.fragment.CollapsedStatusBarFragment"
         )
+        val shadeHeaderControllerClass =
+            findClass("$SYSTEMUI_PACKAGE.shade.ShadeHeaderController")
         dependencyClass = findClass("$SYSTEMUI_PACKAGE.Dependency")
         darkIconDispatcherClass = findClass("$SYSTEMUI_PACKAGE.plugins.DarkIconDispatcher")
 
@@ -327,6 +329,11 @@ class BackgroundChip(context: Context) : ModPack(context) {
                     }
                 }
             }
+
+        shadeHeaderControllerClass
+            .hookMethod("updateQQSPaddings")
+            .suppressError()
+            .runAfter { updateClockViewPadding() }
     }
 
     private fun statusIconsChip() {
@@ -505,12 +512,7 @@ class BackgroundChip(context: Context) : ModPack(context) {
     private fun updateClockView(clockView: View?, gravity: Int) {
         if (clockView == null) return
 
-        clockView.setPadding(
-            mContext.toPx(padding[0]),
-            mContext.toPx(padding[1]),
-            mContext.toPx(padding[2]),
-            mContext.toPx(padding[3])
-        )
+        updateClockViewPadding()
 
         setSBClockBackgroundChip(clockView)
 
@@ -518,7 +520,8 @@ class BackgroundChip(context: Context) : ModPack(context) {
             0 -> {
                 (clockView as TextView).paint.setXfermode(null)
                 try {
-                    callStaticMethod(dependencyClass, "get", darkIconDispatcherClass)
+                    dependencyClass
+                        .callStaticMethod("get", darkIconDispatcherClass)
                         .callMethod("addDarkReceiver", clockView)
                 } catch (ignored: Throwable) {
                     dependencyClass
@@ -535,7 +538,8 @@ class BackgroundChip(context: Context) : ModPack(context) {
             2 -> {
                 (clockView as TextView).paint.setXfermode(null)
                 try {
-                    callStaticMethod(dependencyClass, "get", darkIconDispatcherClass)
+                    dependencyClass
+                        .callStaticMethod("get", darkIconDispatcherClass)
                         .callMethod("removeDarkReceiver", clockView)
                 } catch (ignored: Throwable) {
                     dependencyClass
@@ -548,6 +552,23 @@ class BackgroundChip(context: Context) : ModPack(context) {
         }
 
         setClockGravity(clockView, gravity)
+    }
+
+    private fun updateClockViewPadding() {
+        if (!mShowSBClockBg) return
+
+        listOf(
+            mClockView,
+            mCenterClockView,
+            mRightClockView
+        ).forEach { clockView ->
+            clockView?.setPadding(
+                mContext.toPx(padding[0]),
+                mContext.toPx(padding[1]),
+                mContext.toPx(padding[2]),
+                mContext.toPx(padding[3])
+            )
+        }
     }
 
     private fun setQSStatusIconsBgA12() {
