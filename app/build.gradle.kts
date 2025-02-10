@@ -61,6 +61,32 @@ android {
         }
     }
 
+    flavorDimensions += "distribution"
+
+    productFlavors {
+        create("standard") {
+            isDefault = true
+            dimension = "distribution"
+            resValue("string", "derived_app_name", "Iconify")
+        }
+
+        create("foss") {
+            dimension = "distribution"
+            applicationIdSuffix = ".foss"
+            resValue("string", "derived_app_name", "Iconify (FOSS)")
+        }
+    }
+
+    sourceSets {
+        getByName("standard") {
+            java.srcDirs("src/standard/java")
+        }
+
+        getByName("foss") {
+            java.srcDirs("src/foss/java")
+        }
+    }
+
     buildFeatures {
         viewBinding = true
         dataBinding = true
@@ -115,6 +141,9 @@ gradle.taskGraph.whenReady {
     gradle.startParameter.showStacktrace = ShowStacktrace.ALWAYS
     gradle.startParameter.warningMode = WarningMode.Summary
 }
+
+val fossImplementation by configurations
+val standardImplementation by configurations
 
 dependencies {
     // Kotlin
@@ -205,8 +234,8 @@ dependencies {
     implementation(libs.fadingedgelayout)
 
     // Google Subject Segmentation - MLKit
-    implementation(libs.com.google.android.gms.play.services.mlkit.subject.segmentation)
-    implementation(libs.play.services.base)
+    standardImplementation(libs.com.google.android.gms.play.services.mlkit.subject.segmentation)
+    standardImplementation(libs.play.services.base)
 
     // Blur View
     implementation(libs.blurview)

@@ -195,10 +195,9 @@ class HookEntry : ServiceConnection {
                 component = ComponentName(
                     BuildConfig.APPLICATION_ID,
                     "${
-                        BuildConfig.APPLICATION_ID.replace(
-                            ".debug",
-                            ""
-                        )
+                        BuildConfig.APPLICATION_ID
+                            .replace(".debug", "")
+                            .replace(".foss", "")
                     }.services.RootProviderProxy"
                 )
             }

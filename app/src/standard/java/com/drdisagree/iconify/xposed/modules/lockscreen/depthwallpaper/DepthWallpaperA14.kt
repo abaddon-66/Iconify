@@ -39,10 +39,6 @@ import com.drdisagree.iconify.common.Preferences.DEPTH_WALLPAPER_ON_AOD
 import com.drdisagree.iconify.common.Preferences.DEPTH_WALLPAPER_SWITCH
 import com.drdisagree.iconify.common.Preferences.ICONIFY_DEPTH_WALLPAPER_BACKGROUND_TAG
 import com.drdisagree.iconify.common.Preferences.ICONIFY_DEPTH_WALLPAPER_FOREGROUND_TAG
-import com.drdisagree.iconify.common.Preferences.ICONIFY_LOCKSCREEN_CLOCK_TAG
-import com.drdisagree.iconify.common.Preferences.ICONIFY_LOCKSCREEN_CONTAINER_TAG
-import com.drdisagree.iconify.common.Preferences.ICONIFY_LOCKSCREEN_WEATHER_TAG
-import com.drdisagree.iconify.common.Preferences.ICONIFY_LOCKSCREEN_WIDGET_TAG
 import com.drdisagree.iconify.common.Preferences.LOCKSCREEN_SHADE_SWITCH
 import com.drdisagree.iconify.common.Preferences.LSCLOCK_SWITCH
 import com.drdisagree.iconify.xposed.HookEntry.Companion.enqueueProxyCommand
@@ -92,12 +88,6 @@ class DepthWallpaperA14(context: Context) : ModPack(context) {
     private var mPluginReceiverRegistered = false
     private lateinit var mPluginReceiver: BroadcastReceiver
     private var wallpaperProcessorThread: Thread? = null
-    private val lsItemTags = listOf(
-        ICONIFY_LOCKSCREEN_CONTAINER_TAG,
-        ICONIFY_LOCKSCREEN_CLOCK_TAG,
-        ICONIFY_LOCKSCREEN_WEATHER_TAG,
-        ICONIFY_LOCKSCREEN_WIDGET_TAG
-    )
 
     override fun updatePrefs(vararg key: String) {
         Xprefs.apply {

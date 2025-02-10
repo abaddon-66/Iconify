@@ -41,5 +41,7 @@ object References {
     const val METADATA_THEME_CATEGORY = "THEME_CATEGORY"
 
     // Overlay categories
-    val OVERLAY_CATEGORY_PREFIX = BuildConfig.APPLICATION_ID.replace(".debug", "") + ".category."
+    val OVERLAY_CATEGORY_PREFIX = BuildConfig.APPLICATION_ID
+        .replace(".debug", "")
+        .replace(".foss", "") + ".category."
 }

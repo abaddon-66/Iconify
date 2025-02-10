@@ -18,7 +18,8 @@ object UpdateScheduler {
 
     private val TAG = UpdateScheduler::class.java.getSimpleName()
     private val UPDATE_WORK_NAME = BuildConfig.APPLICATION_ID
-        .replace(".debug", "") + ".services.UpdateScheduler"
+        .replace(".debug", "")
+        .replace(".foss", "") + ".services.UpdateScheduler"
 
     fun scheduleUpdates(context: Context?) {
         Log.i(TAG, "Updating update schedule...")
