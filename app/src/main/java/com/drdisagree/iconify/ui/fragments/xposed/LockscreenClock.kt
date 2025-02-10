@@ -14,6 +14,7 @@ import com.drdisagree.iconify.R
 import com.drdisagree.iconify.common.Const.RESET_LOCKSCREEN_CLOCK_COMMAND
 import com.drdisagree.iconify.common.Dynamic.isAtleastA14
 import com.drdisagree.iconify.common.Preferences.LSCLOCK_FONT_SWITCH
+import com.drdisagree.iconify.common.Preferences.LSCLOCK_MOVE_NOTIFICATION_ICONS
 import com.drdisagree.iconify.common.Preferences.LSCLOCK_SWITCH
 import com.drdisagree.iconify.common.Resources.LSCLOCK_FONT_DIR
 import com.drdisagree.iconify.config.RPrefs.getBoolean
@@ -84,6 +85,13 @@ class LockscreenClock : ControlledPreferenceFragmentCompat() {
                     Shell.cmd(RESET_LOCKSCREEN_CLOCK_COMMAND).exec()
                 }
 
+                MainActivity.showOrHidePendingActionButton(
+                    activityBinding = (requireActivity() as MainActivity).binding,
+                    requiresSystemUiRestart = true
+                )
+            }
+
+            LSCLOCK_MOVE_NOTIFICATION_ICONS -> {
                 MainActivity.showOrHidePendingActionButton(
                     activityBinding = (requireActivity() as MainActivity).binding,
                     requiresSystemUiRestart = true

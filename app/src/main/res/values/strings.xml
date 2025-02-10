@@ -749,6 +749,8 @@
     <string name="lockscreen_clock_auto_hide_clock_title">Auto Hide Clock</string>
     <string name="lockscreen_clock_auto_hide_clock_desc">Hide clock on incoming notification</string>
     <string name="custom_lockscreen_clock_style_title">Clock Style</string>
+    <string name="lockscreen_clock_move_notification_icon_title">AOD Icons Below Clock</string>
+    <string name="lockscreen_clock_move_notification_icon_desc">Move AOD icons below custom clock, might be buggy on older ROMs</string>
     <string name="lockscreen_clock_font_title">Clock Font</string>
     <string name="lockscreen_clock_font_desc">Use custom font for lockscreen clock</string>
     <string name="lsclock_custom_color_title">Custom Clock Color</string>

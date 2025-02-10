@@ -50,6 +50,7 @@ import com.drdisagree.iconify.common.Preferences.LSCLOCK_DEVICENAME
 import com.drdisagree.iconify.common.Preferences.LSCLOCK_FONT_LINEHEIGHT
 import com.drdisagree.iconify.common.Preferences.LSCLOCK_FONT_SWITCH
 import com.drdisagree.iconify.common.Preferences.LSCLOCK_FONT_TEXT_SCALING
+import com.drdisagree.iconify.common.Preferences.LSCLOCK_MOVE_NOTIFICATION_ICONS
 import com.drdisagree.iconify.common.Preferences.LSCLOCK_STYLE
 import com.drdisagree.iconify.common.Preferences.LSCLOCK_SWITCH
 import com.drdisagree.iconify.common.Preferences.LSCLOCK_TOPMARGIN
@@ -65,6 +66,7 @@ import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.applyTextMa
 import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.applyTextScalingRecursively
 import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.findViewContainsTag
 import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.findViewWithTagAndChangeColor
+import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.hideView
 import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.reAddView
 import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.setMargins
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.XposedHook.Companion.findClass
@@ -83,8 +85,10 @@ import java.util.concurrent.TimeUnit
 @SuppressLint("DiscouragedApi")
 class LockscreenClock(context: Context) : ModPack(context) {
 
+    private val isAndroid13OrBelow = Build.VERSION.SDK_INT <= Build.VERSION_CODES.TIRAMISU
     private var showLockscreenClock = false
     private var showDepthWallpaper = false // was used in android 13 and below
+    private var moveNotificationIcons = !isAndroid13OrBelow
     private var mClockViewContainer: ViewGroup? = null
     private var mStatusViewContainer: ViewGroup? = null
     private var mUserManager: UserManager? = null
@@ -143,11 +147,10 @@ class LockscreenClock(context: Context) : ModPack(context) {
     override fun updatePrefs(vararg key: String) {
         if (!XprefsIsInitialized || isComposeLockscreen) return
 
-        val isAndroid13OrBelow = Build.VERSION.SDK_INT <= Build.VERSION_CODES.TIRAMISU
-
         Xprefs.apply {
             showLockscreenClock = getBoolean(LSCLOCK_SWITCH, false)
             showDepthWallpaper = isAndroid13OrBelow && getBoolean(DEPTH_WALLPAPER_SWITCH, false)
+            moveNotificationIcons = getBoolean(LSCLOCK_MOVE_NOTIFICATION_ICONS, !isAndroid13OrBelow)
             customFontEnabled = getBoolean(LSCLOCK_FONT_SWITCH, false)
             customTypeface = if (customFontEnabled && File(customFontDirectory).exists()) {
                 Typeface.createFromFile(File(customFontDirectory))
@@ -230,9 +233,13 @@ class LockscreenClock(context: Context) : ModPack(context) {
                     )
 
                 if (aodNotificationIconContainer != null) {
-                    (aodNotificationIconContainer.parent as? ViewGroup)
-                        ?.removeView(aodNotificationIconContainer)
-                    mClockViewContainer?.addView(aodNotificationIconContainer, -1)
+                    if (moveNotificationIcons) {
+                        (aodNotificationIconContainer.parent as? ViewGroup)
+                            ?.removeView(aodNotificationIconContainer)
+                        mClockViewContainer?.addView(aodNotificationIconContainer, -1)
+                    } else {
+                        aodNotificationIconContainer.hideView()
+                    }
                 }
 
                 // Hide stock clock
@@ -315,7 +322,7 @@ class LockscreenClock(context: Context) : ModPack(context) {
         legacyNotificationIconAreaControllerImplClass
             .hookMethod("setupAodIcons")
             .runBefore { param ->
-                if (!showLockscreenClock) return@runBefore
+                if (!showLockscreenClock || !moveNotificationIcons) return@runBefore
 
                 if (param.args[0] == null && mClockViewContainer != null) {
                     param.args[0] = mClockViewContainer!!.findViewById(

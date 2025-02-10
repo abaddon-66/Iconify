@@ -117,6 +117,7 @@ import com.drdisagree.iconify.common.Preferences.LSCLOCK_DEVICENAME
 import com.drdisagree.iconify.common.Preferences.LSCLOCK_FONT_LINEHEIGHT
 import com.drdisagree.iconify.common.Preferences.LSCLOCK_FONT_SWITCH
 import com.drdisagree.iconify.common.Preferences.LSCLOCK_FONT_TEXT_SCALING
+import com.drdisagree.iconify.common.Preferences.LSCLOCK_MOVE_NOTIFICATION_ICONS
 import com.drdisagree.iconify.common.Preferences.LSCLOCK_STYLE
 import com.drdisagree.iconify.common.Preferences.LSCLOCK_SWITCH
 import com.drdisagree.iconify.common.Preferences.LSCLOCK_TOPMARGIN
@@ -316,6 +317,8 @@ object PrefsHelper {
             SELECTED_QS_TEXT_COLOR -> getBoolean(CUSTOM_QS_TEXT_COLOR)
 
             FORCE_THEMED_ICONS, APP_DRAWER_THEMED_ICONS -> Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
+
+            LSCLOCK_MOVE_NOTIFICATION_ICONS -> Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM
 
             else -> true
         }
