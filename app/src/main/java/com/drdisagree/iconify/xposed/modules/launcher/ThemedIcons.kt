@@ -25,7 +25,6 @@ class ThemedIcons(context: Context) : ModPack(context) {
 
     private var forceThemedIcons: Boolean = false
     private var appDrawerThemedIcons: Boolean = false
-    private var mBgLooper: Any? = null
     private var mIconDb: Any? = null
     private var mCache: Any? = null
     private var mModel: Any? = null
@@ -50,7 +49,6 @@ class ThemedIcons(context: Context) : ModPack(context) {
         baseIconCacheClass
             .hookConstructor()
             .runAfter { param ->
-                mBgLooper = param.thisObject.getField("mBgLooper")
                 mIconDb = param.thisObject.getField("mIconDb")
                 mCache = param.thisObject.getField("mCache")
             }
