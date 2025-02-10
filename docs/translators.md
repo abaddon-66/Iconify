@@ -18,7 +18,7 @@ Thanks to these translators and proofreaders, this project exists:
           <br />
           <sub><b>igormiguell</b></sub></a>
         <br />
-        <sub><b>4329 words</b></sub>
+        <sub><b>4345 words</b></sub>
       </td>
       <td align="center" valign="top">
         <a href="https://crowdin.com/profile/If.you.know.better.than.me.do.it.If.not.shut.up"><img alt="logo" style="width: 32px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/13525964/medium/22265802c0ad24a0a71f1abfc4776771.jpg" />
@@ -42,7 +42,7 @@ Thanks to these translators and proofreaders, this project exists:
         <sub><b>3936 words</b></sub>
       </td>
       <td align="center" valign="top">
-        <a href="https://crowdin.com/profile/mikropsoft"><img alt="logo" style="width: 32px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/15972315/medium/a6a73deed2dd57fe1eea14f3d79c5ae1.jpg" />
+        <a href="https://crowdin.com/profile/mikropsoft"><img alt="logo" style="width: 32px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/15972315/medium/7e347d221a248b78bf19f12c77a65334.jpg" />
           <br />
           <sub><b>𝗦𝗵𝗟𝗲𝗿𝗣 (mikropsoft)</b></sub></a>
         <br />
@@ -55,7 +55,7 @@ Thanks to these translators and proofreaders, this project exists:
           <br />
           <sub><b>Andrea Ferrario (strange977)</b></sub></a>
         <br />
-        <sub><b>3219 words</b></sub>
+        <sub><b>3227 words</b></sub>
       </td>
       <td align="center" valign="top">
         <a href="https://crowdin.com/profile/AioiLight"><img alt="logo" style="width: 32px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/13172949/medium/1e966b1bc958a68e70686bf4b844b39d.jpg" />
@@ -90,7 +90,7 @@ Thanks to these translators and proofreaders, this project exists:
           <br />
           <sub><b>tofmicro</b></sub></a>
         <br />
-        <sub><b>1731 words</b></sub>
+        <sub><b>1757 words</b></sub>
       </td>
     </tr>
     <tr>
@@ -380,9 +380,9 @@ Thanks to these translators and proofreaders, this project exists:
         <sub><b>42 words</b></sub>
       </td>
       <td align="center" valign="top">
-        <a href="https://crowdin.com/profile/younessmouhid"><img alt="logo" style="width: 32px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/14914643/medium/49fd62344c8aaf711202fc5617a117fa.png" />
+        <a href="https://crowdin.com/profile/user99"><img alt="logo" style="width: 32px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/14914643/medium/49fd62344c8aaf711202fc5617a117fa.png" />
           <br />
-          <sub><b>yngams (younessmouhid)</b></sub></a>
+          <sub><b>yn (user99)</b></sub></a>
         <br />
         <sub><b>40 words</b></sub>
       </td>

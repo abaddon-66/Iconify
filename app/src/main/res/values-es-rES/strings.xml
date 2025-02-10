@@ -406,7 +406,6 @@
     <string name="section_title_privacy_chip">Chip de privacidad</string>
     <string name="accent_privacy_chip_title">Chip de Privacidad de Acento</string>
     <string name="accent_privacy_chip_desc">Hace que el chip de privacidad tenga el color de acento</string>
-    <string name="section_title_media_player">Reproductor multimedia</string>
     <string name="disable_progress_wave_title">Deshabilitar onda de progreso</string>
     <string name="disable_progress_wave_desc">Deshabilitar animación de onda de barra de progreso</string>
     <!-- Xposed Menu -->
@@ -487,6 +486,9 @@
     <string name="mini_widget_icon_inactive">Color inactivo del icono del mini widget</string>
     <string name="weather_settings">Configuración del clima</string>
     <string name="lockscreen_widgets_scale">Escala de widgets</string>
+    <string name="lockscreen_device_widget_style_title">Device Widget Style</string>
+    <string name="lockscreen_device_widget_style_classic">Bar with Two Arcs</string>
+    <string name="lockscreen_device_widget_style_arcs">Four Arcs</string>
     <!-- LS Widgets Actions -->
     <string name="camera">Cámara</string>
     <string name="clock_timer">Reloj/temporizador</string>
@@ -555,6 +557,9 @@
     <string name="colored_qs_notification_title">Icono de notificación de color</string>
     <string name="colored_qs_notification_desc">Mostrar icono de aplicación como icono de notificación</string>
     <string name="section_title_qs_margin">Margen de AR</string>
+    <string name="section_title_media_player">Reproductor multimedia</string>
+    <string name="compact_media_player_title">Compact Media Player</string>
+    <string name="compact_media_player_desc">Make media player compact</string>
     <string name="section_title_qs_elements">Elementos de AR</string>
     <string name="hide_qs_on_lockscreen_title">Ocultar QS en pantalla de bloqueo</string>
     <string name="hide_qs_on_lockscreen_desc">Deshabilitar los ajustes rápidos en la pantalla de bloqueo segura</string>

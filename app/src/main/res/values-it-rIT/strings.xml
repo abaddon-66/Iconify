@@ -406,7 +406,6 @@
     <string name="section_title_privacy_chip">Privacy Chip</string>
     <string name="accent_privacy_chip_title">Accento Privacy Chip</string>
     <string name="accent_privacy_chip_desc">Usa l\'accento per colorare il privacy chip</string>
-    <string name="section_title_media_player">Lettore Multimediale</string>
     <string name="disable_progress_wave_title">Disabilita Onda di Avanzamento</string>
     <string name="disable_progress_wave_desc">Disabilita l\'animazione dell\'onda nella barra di avanzamento</string>
     <!-- Xposed Menu -->
@@ -455,7 +454,7 @@
     <string name="oneplus_qs_header_fade_level">Livello Dissolvenza</string>
     <string name="oneplus_qs_header_top_margin">Margine Superiore</string>
     <string name="oneplus_qs_header_expansion_y">Quantità Espansione</string>
-    <string name="oneplus_qs_header_gap">Divario Espando</string>
+    <string name="oneplus_qs_header_gap">Divario Espanso</string>
     <!-- Lockscreen Widgets -->
     <string name="lockscreen_widgets_title">Widget Schermata di Blocco</string>
     <string name="lockscreen_widgets_enabled_title">Abilita Widget Schermata di Blocco</string>
@@ -487,6 +486,9 @@
     <string name="mini_widget_icon_inactive">Colore Inattivo Icona Widget Mini</string>
     <string name="weather_settings">Impostazioni Meteo</string>
     <string name="lockscreen_widgets_scale">Scala Widget</string>
+    <string name="lockscreen_device_widget_style_title">Device Widget Style</string>
+    <string name="lockscreen_device_widget_style_classic">Bar with Two Arcs</string>
+    <string name="lockscreen_device_widget_style_arcs">Four Arcs</string>
     <!-- LS Widgets Actions -->
     <string name="camera">Camera</string>
     <string name="clock_timer">Orologio/Timer</string>
@@ -555,6 +557,9 @@
     <string name="colored_qs_notification_title">Icona Notifica Colorata</string>
     <string name="colored_qs_notification_desc">Mostra icona app come icona di notifica</string>
     <string name="section_title_qs_margin">Margine QS</string>
+    <string name="section_title_media_player">Lettore Multimediale</string>
+    <string name="compact_media_player_title">Compact Media Player</string>
+    <string name="compact_media_player_desc">Make media player compact</string>
     <string name="section_title_qs_elements">Elementi QS</string>
     <string name="hide_qs_on_lockscreen_title">Nascondi Impostazioni Rapide nella Schermata di Blocco</string>
     <string name="hide_qs_on_lockscreen_desc">Disabilita le impostazioni rapide nella schermata di blocco protetta</string>
@@ -1186,8 +1191,8 @@
     <string name="lockscreen_weather_selection_str_gradient">Gradiente</string>
     <string name="lockscreen_weather_selection_str_border_accent">Scuro con bordi accentati</string>
     <string name="lockscreen_weather_selection_str_border_gradient">Scuro con bordi gradienti</string>
-    <string name="lockscreen_weather_font_title">Weather Font</string>
-    <string name="lockscreen_weather_font_desc">Use custom font for weather text</string>
+    <string name="lockscreen_weather_font_title">Carattere Meteo</string>
+    <string name="lockscreen_weather_font_desc">Usa carattere personalizzato per il testo meteo</string>
     <!-- Alert Dialogs -->
     <string name="systemui_restart_required_title">Riavvio SystemUI Necessario</string>
     <string name="systemui_restart_required_desc">Per rendere effettiva questa modifica è necessario un riavvio del SystemUI.</string>

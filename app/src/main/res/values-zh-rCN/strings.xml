@@ -406,7 +406,6 @@
     <string name="section_title_privacy_chip">隐私指示器药丸</string>
     <string name="accent_privacy_chip_title">Accent Privacy Chip</string>
     <string name="accent_privacy_chip_desc">让Privacy chip强调着色</string>
-    <string name="section_title_media_player">媒体播放器</string>
     <string name="disable_progress_wave_title">禁用进度波</string>
     <string name="disable_progress_wave_desc">禁用进度条波形动画</string>
     <!-- Xposed Menu -->
@@ -487,6 +486,9 @@
     <string name="mini_widget_icon_inactive">小部件图标非活动颜色</string>
     <string name="weather_settings">天气设置</string>
     <string name="lockscreen_widgets_scale">部件比例</string>
+    <string name="lockscreen_device_widget_style_title">Device Widget Style</string>
+    <string name="lockscreen_device_widget_style_classic">Bar with Two Arcs</string>
+    <string name="lockscreen_device_widget_style_arcs">Four Arcs</string>
     <!-- LS Widgets Actions -->
     <string name="camera">相机</string>
     <string name="clock_timer">时钟/计时器</string>
@@ -555,6 +557,9 @@
     <string name="colored_qs_notification_title">彩色通知图标</string>
     <string name="colored_qs_notification_desc">显示应用图标作为通知图标</string>
     <string name="section_title_qs_margin">快速设置边距</string>
+    <string name="section_title_media_player">媒体播放器</string>
+    <string name="compact_media_player_title">Compact Media Player</string>
+    <string name="compact_media_player_desc">Make media player compact</string>
     <string name="section_title_qs_elements">快速设置元素</string>
     <string name="hide_qs_on_lockscreen_title">在锁屏界面隐藏快速设置</string>
     <string name="hide_qs_on_lockscreen_desc">在安全锁屏界面禁用快速设置面板</string>
