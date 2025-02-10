@@ -59,7 +59,6 @@ import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.log
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.setField
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.setFieldSilently
 import com.drdisagree.iconify.xposed.utils.XPrefs.Xprefs
-import com.drdisagree.iconify.xposed.utils.XPrefs.XprefsIsInitialized
 import de.robv.android.xposed.XC_MethodHook
 import de.robv.android.xposed.XC_MethodHook.MethodHookParam
 import de.robv.android.xposed.XposedHelpers.callStaticMethod
@@ -97,8 +96,6 @@ class QuickSettings(context: Context) : ModPack(context) {
     private var showHeaderClock = false
 
     override fun updatePrefs(vararg key: String) {
-        if (!XprefsIsInitialized) return
-
         Xprefs.apply {
             isVerticalQSTileActive = getBoolean(VERTICAL_QSTILE_SWITCH, false)
             isHideLabelActive = getBoolean(HIDE_QSLABEL_SWITCH, false)

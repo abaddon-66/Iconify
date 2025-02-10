@@ -106,8 +106,6 @@ class HeaderClock(context: Context) : ModPack(context) {
     }
 
     override fun updatePrefs(vararg key: String) {
-        if (!XprefsIsInitialized) return
-
         Xprefs.apply {
             showHeaderClock = getBoolean(HEADER_CLOCK_SWITCH, false)
             centeredClockView = getBoolean(HEADER_CLOCK_CENTERED, false)
@@ -463,8 +461,6 @@ class HeaderClock(context: Context) : ModPack(context) {
         }
 
     private fun modifyClockView(clockView: View) {
-        if (!XprefsIsInitialized) return
-
         val clockStyle: Int = Xprefs.getInt(HEADER_CLOCK_STYLE, 0)
         val customFontEnabled: Boolean = Xprefs.getBoolean(HEADER_CLOCK_FONT_SWITCH, false)
         val clockScale: Float =

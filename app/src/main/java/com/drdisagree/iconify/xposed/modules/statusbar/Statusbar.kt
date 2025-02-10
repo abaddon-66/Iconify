@@ -39,7 +39,6 @@ import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookMethod
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.log
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.setField
 import com.drdisagree.iconify.xposed.utils.XPrefs.Xprefs
-import com.drdisagree.iconify.xposed.utils.XPrefs.XprefsIsInitialized
 import de.robv.android.xposed.XC_MethodHook.MethodHookParam
 import de.robv.android.xposed.XposedHelpers.callStaticMethod
 import de.robv.android.xposed.callbacks.XC_InitPackageResources.InitPackageResourcesParam
@@ -66,8 +65,6 @@ class Statusbar(context: Context) : ModPack(context) {
     private var clockInitialPosition = -1
 
     override fun updatePrefs(vararg key: String) {
-        if (!XprefsIsInitialized) return
-
         Xprefs.apply {
             mColoredStatusbarIcon = getBoolean(COLORED_STATUSBAR_ICON, false)
             sbClockSizeSwitch = getBoolean(SB_CLOCK_SIZE_SWITCH, false)

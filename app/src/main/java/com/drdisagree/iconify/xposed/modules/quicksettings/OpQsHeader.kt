@@ -90,7 +90,6 @@ import com.drdisagree.iconify.xposed.modules.extras.views.OpQsHeaderView
 import com.drdisagree.iconify.xposed.modules.extras.views.OpQsMediaPlayerView
 import com.drdisagree.iconify.xposed.modules.extras.views.OpQsMediaPlayerView.Companion.opMediaDefaultBackground
 import com.drdisagree.iconify.xposed.utils.XPrefs.Xprefs
-import com.drdisagree.iconify.xposed.utils.XPrefs.XprefsIsInitialized
 import de.robv.android.xposed.XC_MethodHook
 import de.robv.android.xposed.XC_MethodHook.MethodHookParam
 import de.robv.android.xposed.XposedHelpers.callStaticMethod
@@ -185,8 +184,6 @@ class OpQsHeader(context: Context) : ModPack(context) {
     private var previousBlurLevel = 10f
 
     override fun updatePrefs(vararg key: String) {
-        if (!XprefsIsInitialized) return
-
         Xprefs.apply {
             showOpQsHeaderView = getBoolean(OP_QS_HEADER_SWITCH, false)
             vibrateOnClick = getBoolean(OP_QS_HEADER_VIBRATE, false)

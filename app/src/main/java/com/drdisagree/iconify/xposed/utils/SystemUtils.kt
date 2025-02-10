@@ -73,6 +73,5 @@ class SystemUtils(var mContext: Context) {
             }
             Process.killProcess(Process.myPid())
         }
-
-        }
+    }
 }

@@ -24,7 +24,6 @@ import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookConstructo
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookMethod
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.setField
 import com.drdisagree.iconify.xposed.utils.XPrefs.Xprefs
-import com.drdisagree.iconify.xposed.utils.XPrefs.XprefsIsInitialized
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam
 import kotlin.math.ceil
 import kotlin.properties.Delegates
@@ -40,8 +39,6 @@ class VolumePanel(context: Context) : ModPack(context) {
     private var ringerIconTextColor by Delegates.notNull<Int>()
 
     override fun updatePrefs(vararg key: String) {
-        if (!XprefsIsInitialized) return
-
         Xprefs.apply {
             showPercentage = getBoolean(VOLUME_PANEL_PERCENTAGE, false)
             showWarning = getBoolean(VOLUME_PANEL_SAFETY_WARNING, true)

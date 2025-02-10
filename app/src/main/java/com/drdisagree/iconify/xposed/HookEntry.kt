@@ -21,6 +21,7 @@ import com.drdisagree.iconify.xposed.utils.BootLoopProtector
 import com.drdisagree.iconify.xposed.utils.SystemUtils
 import com.drdisagree.iconify.xposed.utils.XPrefs
 import com.drdisagree.iconify.xposed.utils.XPrefs.Xprefs
+import com.drdisagree.iconify.xposed.utils.XPrefs.XprefsIsInitialized
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -132,11 +133,13 @@ class HookEntry : ServiceConnection {
             try {
                 val instance = mod.getConstructor(Context::class.java).newInstance(mContext)
 
-                try {
-                    instance.updatePrefs()
-                } catch (throwable: Throwable) {
-                    log(this@HookEntry, "Failed to update prefs in ${mod.name}")
-                    log(this@HookEntry, throwable)
+                if (XprefsIsInitialized) {
+                    try {
+                        instance.updatePrefs()
+                    } catch (throwable: Throwable) {
+                        log(this@HookEntry, "Failed to update prefs in ${mod.name}")
+                        log(this@HookEntry, throwable)
+                    }
                 }
 
                 instance.handleLoadPackage(loadPackageParam)

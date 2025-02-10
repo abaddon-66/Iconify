@@ -36,7 +36,6 @@ import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.getField
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookMethod
 import com.drdisagree.iconify.xposed.modules.extras.views.ParallaxImageView
 import com.drdisagree.iconify.xposed.utils.XPrefs.Xprefs
-import com.drdisagree.iconify.xposed.utils.XPrefs.XprefsIsInitialized
 import de.robv.android.xposed.XC_MethodHook
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam
 import java.io.File
@@ -59,8 +58,6 @@ class DepthWallpaper(context: Context) : ModPack(context) {
     private var foregroundAlpha = 1.0f
 
     override fun updatePrefs(vararg key: String) {
-        if (!XprefsIsInitialized) return
-
         Xprefs.apply {
             showDepthWallpaper = getBoolean(DEPTH_WALLPAPER_SWITCH, false)
             showFadingAnimation = getBoolean(DEPTH_WALLPAPER_FADE_ANIMATION, false)

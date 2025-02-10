@@ -43,7 +43,6 @@ import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.setExtraField
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.setField
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.setFieldSilently
 import com.drdisagree.iconify.xposed.utils.XPrefs.Xprefs
-import com.drdisagree.iconify.xposed.utils.XPrefs.XprefsIsInitialized
 import de.robv.android.xposed.XposedHelpers.newInstance
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam
 
@@ -59,8 +58,6 @@ class ColorizeNotification(context: Context) : ModPack(context) {
     private var schemeStyle: Any = "TONAL_SPOT"
 
     override fun updatePrefs(vararg key: String) {
-        if (!XprefsIsInitialized) return
-
         Xprefs.apply {
             coloredNotificationIcon = getBoolean(COLORED_NOTIFICATION_ICON_SWITCH, false)
             coloredNotificationView = getBoolean(COLORED_NOTIFICATION_VIEW_SWITCH, false)

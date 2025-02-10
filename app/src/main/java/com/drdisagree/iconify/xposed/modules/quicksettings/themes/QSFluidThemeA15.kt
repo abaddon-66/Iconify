@@ -44,7 +44,6 @@ import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.setField
 import com.drdisagree.iconify.xposed.modules.extras.views.RoundedCornerProgressDrawable
 import com.drdisagree.iconify.xposed.utils.SystemUtils
 import com.drdisagree.iconify.xposed.utils.XPrefs.Xprefs
-import com.drdisagree.iconify.xposed.utils.XPrefs.XprefsIsInitialized
 import de.robv.android.xposed.XC_MethodHook
 import de.robv.android.xposed.XposedHelpers.callStaticMethod
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam
@@ -77,8 +76,6 @@ class QSFluidThemeA15(context: Context) : ModPack(context) {
     private var mSecondaryLabelActiveColor: ColorStateList? = null
 
     override fun updatePrefs(vararg key: String) {
-        if (!XprefsIsInitialized) return
-
         Xprefs.apply {
             fluidQsThemeEnabled = getBoolean(FLUID_QSPANEL, false)
             fluidNotificationEnabled = fluidQsThemeEnabled &&
