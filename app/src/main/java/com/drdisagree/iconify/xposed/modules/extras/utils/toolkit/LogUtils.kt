@@ -85,33 +85,45 @@ fun Class<*>?.dumpClass() {
     XposedBridge.log("Subclasses:")
     val scs = classes
     for (c in scs) {
-        XposedBridge.log(c.name)
+        XposedBridge.log("\t" + c.name)
+    }
+    if (scs.isEmpty()) {
+        XposedBridge.log("\tNone")
     }
 
     XposedBridge.log("Constructors:")
     val cons = declaredConstructors
     for (m in cons) {
-        XposedBridge.log(m.name + " - " + " - " + m.parameterCount)
+        XposedBridge.log("\t" + m.name + " - " + this::class.java.simpleName + " - " + m.parameterCount)
         val cs = m.parameterTypes
         for (c in cs) {
             XposedBridge.log("\t\t" + c.typeName)
         }
+    }
+    if (cons.isEmpty()) {
+        XposedBridge.log("\tNone")
     }
 
     XposedBridge.log("Methods:")
     val ms = declaredMethods.toList().union(methods.toList())
     for (m in ms) {
-        XposedBridge.log(m.name + " - " + m.returnType + " - " + m.parameterCount)
+        XposedBridge.log("\t" + m.name + " - " + m.returnType + " - " + m.parameterCount)
         val cs = m.parameterTypes
         for (c in cs) {
             XposedBridge.log("\t\t" + c.typeName)
         }
     }
+    if (ms.isEmpty()) {
+        XposedBridge.log("\tNone")
+    }
 
     XposedBridge.log("Fields:")
     val fs = declaredFields
     for (f in fs) {
-        XposedBridge.log("\t\t" + f.name + "-" + f.type.name)
+        XposedBridge.log("\t" + f.name + " - " + f.type.name)
+    }
+    if (fs.isEmpty()) {
+        XposedBridge.log("\tNone")
     }
     XposedBridge.log("End dump\n\n")
 }
