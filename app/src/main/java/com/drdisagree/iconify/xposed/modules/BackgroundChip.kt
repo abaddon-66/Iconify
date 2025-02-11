@@ -330,7 +330,7 @@ class BackgroundChip(context: Context) : ModPack(context) {
         shadeHeaderControllerClass
             .hookMethod("updateQQSPaddings")
             .suppressError()
-            .runAfter { updateClockViewPadding() }
+            .runAfter { updateStatusBarClock(true) }
     }
 
     private fun statusIconsChip() {
@@ -509,7 +509,12 @@ class BackgroundChip(context: Context) : ModPack(context) {
     private fun updateClockView(clockView: View?, gravity: Int) {
         if (clockView == null) return
 
-        updateClockViewPadding()
+        clockView.setPadding(
+            mContext.toPx(padding[0]),
+            mContext.toPx(padding[1]),
+            mContext.toPx(padding[2]),
+            mContext.toPx(padding[3])
+        )
 
         setSBClockBackgroundChip(clockView)
 
@@ -549,23 +554,6 @@ class BackgroundChip(context: Context) : ModPack(context) {
         }
 
         setClockGravity(clockView, gravity)
-    }
-
-    private fun updateClockViewPadding() {
-        if (!mShowSBClockBg) return
-
-        listOf(
-            mClockView,
-            mCenterClockView,
-            mRightClockView
-        ).forEach { clockView ->
-            clockView?.setPadding(
-                mContext.toPx(padding[0]),
-                mContext.toPx(padding[1]),
-                mContext.toPx(padding[2]),
-                mContext.toPx(padding[3])
-            )
-        }
     }
 
     private fun setQSStatusIconsBgA12() {
