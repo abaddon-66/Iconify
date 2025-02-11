@@ -130,13 +130,15 @@ class MethodHookHelper(
             methodNames.forEach { methodName ->
                 if (isPattern) {
                     val pattern = Pattern.compile(methodName)
-                    clazz?.declaredMethods?.forEach { method ->
+                    clazz?.declaredMethods?.toList()?.union(clazz.methods.toList())
+                        ?.forEach { method ->
                         if (pattern.matcher(method.name).matches()) {
                             hookMethod(method, callback)
                         }
                     }
                 } else {
-                    clazz?.declaredMethods?.find { it.name == methodName }?.let { method ->
+                    clazz?.declaredMethods?.toList()?.union(clazz.methods.toList())
+                        ?.find { it.name == methodName }?.let { method ->
                         hookMethod(method, callback)
                     } ?: run {
                         if (printError) {
@@ -166,13 +168,15 @@ class MethodHookHelper(
             methodNames.forEach { methodName ->
                 if (isPattern) {
                     val pattern = Pattern.compile(methodName)
-                    clazz?.declaredMethods?.forEach { method ->
+                    clazz?.declaredMethods?.toList()?.union(clazz.methods.toList())
+                        ?.forEach { method ->
                         if (pattern.matcher(method.name).matches()) {
                             hookMethodBefore(method, callback)
                         }
                     }
                 } else {
-                    clazz?.declaredMethods?.find { it.name == methodName }?.let { method ->
+                    clazz?.declaredMethods?.toList()?.union(clazz.methods.toList())
+                        ?.find { it.name == methodName }?.let { method ->
                         hookMethodBefore(method, callback)
                     } ?: run {
                         if (printError) {
@@ -202,13 +206,15 @@ class MethodHookHelper(
             methodNames.forEach { methodName ->
                 if (isPattern) {
                     val pattern = Pattern.compile(methodName)
-                    clazz?.declaredMethods?.forEach { method ->
+                    clazz?.declaredMethods?.toList()?.union(clazz.methods.toList())
+                        ?.forEach { method ->
                         if (pattern.matcher(method.name).matches()) {
                             hookMethodAfter(method, callback)
                         }
                     }
                 } else {
-                    clazz?.declaredMethods?.find { it.name == methodName }?.let { method ->
+                    clazz?.declaredMethods?.toList()?.union(clazz.methods.toList())
+                        ?.find { it.name == methodName }?.let { method ->
                         hookMethodAfter(method, callback)
                     } ?: run {
                         if (printError) {
@@ -236,13 +242,15 @@ class MethodHookHelper(
             methodNames?.forEach { methodName ->
                 if (isPattern) {
                     val pattern = Pattern.compile(methodName)
-                    clazz?.declaredMethods?.forEach { method ->
+                    clazz?.declaredMethods?.toList()?.union(clazz.methods.toList())
+                        ?.forEach { method ->
                         if (pattern.matcher(method.name).matches()) {
                             hookMethodReplace(method, callback)
                         }
                     }
                 } else {
-                    clazz?.declaredMethods?.find { it.name == methodName }?.let { method ->
+                    clazz?.declaredMethods?.toList()?.union(clazz.methods.toList())
+                        ?.find { it.name == methodName }?.let { method ->
                         hookMethodReplace(method, callback)
                     } ?: run {
                         if (printError) {
