@@ -69,13 +69,18 @@ jobs:
           ./gradlew assembleFossDebug
           ./gradlew assembleStandardDebug
 
-      - name: Upload a Build Artifact
+      - name: Upload FOSS Build Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: "Iconify (FOSS) v${{ env.VERSION_NAME }} Dev (#${{github.run_number}})"
+          path: app/build/outputs/apk/foss/debug/*.apk
+          if-no-files-found: error
+
+      - name: Upload Standard Build Artifact
         uses: actions/upload-artifact@v4
         with:
           name: "Iconify v${{ env.VERSION_NAME }} Dev (#${{github.run_number}})"
-          path: |
-            app/build/outputs/apk/foss/debug/*.apk
-            app/build/outputs/apk/standard/debug/*.apk
+          path: app/build/outputs/apk/standard/debug/*.apk
           if-no-files-found: error
 
       - name: Get Commit Messages
