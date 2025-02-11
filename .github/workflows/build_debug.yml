@@ -100,9 +100,7 @@ jobs:
 
       - name: Zip Artifact for Deployment
         run: |
-          cd app/build/outputs/apk/foss/debug/
-          zip "../../../../../../releases/Iconify (FOSS) v${{ env.VERSION_NAME }} Dev (#${{github.run_number}}).zip" *.apk -r
-          cd ../../standard/debug/
+          cd app/build/outputs/apk/standard/debug/
           zip "../../../../../../releases/Iconify v${{ env.VERSION_NAME }} Dev (#${{github.run_number}}).zip" *.apk -r
 
       - name: Telegram File Attachment
@@ -113,9 +111,7 @@ jobs:
             -F chat_id=${{ secrets.TG_CHAT_ID }} \
             -F message_thread_id=${{ secrets.TG_CHAT_THREAD_ID }} \
             -F media='[
-              {"type":"document", "media":"attach://Foss", "caption":""},
-              {"type":"document", "media":"attach://Standard", "caption":"CHANGELOG: ${{ env.COMMIT_MESSAGE_HEADER }}" }
+              {"type":"document", "media":"attach://Standard", "caption":"CHANGELOG: ${{ env.COMMIT_MESSAGE_HEADER }}"}
             ]' \
-            -F Foss="@releases/Iconify (FOSS) v${{ env.VERSION_NAME }} Dev (#${{github.run_number}}).zip" \
             -F Standard="@releases/Iconify v${{ env.VERSION_NAME }} Dev (#${{github.run_number}}).zip" \
             -F disable_notification=true || exit 1
