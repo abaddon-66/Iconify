@@ -10,6 +10,7 @@ import com.drdisagree.iconify.xposed.modules.extras.callbacks.ControllersProvide
 import com.drdisagree.iconify.xposed.modules.extras.callbacks.ThemeChange
 import com.drdisagree.iconify.xposed.modules.extras.utils.MyConstraintSet
 import com.drdisagree.iconify.xposed.modules.extras.utils.SettingsLibUtils
+import com.drdisagree.iconify.xposed.modules.launcher.GestureMod
 import com.drdisagree.iconify.xposed.modules.launcher.IconUpdater
 import com.drdisagree.iconify.xposed.modules.launcher.OpacityModifier
 import com.drdisagree.iconify.xposed.modules.launcher.ThemedIcons
@@ -111,12 +112,14 @@ object EntryList {
     private val pixelLauncherModPacks: List<Class<out ModPack>> = listOf(
         IconUpdater::class.java,
         ThemedIcons::class.java,
-        OpacityModifier::class.java
+        OpacityModifier::class.java,
+        GestureMod::class.java
     )
 
     private val launcher3ModPacks: List<Class<out ModPack>> = listOf(
         ThemedIcons::class.java,
-        OpacityModifier::class.java
+        OpacityModifier::class.java,
+        GestureMod::class.java
     )
 
     fun getEntries(packageName: String): ArrayList<Class<out ModPack>> {

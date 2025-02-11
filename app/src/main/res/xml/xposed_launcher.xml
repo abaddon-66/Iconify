@@ -15,6 +15,12 @@
         app:iconSpaceReserved="false" />
 
     <com.drdisagree.iconify.ui.preferences.SwitchPreference
+        android:key="xposed_doubletaptosleep"
+        android:summary="@string/double_tap_to_sleep_desc"
+        android:title="@string/double_tap_to_sleep_title"
+        app:iconSpaceReserved="false" />
+
+    <com.drdisagree.iconify.ui.preferences.SwitchPreference
         android:key="xposed_disablerecentsblur"
         android:summary="@string/disable_recents_blur_desc"
         android:title="@string/disable_recents_blur_title"

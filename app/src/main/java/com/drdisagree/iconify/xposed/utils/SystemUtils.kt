@@ -13,7 +13,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-
 class SystemUtils(var mContext: Context) {
 
     init {
@@ -62,6 +61,12 @@ class SystemUtils(var mContext: Context) {
                     darkSwitching = false
                 } catch (ignored: Exception) {
                 }
+            }
+        }
+
+        fun sleepDevice() {
+            enqueueProxyCommand { proxy ->
+                proxy.runCommand("input keyevent 223")
             }
         }
 

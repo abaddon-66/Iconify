@@ -1286,6 +1286,8 @@
     <string name="force_themed_icons_desc">Generate monochromatic icons if not provided by the app</string>
     <string name="app_drawer_themed_icons_title">App Drawer Themed Icons</string>
     <string name="app_drawer_themed_icons_desc">Enable themed icons on app drawer</string>
+    <string name="double_tap_to_sleep_title">Double Tap to Sleep</string>
+    <string name="double_tap_to_sleep_desc">Double tap on home screen empty space to turn off the screen</string>
     <string name="disable_recents_blur_title">Disable Recents Blur</string>
     <string name="disable_recents_blur_desc">Disable blur if recents screen is buggy</string>
     <string name="app_drawer_background_opacity_title">App Drawer Background Opacity</string>

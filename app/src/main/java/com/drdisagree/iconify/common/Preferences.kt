@@ -229,6 +229,7 @@ object Preferences {
     const val APP_DRAWER_BACKGROUND_OPACITY = "xposed_appdrawerbackgroundopacity"
     const val RECENTS_BACKGROUND_OPACITY = "xposed_recentsbackgroundopacity"
     const val DISABLE_RECENTS_BLUR = "xposed_disablerecentsblur"
+    const val DOUBLE_TAP_TO_SLEEP = "xposed_doubletaptosleep"
 
     // Xposed view tags
     const val ICONIFY_HEADER_CLOCK_TAG = "iconify_header_clock"
