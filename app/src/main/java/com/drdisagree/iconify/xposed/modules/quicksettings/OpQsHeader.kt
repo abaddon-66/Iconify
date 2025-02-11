@@ -579,13 +579,6 @@ class OpQsHeader(context: Context) : ModPack(context) {
             .apply()
 
         ResourceHookManager
-            .hookInteger()
-            .whenCondition { showOpQsHeaderView }
-            .forPackageName(SYSTEMUI_PACKAGE)
-            .addResource("quick_settings_max_rows") { 3 }
-            .apply()
-
-        ResourceHookManager
             .hookDimen()
             .whenCondition { showOpQsHeaderView }
             .forPackageName(SYSTEMUI_PACKAGE)
