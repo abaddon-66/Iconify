@@ -64,36 +64,32 @@ fun findAndDumpClassIfExists(className: String, classLoader: ClassLoader?): Clas
     return findClassIfExists(className, classLoader)
 }
 
-fun dumpClassObj(classObj: Class<*>?) {
-    if (classObj == null) {
-        XposedBridge.log("Class: null not found")
-        return
-    }
-    dumpClass(classObj)
-}
-
 private fun dumpClass(className: String, classLoader: ClassLoader?) {
     val ourClass = findClassIfExists(className, classLoader)
     if (ourClass == null) {
-        XposedBridge.log("Class: $className not found")
+        XposedBridge.log("DumpClass: Class is null")
         return
     }
-    dumpClass(ourClass)
+    ourClass.dumpClass()
 }
 
-private fun dumpClass(ourClass: Class<*>) {
-    val ms = ourClass.declaredMethods
-    XposedBridge.log("\n\nClass: ${ourClass.name}")
-    XposedBridge.log("extends: ${ourClass.superclass.name}")
+fun Class<*>?.dumpClass() {
+    if (this == null) {
+        XposedBridge.log("DumpClass: Class is null")
+        return
+    }
+
+    XposedBridge.log("\n\nClass: $name")
+    XposedBridge.log("extends: ${superclass.name}")
 
     XposedBridge.log("Subclasses:")
-    val scs = ourClass.classes
+    val scs = classes
     for (c in scs) {
         XposedBridge.log(c.name)
     }
 
-    XposedBridge.log("Methods:")
-    val cons = ourClass.declaredConstructors
+    XposedBridge.log("Constructors:")
+    val cons = declaredConstructors
     for (m in cons) {
         XposedBridge.log(m.name + " - " + " - " + m.parameterCount)
         val cs = m.parameterTypes
@@ -101,6 +97,9 @@ private fun dumpClass(ourClass: Class<*>) {
             XposedBridge.log("\t\t" + c.typeName)
         }
     }
+
+    XposedBridge.log("Methods:")
+    val ms = declaredMethods.toList().union(methods.toList())
     for (m in ms) {
         XposedBridge.log(m.name + " - " + m.returnType + " - " + m.parameterCount)
         val cs = m.parameterTypes
@@ -110,7 +109,7 @@ private fun dumpClass(ourClass: Class<*>) {
     }
 
     XposedBridge.log("Fields:")
-    val fs = ourClass.declaredFields
+    val fs = declaredFields
     for (f in fs) {
         XposedBridge.log("\t\t" + f.name + "-" + f.type.name)
     }
