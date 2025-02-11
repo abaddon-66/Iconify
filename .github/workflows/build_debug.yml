@@ -116,4 +116,5 @@ jobs:
               {"type":"document", "media":"attach://Standard", "caption":"CHANGELOG: ${{ env.COMMIT_MESSAGE_HEADER }}"}
             ]' \
             -F Foss="@releases/Iconify (FOSS) v${{ env.VERSION_NAME }} Dev (#${{github.run_number}}).zip" \
-            -F Standard="@releases/Iconify v${{ env.VERSION_NAME }} Dev (#${{github.run_number}}).zip"
+            -F Standard="@releases/Iconify v${{ env.VERSION_NAME }} Dev (#${{github.run_number}}).zip" \
+            -F disable_notification=true
