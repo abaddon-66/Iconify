@@ -88,16 +88,19 @@ jobs:
         run: |
           COMMIT_MESSAGE_HEADER=""
           COMMIT_INDEX=0
+
           while [[ "$COMMIT_MESSAGE_HEADER" == "" || "$COMMIT_MESSAGE_HEADER" =~ ^Merge\ remote-tracking\ branch ]]; do
             COMMIT_MESSAGE_HEADER=$(git log -1 --skip=$COMMIT_INDEX --pretty=%B | head -n 1)
             echo "Checking commit at index $COMMIT_INDEX: $COMMIT_MESSAGE_HEADER"
             COMMIT_INDEX=$((COMMIT_INDEX + 1))
           done
+
           if [[ -z "$COMMIT_MESSAGE_HEADER" ]]; then
             echo "No valid changelog found!"
             COMMIT_MESSAGE_HEADER="No valid changelog found!"
           fi
-          ESCAPED_MESSAGE=$(echo "$COMMIT_MESSAGE_HEADER" | jq -Rsa . | sed 's/^"\(.*\)"$/\1/')
+
+          ESCAPED_MESSAGE=$(echo "$COMMIT_MESSAGE_HEADER" | jq -Rsa . | sed 's/^"\(.*\)"$/\1/' | sed "s/'//g")
           echo "COMMIT_MESSAGE_HEADER=${ESCAPED_MESSAGE}" >> $GITHUB_ENV
 
       - name: Clean Previous Release Folder
