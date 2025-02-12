@@ -665,7 +665,7 @@ class QSLightThemeA15(context: Context) : ModPack(context) {
             }
 
         val colorAttrParams = themeColorKtClass?.let {
-            findMethod(it, "colorAttr")?.parameters
+            it.findMethod("colorAttr")?.parameters
         } ?: emptyArray()
         val resIdIndex = colorAttrParams.indexOfFirst {
             it.type == Int::class.javaPrimitiveType
