@@ -87,13 +87,18 @@ jobs:
         id: get_commit_message
         run: |
           COMMIT_MESSAGE_HEADER=""
-          COMMIT_INDEX=0
 
-          while [[ "$COMMIT_MESSAGE_HEADER" == "" || "$COMMIT_MESSAGE_HEADER" =~ ^Merge\ remote-tracking\ branch ]]; do
-            COMMIT_MESSAGE_HEADER=$(git log -1 --skip=$COMMIT_INDEX --pretty=%B | head -n 1)
-            echo "Checking commit at index $COMMIT_INDEX: $COMMIT_MESSAGE_HEADER"
-            COMMIT_INDEX=$((COMMIT_INDEX + 1))
-          done
+          COMMIT_MESSAGE_HEADER=$(git log -1 --pretty=%B | head -n 1)
+
+          if [[ "$COMMIT_MESSAGE_HEADER" == *".md"* ]]; then
+            echo "Skipping build upload due to '.md' commit message."
+            echo "COMMIT_MESSAGE_HEADER=Skipping new build" >> $GITHUB_ENV
+            exit 0
+          fi
+
+          if [[ "$COMMIT_MESSAGE_HEADER" =~ ^Merge\ remote-tracking\ branch ]]; then
+            echo "COMMIT_MESSAGE_HEADER=Synced with the latest changes" >> $GITHUB_ENV
+          fi
 
           if [[ -z "$COMMIT_MESSAGE_HEADER" ]]; then
             echo "No valid changelog found!"
@@ -112,7 +117,7 @@ jobs:
           zip "../../../../../../releases/Iconify v${{ env.VERSION_NAME }} Dev (#${{github.run_number}}).zip" *.apk -r
 
       - name: Telegram File Attachment
-        if: github.repository == 'Mahmud0808/Iconify'
+        if: github.repository == 'Mahmud0808/Iconify' && ${{ env.COMMIT_MESSAGE_HEADER != 'Skipping new build' }}
         run: |
           set -e
           curl -v "https://api.telegram.org/bot${{ secrets.TG_BOT_TOKEN }}/sendMediaGroup" \
