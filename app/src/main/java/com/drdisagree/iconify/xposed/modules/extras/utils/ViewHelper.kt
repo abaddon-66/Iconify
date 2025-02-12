@@ -595,7 +595,7 @@ object ViewHelper {
             suppressError = true
         )
 
-        return if (isMethodAvailable(expandableClass, "fromView", View::class.java)) {
+        return if (expandableClass.isMethodAvailable("fromView", View::class.java)) {
             expandableClass!!.callStaticMethod("fromView", this)
         } else {
             expandableCompanionFromViewClass!!.getConstructor(View::class.java).newInstance(this)

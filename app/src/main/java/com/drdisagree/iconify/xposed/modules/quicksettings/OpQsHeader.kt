@@ -1672,8 +1672,7 @@ class OpQsHeader(context: Context) : ModPack(context) {
         if (packageName == null) return
 
         if (mMediaOutputDialogFactory != null) {
-            if (isMethodAvailable(
-                    mMediaOutputDialogFactory,
+            if (mMediaOutputDialogFactory.isMethodAvailable(
                     "create",
                     String::class.java,
                     Boolean::class.java,
@@ -1681,8 +1680,7 @@ class OpQsHeader(context: Context) : ModPack(context) {
                 )
             ) {
                 mMediaOutputDialogFactory.callMethod("create", packageName, true, v)
-            } else if (isMethodAvailable(
-                    mMediaOutputDialogFactory,
+            } else if (mMediaOutputDialogFactory.isMethodAvailable(
                     "create",
                     View::class.java,
                     String::class.java,
@@ -1691,8 +1689,7 @@ class OpQsHeader(context: Context) : ModPack(context) {
                 )
             ) {
                 mMediaOutputDialogFactory.callMethod("create", v, packageName, true, true)
-            } else if (isMethodAvailable(
-                    mMediaOutputDialogFactory,
+            } else if (mMediaOutputDialogFactory.isMethodAvailable(
                     "createAndShow",
                     String::class.java,
                     Boolean::class.java,

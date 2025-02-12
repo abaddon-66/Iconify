@@ -432,7 +432,7 @@ class ColorizeNotification(context: Context) : ModPack(context) {
                 }
             }
 
-        if (isMethodAvailable(notificationContentInflaterClass, "createRemoteViews")) {
+        if (notificationContentInflaterClass.isMethodAvailable("createRemoteViews")) {
             notificationContentInflaterClass
                 .hookMethodMatchPattern(".*createRemoteViews.*")
                 .runBefore { param ->
