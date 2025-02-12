@@ -17,7 +17,6 @@ import android.os.Environment
 import android.os.Handler
 import android.os.Looper
 import android.view.View
-import android.view.View.OnAttachStateChangeListener
 import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.view.WindowManager
@@ -186,58 +185,8 @@ class DepthWallpaperA14(context: Context) : ModPack(context) {
             findClass("$SYSTEMUI_PACKAGE.statusbar.phone.StatusBarKeyguardViewManager")
         val scrimControllerClass = findClass("$SYSTEMUI_PACKAGE.statusbar.phone.ScrimController")
         val scrimViewClass = findClass("$SYSTEMUI_PACKAGE.scrim.ScrimView")
-        val aodBurnInLayerClass = findClass(
-            "$SYSTEMUI_PACKAGE.keyguard.ui.view.layout.sections.AodBurnInLayer",
-            suppressError = true
-        )
         val keyguardBottomAreaViewClass =
             findClass("$SYSTEMUI_PACKAGE.statusbar.phone.KeyguardBottomAreaView")
-
-        aodBurnInLayerClass
-            .hookConstructor()
-            .runAfter { param ->
-                if (!showDepthWallpaper) return@runAfter
-
-                val entryV = param.thisObject as View
-
-                entryV.addOnAttachStateChangeListener(object : OnAttachStateChangeListener {
-                    override fun onViewAttachedToWindow(v: View) {
-                        Handler(Looper.getMainLooper()).postDelayed({
-                            val rootView = v.parent as? ViewGroup ?: return@postDelayed
-
-                            if (!mLayersCreated) {
-                                createLayers()
-                            }
-
-                            val largeClockView = rootView.findViewById<View>(
-                                mContext.resources.getIdentifier(
-                                    "lockscreen_clock_view_large",
-                                    "id",
-                                    mContext.packageName
-                                )
-                            )
-                            val smallClockView = rootView.findViewById<View>(
-                                mContext.resources.getIdentifier(
-                                    "lockscreen_clock_view",
-                                    "id",
-                                    mContext.packageName
-                                )
-                            )
-
-                            rootView.apply {
-                                reAddView(mWallpaperForeground, 0)
-
-                                if (!showLockscreenClock) {
-                                    reAddView(largeClockView, 0)
-                                    reAddView(smallClockView, 0)
-                                }
-                            }
-                        }, 1000)
-                    }
-
-                    override fun onViewDetachedFromWindow(v: View) {}
-                })
-            }
 
         scrimViewClass
             .hookMethod("setViewAlpha")
