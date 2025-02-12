@@ -12,7 +12,7 @@ fun isMethodAvailable(
     if (target == null) return false
 
     if (target is Class<*>) return if (parameterTypes.isEmpty()) {
-        target.declaredMethods.any { it.name == methodName }
+        target.declaredMethods.toList().union(target.methods.toList()).any { it.name == methodName }
     } else {
         try {
             target.getMethod(methodName, *parameterTypes)
@@ -24,7 +24,8 @@ fun isMethodAvailable(
 
     return try {
         if (parameterTypes.isEmpty()) {
-            target::class.java.declaredMethods.any { it.name == methodName }
+            target::class.java.declaredMethods.toList().union(target::class.java.methods.toList())
+                .any { it.name == methodName }
         } else {
             target::class.java.getMethod(methodName, *parameterTypes)
             true
@@ -44,7 +45,8 @@ fun isFieldAvailable(clazz: Class<*>, fieldName: String): Boolean {
 }
 
 fun findMethod(clazz: Class<*>, namePattern: String): Method? {
-    val methods: Array<Method> = clazz.declaredMethods
+    val methods: Array<Method> =
+        clazz.declaredMethods.toList().union(clazz.methods.toList()).toTypedArray()
 
     for (method in methods) {
         if (Pattern.matches(namePattern, method.name)) {
@@ -57,7 +59,8 @@ fun findMethod(clazz: Class<*>, namePattern: String): Method? {
 
 fun findMethods(clazz: Class<*>, namePattern: String): Set<Method> {
     val result: MutableSet<Method> = ArraySet()
-    val methods: Array<Method> = clazz.declaredMethods
+    val methods: Array<Method> =
+        clazz.declaredMethods.toList().union(clazz.methods.toList()).toTypedArray()
 
     for (method in methods) {
         if (Pattern.matches(namePattern, method.name)) {

@@ -55,6 +55,7 @@ import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.getFieldSilent
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookConstructor
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookMethod
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookMethodMatchPattern
+import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.isMethodAvailable
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.log
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.setField
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.setFieldSilently
@@ -287,7 +288,7 @@ class QuickSettings(context: Context) : ModPack(context) {
 
         val qsTileViewImplClass = findClass("$SYSTEMUI_PACKAGE.qs.tileimpl.QSTileViewImpl")!!
 
-        if (fixQsTileColor && qsTileViewImplClass.declaredMethods.find { it.name == "setStateLayer" } != null) {
+        if (fixQsTileColor && isMethodAvailable(qsTileViewImplClass, "setStateLayer")) {
             qsTileViewImplClass
                 .hookMethod("setStateLayer")
                 .replace { param ->

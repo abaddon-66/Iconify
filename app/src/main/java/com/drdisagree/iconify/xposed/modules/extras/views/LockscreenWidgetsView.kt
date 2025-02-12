@@ -1608,7 +1608,7 @@ class LockscreenWidgetsView(context: Context, activityStarter: Any?) :
     @Suppress("deprecation")
     private fun getHotspotSSID(): String {
         try {
-            val methods: Array<Method> = WifiManager::class.java.declaredMethods
+            val methods: Array<Method> = WifiManager::class.java.declaredMethods.toList().union(WifiManager::class.java.methods.toList()).toTypedArray()
             for (m in methods) {
                 if (m.name == "getWifiApConfiguration") {
                     val config = m.invoke(mWifiManager) as WifiConfiguration
