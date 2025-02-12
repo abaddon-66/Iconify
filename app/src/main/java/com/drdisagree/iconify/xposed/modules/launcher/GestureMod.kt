@@ -5,6 +5,7 @@ import android.os.SystemClock
 import android.view.MotionEvent
 import com.drdisagree.iconify.common.Preferences.DOUBLE_TAP_TO_SLEEP
 import com.drdisagree.iconify.xposed.ModPack
+import com.drdisagree.iconify.xposed.modules.extras.utils.VibrationUtils
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.XposedHook.Companion.findClass
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookMethod
 import com.drdisagree.iconify.xposed.utils.SystemUtils.Companion.sleepDevice
@@ -54,7 +55,7 @@ class GestureMod(context: Context) : ModPack(context) {
                             firstTapX = event.x
                             firstTapY = event.y
                             isFirstTapRunning = true
-                        } else {
+                        } else if (isFirstTapComplete) {
                             // Third event (ACTION_DOWN)
                             val distance = hypot(
                                 (event.x - firstTapX).toDouble(),
@@ -63,6 +64,7 @@ class GestureMod(context: Context) : ModPack(context) {
 
                             if (distance <= TAP_DISTANCE_THRESHOLD) {
                                 if (doubleTapToSleep) {
+                                    VibrationUtils.triggerVibration(mContext, 2)
                                     sleepDevice()
                                 }
                             }
@@ -80,9 +82,16 @@ class GestureMod(context: Context) : ModPack(context) {
                     }
 
                     MotionEvent.ACTION_MOVE -> {
-                        // If the user moves, cancel double-tap detection
-                        isFirstTapRunning = false
-                        isFirstTapComplete = false
+                        val distance = hypot(
+                            (event.x - firstTapX).toDouble(),
+                            (event.y - firstTapY).toDouble()
+                        )
+
+                        if (isFirstTapRunning && distance > TAP_DISTANCE_THRESHOLD) {
+                            // If the user moves, cancel double-tap detection
+                            isFirstTapRunning = false
+                            isFirstTapComplete = false
+                        }
                     }
                 }
             }
