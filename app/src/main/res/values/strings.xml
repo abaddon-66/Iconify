@@ -1162,6 +1162,8 @@
     <string name="text_color_primary">Text Color Primary</string>
     <string name="text_color_inverse">Text Color Inverse</string>
     <string name="learn_more">Learn more</string>
+    <string name="custom_tiles_footer_info">To ensure custom tiles work properly, first use the default internet and bluetooth tiles once before using the custom ones.</string>
+    <string name="hig_res_image_footer_info">Avoid using high-resolution images, as they may cause your system UI to crash.</string>
 
     <!-- Weather -->
     <!-- Omni Jaws Strings -->
@@ -1292,6 +1294,7 @@
     <string name="disable_recents_blur_desc">Disable blur if recents screen is buggy</string>
     <string name="app_drawer_background_opacity_title">App Drawer Background Opacity</string>
     <string name="recents_background_opacity_title">Recents Background Opacity</string>
+    <string name="launcher_mod_footer_info">Currently, only Pixel Launcher and Launcher3 are supported.</string>
 
     <!-- Alert Dialogs -->
     <string name="systemui_restart_required_title">SystemUI Restart Needed</string>

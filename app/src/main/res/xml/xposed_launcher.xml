@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:search="http://schemas.android.com/apk/com.drdisagree.iconify.ui.preferences.preferencesearch">
 
     <com.drdisagree.iconify.ui.preferences.SwitchPreference
         android:key="xposed_forcethemedicons"
@@ -45,5 +46,10 @@
         app:minVal="0"
         app:tickInterval="1"
         app:valueFormat="%" />
+
+    <com.drdisagree.iconify.ui.preferences.FooterPreference
+        android:key="launcher_mod_footer_info"
+        android:title="@string/launcher_mod_footer_info"
+        search:ignore="true" />
 
 </PreferenceScreen>

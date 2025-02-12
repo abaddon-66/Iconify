@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:search="http://schemas.android.com/apk/com.drdisagree.iconify.ui.preferences.preferencesearch">
 
     <com.drdisagree.iconify.ui.preferences.MasterSwitchPreference
         android:key="xposed_opqsheader"
@@ -60,5 +61,10 @@
         app:showResetButton="true"
         app:tickInterval="1"
         app:valueFormat="dp" />
+
+    <com.drdisagree.iconify.ui.preferences.FooterPreference
+        android:key="op_qs_footer_info"
+        android:title="@string/custom_tiles_footer_info"
+        search:ignore="true" />
 
 </PreferenceScreen>

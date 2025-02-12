@@ -304,4 +304,10 @@
             app:valueFormat="%" />
 
     </com.drdisagree.iconify.ui.preferences.PreferenceCategory>
+
+    <com.drdisagree.iconify.ui.preferences.FooterPreference
+        android:key="ls_widgets_footer_info"
+        android:title="@string/custom_tiles_footer_info"
+        search:ignore="true" />
+
 </PreferenceScreen>
