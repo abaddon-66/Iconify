@@ -56,8 +56,8 @@
             android:exported="false" />
         <activity
             android:name=".ui.activities.WeatherActivity"
-            android:excludeFromRecents="true"
             android:exported="true"
+            android:excludeFromRecents="true"
             android:theme="@style/Theme.Iconify" />
         <activity
             android:name=".SplashActivity"
@@ -165,6 +165,9 @@
                 android:value="true" />
         </service> <!-- Quick Settings Tile -->
         <meta-data
+            android:name="com.google.mlkit.vision.DEPENDENCIES"
+            android:value="subject_segment" /> <!-- ML Kit download -->
+        <meta-data
             android:name="xposedmodule"
             android:value="true" /> <!-- xposed meta data -->
         <meta-data
@@ -176,6 +179,9 @@
         <meta-data
             android:name="xposedscope"
             android:resource="@array/module_scope" /> <!-- xposed meta data -->
+        <meta-data
+            android:name="com.google.mlkit.vision.DEPENDENCIES"
+            android:value="subject_segment" /> <!-- ML Kit download -->
         <provider
             android:name=".provider.RemotePrefProvider"
             android:authorities="${applicationId}"
