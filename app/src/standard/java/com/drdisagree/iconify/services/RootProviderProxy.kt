@@ -46,9 +46,9 @@ class RootProviderProxy : Service() {
 
         @Throws(RemoteException::class)
         override fun runCommand(command: String): Array<out String?> {
-            try {
-                ensureEnvironment()
+            ensureEnvironment()
 
+            try {
                 val result = Shell.cmd(command).exec().out
                 return result.toTypedArray<String>()
             } catch (ignored: Throwable) {
