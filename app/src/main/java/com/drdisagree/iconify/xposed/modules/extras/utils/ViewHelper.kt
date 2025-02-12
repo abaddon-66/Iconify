@@ -526,7 +526,7 @@ object ViewHelper {
 
         val showDepthWallpaper = Xprefs.getBoolean(DEPTH_WALLPAPER_SWITCH, false)
         val idx = if (showDepthWallpaper) {
-            val tempIdx = findViewIdContainsTag(ICONIFY_DEPTH_WALLPAPER_FOREGROUND_TAG)
+            val tempIdx = findChildIndexContainsTag(ICONIFY_DEPTH_WALLPAPER_FOREGROUND_TAG)
             if (tempIdx == -1) 0 else tempIdx
         } else {
             0

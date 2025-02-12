@@ -204,10 +204,8 @@ class DepthWallpaperA15(context: Context) : ModPack(context) {
             findClass("$SYSTEMUI_PACKAGE.statusbar.phone.KeyguardBottomAreaView")
         val statusBarKeyguardViewManagerClass =
             findClass("$SYSTEMUI_PACKAGE.statusbar.phone.StatusBarKeyguardViewManager")
-        val aodBurnInLayerClass = findClass(
-            "$SYSTEMUI_PACKAGE.keyguard.ui.view.layout.sections.AodBurnInLayer",
-            suppressError = true
-        )
+        val aodBurnInLayerClass =
+            findClass("$SYSTEMUI_PACKAGE.keyguard.ui.view.layout.sections.AodBurnInLayer")
         var aodBurnInLayerHooked = false
 
         // Apparently ROMs like CrDroid doesn't even use AodBurnInLayer class
@@ -227,6 +225,17 @@ class DepthWallpaperA15(context: Context) : ModPack(context) {
                         if (!showDepthWallpaper) return@postDelayed
 
                         val rootView = v.parent as? ViewGroup ?: return@postDelayed
+
+                        // If rootView is not R.id.keyguard_root_view, detach and return
+                        if (rootView.id != mContext.resources.getIdentifier(
+                                "keyguard_root_view",
+                                "id",
+                                mContext.packageName
+                            )
+                        ) {
+                            entryV.removeOnAttachStateChangeListener(this)
+                            return@postDelayed
+                        }
 
                         if (!mLayersCreated) {
                             createLayers()
