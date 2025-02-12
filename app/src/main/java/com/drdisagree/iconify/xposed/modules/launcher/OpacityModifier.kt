@@ -1,6 +1,7 @@
 package com.drdisagree.iconify.xposed.modules.launcher
 
 import android.content.Context
+import android.graphics.Color
 import androidx.core.graphics.ColorUtils
 import com.drdisagree.iconify.common.Preferences.APP_DRAWER_BACKGROUND_OPACITY
 import com.drdisagree.iconify.common.Preferences.DISABLE_RECENTS_BLUR
@@ -43,6 +44,17 @@ class OpacityModifier(context: Context) : ModPack(context) {
             findClass("com.android.launcher3.uioverrides.states.QuickSwitchState")
         val recentsStateClass = findClass("com.android.quickstep.fallback.RecentsState")
         val hintStateClass = findClass("com.android.launcher3.states.HintState")
+        val activityAllAppsContainerViewClass =
+            findClass("com.android.launcher3.allapps.ActivityAllAppsContainerView")
+
+        activityAllAppsContainerViewClass
+            .hookMethod("updateHeaderScroll")
+            .runAfter { param ->
+                if (appDrawerBackgroundOpacity != 255) {
+                    param.thisObject.setField("mHeaderColor", Color.TRANSPARENT)
+                    param.thisObject.callMethod("invalidateHeader")
+                }
+            }
 
         allAppsStateClass
             .hookMethod("getWorkspaceScrimColor")
