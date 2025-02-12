@@ -315,6 +315,29 @@ class LockscreenClock(context: Context) : ModPack(context) {
                 }
             }
 
+        val keyguardUpdateMonitor = findClass("com.android.keyguard.KeyguardUpdateMonitor")
+
+        keyguardUpdateMonitor
+            .hookMethod("registerCallback")
+            .parameters("com.android.keyguard.KeyguardUpdateMonitorCallback")
+            .runAfter { param ->
+                if (!showLockscreenClock) return@runAfter
+
+                val callback = param.args[0]
+
+                callback.javaClass
+                    .hookMethod(
+                        "onTimeChanged",
+                        "onTimeFormatChanged",
+                        "onTimeZoneChanged"
+                    )
+                    .runAfter runAfter2@{
+                        if (!showLockscreenClock) return@runAfter2
+
+                        Handler(Looper.getMainLooper()).post { updateClockView() }
+                    }
+            }
+
         val legacyNotificationIconAreaControllerImplClass = findClass(
             "$SYSTEMUI_PACKAGE.statusbar.phone.LegacyNotificationIconAreaControllerImpl",
             "$SYSTEMUI_PACKAGE.statusbar.phone.NotificationIconAreaController"
