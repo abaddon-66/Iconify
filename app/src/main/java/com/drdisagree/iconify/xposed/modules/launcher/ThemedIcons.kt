@@ -13,6 +13,7 @@ import com.drdisagree.iconify.xposed.modules.extras.utils.MonochromeIconFactory
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.XposedHook.Companion.findClass
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.callMethod
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.callStaticMethod
+import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.getAnyField
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.getExtraFieldSilently
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.getField
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookConstructor
@@ -52,8 +53,8 @@ class ThemedIcons(context: Context) : ModPack(context) {
         baseIconCacheClass
             .hookConstructor()
             .runAfter { param ->
-                mIconDb = param.thisObject.getField("mIconDb")
-                mCache = param.thisObject.getField("mCache")
+                mIconDb = param.thisObject.getAnyField("mIconDb", "iconDb")
+                mCache = param.thisObject.getAnyField("mCache", "cache")
             }
 
         val launcherAppStateClass = findClass("com.android.launcher3.LauncherAppState")
