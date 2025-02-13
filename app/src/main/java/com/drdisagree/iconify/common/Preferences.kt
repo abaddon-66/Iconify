@@ -394,7 +394,6 @@ object Preferences {
     const val UPDATE_OVER_WIFI = "IconifyUpdateOverWifi"
     const val SHOW_HOME_CARD = "IconifyShowHomeCard"
     const val VIBRATE_UI = "IconifyUiVibration"
-    const val SLIDER_CONTROLLER = "IconifySliderController"
     const val XPOSED_ONLY_MODE = "IconifyXposedOnlyMode"
     const val NEW_UPDATE_FOUND = "newUpdateFound"
 

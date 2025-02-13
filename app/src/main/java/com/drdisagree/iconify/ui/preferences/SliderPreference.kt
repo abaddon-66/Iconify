@@ -13,8 +13,6 @@ import androidx.core.content.ContextCompat
 import androidx.preference.Preference
 import androidx.preference.PreferenceViewHolder
 import com.drdisagree.iconify.R
-import com.drdisagree.iconify.common.Preferences.SLIDER_CONTROLLER
-import com.drdisagree.iconify.config.RPrefs
 import com.drdisagree.iconify.utils.HapticUtils.weakVibrate
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.slider.LabelFormatter
@@ -87,8 +85,7 @@ class SliderPreference(
                 R.styleable.SliderPreference_tickVisible,
                 abs(valueTo - valueFrom) <= 25
             )
-            showController = getBoolean(R.styleable.SliderPreference_showController, false) ||
-                    RPrefs.getBoolean(SLIDER_CONTROLLER, false)
+            showController = getBoolean(R.styleable.SliderPreference_showController, false)
             decimalFormat = if (hasValue(R.styleable.SliderPreference_decimalFormat)) {
                 getString(R.styleable.SliderPreference_decimalFormat)
             } else {

@@ -8,8 +8,6 @@ import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import android.widget.TextView
 import com.drdisagree.iconify.R
-import com.drdisagree.iconify.common.Preferences.SLIDER_CONTROLLER
-import com.drdisagree.iconify.config.RPrefs
 import com.drdisagree.iconify.utils.HapticUtils.weakVibrate
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.slider.Slider
@@ -78,8 +76,7 @@ class SliderWidget : RelativeLayout {
         decimalFormat = typedArray.getString(R.styleable.SliderWidget_decimalFormat)
         outputScale = typedArray.getFloat(R.styleable.SliderWidget_outputScale, 1f)
         showResetButton = typedArray.getBoolean(R.styleable.SliderWidget_showResetButton, false)
-        showController = typedArray.getBoolean(R.styleable.SliderWidget_showController, false) ||
-                RPrefs.getBoolean(SLIDER_CONTROLLER, false)
+        showController = typedArray.getBoolean(R.styleable.SliderWidget_showController, false)
         tickVisible = typedArray.getBoolean(
             R.styleable.SliderWidget_tickVisible,
             abs(valueTo - valueFrom) <= 25
