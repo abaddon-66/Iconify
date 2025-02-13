@@ -30,7 +30,6 @@ class GestureMod(context: Context) : ModPack(context) {
         val workspaceTouchListenerClass =
             findClass("com.android.launcher3.touch.WorkspaceTouchListener")
 
-        // New pixel launcher
         workspaceTouchListenerClass
             .hookMethod("onTouch")
             .runAfter { param ->
