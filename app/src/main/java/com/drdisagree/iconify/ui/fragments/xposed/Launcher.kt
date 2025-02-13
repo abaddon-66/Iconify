@@ -1,7 +1,15 @@
 package com.drdisagree.iconify.ui.fragments.xposed
 
 import com.drdisagree.iconify.R
+import com.drdisagree.iconify.common.Const.LAUNCHER3_PACKAGE
+import com.drdisagree.iconify.common.Const.PIXEL_LAUNCHER_PACKAGE
+import com.drdisagree.iconify.common.Preferences.DESKTOP_DOCK_SPACING
+import com.drdisagree.iconify.common.Preferences.DESKTOP_SEARCH_BAR
+import com.drdisagree.iconify.config.RPrefs
 import com.drdisagree.iconify.ui.base.ControlledPreferenceFragmentCompat
+import com.drdisagree.iconify.xposed.utils.BootLoopProtector.LOAD_TIME_KEY_KEY
+import com.drdisagree.iconify.xposed.utils.BootLoopProtector.PACKAGE_STRIKE_KEY_KEY
+import java.util.Calendar
 
 class Launcher : ControlledPreferenceFragmentCompat() {
 
@@ -16,4 +24,25 @@ class Launcher : ControlledPreferenceFragmentCompat() {
 
     override val hasMenu: Boolean
         get() = true
+
+    override fun updateScreen(key: String?) {
+        super.updateScreen(key)
+
+        when (key) {
+            DESKTOP_SEARCH_BAR,
+            DESKTOP_DOCK_SPACING -> {
+                resetBootloopProtectorForPackage(PIXEL_LAUNCHER_PACKAGE)
+                resetBootloopProtectorForPackage(LAUNCHER3_PACKAGE)
+            }
+        }
+    }
+
+    private fun resetBootloopProtectorForPackage(packageName: String) {
+        val loadTimeKey = String.format("%s%s", LOAD_TIME_KEY_KEY, packageName)
+        val strikeKey = String.format("%s%s", PACKAGE_STRIKE_KEY_KEY, packageName)
+        val currentTime = Calendar.getInstance().time.time
+
+        RPrefs.putLong(loadTimeKey, currentTime)
+        RPrefs.putInt(strikeKey, 0)
+    }
 }
