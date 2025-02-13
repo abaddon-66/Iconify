@@ -46,7 +46,7 @@
             android:title="@string/dock_spacing_title"
             app:defaultValue="-1"
             app:iconSpaceReserved="false"
-            app:maxVal="80"
+            app:maxVal="260"
             app:minVal="-1"
             app:showDefaultIndicator="true"
             app:tickInterval="1"
