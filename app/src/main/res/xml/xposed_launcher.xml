@@ -22,6 +22,18 @@
         app:iconSpaceReserved="false" />
 
     <com.drdisagree.iconify.ui.preferences.SwitchPreference
+        android:defaultValue="true"
+        android:key="xposed_desktopiconlabels"
+        android:title="@string/desktop_icon_labels_title"
+        app:iconSpaceReserved="false" />
+
+    <com.drdisagree.iconify.ui.preferences.SwitchPreference
+        android:defaultValue="true"
+        android:key="xposed_appdrawericonlabels"
+        android:title="@string/app_drawer_icon_labels_title"
+        app:iconSpaceReserved="false" />
+
+    <com.drdisagree.iconify.ui.preferences.SwitchPreference
         android:key="xposed_disablerecentsblur"
         android:summary="@string/disable_recents_blur_desc"
         android:title="@string/disable_recents_blur_title"
