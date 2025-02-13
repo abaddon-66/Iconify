@@ -8,6 +8,8 @@ import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import android.widget.TextView
 import com.drdisagree.iconify.R
+import com.drdisagree.iconify.common.Preferences.SLIDER_CONTROLLER
+import com.drdisagree.iconify.config.RPrefs
 import com.drdisagree.iconify.utils.HapticUtils.weakVibrate
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.slider.Slider
@@ -15,6 +17,7 @@ import kotlinx.parcelize.Parcelize
 import kotlinx.parcelize.RawValue
 import java.text.DecimalFormat
 import java.util.Objects
+import kotlin.math.abs
 
 class SliderWidget : RelativeLayout {
 
@@ -22,14 +25,22 @@ class SliderWidget : RelativeLayout {
     private lateinit var titleTextView: TextView
     private lateinit var summaryTextView: TextView
     private lateinit var materialSlider: Slider
+    private lateinit var minusButton: MaterialButton
+    private lateinit var plusButton: MaterialButton
     private lateinit var resetButton: MaterialButton
     private var valueFormat: String? = ""
     private var defaultValue = 0
+    private var valueFrom = 0
+    private var valueTo = 100
+    private var tickInterval = 1
     private var outputScale = 1f
     private var isDecimalFormat = false
     private var decimalFormat: String? = "#.#"
     private var resetClickListener: OnLongClickListener? = null
     private var onSliderTouchListener: Slider.OnSliderTouchListener? = null
+    private var tickVisible: Boolean = false
+    private var showResetButton: Boolean = false
+    private var showController: Boolean = false
 
     constructor(context: Context) : super(context) {
         init(context, null)
@@ -56,17 +67,29 @@ class SliderWidget : RelativeLayout {
 
         valueFormat = typedArray.getString(R.styleable.SliderWidget_valueFormat)
         defaultValue = typedArray.getInt(R.styleable.SliderWidget_sliderDefaultValue, Int.MAX_VALUE)
-        setTitle(typedArray.getString(R.styleable.SliderWidget_titleText))
-        setSliderValueFrom(typedArray.getInt(R.styleable.SliderWidget_sliderValueFrom, 0))
-        setSliderValueTo(typedArray.getInt(R.styleable.SliderWidget_sliderValueTo, 100))
-        setSliderStepSize(typedArray.getInt(R.styleable.SliderWidget_sliderStepSize, 1))
+        valueFrom = typedArray.getInt(R.styleable.SliderWidget_sliderValueFrom, 0)
+        valueTo = typedArray.getInt(R.styleable.SliderWidget_sliderValueTo, 100)
         sliderValue = typedArray.getInt(
             R.styleable.SliderWidget_sliderValue,
             typedArray.getInt(R.styleable.SliderWidget_sliderDefaultValue, 50)
         )
+        tickInterval = typedArray.getInt(R.styleable.SliderWidget_sliderStepSize, 1)
         isDecimalFormat = typedArray.getBoolean(R.styleable.SliderWidget_isDecimalFormat, false)
         decimalFormat = typedArray.getString(R.styleable.SliderWidget_decimalFormat)
         outputScale = typedArray.getFloat(R.styleable.SliderWidget_outputScale, 1f)
+        showResetButton = typedArray.getBoolean(R.styleable.SliderWidget_showResetButton, false)
+        showController = typedArray.getBoolean(R.styleable.SliderWidget_showController, false) ||
+                RPrefs.getBoolean(SLIDER_CONTROLLER, false)
+        tickVisible = typedArray.getBoolean(
+            R.styleable.SliderWidget_tickVisible,
+            abs(valueTo - valueFrom) <= 25
+        )
+
+        setTitle(typedArray.getString(R.styleable.SliderWidget_titleText))
+        setSliderValueFrom(valueFrom)
+        setSliderValueTo(valueTo)
+        setSliderStepSize(tickInterval)
+        materialSlider.isTickVisible = tickVisible
 
         typedArray.recycle()
 
@@ -82,6 +105,30 @@ class SliderWidget : RelativeLayout {
         handleResetButton()
         setOnSliderTouchListener(null)
         setResetClickListener(null)
+
+        if (showController) {
+            minusButton.visibility = View.VISIBLE
+            plusButton.visibility = View.VISIBLE
+
+            minusButton.setOnClickListener { v: View ->
+                v.weakVibrate()
+                if (sliderValue <= valueFrom) return@setOnClickListener
+
+                sliderValue = (sliderValue - tickInterval).coerceAtLeast(valueFrom)
+            }
+
+            plusButton.setOnClickListener { v: View ->
+                v.weakVibrate()
+                if (sliderValue >= valueTo) return@setOnClickListener
+
+                sliderValue = (sliderValue + tickInterval).coerceAtMost(valueTo)
+            }
+
+            updateControllerButtons()
+        } else {
+            minusButton.visibility = View.GONE
+            plusButton.visibility = View.GONE
+        }
     }
 
     fun setTitle(titleResId: Int) {
@@ -119,6 +166,8 @@ class SliderWidget : RelativeLayout {
             materialSlider.value = value.toFloat()
             setSelectedText()
             handleResetButton()
+            if (showController) updateControllerButtons()
+            notifyOnSliderTouchStopped(materialSlider)
         }
 
     fun setSliderValueFrom(value: Int) {
@@ -156,13 +205,14 @@ class SliderWidget : RelativeLayout {
                 setSelectedText()
                 handleResetButton()
                 notifyOnSliderTouchStopped(slider)
+                if (showController) updateControllerButtons()
             }
         })
 
         materialSlider.setLabelFormatter {
-            if (valueFormat!!.isBlank() || valueFormat!!.isEmpty()) (if (!isDecimalFormat) (materialSlider.value / outputScale).toInt() else DecimalFormat(
-                decimalFormat
-            )
+            if (valueFormat!!.isBlank() || valueFormat!!.isEmpty()) (
+                    if (!isDecimalFormat) (materialSlider.value / outputScale).toInt()
+                    else DecimalFormat(decimalFormat)
                 .format((materialSlider.value / outputScale).toDouble())).toString() + valueFormat else (if (!isDecimalFormat) materialSlider.value.toInt()
                 .toString() else DecimalFormat(decimalFormat)
                 .format((materialSlider.value / outputScale).toDouble())) + valueFormat
@@ -185,6 +235,7 @@ class SliderWidget : RelativeLayout {
 
             handleResetButton()
             notifyOnResetClicked(v)
+            if (showController) updateControllerButtons()
         }
     }
 
@@ -214,6 +265,12 @@ class SliderWidget : RelativeLayout {
         }
     }
 
+    private fun updateControllerButtons() {
+        val currentValue = materialSlider.value
+        minusButton.isEnabled = currentValue > valueFrom
+        plusButton.isEnabled = currentValue < valueTo
+    }
+
     override fun setEnabled(enabled: Boolean) {
         super.setEnabled(enabled)
 
@@ -230,11 +287,15 @@ class SliderWidget : RelativeLayout {
         titleTextView = findViewById(R.id.title)
         summaryTextView = findViewById(R.id.summary)
         materialSlider = findViewById(R.id.slider_widget)
+        minusButton = findViewById(R.id.minus_button)
+        plusButton = findViewById(R.id.plus_button)
         resetButton = findViewById(R.id.reset_button)
         container.id = generateViewId()
         titleTextView.id = generateViewId()
         summaryTextView.id = generateViewId()
         materialSlider.id = generateViewId()
+        minusButton.id = generateViewId()
+        plusButton.id = generateViewId()
         resetButton.id = generateViewId()
     }
 
@@ -252,6 +313,7 @@ class SliderWidget : RelativeLayout {
         materialSlider.value = state.sliderValue
         setSelectedText()
         handleResetButton()
+        if (showController) updateControllerButtons()
     }
 
     @Parcelize

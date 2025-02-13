@@ -133,6 +133,8 @@
     <string name="settings_show_home_page_card_desc">Show a beautiful card on the home page.</string>
     <string name="settings_vibrate_ui_card_title">Haptic Feedback</string>
     <string name="settings_vibrate_ui_page_card_desc">Enhance touch feedback with interactive haptics.</string>
+    <string name="settings_slider_controller_title">Slider Controller</string>
+    <string name="settings_slider_controller_desc">Enable to display plus and minus buttons with sliders.</string>
     <string name="settings_clear_app_cache_title">Clear App Cache</string>
     <string name="settings_clear_app_cache_desc">Clear caches generated due to the usage of custom fonts, images, or gifs.</string>
     <string name="activity_title_experimental">Experimental</string>

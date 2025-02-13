@@ -13,6 +13,8 @@ import androidx.core.content.ContextCompat
 import androidx.preference.Preference
 import androidx.preference.PreferenceViewHolder
 import com.drdisagree.iconify.R
+import com.drdisagree.iconify.common.Preferences.SLIDER_CONTROLLER
+import com.drdisagree.iconify.config.RPrefs
 import com.drdisagree.iconify.utils.HapticUtils.weakVibrate
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.slider.LabelFormatter
@@ -43,10 +45,13 @@ class SliderPreference(
     private val tickVisible: Boolean
     private val tickInterval: Float
     private val showResetButton: Boolean
+    private val showController: Boolean
     private val defaultValue: MutableList<Float> = ArrayList()
     private var slider: RangeSlider? = null
     private var titleView: TextView? = null
     private var summaryView: TextView? = null
+    private var mMinusButton: MaterialButton? = null
+    private var mPlusButton: MaterialButton? = null
     private var mResetButton: MaterialButton? = null
 
     @Suppress("unused")
@@ -55,7 +60,7 @@ class SliderPreference(
     private var valueFormat: String? = null
     private val outputScale: Float
     private val isDecimalFormat: Boolean
-    private val showDefault: Boolean
+    private val showDefaultIndicator: Boolean
     private var decimalFormat: String? = "#.#"
 
     var updateConstantly: Boolean
@@ -82,13 +87,16 @@ class SliderPreference(
                 R.styleable.SliderPreference_tickVisible,
                 abs(valueTo - valueFrom) <= 25
             )
+            showController = getBoolean(R.styleable.SliderPreference_showController, false) ||
+                    RPrefs.getBoolean(SLIDER_CONTROLLER, false)
             decimalFormat = if (hasValue(R.styleable.SliderPreference_decimalFormat)) {
                 getString(R.styleable.SliderPreference_decimalFormat)
             } else {
                 "#.#" // Default decimal format
             }
             outputScale = getFloat(R.styleable.SliderPreference_outputScale, 1f)
-            showDefault = getBoolean(R.styleable.SliderPreference_showDefault, false)
+            showDefaultIndicator =
+                getBoolean(R.styleable.SliderPreference_showDefaultIndicator, false)
             val defaultValStr = getString(androidx.preference.R.styleable.Preference_defaultValue)
 
             if (valueFormat == null) valueFormat = ""
@@ -135,6 +143,8 @@ class SliderPreference(
 
         slider!!.setLabelFormatter(labelFormatter)
 
+        mMinusButton = holder.itemView.findViewById(R.id.minus_button)
+        mPlusButton = holder.itemView.findViewById(R.id.plus_button)
         mResetButton = holder.itemView.findViewById(R.id.reset_button)
 
         if (showResetButton && defaultValue.isNotEmpty()) {
@@ -154,10 +164,54 @@ class SliderPreference(
                     }
                 }
 
+                if (showController) updateControllerButtons()
+
                 savePrefs()
             }
         } else {
             mResetButton!!.visibility = View.GONE
+        }
+
+        if (showController) {
+            mMinusButton!!.visibility = View.VISIBLE
+            mPlusButton!!.visibility = View.VISIBLE
+
+            mMinusButton!!.setOnClickListener { v: View ->
+                v.weakVibrate()
+                val currentValue = slider?.values?.get(0) ?: return@setOnClickListener
+                if (currentValue <= valueFrom) return@setOnClickListener
+
+                val newValue = (currentValue - tickInterval).coerceAtLeast(valueFrom)
+                slider!!.values = listOf(newValue)
+                summaryView!!.text =
+                    slider!!.values.joinToString(separator = " - ") { sliderValue ->
+                        labelFormatter.getFormattedValue(sliderValue)
+                    }
+
+                updateControllerButtons()
+                handleResetButton()
+                savePrefs()
+            }
+
+            mPlusButton!!.setOnClickListener { v: View ->
+                v.weakVibrate()
+                val currentValue = slider?.values?.get(0) ?: return@setOnClickListener
+                if (currentValue >= valueTo) return@setOnClickListener
+
+                val newValue = (currentValue + tickInterval).coerceAtMost(valueTo)
+                slider!!.values = listOf(newValue)
+                summaryView!!.text =
+                    slider!!.values.joinToString(separator = " - ") { sliderValue ->
+                        labelFormatter.getFormattedValue(sliderValue)
+                    }
+
+                updateControllerButtons()
+                handleResetButton()
+                savePrefs()
+            }
+        } else {
+            mMinusButton!!.visibility = View.GONE
+            mPlusButton!!.visibility = View.GONE
         }
 
         sliderValue = holder.itemView.findViewById(androidx.preference.R.id.seekbar_value)
@@ -175,6 +229,8 @@ class SliderPreference(
             }
             visibility = if (showValueLabel) View.VISIBLE else View.GONE
         }
+
+        if (showController) updateControllerButtons()
 
         handleResetButton()
     }
@@ -249,6 +305,12 @@ class SliderPreference(
         }
     }
 
+    private fun updateControllerButtons() {
+        val currentValue = slider?.values?.get(0) ?: valueFrom
+        mMinusButton?.isEnabled = currentValue > valueFrom
+        mPlusButton?.isEnabled = currentValue < valueTo
+    }
+
     var labelFormatter: LabelFormatter = LabelFormatter {
         val formattedValues = slider!!.values.joinToString(separator = " - ") { sliderValue ->
             if (valueFormat != null && (valueFormat!!.isBlank() || valueFormat!!.isEmpty())) {
@@ -266,7 +328,7 @@ class SliderPreference(
             }
         }
 
-        if (showDefault &&
+        if (showDefaultIndicator &&
             defaultValue.isNotEmpty() &&
             defaultValue.containsAll(slider!!.values)
         ) {
@@ -307,6 +369,8 @@ class SliderPreference(
                 summary.text = labelFormatter.getFormattedValue(slider.values[0])
                 summary.visibility =
                     if (showValueLabel) View.VISIBLE else View.GONE
+
+                if (showController) updateControllerButtons()
 
                 handleResetButton()
 
