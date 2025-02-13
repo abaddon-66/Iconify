@@ -23,6 +23,7 @@ import java.math.BigDecimal
 import java.text.DecimalFormat
 import java.util.Locale
 import java.util.Scanner
+import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
 
@@ -39,6 +40,7 @@ class SliderPreference(
 
     private var valueFrom: Float
     private var valueTo: Float
+    private val tickVisible: Boolean
     private val tickInterval: Float
     private val showResetButton: Boolean
     private val defaultValue: MutableList<Float> = ArrayList()
@@ -76,6 +78,10 @@ class SliderPreference(
             showValueLabel = getBoolean(R.styleable.SliderPreference_showValueLabel, true)
             valueFormat = getString(R.styleable.SliderPreference_valueFormat)
             isDecimalFormat = getBoolean(R.styleable.SliderPreference_isDecimalFormat, false)
+            tickVisible = getBoolean(
+                R.styleable.SliderPreference_tickVisible,
+                abs(valueTo - valueFrom) <= 25
+            )
             decimalFormat = if (hasValue(R.styleable.SliderPreference_decimalFormat)) {
                 getString(R.styleable.SliderPreference_decimalFormat)
             } else {
@@ -159,6 +165,7 @@ class SliderPreference(
         slider!!.valueFrom = valueFrom
         slider!!.valueTo = valueTo
         slider!!.stepSize = tickInterval
+        slider!!.isTickVisible = tickVisible
 
         syncState()
 
@@ -279,7 +286,7 @@ class SliderPreference(
     }
 
     private var changeListener: RangeSlider.OnChangeListener =
-        RangeSlider.OnChangeListener { slider: RangeSlider, value: Float, fromUser: Boolean ->
+        RangeSlider.OnChangeListener { slider: RangeSlider, _: Float, fromUser: Boolean ->
             if (key != slider.tag) return@OnChangeListener
             if (updateConstantly && fromUser) {
                 savePrefs()
