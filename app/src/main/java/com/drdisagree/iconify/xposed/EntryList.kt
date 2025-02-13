@@ -14,6 +14,7 @@ import com.drdisagree.iconify.xposed.modules.launcher.GestureMod
 import com.drdisagree.iconify.xposed.modules.launcher.IconLabels
 import com.drdisagree.iconify.xposed.modules.launcher.IconUpdater
 import com.drdisagree.iconify.xposed.modules.launcher.OpacityModifier
+import com.drdisagree.iconify.xposed.modules.launcher.HotseatMod
 import com.drdisagree.iconify.xposed.modules.launcher.ThemedIcons
 import com.drdisagree.iconify.xposed.modules.lockscreen.Lockscreen
 import com.drdisagree.iconify.xposed.modules.lockscreen.clock.LockscreenClock
@@ -115,14 +116,16 @@ object EntryList {
         ThemedIcons::class.java,
         OpacityModifier::class.java,
         GestureMod::class.java,
-        IconLabels::class.java
+        IconLabels::class.java,
+        HotseatMod::class.java
     )
 
     private val launcher3ModPacks: List<Class<out ModPack>> = listOf(
         ThemedIcons::class.java,
         OpacityModifier::class.java,
         GestureMod::class.java,
-        IconLabels::class.java
+        IconLabels::class.java,
+        HotseatMod::class.java
     )
 
     fun getEntries(packageName: String): ArrayList<Class<out ModPack>> {
