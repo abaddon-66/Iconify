@@ -1,8 +1,6 @@
 package com.drdisagree.iconify.xposed.utils
 
 import android.annotation.SuppressLint
-import com.drdisagree.iconify.common.Const.FRAMEWORK_PACKAGE
-import com.drdisagree.iconify.common.Const.SYSTEMUI_PACKAGE
 import com.drdisagree.iconify.xposed.utils.XPrefs.Xprefs
 import com.drdisagree.iconify.xposed.utils.XPrefs.XprefsIsInitialized
 import java.util.Calendar
@@ -21,14 +19,13 @@ object BootLoopProtector {
         val currentTime = Calendar.getInstance().time.time
         val lastLoadTime = Xprefs.getLong(loadTimeKey, 0)
         var strikeCount = Xprefs.getInt(strikeKey, 0)
-        val maximumCount = if (packageName in setOf(FRAMEWORK_PACKAGE, SYSTEMUI_PACKAGE)) 3 else 6
 
         if (currentTime - lastLoadTime > 40000) {
             Xprefs.edit()
                 .putLong(loadTimeKey, currentTime)
                 .putInt(strikeKey, 0)
                 .commit()
-        } else if (strikeCount >= maximumCount) {
+        } else if (strikeCount >= 3) {
             return true
         } else {
             Xprefs.edit()
