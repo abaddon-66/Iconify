@@ -33,10 +33,12 @@ import com.drdisagree.iconify.ui.utils.ViewHelper.setHeader
 import com.drdisagree.iconify.ui.views.ClockCarouselView
 import com.drdisagree.iconify.utils.SystemUtils
 import com.drdisagree.iconify.utils.WallpaperUtils.loadWallpaper
+import com.google.android.material.color.DynamicColors
 import com.topjohnwu.superuser.internal.UiThreadHandler.handler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.util.concurrent.Executors
+
 
 class LockscreenClockParent : BaseFragment() {
 
@@ -90,6 +92,18 @@ class LockscreenClockParent : BaseFragment() {
             R.layout.clock_carousel_view
         val clockCarouselView =
             binding.clockCarouselView.clockCarouselViewStub.inflate() as ClockCarouselView
+
+        if (context != null) {
+            val dynamicColorContext = DynamicColors.wrapContextIfAvailable(
+                requireContext(),
+                R.style.ThemeOverlay_Material3_DynamicColors_Dark
+            )
+            val attrsToResolve = intArrayOf(R.attr.colorSurfaceContainer)
+            val typedArray = dynamicColorContext.obtainStyledAttributes(attrsToResolve)
+            val colorSurfaceContainer = typedArray.getColor(0, 0)
+            typedArray.recycle()
+            clockCarouselView.setCarouselCardColor(colorSurfaceContainer)
+        }
 
         Executors.newSingleThreadExecutor().execute {
             if (context == null) return@execute
