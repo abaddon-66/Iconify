@@ -1,6 +1,7 @@
 package com.drdisagree.iconify.xposed.modules.launcher
 
 import android.content.Context
+import android.graphics.Rect
 import com.drdisagree.iconify.common.Preferences.APP_DRAWER_ICON_LABELS
 import com.drdisagree.iconify.common.Preferences.DESKTOP_ICON_LABELS
 import com.drdisagree.iconify.xposed.ModPack
@@ -39,6 +40,7 @@ class IconLabels(context: Context) : ModPack(context) {
     override fun handleLoadPackage(loadPackageParam: LoadPackageParam) {
         val invariantDeviceProfileClass = findClass("com.android.launcher3.InvariantDeviceProfile")
         val bubbleTextViewClass = findClass("com.android.launcher3.BubbleTextView")
+        val deviceProfileClass = findClass("com.android.launcher3.DeviceProfile")
 
         invariantDeviceProfileClass
             .hookConstructor()
@@ -82,6 +84,40 @@ class IconLabels(context: Context) : ModPack(context) {
                 } else if (mDisplay.isDrawer() && !showDrawerLabels) {
                     reAddLabel()
                 }
+            }
+
+        deviceProfileClass
+            .hookMethod(
+                "updateIconSize",
+                "autoResizeAllAppsCells"
+            )
+            .runAfter { param ->
+                if (showDrawerLabels) return@runAfter
+
+                val cellLayoutPaddingPx = param.thisObject.getField("cellLayoutPaddingPx") as Rect
+                val desiredWorkspaceHorizontalMarginPx =
+                    param.thisObject.getField("desiredWorkspaceHorizontalMarginPx") as Int
+                val availableWidthPx = param.thisObject.getField("availableWidthPx") as Int
+
+                val cellLayoutHorizontalPadding =
+                    (cellLayoutPaddingPx.left + cellLayoutPaddingPx.right) / 2
+                val leftRightPadding =
+                    desiredWorkspaceHorizontalMarginPx + cellLayoutHorizontalPadding
+                val drawerWidth = availableWidthPx - leftRightPadding * 2
+                val invariantDeviceProfile = param.thisObject.getField("inv")
+
+                val allAppsCellHeightPx =
+                    (drawerWidth / invariantDeviceProfile.getField("numAllAppsColumns") as Int)
+                val allAppsIconDrawablePaddingPx = 0
+
+                param.thisObject.setField(
+                    "allAppsCellHeightPx",
+                    allAppsCellHeightPx
+                )
+                param.thisObject.setField(
+                    "allAppsIconDrawablePaddingPx",
+                    allAppsIconDrawablePaddingPx
+                )
             }
     }
 
