@@ -887,41 +887,45 @@ class OpQsHeader(context: Context) : ModPack(context) {
         val networkCapabilities =
             mConnectivityManager.getNetworkCapabilities(network) ?: return defaultInfo
 
-        if (networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)) {
-            for (subscriptionInfo in activeSubscriptionInfoList) {
-                val subId = subscriptionInfo.subscriptionId
-                val subTelephonyManager = mTelephonyManager.createForSubscriptionId(subId)
+        if (!networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)) {
+            return defaultInfo
+        }
 
-                if (subTelephonyManager.simState == TelephonyManager.SIM_STATE_READY &&
-                    networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)
-                ) {
-                    val carrierName = subscriptionInfo.carrierName.toString()
-                    val signalStrength = subTelephonyManager.signalStrength
-                    val signalStrengthLevel = signalStrength?.level?.coerceIn(0, 4) ?: 0
+        val activeDataSubId = SubscriptionManager.getDefaultDataSubscriptionId()
 
-                    val networkType = when (subTelephonyManager.networkType) {
-                        TelephonyManager.NETWORK_TYPE_NR -> "5G"
-                        TelephonyManager.NETWORK_TYPE_LTE -> "LTE"
-                        TelephonyManager.NETWORK_TYPE_HSDPA,
-                        TelephonyManager.NETWORK_TYPE_HSPA,
-                        TelephonyManager.NETWORK_TYPE_HSUPA,
-                        TelephonyManager.NETWORK_TYPE_UMTS -> "3G"
+        for (subscriptionInfo in activeSubscriptionInfoList) {
+            val subId = subscriptionInfo.subscriptionId
+            val subTelephonyManager = mTelephonyManager.createForSubscriptionId(subId)
 
-                        TelephonyManager.NETWORK_TYPE_EDGE,
-                        TelephonyManager.NETWORK_TYPE_GPRS -> "2G"
+            if (subId == activeDataSubId &&
+                subTelephonyManager.simState == TelephonyManager.SIM_STATE_READY
+            ) {
+                val carrierName = subscriptionInfo.carrierName.toString()
+                val signalStrength = subTelephonyManager.signalStrength
+                val signalStrengthLevel = signalStrength?.level?.coerceIn(0, 4) ?: 0
 
-                        TelephonyManager.NETWORK_TYPE_CDMA,
-                        TelephonyManager.NETWORK_TYPE_EVDO_0,
-                        TelephonyManager.NETWORK_TYPE_EVDO_A,
-                        TelephonyManager.NETWORK_TYPE_EVDO_B,
-                        TelephonyManager.NETWORK_TYPE_1xRTT -> "CDMA"
+                val networkType = when (subTelephonyManager.networkType) {
+                    TelephonyManager.NETWORK_TYPE_NR -> "5G"
+                    TelephonyManager.NETWORK_TYPE_LTE -> "LTE"
+                    TelephonyManager.NETWORK_TYPE_HSDPA,
+                    TelephonyManager.NETWORK_TYPE_HSPA,
+                    TelephonyManager.NETWORK_TYPE_HSUPA,
+                    TelephonyManager.NETWORK_TYPE_UMTS -> "3G"
 
-                        TelephonyManager.NETWORK_TYPE_GSM -> "GSM"
-                        else -> null
-                    }
+                    TelephonyManager.NETWORK_TYPE_EDGE,
+                    TelephonyManager.NETWORK_TYPE_GPRS -> "2G"
 
-                    return CarrierInfo(carrierName, signalStrengthLevel, networkType)
+                    TelephonyManager.NETWORK_TYPE_CDMA,
+                    TelephonyManager.NETWORK_TYPE_EVDO_0,
+                    TelephonyManager.NETWORK_TYPE_EVDO_A,
+                    TelephonyManager.NETWORK_TYPE_EVDO_B,
+                    TelephonyManager.NETWORK_TYPE_1xRTT -> "CDMA"
+
+                    TelephonyManager.NETWORK_TYPE_GSM -> "GSM"
+                    else -> null
                 }
+
+                return CarrierInfo(carrierName, signalStrengthLevel, networkType)
             }
         }
 
