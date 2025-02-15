@@ -22,7 +22,6 @@ import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookMethod
 import com.drdisagree.iconify.xposed.utils.XPrefs.Xprefs
 import de.robv.android.xposed.XposedHelpers.setAdditionalInstanceField
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam
-import java.util.Locale
 
 class ThemedIcons(context: Context) : ModPack(context) {
 
@@ -76,7 +75,7 @@ class ThemedIcons(context: Context) : ModPack(context) {
                     if (param.result == null && forceThemedIcons) {
                         val mIconBitmapSize = param.thisObject.getField("mIconBitmapSize") as Int
 
-                        param.result = MonochromeIconFactory(mIconBitmapSize)
+                        param.result = MonochromeIconFactory(mIconBitmapSize, true)
                             .wrap(mContext, param.args[0] as Drawable)
                     }
                 }
@@ -87,26 +86,30 @@ class ThemedIcons(context: Context) : ModPack(context) {
                 .hookConstructor()
                 .runAfter { param ->
                     val mIconBitmapSize = param.thisObject.getField("mIconBitmapSize") as Int
+                    val monochromeIconFactory = MonochromeIconFactory(mIconBitmapSize, false)
 
                     AdaptiveIconDrawable::class.java
                         .hookMethod("getMonochrome")
                         .runAfter runAfter2@{ param2 ->
                             if (param2.result == null && forceThemedIcons) {
-                                // If it's from com.android.launcher3.icons.IconProvider.getIconWithOverrides,
-                                // monochrome is already included
-                                if (Throwable()
-                                        .stackTrace[4]
-                                        .methodName
-                                        .lowercase(Locale.getDefault())
-                                        .contains("override")
-                                ) return@runAfter2
+                                // If it's from com.android.launcher3.icons.IconProvider class and
+                                // mentioned methods, monochrome is already included
+                                Throwable().stackTrace.forEach { stackTrace ->
+                                    stackTrace.methodName.lowercase().let { methodName ->
+                                        if (stackTrace.className.contains("IconProvider") &&
+                                            (methodName == "getIconWithOverrides" || methodName == "getIcon")
+                                        ) return@runAfter2
+                                    }
+                                }
 
                                 var monochromeIcon = param2.thisObject
                                     .getExtraFieldSilently("mMonochromeIcon") as? Drawable
 
                                 if (monochromeIcon == null) {
-                                    monochromeIcon = MonochromeIconFactory(mIconBitmapSize)
-                                        .wrap(mContext, param2.thisObject as Drawable)
+                                    monochromeIcon = monochromeIconFactory.wrap(
+                                        mContext,
+                                        param2.thisObject as Drawable
+                                    )
                                     setAdditionalInstanceField(
                                         param2.thisObject,
                                         "mMonochromeIcon",

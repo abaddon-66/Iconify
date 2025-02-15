@@ -30,7 +30,9 @@ import android.graphics.drawable.AdaptiveIconDrawable
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
+import android.graphics.drawable.InsetDrawable
 import androidx.annotation.WorkerThread
+import com.drdisagree.iconify.xposed.modules.extras.utils.MonochromeIconFactory.ClippedMonoDrawable.Companion.create
 import java.nio.ByteBuffer
 import kotlin.math.max
 import kotlin.math.min
@@ -39,7 +41,10 @@ import kotlin.math.min
  * Utility class to generate monochrome icons version for a given drawable.
  */
 @Suppress("deprecation")
-open class MonochromeIconFactory internal constructor(iconBitmapSize: Int) : BitmapDrawable() {
+open class MonochromeIconFactory internal constructor(
+    iconBitmapSize: Int,
+    private val insetForeground: Boolean
+) : BitmapDrawable() {
 
     private val mFlatBitmap: Bitmap
     private val mFlatCanvas: Canvas
@@ -103,7 +108,7 @@ open class MonochromeIconFactory internal constructor(iconBitmapSize: Int) : Bit
             drawDrawable(icon.background)
             drawDrawable(icon.foreground)
             generateMono()
-            return ClippedMonoDrawable(context, this)
+            return ClippedMonoDrawable(this, insetForeground).create(context)
         } else {
             mFlatCanvas.drawColor(Color.WHITE)
             drawDrawable(icon)
@@ -175,11 +180,11 @@ open class MonochromeIconFactory internal constructor(iconBitmapSize: Int) : Bit
     }
 
     class ClippedMonoDrawable(
-        context: Context,
-        base: Drawable
-    ) : BitmapDrawable(
-        context.resources,
-        drawableToBitmap(base)
+        base: Drawable,
+        insetForeground: Boolean
+    ) : InsetDrawable(
+        base,
+        if (insetForeground) -AdaptiveIconDrawable.getExtraInsetFraction() else 0f
     ) {
 
         private val mCrop = AdaptiveIconDrawable(ColorDrawable(Color.BLACK), null)
@@ -193,12 +198,15 @@ open class MonochromeIconFactory internal constructor(iconBitmapSize: Int) : Bit
         }
 
         companion object {
+            fun ClippedMonoDrawable.create(context: Context): BitmapDrawable {
+                val bitmap = drawableToBitmap(this)
+                return BitmapDrawable(context.resources, bitmap)
+            }
+
             private fun drawableToBitmap(drawable: Drawable): Bitmap {
-                val bitmap = Bitmap.createBitmap(
-                    drawable.intrinsicWidth.takeIf { it > 0 } ?: 100,
-                    drawable.intrinsicHeight.takeIf { it > 0 } ?: 100,
-                    Bitmap.Config.ARGB_8888
-                )
+                val width = drawable.intrinsicWidth.takeIf { it > 0 } ?: 100
+                val height = drawable.intrinsicHeight.takeIf { it > 0 } ?: 100
+                val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
                 val canvas = Canvas(bitmap)
                 drawable.setBounds(0, 0, canvas.width, canvas.height)
                 drawable.draw(canvas)
