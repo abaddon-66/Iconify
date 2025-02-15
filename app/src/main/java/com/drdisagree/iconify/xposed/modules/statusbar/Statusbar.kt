@@ -24,6 +24,7 @@ import com.drdisagree.iconify.common.Preferences.HIDE_LOCKSCREEN_STATUSBAR
 import com.drdisagree.iconify.common.Preferences.SB_CLOCK_SIZE
 import com.drdisagree.iconify.common.Preferences.SB_CLOCK_SIZE_SWITCH
 import com.drdisagree.iconify.common.Preferences.SHOW_CLOCK_ON_RIGHT_SIDE
+import com.drdisagree.iconify.common.Preferences.STATUSBAR_SWAP_CELLULAR_NETWORK_TYPE
 import com.drdisagree.iconify.common.Preferences.STATUSBAR_SWAP_WIFI_CELLULAR
 import com.drdisagree.iconify.xposed.HookRes.Companion.resParams
 import com.drdisagree.iconify.xposed.ModPack
@@ -31,11 +32,11 @@ import com.drdisagree.iconify.xposed.modules.extras.utils.StatusBarClock.getCent
 import com.drdisagree.iconify.xposed.modules.extras.utils.StatusBarClock.getLeftClockView
 import com.drdisagree.iconify.xposed.modules.extras.utils.StatusBarClock.getRightClockView
 import com.drdisagree.iconify.xposed.modules.extras.utils.StatusBarClock.setClockGravity
+import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.reAddView
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.XposedHook.Companion.findClass
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.callMethod
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.getField
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.getFieldSilently
-import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookConstructor
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookLayout
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookMethod
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.log
@@ -60,6 +61,7 @@ class Statusbar(context: Context) : ModPack(context) {
     private var hideLockscreenCarrier = false
     private var hideLockscreenStatusbar = false
     private var swapWifiAndCellularIcon = false
+    private var swapCellularAndNetworkTypeIcon = false
     private var clockOnRightSide = false
     private var phoneStatusBarView: ViewGroup? = null
     private var clockInitialPosition = -1
@@ -72,6 +74,7 @@ class Statusbar(context: Context) : ModPack(context) {
             hideLockscreenCarrier = getBoolean(HIDE_LOCKSCREEN_CARRIER, false)
             hideLockscreenStatusbar = getBoolean(HIDE_LOCKSCREEN_STATUSBAR, false)
             swapWifiAndCellularIcon = getBoolean(STATUSBAR_SWAP_WIFI_CELLULAR, false)
+            swapCellularAndNetworkTypeIcon = getBoolean(STATUSBAR_SWAP_CELLULAR_NETWORK_TYPE, false)
             clockOnRightSide = getBoolean(SHOW_CLOCK_ON_RIGHT_SIDE, false)
         }
 
@@ -95,6 +98,7 @@ class Statusbar(context: Context) : ModPack(context) {
         hideLockscreenCarrierOrStatusbar()
         applyClockSize()
         swapWifiAndCellularIcon()
+        swapCellularAndNetworkTypeIcon()
         clockOnRightSide()
     }
 
@@ -450,114 +454,160 @@ class Statusbar(context: Context) : ModPack(context) {
     }
 
     private fun swapWifiAndCellularIcon() {
-        val statusBarIconListClass = findClass(
-            "$SYSTEMUI_PACKAGE.statusbar.phone.StatusBarIconList",
-            "$SYSTEMUI_PACKAGE.statusbar.phone.ui.StatusBarIconList"
-        )
-        val iconManagerClass = findClass(
-            "$SYSTEMUI_PACKAGE.statusbar.phone.StatusBarIconController\$IconManager",
-            "$SYSTEMUI_PACKAGE.statusbar.phone.ui.IconManager"
-        )
-        val darkIconManagerClass = findClass(
-            "$SYSTEMUI_PACKAGE.statusbar.phone.StatusBarIconController\$DarkIconManager",
-            "$SYSTEMUI_PACKAGE.statusbar.phone.ui.DarkIconManager"
-        )
-        val statusBarIconViewClass = findClass("$SYSTEMUI_PACKAGE.statusbar.StatusBarIconView")
+        // TODO: Find a different approach to swap wifi and cellular icon
+//        val statusBarIconListClass = findClass(
+//            "$SYSTEMUI_PACKAGE.statusbar.phone.StatusBarIconList",
+//            "$SYSTEMUI_PACKAGE.statusbar.phone.ui.StatusBarIconList"
+//        )
+//        val iconManagerClass = findClass(
+//            "$SYSTEMUI_PACKAGE.statusbar.phone.StatusBarIconController\$IconManager",
+//            "$SYSTEMUI_PACKAGE.statusbar.phone.ui.IconManager"
+//        )
+//        val darkIconManagerClass = findClass(
+//            "$SYSTEMUI_PACKAGE.statusbar.phone.StatusBarIconController\$DarkIconManager",
+//            "$SYSTEMUI_PACKAGE.statusbar.phone.ui.DarkIconManager"
+//        )
+//        val statusBarIconViewClass = findClass("$SYSTEMUI_PACKAGE.statusbar.StatusBarIconView")
+//
+//        fun swapStatusbarIconSlots(list: List<*>, param: MethodHookParam, fieldName: String) {
+//            val wifiIndex = list.indexOfFirst { (it.getField("mName") as String) == "wifi" }
+//            val mobileIndex = list.indexOfFirst { (it.getField("mName") as String) == "mobile" }
+//
+//            if (wifiIndex != -1 && mobileIndex != -1 && mobileIndex > wifiIndex) {
+//                val mutableList = list.toMutableList()
+//                mutableList[wifiIndex] = mutableList[mobileIndex].also {
+//                    mutableList[mobileIndex] = mutableList[wifiIndex]
+//                }
+//                param.thisObject.setField(fieldName, mutableList)
+//            }
+//        }
+//
+//        statusBarIconListClass
+//            .hookConstructor()
+//            .runAfter { param ->
+//                if (!swapWifiAndCellularIcon) return@runAfter
+//
+//                swapStatusbarIconSlots(
+//                    param.thisObject.getField("mSlots") as ArrayList<*>,
+//                    param,
+//                    "mSlots"
+//                )
+//                swapStatusbarIconSlots(
+//                    param.thisObject.getField("mViewOnlySlots") as List<*>,
+//                    param,
+//                    "mViewOnlySlots"
+//                )
+//            }
+//
+//        iconManagerClass
+//            .hookMethod(
+//                "addIcon",
+//                "addHolder",
+//                "addNewWifiIcon",
+//                "addNewMobileIcon",
+//                "addNetworkTraffic",
+//                "addBluetoothIcon",
+//                "addBindableIcon"
+//            )
+//            .runBefore { param ->
+//                if (!swapWifiAndCellularIcon) return@runBefore
+//
+//                // addBindableIcon has index parameter at 1
+//                val intIdx = if (param.args[0] is Int) 0 else 1
+//
+//                val index = param.args[intIdx] as Int
+//                val mGroup = param.thisObject.getField("mGroup") as ViewGroup
+//
+//                param.args[intIdx] = index.coerceIn(0, mGroup.childCount)
+//            }
+//
+//        fun handleSetIcon(param: MethodHookParam, applyDark: Boolean = false) {
+//            if (!swapWifiAndCellularIcon) return
+//
+//            val viewIndex = param.args[0] as Int
+//            val icon = param.args[1]
+//            val mGroup = param.thisObject.getField("mGroup") as ViewGroup
+//            val view = mGroup.getChildAt(viewIndex)
+//
+//            if (view.javaClass.simpleName != statusBarIconViewClass?.simpleName) {
+//                try {
+//                    val layoutParams: ViewGroup.LayoutParams = view.layoutParams
+//                    val onCreateLayoutParams: LinearLayout.LayoutParams =
+//                        param.thisObject.callMethod(
+//                            "onCreateLayoutParams",
+//                            icon.getField("shape")
+//                        ) as LinearLayout.LayoutParams
+//
+//                    if (onCreateLayoutParams.width != layoutParams.width ||
+//                        onCreateLayoutParams.height != layoutParams.height
+//                    ) {
+//                        view.setLayoutParams(onCreateLayoutParams)
+//                    }
+//                } catch (ignored: Throwable) {
+//                    // icon.shape does not exist in older versions
+//                }
+//
+//                if (applyDark) {
+//                    val mDarkIconDispatcher = param.thisObject.getField("mDarkIconDispatcher")
+//                    mDarkIconDispatcher.callMethod("applyDark", view)
+//                }
+//
+//                param.result = null
+//            }
+//        }
+//
+//        iconManagerClass
+//            .hookMethod("onSetIcon")
+//            .runBefore { param -> handleSetIcon(param, false) }
+//
+//        darkIconManagerClass
+//            .hookMethod("onSetIcon")
+//            .runBefore { param -> handleSetIcon(param, true) }
+    }
 
-        fun swapStatusbarIconSlots(list: List<*>, param: MethodHookParam, fieldName: String) {
-            val wifiIndex = list.indexOfFirst { (it.getField("mName") as String) == "wifi" }
-            val mobileIndex = list.indexOfFirst { (it.getField("mName") as String) == "mobile" }
+    private fun swapCellularAndNetworkTypeIcon() {
+        val xResources: XResources = resParams[SYSTEMUI_PACKAGE]?.res ?: return
 
-            if (wifiIndex != -1 && mobileIndex != -1 && mobileIndex > wifiIndex) {
-                val mutableList = list.toMutableList()
-                mutableList[wifiIndex] = mutableList[mobileIndex].also {
-                    mutableList[mobileIndex] = mutableList[wifiIndex]
+        try {
+            xResources
+                .hookLayout()
+                .packageName(SYSTEMUI_PACKAGE)
+                .resource("layout", "status_bar_mobile_signal_group_inner")
+                .throwError()
+                .run { liparam ->
+                    if (!swapCellularAndNetworkTypeIcon) return@run
+
+                    val networkType = liparam.view.findViewById<View>(
+                        liparam.res.getIdentifier(
+                            "mobile_type_container",
+                            "id",
+                            mContext.packageName
+                        )
+                    )
+                    val parent = networkType.parent as ViewGroup
+
+                    parent.reAddView(networkType)
                 }
-                param.thisObject.setField(fieldName, mutableList)
-            }
+        } catch (ignored: Throwable) {
+            xResources
+                .hookLayout()
+                .packageName(SYSTEMUI_PACKAGE)
+                .resource("layout", "status_bar_mobile_signal_group")
+                .run { liparam ->
+                    if (!swapCellularAndNetworkTypeIcon) return@run
+
+                    val networkType = liparam.view.findViewById<View>(
+                        liparam.res.getIdentifier(
+                            "mobile_type",
+                            "id",
+                            mContext.packageName
+                        )
+                    )
+                    val parent = networkType.parent as ViewGroup
+
+                    parent.reAddView(networkType)
+                }
         }
-
-        statusBarIconListClass
-            .hookConstructor()
-            .runAfter { param ->
-                if (!swapWifiAndCellularIcon) return@runAfter
-
-                swapStatusbarIconSlots(
-                    param.thisObject.getField("mSlots") as ArrayList<*>,
-                    param,
-                    "mSlots"
-                )
-                swapStatusbarIconSlots(
-                    param.thisObject.getField("mViewOnlySlots") as List<*>,
-                    param,
-                    "mViewOnlySlots"
-                )
-            }
-
-        iconManagerClass
-            .hookMethod(
-                "addIcon",
-                "addHolder",
-                "addNewWifiIcon",
-                "addNewMobileIcon",
-                "addNetworkTraffic",
-                "addBluetoothIcon",
-                "addBindableIcon"
-            )
-            .runBefore { param ->
-                if (!swapWifiAndCellularIcon) return@runBefore
-
-                // addBindableIcon has index parameter at 1
-                val intIdx = if (param.args[0] is Int) 0 else 1
-
-                val index = param.args[intIdx] as Int
-                val mGroup = param.thisObject.getField("mGroup") as ViewGroup
-
-                param.args[intIdx] = index.coerceIn(0, mGroup.childCount)
-            }
-
-        fun handleSetIcon(param: MethodHookParam, applyDark: Boolean = false) {
-            if (!swapWifiAndCellularIcon) return
-
-            val viewIndex = param.args[0] as Int
-            val icon = param.args[1]
-            val mGroup = param.thisObject.getField("mGroup") as ViewGroup
-            val view = mGroup.getChildAt(viewIndex)
-
-            if (view.javaClass.simpleName != statusBarIconViewClass?.simpleName) {
-                try {
-                    val layoutParams: ViewGroup.LayoutParams = view.layoutParams
-                    val onCreateLayoutParams: LinearLayout.LayoutParams =
-                        param.thisObject.callMethod(
-                            "onCreateLayoutParams",
-                            icon.getField("shape")
-                        ) as LinearLayout.LayoutParams
-
-                    if (onCreateLayoutParams.width != layoutParams.width ||
-                        onCreateLayoutParams.height != layoutParams.height
-                    ) {
-                        view.setLayoutParams(onCreateLayoutParams)
-                    }
-                } catch (ignored: Throwable) {
-                    // icon.shape does not exist in older versions
-                }
-
-                if (applyDark) {
-                    val mDarkIconDispatcher = param.thisObject.getField("mDarkIconDispatcher")
-                    mDarkIconDispatcher.callMethod("applyDark", view)
-                }
-
-                param.result = null
-            }
-        }
-
-        iconManagerClass
-            .hookMethod("onSetIcon")
-            .runBefore { param -> handleSetIcon(param, false) }
-
-        darkIconManagerClass
-            .hookMethod("onSetIcon")
-            .runBefore { param -> handleSetIcon(param, true) }
     }
 
     private fun clockOnRightSide() {
