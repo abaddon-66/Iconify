@@ -3,6 +3,7 @@ package com.drdisagree.iconify.xposed.modules.statusbar
 import android.annotation.SuppressLint
 import android.app.ActivityManager
 import android.content.Context
+import android.content.res.XResources
 import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.os.Build
@@ -35,14 +36,13 @@ import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.callMethod
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.getField
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.getFieldSilently
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookConstructor
+import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookLayout
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookMethod
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.log
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.setField
 import com.drdisagree.iconify.xposed.utils.XPrefs.Xprefs
 import de.robv.android.xposed.XC_MethodHook.MethodHookParam
 import de.robv.android.xposed.XposedHelpers.callStaticMethod
-import de.robv.android.xposed.callbacks.XC_InitPackageResources.InitPackageResourcesParam
-import de.robv.android.xposed.callbacks.XC_LayoutInflated
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam
 
 @SuppressLint("DiscouragedApi")
@@ -307,67 +307,63 @@ class Statusbar(context: Context) : ModPack(context) {
     }
 
     private fun hideLockscreenCarrierOrStatusbar() {
-        val resParam: InitPackageResourcesParam = resParams[SYSTEMUI_PACKAGE] ?: return
+        val xResources: XResources = resParams[SYSTEMUI_PACKAGE]?.res ?: return
 
-        try {
-            resParam.res.hookLayout(
-                SYSTEMUI_PACKAGE,
-                "layout",
-                "keyguard_status_bar",
-                object : XC_LayoutInflated() {
-                    override fun handleLayoutInflated(liparam: LayoutInflatedParam) {
-                        if (hideLockscreenCarrier) {
-                            try {
-                                liparam.view.findViewById<TextView>(
-                                    liparam.res.getIdentifier(
-                                        "keyguard_carrier_text",
-                                        "id",
-                                        mContext.packageName
-                                    )
-                                ).apply {
-                                    layoutParams.height = 0
-                                    visibility = View.INVISIBLE
-                                    requestLayout()
-                                }
-                            } catch (ignored: Throwable) {
-                            }
+        xResources
+            .hookLayout()
+            .packageName(SYSTEMUI_PACKAGE)
+            .resource("layout", "keyguard_status_bar")
+            .suppressError()
+            .run { liparam ->
+                if (hideLockscreenCarrier) {
+                    try {
+                        liparam.view.findViewById<TextView>(
+                            liparam.res.getIdentifier(
+                                "keyguard_carrier_text",
+                                "id",
+                                mContext.packageName
+                            )
+                        ).apply {
+                            layoutParams.height = 0
+                            visibility = View.INVISIBLE
+                            requestLayout()
                         }
-
-                        if (hideLockscreenStatusbar) {
-                            try {
-                                liparam.view.findViewById<LinearLayout>(
-                                    liparam.res.getIdentifier(
-                                        "status_icon_area",
-                                        "id",
-                                        mContext.packageName
-                                    )
-                                ).apply {
-                                    layoutParams.height = 0
-                                    visibility = View.INVISIBLE
-                                    requestLayout()
-                                }
-                            } catch (ignored: Throwable) {
-                            }
-
-                            try {
-                                liparam.view.findViewById<TextView>(
-                                    liparam.res.getIdentifier(
-                                        "keyguard_carrier_text",
-                                        "id",
-                                        mContext.packageName
-                                    )
-                                ).apply {
-                                    layoutParams.height = 0
-                                    visibility = View.INVISIBLE
-                                    requestLayout()
-                                }
-                            } catch (ignored: Throwable) {
-                            }
-                        }
+                    } catch (ignored: Throwable) {
                     }
-                })
-        } catch (ignored: Throwable) {
-        }
+                }
+
+                if (hideLockscreenStatusbar) {
+                    try {
+                        liparam.view.findViewById<LinearLayout>(
+                            liparam.res.getIdentifier(
+                                "status_icon_area",
+                                "id",
+                                mContext.packageName
+                            )
+                        ).apply {
+                            layoutParams.height = 0
+                            visibility = View.INVISIBLE
+                            requestLayout()
+                        }
+                    } catch (ignored: Throwable) {
+                    }
+
+                    try {
+                        liparam.view.findViewById<TextView>(
+                            liparam.res.getIdentifier(
+                                "keyguard_carrier_text",
+                                "id",
+                                mContext.packageName
+                            )
+                        ).apply {
+                            layoutParams.height = 0
+                            visibility = View.INVISIBLE
+                            requestLayout()
+                        }
+                    } catch (ignored: Throwable) {
+                    }
+                }
+            }
     }
 
     private fun applyClockSize() {

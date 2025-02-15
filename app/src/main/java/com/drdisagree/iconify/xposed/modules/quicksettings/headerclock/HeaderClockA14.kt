@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.content.res.XResources
 import android.graphics.Bitmap
 import android.graphics.Typeface
 import android.graphics.drawable.BitmapDrawable
@@ -73,13 +74,12 @@ import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.callMethod
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.callStaticMethodSilently
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.getField
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookConstructor
+import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookLayout
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookMethod
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.log
 import com.drdisagree.iconify.xposed.utils.XPrefs.Xprefs
 import com.drdisagree.iconify.xposed.utils.XPrefs.XprefsIsInitialized
 import de.robv.android.xposed.XC_MethodHook
-import de.robv.android.xposed.callbacks.XC_InitPackageResources.InitPackageResourcesParam
-import de.robv.android.xposed.callbacks.XC_LayoutInflated
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam
 import java.io.File
 import java.util.Locale
@@ -772,104 +772,104 @@ class HeaderClockA14(context: Context) : ModPack(context) {
     private fun handleLegacyHeaderView() {
         if (!showHeaderClock) return
 
-        val resParam: InitPackageResourcesParam = resParams[SYSTEMUI_PACKAGE] ?: return
+        val xResources: XResources = resParams[SYSTEMUI_PACKAGE]?.res ?: return
 
-        try {
-            resParam.res.hookLayout(
-                SYSTEMUI_PACKAGE,
-                "layout",
-                "quick_qs_status_icons",
-                object : XC_LayoutInflated() {
-                    override fun handleLayoutInflated(liparam: LayoutInflatedParam) {
-                        if (!showHeaderClock) return
+        xResources
+            .hookLayout()
+            .packageName(SYSTEMUI_PACKAGE)
+            .resource("layout", "quick_qs_status_icons")
+            .suppressError()
+            .run { liparam ->
+                if (!showHeaderClock) return@run
 
-                        // Ricedroid date
-                        try {
-                            val date =
-                                liparam.view.findViewById<TextView>(
-                                    liparam.res.getIdentifier(
-                                        "date",
-                                        "id",
-                                        mContext.packageName
-                                    )
+                // Ricedroid date
+                try {
+                    val date =
+                        liparam.view.findViewById<TextView>(
+                            liparam.res.getIdentifier(
+                                "date",
+                                "id",
+                                mContext.packageName
+                            )
+                        )
+                    date.layoutParams.height = 0
+                    date.layoutParams.width = 0
+                    date.setTextAppearance(0)
+                    date.setTextColor(0)
+                    date.visibility = View.GONE
+                } catch (ignored: Throwable) {
+                }
+
+                // Nusantara clock
+                try {
+                    val jrClock =
+                        liparam.view.findViewById<TextView>(
+                            liparam.res.getIdentifier(
+                                "jr_clock",
+                                "id",
+                                mContext.packageName
+                            )
+                        )
+                    jrClock.layoutParams.height = 0
+                    jrClock.layoutParams.width = 0
+                    jrClock.setTextAppearance(0)
+                    jrClock.setTextColor(0)
+                    jrClock.visibility = View.GONE
+                } catch (ignored: Throwable) {
+                }
+
+                // Nusantara date
+                try {
+                    val jrDateContainer =
+                        liparam.view.findViewById<LinearLayout>(
+                            liparam.res.getIdentifier(
+                                "jr_date_container",
+                                "id",
+                                mContext.packageName
+                            )
+                        )
+                    val jrDate = jrDateContainer.getChildAt(0) as TextView
+                    jrDate.layoutParams.height = 0
+                    jrDate.layoutParams.width = 0
+                    jrDate.setTextAppearance(0)
+                    jrDate.setTextColor(0)
+                    jrDate.visibility = View.GONE
+                } catch (ignored: Throwable) {
+                }
+            }
+
+        xResources
+            .hookLayout()
+            .packageName(SYSTEMUI_PACKAGE)
+            .resource("layout", "quick_status_bar_header_date_privacy")
+            .suppressError()
+            .run { liparam ->
+                liparam.view.findViewById<View>(
+                    liparam.res.getIdentifier(
+                        "lock_icon_view",
+                        "id",
+                        mContext.packageName
+                    )
+                ).apply {
+                    if (!showHeaderClock) return@apply
+
+                    try {
+                        val date =
+                            liparam.view.findViewById<TextView>(
+                                liparam.res.getIdentifier(
+                                    "date",
+                                    "id",
+                                    mContext.packageName
                                 )
-                            date.layoutParams.height = 0
-                            date.layoutParams.width = 0
-                            date.setTextAppearance(0)
-                            date.setTextColor(0)
-                            date.visibility = View.GONE
-                        } catch (ignored: Throwable) {
-                        }
-
-                        // Nusantara clock
-                        try {
-                            val jrClock =
-                                liparam.view.findViewById<TextView>(
-                                    liparam.res.getIdentifier(
-                                        "jr_clock",
-                                        "id",
-                                        mContext.packageName
-                                    )
-                                )
-                            jrClock.layoutParams.height = 0
-                            jrClock.layoutParams.width = 0
-                            jrClock.setTextAppearance(0)
-                            jrClock.setTextColor(0)
-                            jrClock.visibility = View.GONE
-                        } catch (ignored: Throwable) {
-                        }
-
-                        // Nusantara date
-                        try {
-                            val jrDateContainer =
-                                liparam.view.findViewById<LinearLayout>(
-                                    liparam.res.getIdentifier(
-                                        "jr_date_container",
-                                        "id",
-                                        mContext.packageName
-                                    )
-                                )
-                            val jrDate = jrDateContainer.getChildAt(0) as TextView
-                            jrDate.layoutParams.height = 0
-                            jrDate.layoutParams.width = 0
-                            jrDate.setTextAppearance(0)
-                            jrDate.setTextColor(0)
-                            jrDate.visibility = View.GONE
-                        } catch (ignored: Throwable) {
-                        }
+                            )
+                        date.layoutParams.height = 0
+                        date.layoutParams.width = 0
+                        date.setTextAppearance(0)
+                        date.setTextColor(0)
+                        date.visibility = View.GONE
+                    } catch (ignored: Throwable) {
                     }
-                })
-        } catch (ignored: Throwable) {
-        }
-
-        try {
-            resParam.res.hookLayout(
-                SYSTEMUI_PACKAGE,
-                "layout",
-                "quick_status_bar_header_date_privacy",
-                object : XC_LayoutInflated() {
-                    override fun handleLayoutInflated(liparam: LayoutInflatedParam) {
-                        if (!showHeaderClock) return
-
-                        try {
-                            val date =
-                                liparam.view.findViewById<TextView>(
-                                    liparam.res.getIdentifier(
-                                        "date",
-                                        "id",
-                                        mContext.packageName
-                                    )
-                                )
-                            date.layoutParams.height = 0
-                            date.layoutParams.width = 0
-                            date.setTextAppearance(0)
-                            date.setTextColor(0)
-                            date.visibility = View.GONE
-                        } catch (ignored: Throwable) {
-                        }
-                    }
-                })
-        } catch (ignored: Throwable) {
-        }
+                }
+            }
     }
 }
