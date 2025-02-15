@@ -16,6 +16,7 @@ import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.callStaticMeth
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.getAnyField
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.getExtraFieldSilently
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.getField
+import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.getStaticField
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookConstructor
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookMethod
 import com.drdisagree.iconify.xposed.utils.XPrefs.Xprefs
@@ -121,6 +122,10 @@ class ThemedIcons(context: Context) : ModPack(context) {
 
         val bubbleTextViewClass = findClass("com.android.launcher3.BubbleTextView")
         val themesClass = findClass("com.android.launcher3.util.Themes")
+        val themeManagerClass = findClass(
+            "com.android.launcher3.graphics.ThemeManager",
+            suppressError = true
+        )
 
         bubbleTextViewClass
             .hookMethod("shouldUseTheme")
@@ -132,10 +137,20 @@ class ThemedIcons(context: Context) : ModPack(context) {
                         DISPLAY_SEARCH_RESULT_SMALL,
                         DISPLAY_PREDICTION_ROW,
                         DISPLAY_SEARCH_RESULT_APP_ROW
-                    ) && themesClass.callStaticMethod(
-                        "isThemedIconEnabled",
-                        param.thisObject.callMethod("getContext")
-                    ) as Boolean
+                    ) && try {
+                        themesClass.callStaticMethod(
+                            "isThemedIconEnabled",
+                            param.thisObject.callMethod("getContext")
+                        )
+                    } catch (ignored: Throwable) {
+                        val themeManagerInstance = themeManagerClass
+                            .getStaticField("INSTANCE")
+                            .callMethod(
+                                "get",
+                                param.thisObject.callMethod("getContext")
+                            )
+                        themeManagerInstance.callMethod("isMonoThemeEnabled")
+                    } as Boolean
                 }
             }
     }
