@@ -454,115 +454,37 @@ class Statusbar(context: Context) : ModPack(context) {
     }
 
     private fun swapWifiAndCellularIcon() {
-        // TODO: Find a different approach to swap wifi and cellular icon
-//        val statusBarIconListClass = findClass(
-//            "$SYSTEMUI_PACKAGE.statusbar.phone.StatusBarIconList",
-//            "$SYSTEMUI_PACKAGE.statusbar.phone.ui.StatusBarIconList"
-//        )
-//        val iconManagerClass = findClass(
-//            "$SYSTEMUI_PACKAGE.statusbar.phone.StatusBarIconController\$IconManager",
-//            "$SYSTEMUI_PACKAGE.statusbar.phone.ui.IconManager"
-//        )
-//        val darkIconManagerClass = findClass(
-//            "$SYSTEMUI_PACKAGE.statusbar.phone.StatusBarIconController\$DarkIconManager",
-//            "$SYSTEMUI_PACKAGE.statusbar.phone.ui.DarkIconManager"
-//        )
-//        val statusBarIconViewClass = findClass("$SYSTEMUI_PACKAGE.statusbar.StatusBarIconView")
-//
-//        fun swapStatusbarIconSlots(list: List<*>, param: MethodHookParam, fieldName: String) {
-//            val wifiIndex = list.indexOfFirst { (it.getField("mName") as String) == "wifi" }
-//            val mobileIndex = list.indexOfFirst { (it.getField("mName") as String) == "mobile" }
-//
-//            if (wifiIndex != -1 && mobileIndex != -1 && mobileIndex > wifiIndex) {
-//                val mutableList = list.toMutableList()
-//                mutableList[wifiIndex] = mutableList[mobileIndex].also {
-//                    mutableList[mobileIndex] = mutableList[wifiIndex]
-//                }
-//                param.thisObject.setField(fieldName, mutableList)
-//            }
-//        }
-//
-//        statusBarIconListClass
-//            .hookConstructor()
-//            .runAfter { param ->
-//                if (!swapWifiAndCellularIcon) return@runAfter
-//
-//                swapStatusbarIconSlots(
-//                    param.thisObject.getField("mSlots") as ArrayList<*>,
-//                    param,
-//                    "mSlots"
-//                )
-//                swapStatusbarIconSlots(
-//                    param.thisObject.getField("mViewOnlySlots") as List<*>,
-//                    param,
-//                    "mViewOnlySlots"
-//                )
-//            }
-//
-//        iconManagerClass
-//            .hookMethod(
-//                "addIcon",
-//                "addHolder",
-//                "addNewWifiIcon",
-//                "addNewMobileIcon",
-//                "addNetworkTraffic",
-//                "addBluetoothIcon",
-//                "addBindableIcon"
-//            )
-//            .runBefore { param ->
-//                if (!swapWifiAndCellularIcon) return@runBefore
-//
-//                // addBindableIcon has index parameter at 1
-//                val intIdx = if (param.args[0] is Int) 0 else 1
-//
-//                val index = param.args[intIdx] as Int
-//                val mGroup = param.thisObject.getField("mGroup") as ViewGroup
-//
-//                param.args[intIdx] = index.coerceIn(0, mGroup.childCount)
-//            }
-//
-//        fun handleSetIcon(param: MethodHookParam, applyDark: Boolean = false) {
-//            if (!swapWifiAndCellularIcon) return
-//
-//            val viewIndex = param.args[0] as Int
-//            val icon = param.args[1]
-//            val mGroup = param.thisObject.getField("mGroup") as ViewGroup
-//            val view = mGroup.getChildAt(viewIndex)
-//
-//            if (view.javaClass.simpleName != statusBarIconViewClass?.simpleName) {
-//                try {
-//                    val layoutParams: ViewGroup.LayoutParams = view.layoutParams
-//                    val onCreateLayoutParams: LinearLayout.LayoutParams =
-//                        param.thisObject.callMethod(
-//                            "onCreateLayoutParams",
-//                            icon.getField("shape")
-//                        ) as LinearLayout.LayoutParams
-//
-//                    if (onCreateLayoutParams.width != layoutParams.width ||
-//                        onCreateLayoutParams.height != layoutParams.height
-//                    ) {
-//                        view.setLayoutParams(onCreateLayoutParams)
-//                    }
-//                } catch (ignored: Throwable) {
-//                    // icon.shape does not exist in older versions
-//                }
-//
-//                if (applyDark) {
-//                    val mDarkIconDispatcher = param.thisObject.getField("mDarkIconDispatcher")
-//                    mDarkIconDispatcher.callMethod("applyDark", view)
-//                }
-//
-//                param.result = null
-//            }
-//        }
-//
-//        iconManagerClass
-//            .hookMethod("onSetIcon")
-//            .runBefore { param -> handleSetIcon(param, false) }
-//
-//        darkIconManagerClass
-//            .hookMethod("onSetIcon")
-//            .runBefore { param -> handleSetIcon(param, true) }
+        val statusIconContainerClass =
+            findClass("$SYSTEMUI_PACKAGE.statusbar.phone.StatusIconContainer")
+
+        statusIconContainerClass
+            .hookMethod("onViewAdded")
+            .runAfter { param ->
+                if (!swapWifiAndCellularIcon) return@runAfter
+
+                val parent = param.thisObject as ViewGroup
+
+                val wifiView = parent.findViewById<View>(
+                    mContext.resources.getIdentifier(
+                        "wifi_combo",
+                        "id",
+                        mContext.packageName
+                    )
+                )
+                val mobileView = parent.findViewById<View>(
+                    mContext.resources.getIdentifier(
+                        "mobile_combo",
+                        "id",
+                        mContext.packageName
+                    )
+                )
+                val wifiIndex = parent.indexOfChild(wifiView)
+                val mobileIndex = parent.indexOfChild(mobileView)
+
+                if (wifiIndex != -1 && mobileIndex != -1 && mobileIndex > wifiIndex) {
+                    parent.reAddView(wifiView, mobileIndex)
+                }
+            }
     }
 
     private fun swapCellularAndNetworkTypeIcon() {
