@@ -127,6 +127,8 @@
     <string name="settings_show_home_page_card_desc">Mostre um lindo cartão na página inicial.</string>
     <string name="settings_vibrate_ui_card_title">Feedback tátil</string>
     <string name="settings_vibrate_ui_page_card_desc">Melhore o feedback de toque com sensação tátil interativa</string>
+    <string name="settings_slider_controller_title">Controlador deslizante</string>
+    <string name="settings_slider_controller_desc">Ative para exibir os botões de mais e menos com controles deslizantes.</string>
     <string name="settings_clear_app_cache_title">Limpar cache do app</string>
     <string name="settings_clear_app_cache_desc">Limpe caches gerados devido ao uso de fontes, imagens ou gifs personalizados.</string>
     <string name="activity_title_experimental">Experimental</string>
@@ -296,12 +298,17 @@
     <string name="section_title_qs_text_color">Cor do texto do painel QS</string>
     <string name="qs_text_color_normal">Normal</string>
     <string name="qs_text_color_pixel">Pixel</string>
+    <string name="custom_qs_tile_text_color_title">Cor de texto personalizada</string>
+    <string name="custom_qs_tile_text_color_desc">Ativa a cor de texto personalizada do bloco QS</string>
+    <string name="custom_qs_tile_text_color_list_title">Opções de cores de texto</string>
     <string name="label_always_white_title">Sempre branco</string>
     <string name="label_always_white_desc">Título branco, subtítulo branco</string>
     <string name="label_always_white_v2_title">Sempre branco v2</string>
     <string name="label_always_white_v2_desc">Título branco, subtítulo destacado</string>
     <string name="label_follow_system_title">Seguir sistema</string>
     <string name="label_follow_system_desc">Sistema de títulos, sistema de subtítulo</string>
+    <string name="label_follow_system_inverse_title">Seguir inverso do sistema</string>
+    <!--<string name="label_follow_system_inverse_desc">Title system, subtitle system</string>-->
     <string name="label_follow_system_v2_title">Seguir sistema v2</string>
     <string name="label_follow_system_v2_desc">Sistema de título, destaque de subtítulo</string>
     <string name="label_fix_text_color_title">Corrigir cor do texto</string>
@@ -316,6 +323,7 @@
     <!-- QS Panel Margin -->
     <string name="qqs_panel_top_margin_title">Margem superior do painel QQS</string>
     <string name="qs_panel_top_margin_title">Margem superior do painel QS</string>
+    <string name="qs_panel_top_margin_info">Gire o dispositivo para ver as alterações. Se isso não funcionar, reinicie a Interface do sistema.</string>
     <!-- Statusbar -->
     <string name="section_title_spacing">Espaçamento</string>
     <string name="sb_left_padding">Preenchimento esquerdo</string>
@@ -443,6 +451,8 @@
     <string name="activity_title_xposed_others">Outros</string>
     <string name="activity_desc_xposed_others">Diversos ajustes do Xposed</string>
     <string name="activity_title_xposed_weather_settings">Configurações do clima</string>
+    <string name="activity_title_xposed_launcher">Launcher</string>
+    <string name="activity_desc_xposed_launcher">Modificações relacionadas ao launcher</string>
     <!-- Oneplus QS Header -->
     <string name="oneplus_qs_header_title">Cabeçalho OnePlus QS</string>
     <string name="oneplus_qs_header_desc">Ative o reprodutor de mídia e blocos estilo OOS no QS</string>
@@ -697,6 +707,8 @@
     <string name="lockscreen_clock_auto_hide_clock_title">Ocultar relógio automaticamente</string>
     <string name="lockscreen_clock_auto_hide_clock_desc">Oculte o relógio na notificação recebida</string>
     <string name="custom_lockscreen_clock_style_title">Estilo do relógio</string>
+    <string name="lockscreen_clock_move_notification_icon_title">Ícones AOD abaixo do relógio</string>
+    <string name="lockscreen_clock_move_notification_icon_desc">Move ícones AOD abaixo do relógio personalizado. Pode apresentar erros em ROMs mais antigas.</string>
     <string name="lockscreen_clock_font_title">Fonte do relógio</string>
     <string name="lockscreen_clock_font_desc">Use fonte personalizada para o relógio da tela de bloqueio</string>
     <string name="lsclock_custom_color_title">Cor do relógio personalizada</string>
@@ -812,6 +824,10 @@
     <string name="hide_ls_statusbar_desc">Oculte a barra de status na tela de bloqueio</string>
     <string name="sb_swap_wifi_cellular_title">Trocar Wi-Fi e celular</string>
     <string name="sb_swap_wifi_cellular_desc">Troque os ícones de Wi-Fi e celular</string>
+    <string name="sb_swap_cellular_network_type_title">Trocar tipo de celular e rede</string>
+    <string name="sb_swap_cellular_network_type_desc">Troque os ícones de celular e tipo de rede (3G, 4G, LTE, etc.)</string>
+    <string name="sb_clock_on_right_side_title">Relógio no lado direito</string>
+    <string name="sb_clock_on_right_side_desc">Mostre o relógio no lado direito da barra de status</string>
     <!-- Xposed Others -->
     <string name="qs_header">Cabeçalho QS</string>
     <string name="hide_carrier_group_title">Ocultar grupo de operadoras</string>
@@ -1084,6 +1100,9 @@
     <string name="accent_tertiary">Destaque terciário</string>
     <string name="text_color_primary">Cor do texto primário</string>
     <string name="text_color_inverse">Cor do texto inversa</string>
+    <string name="learn_more">Saiba mais</string>
+    <string name="custom_tiles_footer_info">Para garantir que os blocos personalizados funcionem corretamente, primeiro use os blocos padrão de Internet e Bluetooth uma vez antes de usar os personalizados.</string>
+    <string name="hig_res_image_footer_info">Evite usar imagens de alta resolução, pois elas podem causar falha na Interface do sistema.</string>
     <!-- Weather -->
     <!-- Omni Jaws Strings -->
     <string name="units_title">Unidade</string>
@@ -1193,6 +1212,27 @@
     <string name="lockscreen_weather_selection_str_border_gradient">Escuro com bordas gradientes</string>
     <string name="lockscreen_weather_font_title">Fonte do clima</string>
     <string name="lockscreen_weather_font_desc">Use fonte personalizada para texto meteorológico</string>
+    <!-- Launcher mods -->
+    <string name="section_title_icons">Ícones</string>
+    <string name="section_title_home_screen">Tela inicial</string>
+    <string name="section_title_app_drawer">Gaveta de apps</string>
+    <string name="section_title_recents">Recentes</string>
+    <string name="force_themed_icons_title">Forçar ícones temáticos</string>
+    <string name="force_themed_icons_desc">Gere ícones monocromáticos se não forem fornecidos pelo app</string>
+    <string name="app_drawer_themed_icons_title">Ícones temáticos da gaveta de apps</string>
+    <string name="app_drawer_themed_icons_desc">Ative ícones temáticos na gaveta de apps</string>
+    <string name="double_tap_to_sleep_title">Toque duas vezes para desligar a tela</string>
+    <string name="double_tap_to_sleep_desc">Toque duas vezes no espaço vazio da tela inicial para desligar a tela</string>
+    <string name="desktop_icon_labels_title">Nome dos ícones na tela inicial</string>
+    <string name="app_drawer_icon_labels_title">Nome dos ícones na gaveta de apps</string>
+    <string name="disable_recents_blur_title">Desativar blur nos recentes</string>
+    <string name="disable_recents_blur_desc">Desative o blur se a tela dos apps recentes estiver com erros</string>
+    <string name="hide_desktop_search_bar_title">Ocultar barra de pesquisa na tela inicial</string>
+    <string name="hide_desktop_search_bar_desc">Oculte a barra de pesquisa da dock da tela inicial</string>
+    <string name="dock_spacing_title">Espaçamento da dock</string>
+    <string name="app_drawer_background_opacity_title">Opacidade do fundo da gaveta de apps</string>
+    <string name="recents_background_opacity_title">Opacidade do fundo dos recentes</string>
+    <string name="launcher_mod_footer_info">Atualmente, apenas Pixel Launcher e Launcher3 são suportados.</string>
     <!-- Alert Dialogs -->
     <string name="systemui_restart_required_title">Necessário reiniciar a Interface do sistema</string>
     <string name="systemui_restart_required_desc">É necessário reiniciar a Interface do sistema para que esta alteração tenha efeito.</string>
