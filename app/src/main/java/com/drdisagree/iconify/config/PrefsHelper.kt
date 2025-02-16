@@ -86,6 +86,7 @@ import com.drdisagree.iconify.common.Preferences.HEADER_CLOCK_COLOR_SWITCH
 import com.drdisagree.iconify.common.Preferences.HEADER_CLOCK_EXPANSION_Y
 import com.drdisagree.iconify.common.Preferences.HEADER_CLOCK_LANDSCAPE_SWITCH
 import com.drdisagree.iconify.common.Preferences.HIDE_QSLABEL_SWITCH
+import com.drdisagree.iconify.common.Preferences.HIDE_QS_ON_LOCKSCREEN
 import com.drdisagree.iconify.common.Preferences.LIGHT_QSPANEL
 import com.drdisagree.iconify.common.Preferences.LOCKSCREEN_SHADE_SWITCH
 import com.drdisagree.iconify.common.Preferences.LOCKSCREEN_WALLPAPER_BLUR
@@ -319,6 +320,8 @@ object PrefsHelper {
             FORCE_THEMED_ICONS, APP_DRAWER_THEMED_ICONS -> Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
 
             LSCLOCK_MOVE_NOTIFICATION_ICONS -> Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM
+
+            HIDE_QS_ON_LOCKSCREEN -> Build.VERSION.SDK_INT <= Build.VERSION_CODES.UPSIDE_DOWN_CAKE
 
             else -> true
         }

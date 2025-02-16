@@ -689,6 +689,8 @@ class QuickSettings(context: Context) : ModPack(context) {
     }
 
     private fun disableQsOnSecureLockScreen() {
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.UPSIDE_DOWN_CAKE) return
+
         val remoteInputQuickSettingsDisablerClass =
             findClass("$SYSTEMUI_PACKAGE.statusbar.policy.RemoteInputQuickSettingsDisabler")
         val phoneStatusBarPolicyClass =
