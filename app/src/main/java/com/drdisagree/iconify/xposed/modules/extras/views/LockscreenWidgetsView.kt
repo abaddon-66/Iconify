@@ -18,7 +18,6 @@ import android.media.session.MediaSessionManager
 import android.media.session.PlaybackState
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
-import android.net.wifi.WifiConfiguration
 import android.net.wifi.WifiManager
 import android.os.Build
 import android.os.Handler
@@ -1611,7 +1610,7 @@ class LockscreenWidgetsView(context: Context, activityStarter: Any?) :
             val methods: Array<Method> = WifiManager::class.java.declaredMethods.toList().union(WifiManager::class.java.methods.toList()).toTypedArray()
             for (m in methods) {
                 if (m.name == "getWifiApConfiguration") {
-                    val config = m.invoke(mWifiManager) as WifiConfiguration
+                    val config = m.invoke(mWifiManager) as android.net.wifi.WifiConfiguration
                     return config.SSID
                 }
             }

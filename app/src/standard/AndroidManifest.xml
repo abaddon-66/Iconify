@@ -1,38 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
-    <!-- <uses-permission android:name="android.permission.FOREGROUND_SERVICE" /> --> <!-- Re-apply customizations on boot (deprecated) -->
-    <uses-permission android:name="android.permission.INTERNET" /> <!-- Access to the internet for checking for updates -->
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" /> <!-- Schedule a job to check for updates -->
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" /> <!-- Notify about new iconify updates -->
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" /> <!-- Access storage for compilation of APKs in .iconify folder -->
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" /> <!-- Read storage to be able to see what the compilation created -->
-    <uses-permission
-        android:name="android.permission.MANAGE_EXTERNAL_STORAGE"
-        tools:ignore="ScopedStorage" /> <!-- Manage storage to be able to see what the compilation created -->
-    <queries> <!-- Checking for Installed Music Players -->
-        <package android:name="com.maxmpz.audioplayer" />
-        <package android:name="code.name.monkey.retromusic" />
-        <package android:name="com.awedea.nyx" />
-        <package android:name="com.kapp.youtube.final" />
-        <package android:name="com.shadow.blackhole" />
-        <package android:name="in.krosbits.musicolet" />
-        <package android:name="com.google.android.youtube" />
-        <package android:name="com.google.android.apps.youtube.music" />
-        <package android:name="app.revanced.android.youtube" />
-        <package android:name="app.revanced.android.apps.youtube.music" />
-    </queries>
-    <uses-permission
-        android:name="android.permission.QUERY_ALL_PACKAGES"
-        tools:ignore="QueryAllPackagesPermission" />
-
-    <!-- Weather Updater -->
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" /> <!-- Weather Updater -->
-    <uses-permission android:name="android.permission.INTERNET" /> <!-- Weather Updater -->
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" /> <!-- Get Location for Weather -->
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" /> <!-- Get Location for Weather -->
-    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" /> <!-- Get Location for Weather -->
-    <uses-permission android:name="com.drdisagree.iconify.READ_WEATHER" /> <!-- Permission for self Weather Provider -->
 
     <application
         android:name=".Iconify"
@@ -166,22 +134,7 @@
         </service> <!-- Quick Settings Tile -->
         <meta-data
             android:name="com.google.mlkit.vision.DEPENDENCIES"
-            android:value="subject_segment" /> <!-- ML Kit download -->
-        <meta-data
-            android:name="xposedmodule"
-            android:value="true" /> <!-- xposed meta data -->
-        <meta-data
-            android:name="xposeddescription"
-            android:value="@string/app_moto" /> <!-- xposed meta data -->
-        <meta-data
-            android:name="xposedminversion"
-            android:value="82" /> <!-- xposed meta data -->
-        <meta-data
-            android:name="xposedscope"
-            android:resource="@array/module_scope" /> <!-- xposed meta data -->
-        <meta-data
-            android:name="com.google.mlkit.vision.DEPENDENCIES"
-            android:value="subject_segment" /> <!-- ML Kit download -->
+            android:value="subject_segment" /> <!-- ML Kit -->
         <provider
             android:name=".provider.RemotePrefProvider"
             android:authorities="${applicationId}"
@@ -364,7 +317,5 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-
     </application>
-
 </manifest>

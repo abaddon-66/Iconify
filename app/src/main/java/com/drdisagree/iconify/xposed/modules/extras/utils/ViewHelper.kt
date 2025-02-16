@@ -10,10 +10,6 @@ import android.graphics.Typeface
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
-import android.renderscript.Allocation
-import android.renderscript.Element
-import android.renderscript.RenderScript
-import android.renderscript.ScriptIntrinsicBlur
 import android.util.TypedValue
 import android.view.View
 import android.view.ViewGroup
@@ -430,13 +426,13 @@ object ViewHelper {
             tempImage.width, tempImage.height,
             Bitmap.Config.ARGB_8888
         )
-        val renderScript = RenderScript.create(context)
-        val blurInput = Allocation.createFromBitmap(renderScript, tempImage)
-        val blurOutput = Allocation.createFromBitmap(renderScript, bitmap)
+        val renderScript = android.renderscript.RenderScript.create(context)
+        val blurInput = android.renderscript.Allocation.createFromBitmap(renderScript, tempImage)
+        val blurOutput = android.renderscript.Allocation.createFromBitmap(renderScript, bitmap)
 
-        ScriptIntrinsicBlur.create(
+        android.renderscript.ScriptIntrinsicBlur.create(
             renderScript,
-            Element.U8_4(renderScript)
+            android.renderscript.Element.U8_4(renderScript)
         ).apply {
             setInput(blurInput)
             setRadius(radius.coerceIn(0.0001f, 25f))
