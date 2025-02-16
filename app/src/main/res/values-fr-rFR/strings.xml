@@ -127,6 +127,8 @@
     <string name="settings_show_home_page_card_desc">Montrez une belle carte sur la page d\'accueil.</string>
     <string name="settings_vibrate_ui_card_title">Vibration</string>
     <string name="settings_vibrate_ui_page_card_desc">Améliore les interactions à l\'écran avec des vibrations.</string>
+    <string name="settings_slider_controller_title">Slider Controller</string>
+    <string name="settings_slider_controller_desc">Enable to display plus and minus buttons with sliders.</string>
     <string name="settings_clear_app_cache_title">Vider le cache de l\'application</string>
     <string name="settings_clear_app_cache_desc">Effacez le cache généré en raison de l\'utilisation de polices, d\'images ou de gifs personnalisés.</string>
     <string name="activity_title_experimental">Expérimental</string>
@@ -296,12 +298,17 @@
     <string name="section_title_qs_text_color">Couleur du texte du QS</string>
     <string name="qs_text_color_normal">Normal</string>
     <string name="qs_text_color_pixel">Pixel</string>
+    <string name="custom_qs_tile_text_color_title">Couleur du texte personnalisé</string>
+    <string name="custom_qs_tile_text_color_desc">Activer la couleur de texte personnalisée des tuiles QS</string>
+    <string name="custom_qs_tile_text_color_list_title">Options de couleur du texte</string>
     <string name="label_always_white_title">Tout en blanc</string>
     <string name="label_always_white_desc">Titre blanc, sous-titre blanc</string>
     <string name="label_always_white_v2_title">Tout en blanc v2</string>
     <string name="label_always_white_v2_desc">Titre blanc, sous-titre accentué</string>
     <string name="label_follow_system_title">Suivre le système</string>
     <string name="label_follow_system_desc">Titre système, sous-titre système</string>
+    <string name="label_follow_system_inverse_title">Suivre l\'inversion du système</string>
+    <!--<string name="label_follow_system_inverse_desc">Title system, subtitle system</string>-->
     <string name="label_follow_system_v2_title">Suivre le système v2</string>
     <string name="label_follow_system_v2_desc">Titres système, accent des sous-titres</string>
     <string name="label_fix_text_color_title">Corriger la couleur des textes</string>
@@ -316,6 +323,7 @@
     <!-- QS Panel Margin -->
     <string name="qqs_panel_top_margin_title">Marges du panneau Qs rapide</string>
     <string name="qs_panel_top_margin_title">Marge supérieure du panneau Qs</string>
+    <string name="qs_panel_top_margin_info">Faites pivoter l\'appareil pour voir les modifications. Si cela ne fonctionne pas, redémarrez SystemUI.</string>
     <!-- Statusbar -->
     <string name="section_title_spacing">Espacement</string>
     <string name="sb_left_padding">Rembourrage gauche</string>
@@ -443,6 +451,8 @@
     <string name="activity_title_xposed_others">Autres</string>
     <string name="activity_desc_xposed_others">Autres modifications et personnalisation xposed</string>
     <string name="activity_title_xposed_weather_settings">Paramètres de la météo</string>
+    <string name="activity_title_xposed_launcher">Lanceur d\'applications</string>
+    <string name="activity_desc_xposed_launcher">Modifications relatives au lanceur</string>
     <!-- Oneplus QS Header -->
     <string name="oneplus_qs_header_title">En-tête OnePlus des Paramètres Rapides</string>
     <string name="oneplus_qs_header_desc">Active le style du lecteur de musique de OxygenOS</string>
@@ -697,6 +707,8 @@
     <string name="lockscreen_clock_auto_hide_clock_title">Cacher automatiquement l\'horloge</string>
     <string name="lockscreen_clock_auto_hide_clock_desc">Masquer l\'horloge lors d\'une notification entrante</string>
     <string name="custom_lockscreen_clock_style_title">Style de l\'horloge</string>
+    <string name="lockscreen_clock_move_notification_icon_title">Icônes AOD en dessous de l\'horloge</string>
+    <string name="lockscreen_clock_move_notification_icon_desc">Déplacer les icônes AOD sous l\'horloge personnalisée, peut être buggé sur les anciennes ROM</string>
     <string name="lockscreen_clock_font_title">Police de l\'horloge</string>
     <string name="lockscreen_clock_font_desc">Utiliser une police personnalisée pour l\'horloge de l\'écran de verrouillage</string>
     <string name="lsclock_custom_color_title">Couleur de l\'horloge personnalisée</string>
@@ -812,6 +824,10 @@
     <string name="hide_ls_statusbar_desc">Masquer la barre d\'état sur l\'écran de verrouillage</string>
     <string name="sb_swap_wifi_cellular_title">Interchanger le wifi et cellulaire</string>
     <string name="sb_swap_wifi_cellular_desc">Interchanger l\'icône du wifi et cellulaire</string>
+    <string name="sb_swap_cellular_network_type_title">Swap Cellular and Network Type</string>
+    <string name="sb_swap_cellular_network_type_desc">Swap cellular and network type (3G 4G LTE etc.) icons</string>
+    <string name="sb_clock_on_right_side_title">Horloge sur le côté droit</string>
+    <string name="sb_clock_on_right_side_desc">Afficher l\'horloge sur le côté droit de la barre d\'état</string>
     <!-- Xposed Others -->
     <string name="qs_header">En-tête du panneau d\'accès rapide</string>
     <string name="hide_carrier_group_title">Cacher le groupe d\'opérateur</string>
@@ -1084,6 +1100,9 @@
     <string name="accent_tertiary">Accent tertiaire</string>
     <string name="text_color_primary">Couleur primaire du texte</string>
     <string name="text_color_inverse">Couleur du texte inversée</string>
+    <string name="learn_more">En savoir plus</string>
+    <string name="custom_tiles_footer_info">To ensure custom tiles work properly, first use the default internet and bluetooth tiles once before using the custom ones.</string>
+    <string name="hig_res_image_footer_info">Avoid using high-resolution images, as they may cause your system UI to crash.</string>
     <!-- Weather -->
     <!-- Omni Jaws Strings -->
     <string name="units_title">Unité</string>
@@ -1193,6 +1212,27 @@
     <string name="lockscreen_weather_selection_str_border_gradient">Sombre avec bordures en dégradé</string>
     <string name="lockscreen_weather_font_title">Police de la météo</string>
     <string name="lockscreen_weather_font_desc">Utiliser une police personnalisée pour le texte de la météo</string>
+    <!-- Launcher mods -->
+    <string name="section_title_icons">Icons</string>
+    <string name="section_title_home_screen">Home Screen</string>
+    <string name="section_title_app_drawer">App Drawer</string>
+    <string name="section_title_recents">Recents</string>
+    <string name="force_themed_icons_title">Forcer les icônes à thème</string>
+    <string name="force_themed_icons_desc">Générer des icônes monochromatiques si elles ne sont pas fournies par l\'application</string>
+    <string name="app_drawer_themed_icons_title">Icônes du thème du tiroir d\'applications</string>
+    <string name="app_drawer_themed_icons_desc">Activer les icônes à thème dans le tiroir d\'applications</string>
+    <string name="double_tap_to_sleep_title">Double Tap to Sleep</string>
+    <string name="double_tap_to_sleep_desc">Double tap on home screen empty space to turn off the screen</string>
+    <string name="desktop_icon_labels_title">Icon Labels on Desktop</string>
+    <string name="app_drawer_icon_labels_title">Icon Labels in App Drawer</string>
+    <string name="disable_recents_blur_title">Désactiver le flou des applications récentes</string>
+    <string name="disable_recents_blur_desc">Désactiver le flou si l\'écran des applications récentes est bogué</string>
+    <string name="hide_desktop_search_bar_title">Hide Desktop Search Bar</string>
+    <string name="hide_desktop_search_bar_desc">Hide search bar from desktop dock</string>
+    <string name="dock_spacing_title">Dock Spacing</string>
+    <string name="app_drawer_background_opacity_title">Opacité de l\'arrière-plan du tiroir d\'applications</string>
+    <string name="recents_background_opacity_title">Opacité de l\'arrière-plan des applications récentes</string>
+    <string name="launcher_mod_footer_info">Currently, only Pixel Launcher and Launcher3 are supported.</string>
     <!-- Alert Dialogs -->
     <string name="systemui_restart_required_title">Redémarrage de l\'interface utilisateur système nécessaire</string>
     <string name="systemui_restart_required_desc">Un redémarrage de l\'interface utilisateur est nécessaire pour que cette modification prenne effet.</string>
