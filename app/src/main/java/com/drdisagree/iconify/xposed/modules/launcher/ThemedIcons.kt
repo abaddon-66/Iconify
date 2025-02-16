@@ -6,6 +6,7 @@ import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
+import com.drdisagree.iconify.common.Const.LAUNCHER3_PACKAGE
 import com.drdisagree.iconify.common.Preferences.APP_DRAWER_THEMED_ICONS
 import com.drdisagree.iconify.common.Preferences.FORCE_THEMED_ICONS
 import com.drdisagree.iconify.xposed.ModPack
@@ -66,6 +67,9 @@ class ThemedIcons(context: Context) : ModPack(context) {
             }
 
         try {
+            // Only for modified Launcher3
+            if (mContext.packageName != LAUNCHER3_PACKAGE) throw Throwable()
+
             val launcherIconsClass = findClass("com.android.launcher3.icons.LauncherIcons")
 
             launcherIconsClass
@@ -95,9 +99,9 @@ class ThemedIcons(context: Context) : ModPack(context) {
                                 // If it's from com.android.launcher3.icons.IconProvider class and
                                 // mentioned methods, monochrome is already included
                                 Throwable().stackTrace.forEach { stackTrace ->
-                                    stackTrace.methodName.lowercase().let { methodName ->
+                                    stackTrace.methodName.lowercase().let { name ->
                                         if (stackTrace.className.contains("IconProvider") &&
-                                            (methodName == "getIconWithOverrides" || methodName == "getIcon")
+                                            (name.contains("override") || name == "geticon")
                                         ) return@runAfter2
                                     }
                                 }

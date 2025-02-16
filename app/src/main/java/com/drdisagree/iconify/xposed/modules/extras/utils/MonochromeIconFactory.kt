@@ -108,7 +108,7 @@ open class MonochromeIconFactory internal constructor(
             drawDrawable(icon.background)
             drawDrawable(icon.foreground)
             generateMono()
-            return ClippedMonoDrawable(this, insetForeground).create(context)
+            return ClippedMonoDrawable(this, insetForeground).create(context, mBitmapSize)
         } else {
             mFlatCanvas.drawColor(Color.WHITE)
             drawDrawable(icon)
@@ -198,14 +198,14 @@ open class MonochromeIconFactory internal constructor(
         }
 
         companion object {
-            fun ClippedMonoDrawable.create(context: Context): BitmapDrawable {
-                val bitmap = drawableToBitmap(this)
+            fun ClippedMonoDrawable.create(context: Context, iconSize: Int): BitmapDrawable {
+                val bitmap = drawableToBitmap(this, iconSize)
                 return BitmapDrawable(context.resources, bitmap)
             }
 
-            private fun drawableToBitmap(drawable: Drawable): Bitmap {
-                val width = drawable.intrinsicWidth.takeIf { it > 0 } ?: 100
-                val height = drawable.intrinsicHeight.takeIf { it > 0 } ?: 100
+            private fun drawableToBitmap(drawable: Drawable, iconSize: Int): Bitmap {
+                val width = drawable.intrinsicWidth.takeIf { it > 0 } ?: iconSize
+                val height = drawable.intrinsicHeight.takeIf { it > 0 } ?: iconSize
                 val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
                 val canvas = Canvas(bitmap)
                 drawable.setBounds(0, 0, canvas.width, canvas.height)
