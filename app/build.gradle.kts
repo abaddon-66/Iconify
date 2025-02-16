@@ -154,15 +154,17 @@ dependencies {
     implementation(libs.androidx.palette.ktx)
 
     // Xposed API
-    compileOnly(files("libs/api-82.jar"))
-    compileOnly(files("libs/api-82-sources.jar"))
+    // F-Droid disallow `api.xposed.info` since it's not a "Trusted Maven Repository".
+    // So we create a mirror GitHub repository and obtain the library from `jitpack.io` instead.
+    // Equivalent to `implementation 'de.robv.android.xposed:api:82'`.
+    compileOnly(libs.xposedbridge)
 
     // The core module that provides APIs to a shell
-    implementation(libs.core)
+    implementation(libs.su.core)
     // Optional: APIs for creating root services. Depends on ":core"
-    implementation(libs.service)
+    implementation(libs.su.service)
     // Optional: Provides remote file system support
-    implementation(libs.nio)
+    implementation(libs.su.nio)
 
     // Coroutines
     implementation(libs.kotlinx.coroutines.android)

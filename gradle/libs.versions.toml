@@ -16,8 +16,8 @@ coreSplashscreen = "1.0.1"
 dotsindicator = "5.1.0"
 eventbus = "3.3.1"
 fadingedgelayout = "1.0.0"
-glide = "4.16.0"
 flexbox = "3.0.0"
+glide = "4.16.0"
 googlePlayServicesMlkitSubjectSegmentationVersion = "16.0.0-beta1"
 guava = "33.2.1-jre"
 jsoup = "1.18.1"
@@ -27,28 +27,31 @@ kotlinxCoroutinesAndroid = "1.9.0"
 library = "8.8.1"
 libsuVersion = "6.0.0"
 lottie = "6.6.2"
+material = "1.12.0"
 navigationUiKtx = "2.8.7"
 navigationFragmentKtx = "2.8.7"
+parcelize = "2.0.0"
+paletteKtx = "1.0.0"
 playServicesBase = "18.5.0"
 preferenceKtx = "1.2.1"
-slf4jApi = "2.0.16"
-viewpager2 = "1.1.0"
 recyclerviewSelection = "1.1.0"
 recyclerview = "1.4.0"
 remotepreferences = "0.8"
+slf4jApi = "2.0.16"
+viewpager2 = "1.1.0"
 workRuntime = "2.10.0"
+xposedbridge = "main-SNAPSHOT"
 zip4j = "2.11.5"
-material = "1.12.0"
-parcelize = "2.0.0"
-paletteKtx = "1.0.0"
 
 [libraries]
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
 androidx-concurrent-futures = { module = "androidx.concurrent:concurrent-futures", version.ref = "concurrentFutures" }
 androidx-constraintlayout = { module = "androidx.constraintlayout:constraintlayout", version.ref = "constraintlayout" }
 androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "coreKtx" }
+androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "coreSplashscreen" }
 androidx-navigation-ui-ktx = { module = "androidx.navigation:navigation-ui-ktx", version.ref = "navigationUiKtx" }
 androidx-navigation-fragment-ktx = { module = "androidx.navigation:navigation-fragment-ktx", version.ref = "navigationFragmentKtx" }
+androidx-palette-ktx = { group = "androidx.palette", name = "palette-ktx", version.ref = "paletteKtx" }
 androidx-preference-ktx = { module = "androidx.preference:preference-ktx", version.ref = "preferenceKtx" }
 androidx-viewpager2 = { module = "androidx.viewpager2:viewpager2", version.ref = "viewpager2" }
 androidx-recyclerview-selection = { module = "androidx.recyclerview:recyclerview-selection", version.ref = "recyclerviewSelection" }
@@ -56,14 +59,12 @@ androidx-recyclerview = { module = "androidx.recyclerview:recyclerview", version
 androidx-work-runtime = { module = "androidx.work:work-runtime", version.ref = "workRuntime" }
 androidx-work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "workRuntime" }
 bcpkix-jdk18on = { module = "org.bouncycastle:bcpkix-jdk18on", version.ref = "bcpkixJdk18on" }
-androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "coreSplashscreen" }
 blurview = { module = "com.github.Dimezis:BlurView", version.ref = "blurview" }
 circleindicator = { module = "me.relex:circleindicator", version.ref = "circleindicator" }
 collapsingtoolbarlayout-subtitle = { module = "com.hendraanggrian.material:collapsingtoolbarlayout-subtitle", version.ref = "collapsingtoolbarlayoutSubtitle" }
 com-google-android-gms-play-services-mlkit-subject-segmentation = { module = "com.google.android.gms:play-services-mlkit-subject-segmentation", version.ref = "googlePlayServicesMlkitSubjectSegmentationVersion" }
 commons-text = { module = "org.apache.commons:commons-text", version.ref = "commonsText" }
 compiler = { module = "com.github.bumptech.glide:compiler", version.ref = "compiler" }
-core = { module = "com.github.topjohnwu.libsu:core", version.ref = "libsuVersion" }
 dotsindicator = { module = "com.tbuonomo:dotsindicator", version.ref = "dotsindicator" }
 eventbus = { module = "org.greenrobot:eventbus", version.ref = "eventbus" }
 fadingedgelayout = { module = "com.github.bosphere.android-fadingedgelayout:fadingedgelayout", version.ref = "fadingedgelayout" }
@@ -74,16 +75,17 @@ jaredrummler-colorpicker = { module = "com.jaredrummler:colorpicker", version.re
 jsoup = { module = "org.jsoup:jsoup", version.ref = "jsoup" }
 kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinxCoroutinesAndroid" }
 library = { module = "com.android.databinding:library", version.ref = "library" }
+su-core = { module = "com.github.topjohnwu.libsu:core", version.ref = "libsuVersion" }
+su-nio = { module = "com.github.topjohnwu.libsu:nio", version.ref = "libsuVersion" }
+su-service = { module = "com.github.topjohnwu.libsu:service", version.ref = "libsuVersion" }
 lottie = { module = "com.airbnb.android:lottie", version.ref = "lottie" }
 material = { module = "com.google.android.material:material", version.ref = "material" }
-nio = { module = "com.github.topjohnwu.libsu:nio", version.ref = "libsuVersion" }
+okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version = "4.12.0" }
 play-services-base = { module = "com.google.android.gms:play-services-base", version.ref = "playServicesBase" }
 remotepreferences = { module = "com.crossbowffs.remotepreferences:remotepreferences", version.ref = "remotepreferences" }
-service = { module = "com.github.topjohnwu.libsu:service", version.ref = "libsuVersion" }
 slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "slf4jApi" }
+xposedbridge = { module = "com.github.Mahmud0808:XposedBridge", version.ref = "xposedbridge" }
 zip4j = { module = "net.lingala.zip4j:zip4j", version.ref = "zip4j" }
-androidx-palette-ktx = { group = "androidx.palette", name = "palette-ktx", version.ref = "paletteKtx" }
-okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version = "4.12.0" }
 
 [plugins]
 agp-app = { id = "com.android.application", version.ref = "agp" }
