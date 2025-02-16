@@ -66,21 +66,39 @@ jobs:
 
       - name: Build with Gradle
         run: |
-          ./gradlew assembleFossDebug
+          ./gradlew assembleFossDebug -PsplitApks
           ./gradlew assembleStandardDebug
-
-      - name: Upload FOSS Build Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: "Iconify (FOSS) v${{ env.VERSION_NAME }} Dev (#${{github.run_number}})"
-          path: app/build/outputs/apk/foss/debug/*.apk
-          if-no-files-found: error
 
       - name: Upload Standard Build Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: "Iconify v${{ env.VERSION_NAME }} Dev (#${{github.run_number}})"
+          name: "Iconify Standard v${{ env.VERSION_NAME }} Dev (#${{github.run_number}})"
           path: app/build/outputs/apk/standard/debug/*.apk
+          if-no-files-found: error
+
+      - name: Upload FOSS Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: "Iconify (FOSS) v${{ env.VERSION_NAME }} Dev (#${{github.run_number}}) - arm64-v8a"
+          path: app/build/outputs/apk/foss/debug/*-arm64-v8a-*.apk
+          if-no-files-found: error
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: "Iconify (FOSS) v${{ env.VERSION_NAME }} Dev (#${{github.run_number}}) - armeabi-v7a"
+          path: app/build/outputs/apk/foss/debug/*-armeabi-v7a-*.apk
+          if-no-files-found: error
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: "Iconify (FOSS) v${{ env.VERSION_NAME }} Dev (#${{github.run_number}}) - x86"
+          path: app/build/outputs/apk/foss/debug/*-x86-*.apk
+          if-no-files-found: error
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: "Iconify (FOSS) v${{ env.VERSION_NAME }} Dev (#${{github.run_number}}) - x86_64"
+          path: app/build/outputs/apk/foss/debug/*-x86_64-*.apk
           if-no-files-found: error
 
       - name: Get Commit Messages
@@ -111,7 +129,7 @@ jobs:
       - name: Clean Previous Release Folder
         run: rm -rf releases && mkdir -p releases
 
-      - name: Zip Artifact for Deployment
+      - name: Zip Artifact for Sending to Telegram
         run: |
           cd app/build/outputs/apk/standard/debug/
           zip "../../../../../../releases/Iconify v${{ env.VERSION_NAME }} Dev (#${{github.run_number}}).zip" *.apk -r

@@ -18,7 +18,7 @@ android {
         targetSdk = 35
         versionCode = 22
         versionName = "7.0.0"
-        setProperty("archivesBaseName", "Iconify v$versionName")
+        setProperty("archivesBaseName", "Iconify v${defaultConfig.versionName}")
         buildConfigField("int", "MIN_SDK_VERSION", "$minSdk")
     }
 
@@ -84,6 +84,17 @@ android {
 
         getByName("foss") {
             java.srcDirs("src/foss/java")
+        }
+    }
+
+    if (hasProperty("splitApks")) {
+        splits {
+            abi {
+                isEnable = true
+                reset()
+                include("arm64-v8a", "armeabi-v7a", "x86", "x86_64")
+                isUniversalApk = false
+            }
         }
     }
 
