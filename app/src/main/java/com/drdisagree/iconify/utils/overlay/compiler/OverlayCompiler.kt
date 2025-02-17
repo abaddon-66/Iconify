@@ -2,8 +2,10 @@ package com.drdisagree.iconify.utils.overlay.compiler
 
 import android.util.Log
 import com.drdisagree.iconify.Iconify.Companion.appContext
+import com.drdisagree.iconify.common.Dynamic.AAPT
 import com.drdisagree.iconify.common.Dynamic.AAPT2
 import com.drdisagree.iconify.common.Dynamic.ZIPALIGN
+import com.drdisagree.iconify.common.Dynamic.isAtleastA14
 import com.drdisagree.iconify.common.Resources
 import com.drdisagree.iconify.common.Resources.FRAMEWORK_DIR
 import com.drdisagree.iconify.utils.AppUtils.getSplitLocations
@@ -17,6 +19,7 @@ import java.security.cert.X509Certificate
 object OverlayCompiler {
 
     private val TAG = OverlayCompiler::class.java.simpleName
+    private val aapt: String = AAPT.absolutePath
     private val aapt2: String = AAPT2.absolutePath
     private val zipalign: String = ZIPALIGN.absolutePath
     private var key: PrivateKey? = null
@@ -111,7 +114,11 @@ object OverlayCompiler {
                 Resources.UNSIGNED_UNALIGNED_DIR
             }
 
-        return StringBuilder(getAAPT2Command(source, name, outputDir))
+        return if (!isAtleastA14) {
+            StringBuilder("$aapt p -f -M $source/AndroidManifest.xml -S $source/res -F $outputDir/$name -I $FRAMEWORK_DIR --include-meta-data --auto-add-overlay")
+        } else {
+            StringBuilder(getAAPT2Command(source, name, outputDir))
+        }
     }
 
     private fun getAAPT2Command(source: String, name: String, outputDir: String): String {

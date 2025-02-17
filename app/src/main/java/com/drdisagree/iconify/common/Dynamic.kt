@@ -29,7 +29,11 @@ object Dynamic {
     // Overlay compiler tools
     val NATIVE_LIBRARY_DIR: String = appContext.applicationInfo.nativeLibraryDir
 
+    val AAPTLIB = File(NATIVE_LIBRARY_DIR, "libaapt.so")
+
     val AAPT2LIB = File(NATIVE_LIBRARY_DIR, "libaapt2.so")
+
+    val AAPT = File(Resources.BIN_DIR, "aapt")
 
     val AAPT2 = File(Resources.BIN_DIR, "aapt2")
 

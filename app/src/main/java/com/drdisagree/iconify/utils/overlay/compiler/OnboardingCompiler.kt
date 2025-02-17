@@ -2,8 +2,10 @@ package com.drdisagree.iconify.utils.overlay.compiler
 
 import android.util.Log
 import com.drdisagree.iconify.Iconify.Companion.appContext
+import com.drdisagree.iconify.common.Dynamic.AAPT
 import com.drdisagree.iconify.common.Dynamic.AAPT2
 import com.drdisagree.iconify.common.Dynamic.ZIPALIGN
+import com.drdisagree.iconify.common.Dynamic.isAtleastA14
 import com.drdisagree.iconify.common.Resources
 import com.drdisagree.iconify.common.Resources.FRAMEWORK_DIR
 import com.drdisagree.iconify.common.Resources.UNSIGNED_UNALIGNED_DIR
@@ -18,6 +20,7 @@ import java.security.cert.X509Certificate
 object OnboardingCompiler {
 
     private val TAG = OnboardingCompiler::class.java.simpleName
+    private val aapt: String = AAPT.absolutePath
     private val aapt2: String = AAPT2.absolutePath
     private val zipalign: String = ZIPALIGN.absolutePath
     private var key: PrivateKey? = null
@@ -45,11 +48,17 @@ object OnboardingCompiler {
     fun runAapt(source: String, name: String): Boolean {
         var result: Shell.Result? = null
         var attempt = 3
+        val command: String
 
-        val command: String = getAAPT2Command(source, name)
+        if (!isAtleastA14) {
+            command =
+                "$aapt p -f -M $source/AndroidManifest.xml -I $FRAMEWORK_DIR -S $source/res -F $UNSIGNED_UNALIGNED_DIR/$name-unsigned-unaligned.apk --include-meta-data --auto-add-overlay"
+        } else {
+            command = getAAPT2Command(source, name)
 
-        if (isQsTileOrTextOverlay(name)) {
-            QsResourceManager.removeQuickSettingsStyles(source)
+            if (isQsTileOrTextOverlay(name)) {
+                QsResourceManager.removeQuickSettingsStyles(source)
+            }
         }
 
         while (attempt-- != 0) {
