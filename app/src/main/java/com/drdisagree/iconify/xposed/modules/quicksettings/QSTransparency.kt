@@ -170,8 +170,10 @@ class QSTransparency(context: Context) : ModPack(context) {
                 }
             }
 
-        val quickSettingsControllerClass =
-            findClass("$SYSTEMUI_PACKAGE.shade.QuickSettingsController")
+        val quickSettingsControllerClass = findClass(
+            "$SYSTEMUI_PACKAGE.shade.QuickSettingsControllerImpl",
+            "$SYSTEMUI_PACKAGE.shade.QuickSettingsController"
+        )
 
         quickSettingsControllerClass
             .hookConstructor()
@@ -179,7 +181,7 @@ class QSTransparency(context: Context) : ModPack(context) {
 
         ResourceHookManager
             .hookDimen()
-            .whenCondition { qsTransparencyActive && !onlyNotifTransparencyActive && alpha.toInt() == 0 }
+            .whenCondition { qsTransparencyActive && !onlyNotifTransparencyActive && alpha == 0f }
             .forPackageName(SYSTEMUI_PACKAGE)
             .addResource("notification_scrim_corner_radius") { 0 }
             .apply()
