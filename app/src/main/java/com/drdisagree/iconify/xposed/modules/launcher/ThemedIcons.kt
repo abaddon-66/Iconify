@@ -98,13 +98,12 @@ class ThemedIcons(context: Context) : ModPack(context) {
                             if (param2.result == null && forceThemedIcons) {
                                 // If it's from com.android.launcher3.icons.IconProvider class and
                                 // mentioned methods, monochrome is already included
-                                Throwable().stackTrace.forEach { stackTrace ->
-                                    stackTrace.methodName.lowercase().let { name ->
-                                        if (stackTrace.className.contains("IconProvider") &&
-                                            (name.contains("override") || name == "geticon")
-                                        ) return@runAfter2
-                                    }
-                                }
+                                Thread.currentThread().stackTrace.firstOrNull {
+                                    it.className.contains("IconProvider") && it.methodName in listOf(
+                                        "getIconWithOverrides",
+                                        "getIcon"
+                                    )
+                                }?.let { return@runAfter2 }
 
                                 var monochromeIcon = param2.thisObject
                                     .getExtraFieldSilently("mMonochromeIcon") as? Drawable
