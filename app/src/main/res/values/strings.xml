@@ -878,6 +878,7 @@
     <string name="sb_clock_on_right_side_desc">Show clock on right side of statusbar</string>
     <string name="sb_show_4g_icon_title">4G Icon</string>
     <string name="sb_show_4g_icon_desc">Display 4G icon in statusbar instead of LTE</string>
+    <string name="sb_max_notification_icons_title">Notification Icons Limit</string>
 
     <!-- Xposed Others -->
     <string name="qs_header">QS Header</string>

@@ -15,6 +15,7 @@ import android.widget.TextView
 import com.drdisagree.iconify.common.Const.SYSTEMUI_PACKAGE
 import com.drdisagree.iconify.common.Preferences.HIDE_LOCKSCREEN_CARRIER
 import com.drdisagree.iconify.common.Preferences.HIDE_LOCKSCREEN_STATUSBAR
+import com.drdisagree.iconify.common.Preferences.NOTIFICATION_ICONS_LIMIT
 import com.drdisagree.iconify.common.Preferences.SB_CLOCK_SIZE
 import com.drdisagree.iconify.common.Preferences.SB_CLOCK_SIZE_SWITCH
 import com.drdisagree.iconify.common.Preferences.SHOW_4G_INSTEAD_OF_LTE
@@ -25,6 +26,7 @@ import com.drdisagree.iconify.xposed.modules.extras.utils.StatusBarClock.getCent
 import com.drdisagree.iconify.xposed.modules.extras.utils.StatusBarClock.getLeftClockView
 import com.drdisagree.iconify.xposed.modules.extras.utils.StatusBarClock.getRightClockView
 import com.drdisagree.iconify.xposed.modules.extras.utils.StatusBarClock.setClockGravity
+import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.ResourceHookManager
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.XposedHook.Companion.findClass
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookLayout
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookMethod
@@ -47,6 +49,7 @@ class StatusbarMisc(context: Context) : ModPack(context) {
     private var hideLockscreenStatusbar = false
     private var clockOnRightSide = false
     private var show4GInsteadOfLTE = false
+    private var notifIconsLimit = -1
     private var phoneStatusBarView: ViewGroup? = null
     private var clockInitialPosition = -1
 
@@ -58,6 +61,7 @@ class StatusbarMisc(context: Context) : ModPack(context) {
             hideLockscreenStatusbar = getBoolean(HIDE_LOCKSCREEN_STATUSBAR, false)
             clockOnRightSide = getBoolean(SHOW_CLOCK_ON_RIGHT_SIDE, false)
             show4GInsteadOfLTE = getBoolean(SHOW_4G_INSTEAD_OF_LTE, false)
+            notifIconsLimit = getSliderInt(NOTIFICATION_ICONS_LIMIT, -1)
         }
 
         when (key.firstOrNull()) {
@@ -80,6 +84,7 @@ class StatusbarMisc(context: Context) : ModPack(context) {
         applyClockSize()
         clockOnRightSide()
         show4GInsteadOfLTE()
+        notificationIconsLimit()
     }
 
     private fun hideLockscreenCarrierOrStatusbar() {
@@ -254,6 +259,16 @@ class StatusbarMisc(context: Context) : ModPack(context) {
             .runAfter { param ->
                 param.result.setField("show4gForLte", show4GInsteadOfLTE)
             }
+    }
+
+    private fun notificationIconsLimit() {
+        ResourceHookManager
+            .hookInteger()
+            .forPackageName(SYSTEMUI_PACKAGE)
+            .whenCondition { notifIconsLimit != -1 }
+            .addResource("max_notif_static_icons") { notifIconsLimit }
+            .addResource("max_notif_icons_on_lockscreen") { notifIconsLimit }
+            .apply()
     }
 
     private fun moveStatusBarClock() {
