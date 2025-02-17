@@ -50,8 +50,6 @@ class StatusbarMisc(context: Context) : ModPack(context) {
     private var clockOnRightSide = false
     private var show4GInsteadOfLTE = false
     private var notifIconsLimit = -1
-    private var phoneStatusBarView: ViewGroup? = null
-    private var clockInitialPosition = -1
 
     override fun updatePrefs(vararg key: String) {
         Xprefs.apply {
@@ -74,8 +72,6 @@ class StatusbarMisc(context: Context) : ModPack(context) {
                 HIDE_LOCKSCREEN_CARRIER,
                 HIDE_LOCKSCREEN_STATUSBAR
             ) -> hideLockscreenCarrierOrStatusbar()
-
-            in setOf(SHOW_CLOCK_ON_RIGHT_SIDE) -> moveStatusBarClock()
         }
     }
 
@@ -236,18 +232,51 @@ class StatusbarMisc(context: Context) : ModPack(context) {
         val shadeHeaderControllerClass =
             findClass("$SYSTEMUI_PACKAGE.shade.ShadeHeaderController")
 
+        fun ViewGroup.moveStatusBarClock() {
+            val statusBarContents = findViewById<ViewGroup>(
+                mContext.resources.getIdentifier(
+                    "status_bar_contents",
+                    "id",
+                    mContext.packageName
+                )
+            )
+            val statusBarClock = findViewById<View>(
+                mContext.resources.getIdentifier(
+                    "clock",
+                    "id",
+                    mContext.packageName
+                )
+            )
+            val startPadding = mContext.resources.getDimensionPixelSize(
+                mContext.resources.getIdentifier(
+                    "status_bar_left_clock_starting_padding",
+                    "dimen",
+                    mContext.packageName
+                )
+            )
+            val endPadding = mContext.resources.getDimensionPixelSize(
+                mContext.resources.getIdentifier(
+                    "status_bar_left_clock_end_padding",
+                    "dimen",
+                    mContext.packageName
+                )
+            )
+
+            if (clockOnRightSide) {
+                (statusBarClock?.parent as? ViewGroup)?.removeView(statusBarClock)
+                statusBarContents?.addView(statusBarClock)
+                statusBarClock?.setPaddingRelative(endPadding, 0, startPadding, 0)
+            }
+        }
+
         phoneStatusBarViewClass
             .hookMethod("onFinishInflate")
-            .runAfter { param ->
-                phoneStatusBarView = param.thisObject as ViewGroup
-
-                moveStatusBarClock()
-            }
+            .runAfter { param -> (param.thisObject as ViewGroup).moveStatusBarClock() }
 
         shadeHeaderControllerClass
             .hookMethod("updateQQSPaddings")
             .suppressError()
-            .runAfter { moveStatusBarClock() }
+            .runAfter { param -> (param.thisObject as ViewGroup).moveStatusBarClock() }
     }
 
     private fun show4GInsteadOfLTE() {
@@ -269,60 +298,5 @@ class StatusbarMisc(context: Context) : ModPack(context) {
             .addResource("max_notif_static_icons") { notifIconsLimit }
             .addResource("max_notif_icons_on_lockscreen") { notifIconsLimit }
             .apply()
-    }
-
-    private fun moveStatusBarClock() {
-        if (phoneStatusBarView == null) return
-
-        val statusBarContents = phoneStatusBarView!!.findViewById<ViewGroup>(
-            mContext.resources.getIdentifier(
-                "status_bar_contents",
-                "id",
-                mContext.packageName
-            )
-        )
-        val statusBarStartSideExceptHeadsUp = phoneStatusBarView!!.findViewById<ViewGroup>(
-            mContext.resources.getIdentifier(
-                "status_bar_start_side_except_heads_up",
-                "id",
-                mContext.packageName
-            )
-        )
-        val statusBarClock = phoneStatusBarView!!.findViewById<View>(
-            mContext.resources.getIdentifier(
-                "clock",
-                "id",
-                mContext.packageName
-            )
-        )
-        val startPadding = mContext.resources.getDimensionPixelSize(
-            mContext.resources.getIdentifier(
-                "status_bar_left_clock_starting_padding",
-                "dimen",
-                mContext.packageName
-            )
-        )
-        val endPadding = mContext.resources.getDimensionPixelSize(
-            mContext.resources.getIdentifier(
-                "status_bar_left_clock_end_padding",
-                "dimen",
-                mContext.packageName
-            )
-        )
-
-        if (clockInitialPosition == -1) {
-            clockInitialPosition = (statusBarClock?.parent as? ViewGroup)
-                ?.indexOfChild(statusBarClock) ?: return
-        }
-
-        (statusBarClock?.parent as? ViewGroup)?.removeView(statusBarClock)
-
-        if (clockOnRightSide) {
-            statusBarContents?.addView(statusBarClock)
-            statusBarClock?.setPaddingRelative(endPadding, 0, startPadding, 0)
-        } else {
-            statusBarStartSideExceptHeadsUp?.addView(statusBarClock, clockInitialPosition)
-            statusBarClock?.setPaddingRelative(startPadding, 0, endPadding, 0)
-        }
     }
 }
