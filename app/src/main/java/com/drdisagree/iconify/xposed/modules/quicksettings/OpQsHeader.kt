@@ -31,6 +31,7 @@ import android.net.NetworkCapabilities
 import android.net.wifi.WifiManager
 import android.os.Handler
 import android.os.Looper
+import android.os.Process
 import android.os.UserHandle
 import android.provider.Settings
 import android.telephony.SubscriptionManager
@@ -79,6 +80,8 @@ import com.drdisagree.iconify.xposed.modules.extras.utils.isQsTileOverlayEnabled
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.ResourceHookManager
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.XposedHook.Companion.findClass
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.callMethod
+import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.callStaticMethod
+import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.getAnyField
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.getField
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookConstructor
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookMethod
@@ -275,11 +278,10 @@ class OpQsHeader(context: Context) : ModPack(context) {
         val getMediaOutputDialog = object : XC_MethodHook() {
             override fun afterHookedMethod(param: MethodHookParam) {
                 if (mMediaOutputDialogFactory == null) {
-                    mMediaOutputDialogFactory = try {
-                        param.thisObject.getField("mMediaOutputDialogFactory")
-                    } catch (ignored: Throwable) {
-                        param.thisObject.getField("mMediaOutputDialogManager")
-                    }
+                    mMediaOutputDialogFactory = param.thisObject.getAnyField(
+                        "mMediaOutputDialogFactory",
+                        "mMediaOutputDialogManager"
+                    )
                 }
             }
         }
@@ -1675,45 +1677,80 @@ class OpQsHeader(context: Context) : ModPack(context) {
     private fun launchMediaOutputSwitcher(packageName: String?, v: View) {
         if (packageName == null) return
 
-        if (mMediaOutputDialogFactory != null) {
-            if (mMediaOutputDialogFactory.isMethodAvailable(
+        mMediaOutputDialogFactory?.let { mediaOutputDialog ->
+            val dialogTransitionAnimatorControllerClass = findClass(
+                "$SYSTEMUI_PACKAGE.animation.DialogTransitionAnimator\$Controller",
+                suppressError = true
+            )
+
+            when {
+                mediaOutputDialog.isMethodAvailable(
                     "create",
                     String::class.java,
                     Boolean::class.java,
                     View::class.java
-                )
-            ) {
-                mMediaOutputDialogFactory.callMethod("create", packageName, true, v)
-            } else if (mMediaOutputDialogFactory.isMethodAvailable(
+                ) -> {
+                    mediaOutputDialog.callMethod("create", packageName, true, v)
+                }
+
+                mediaOutputDialog.isMethodAvailable(
                     "create",
                     View::class.java,
                     String::class.java,
                     Boolean::class.java,
                     Boolean::class.java
-                )
-            ) {
-                mMediaOutputDialogFactory.callMethod("create", v, packageName, true, true)
-            } else if (mMediaOutputDialogFactory.isMethodAvailable(
+                ) -> {
+                    mediaOutputDialog.callMethod("create", v, packageName, true, true)
+                }
+
+                mediaOutputDialog.isMethodAvailable(
                     "createAndShow",
                     String::class.java,
                     Boolean::class.java,
                     View::class.java,
                     UserHandle::class.java,
                     MediaSession.Token::class.java
-                )
-            ) {
-                mMediaOutputDialogFactory.callMethod(
+                ) -> {
+                    mediaOutputDialog.callMethod(
+                        "createAndShow",
+                        packageName,
+                        true,
+                        v,
+                        null,
+                        null
+                    )
+                }
+
+                dialogTransitionAnimatorControllerClass != null && mediaOutputDialog.isMethodAvailable(
                     "createAndShow",
-                    packageName,
-                    true,
-                    v,
-                    null,
-                    null
-                )
-            } else {
-                log(this@OpQsHeader, "No method available to create MediaOutputDialog")
+                    String::class.java,
+                    Boolean::class.java,
+                    dialogTransitionAnimatorControllerClass,
+                    Boolean::class.java,
+                    UserHandle::class.java,
+                    MediaSession.Token::class.java
+                ) -> {
+                    val myUserId = UserHandle::class.java.callStaticMethod(
+                        "getUserId",
+                        Process.myUid()
+                    ) as Int
+
+                    mediaOutputDialog.callMethod(
+                        "createAndShow",
+                        packageName,
+                        true,
+                        null,
+                        true,
+                        UserHandle.getUserHandleForUid(myUserId),
+                        null
+                    )
+                }
+
+                else -> {
+                    log(this@OpQsHeader, "No method available to create MediaOutputDialog")
+                }
             }
-        } else {
+        } ?: run {
             log(this@OpQsHeader, "MediaOutputDialogFactory is not available")
         }
     }
