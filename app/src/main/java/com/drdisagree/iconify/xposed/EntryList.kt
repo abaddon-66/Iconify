@@ -11,10 +11,10 @@ import com.drdisagree.iconify.xposed.modules.extras.callbacks.ThemeChange
 import com.drdisagree.iconify.xposed.modules.extras.utils.MyConstraintSet
 import com.drdisagree.iconify.xposed.modules.extras.utils.SettingsLibUtils
 import com.drdisagree.iconify.xposed.modules.launcher.GestureMod
+import com.drdisagree.iconify.xposed.modules.launcher.HotseatMod
 import com.drdisagree.iconify.xposed.modules.launcher.IconLabels
 import com.drdisagree.iconify.xposed.modules.launcher.IconUpdater
 import com.drdisagree.iconify.xposed.modules.launcher.OpacityModifier
-import com.drdisagree.iconify.xposed.modules.launcher.HotseatMod
 import com.drdisagree.iconify.xposed.modules.launcher.ThemedIcons
 import com.drdisagree.iconify.xposed.modules.lockscreen.Lockscreen
 import com.drdisagree.iconify.xposed.modules.lockscreen.clock.LockscreenClock
@@ -27,7 +27,8 @@ import com.drdisagree.iconify.xposed.modules.lockscreen.weather.LockscreenWeathe
 import com.drdisagree.iconify.xposed.modules.lockscreen.widgets.LockscreenWidgets
 import com.drdisagree.iconify.xposed.modules.lockscreen.widgets.LockscreenWidgetsA15
 import com.drdisagree.iconify.xposed.modules.misc.Miscellaneous
-import com.drdisagree.iconify.xposed.modules.quicksettings.ColorizeNotification
+import com.drdisagree.iconify.xposed.modules.quicksettings.AppIconInNotification
+import com.drdisagree.iconify.xposed.modules.quicksettings.ColorizeNotificationView
 import com.drdisagree.iconify.xposed.modules.quicksettings.HeaderImage
 import com.drdisagree.iconify.xposed.modules.quicksettings.OpQsHeader
 import com.drdisagree.iconify.xposed.modules.quicksettings.QSTransparency
@@ -44,7 +45,10 @@ import com.drdisagree.iconify.xposed.modules.quicksettings.themes.QSLightThemeA1
 import com.drdisagree.iconify.xposed.modules.quicksettings.themes.QSLightThemeA13
 import com.drdisagree.iconify.xposed.modules.quicksettings.themes.QSLightThemeA14
 import com.drdisagree.iconify.xposed.modules.quicksettings.themes.QSLightThemeA15
-import com.drdisagree.iconify.xposed.modules.statusbar.Statusbar
+import com.drdisagree.iconify.xposed.modules.statusbar.AppIconsInStatusbar
+import com.drdisagree.iconify.xposed.modules.statusbar.StatusbarMisc
+import com.drdisagree.iconify.xposed.modules.statusbar.SwapSignalNetworkType
+import com.drdisagree.iconify.xposed.modules.statusbar.SwapWiFiCellular
 import com.drdisagree.iconify.xposed.modules.volume.VolumePanel
 import com.drdisagree.iconify.xposed.utils.HookCheck
 
@@ -68,10 +72,14 @@ object EntryList {
         Miscellaneous::class.java,
         QSTransparency::class.java,
         QuickSettings::class.java,
-        Statusbar::class.java,
+        AppIconsInStatusbar::class.java,
+        SwapWiFiCellular::class.java,
+        SwapSignalNetworkType::class.java,
+        StatusbarMisc::class.java,
         BatteryStyleManager::class.java,
         VolumePanel::class.java,
-        ColorizeNotification::class.java
+        ColorizeNotificationView::class.java,
+        AppIconInNotification::class.java
     )
 
     private val systemUiAndroid12ModPacks: List<Class<out ModPack>> = listOf(

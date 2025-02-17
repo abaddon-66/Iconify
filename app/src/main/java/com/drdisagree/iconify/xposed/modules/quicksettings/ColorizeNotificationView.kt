@@ -14,7 +14,6 @@ import android.graphics.drawable.Drawable
 import android.os.Handler
 import android.os.Looper
 import android.view.View
-import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.RemoteViews
 import android.widget.TextView
@@ -23,7 +22,6 @@ import androidx.core.graphics.drawable.DrawableCompat
 import com.drdisagree.iconify.common.Const.FRAMEWORK_PACKAGE
 import com.drdisagree.iconify.common.Const.SYSTEMUI_PACKAGE
 import com.drdisagree.iconify.common.Preferences.COLORED_NOTIFICATION_ALTERNATIVE_SWITCH
-import com.drdisagree.iconify.common.Preferences.COLORED_NOTIFICATION_ICON_SWITCH
 import com.drdisagree.iconify.common.Preferences.COLORED_NOTIFICATION_VIEW_SWITCH
 import com.drdisagree.iconify.utils.color.monet.quantize.QuantizerCelebi
 import com.drdisagree.iconify.utils.color.monet.score.Score
@@ -48,9 +46,8 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam
 
 @SuppressLint("DiscouragedApi")
 @Suppress("deprecation", "UNCHECKED_CAST")
-class ColorizeNotification(context: Context) : ModPack(context) {
+class ColorizeNotificationView(context: Context) : ModPack(context) {
 
-    private var coloredNotificationIcon = false
     private var coloredNotificationView = false
     private var coloredNotificationAlternativeColor = false
     private var titleResId = 0
@@ -59,7 +56,6 @@ class ColorizeNotification(context: Context) : ModPack(context) {
 
     override fun updatePrefs(vararg key: String) {
         Xprefs.apply {
-            coloredNotificationIcon = getBoolean(COLORED_NOTIFICATION_ICON_SWITCH, false)
             coloredNotificationView = getBoolean(COLORED_NOTIFICATION_VIEW_SWITCH, false)
             coloredNotificationAlternativeColor =
                 getBoolean(COLORED_NOTIFICATION_ALTERNATIVE_SWITCH, false)
@@ -80,8 +76,6 @@ class ColorizeNotification(context: Context) : ModPack(context) {
             findClass("$SYSTEMUI_PACKAGE.statusbar.notification.row.NotificationContentView")
         val notificationContentInflaterClass =
             findClass("$SYSTEMUI_PACKAGE.statusbar.notification.row.NotificationContentInflater")
-        val notificationHeaderViewWrapperClass =
-            findClass("$SYSTEMUI_PACKAGE.statusbar.notification.row.wrapper.NotificationHeaderViewWrapper")
 
         try {
             val styles: Array<out Any> = monetStyleClass.getEnumConstants()!!
@@ -475,51 +469,6 @@ class ColorizeNotification(context: Context) : ModPack(context) {
                     notification.setTextColor(inflationProgress, mContext!!)
                 }
         }
-
-        notificationHeaderViewWrapperClass
-            .hookMethod("onContentUpdated")
-            .runAfter { param ->
-                if (!coloredNotificationIcon) return@runAfter
-
-                val row = param.args[0]
-                val notifyEntries = try {
-                    row.callMethod("getEntry")
-                } catch (ignored: Throwable) {
-                    row.getField("mEntry")
-                }
-                val notifySbn = try {
-                    notifyEntries.callMethod("getSbn")
-                } catch (ignored: Throwable) {
-                    notifyEntries.getField("mSbn")
-                }
-                val notification = notifySbn.callMethod("getNotification") as Notification
-                val pkgName = notifySbn.callMethod("getPackageName") as? String ?: return@runAfter
-                val appIcon: Drawable = try {
-                    mContext.packageManager.getApplicationIcon(pkgName)
-                } catch (ignored: Throwable) {
-                    return@runAfter
-                }
-                val mIcon = param.thisObject.getFieldSilently("mIcon") as ImageView
-                val mWorkProfileImage =
-                    param.thisObject.getFieldSilently("mWorkProfileImage") as? ImageView
-                val mImageTransformStateIconTag = mContext.resources.getIdentifier(
-                    "image_icon_tag",
-                    "id",
-                    SYSTEMUI_PACKAGE
-                )
-
-                if (mWorkProfileImage != null) {
-                    mIcon.setImageDrawable(appIcon);
-                    mWorkProfileImage.setImageIcon(notification.smallIcon);
-                    // The work profile image is always the same
-                    // Lets just set the icon tag for it not to animate
-                    mWorkProfileImage.setTag(
-                        mImageTransformStateIconTag,
-                        notification.smallIcon
-                    )
-                }
-                mIcon.setTag(mImageTransformStateIconTag, notification.smallIcon);
-            }
     }
 
     private fun Drawable.drawableToBitmap(): Bitmap {
