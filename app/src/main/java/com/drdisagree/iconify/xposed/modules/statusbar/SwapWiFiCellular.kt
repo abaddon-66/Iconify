@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.children
 import com.drdisagree.iconify.common.Const.SYSTEMUI_PACKAGE
 import com.drdisagree.iconify.common.Preferences.STATUSBAR_SWAP_WIFI_CELLULAR
 import com.drdisagree.iconify.xposed.ModPack
@@ -42,18 +43,23 @@ class SwapWiFiCellular(context: Context) : ModPack(context) {
                         mContext.packageName
                     )
                 )
-                val mobileView = parent.findViewById<View>(
-                    mContext.resources.getIdentifier(
-                        "mobile_combo",
-                        "id",
-                        mContext.packageName
-                    )
-                )
-                val wifiIndex = parent.indexOfChild(wifiView)
-                val mobileIndex = parent.indexOfChild(mobileView)
 
-                if (wifiIndex != -1 && mobileIndex != -1 && mobileIndex > wifiIndex) {
-                    parent.reAddView(wifiView, mobileIndex)
+                val mobileId = mContext.resources.getIdentifier(
+                    "mobile_combo",
+                    "id",
+                    mContext.packageName
+                )
+                val mobileViews = parent.children
+                    .filter { it.id == mobileId }
+                    .toMutableList()
+
+                if (mobileViews.isNotEmpty() && wifiView != null) {
+                    val lastMobileView = mobileViews.last()
+                    val lastMobileIndex = parent.indexOfChild(lastMobileView)
+
+                    if (lastMobileIndex > parent.indexOfChild(wifiView)) {
+                        parent.reAddView(wifiView, lastMobileIndex)
+                    }
                 }
             }
     }
