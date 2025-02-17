@@ -148,6 +148,7 @@ object Preferences {
     const val STATUSBAR_SWAP_WIFI_CELLULAR = "xposed_statusbarswapwificellular"
     const val STATUSBAR_SWAP_CELLULAR_NETWORK_TYPE = "xposed_statusbarswapcellularnetworktype"
     const val SHOW_CLOCK_ON_RIGHT_SIDE = "xposed_showclockonrightside"
+    const val SHOW_4G_INSTEAD_OF_LTE = "xposed_show4ginsteadoflte"
     const val SB_CLOCK_SIZE_SWITCH = "xposed_sbclocksizeswitch"
     const val SB_CLOCK_SIZE = "xposed_sbclocksize"
     const val COLORED_STATUSBAR_ICON = "xposed_coloredstatusbaricon"

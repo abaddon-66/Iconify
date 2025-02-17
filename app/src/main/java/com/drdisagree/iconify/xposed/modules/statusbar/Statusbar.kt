@@ -23,6 +23,7 @@ import com.drdisagree.iconify.common.Preferences.HIDE_LOCKSCREEN_CARRIER
 import com.drdisagree.iconify.common.Preferences.HIDE_LOCKSCREEN_STATUSBAR
 import com.drdisagree.iconify.common.Preferences.SB_CLOCK_SIZE
 import com.drdisagree.iconify.common.Preferences.SB_CLOCK_SIZE_SWITCH
+import com.drdisagree.iconify.common.Preferences.SHOW_4G_INSTEAD_OF_LTE
 import com.drdisagree.iconify.common.Preferences.SHOW_CLOCK_ON_RIGHT_SIDE
 import com.drdisagree.iconify.common.Preferences.STATUSBAR_SWAP_CELLULAR_NETWORK_TYPE
 import com.drdisagree.iconify.common.Preferences.STATUSBAR_SWAP_WIFI_CELLULAR
@@ -63,6 +64,7 @@ class Statusbar(context: Context) : ModPack(context) {
     private var swapWifiAndCellularIcon = false
     private var swapCellularAndNetworkTypeIcon = false
     private var clockOnRightSide = false
+    private var show4GInsteadOfLTE = false
     private var phoneStatusBarView: ViewGroup? = null
     private var clockInitialPosition = -1
 
@@ -76,6 +78,7 @@ class Statusbar(context: Context) : ModPack(context) {
             swapWifiAndCellularIcon = getBoolean(STATUSBAR_SWAP_WIFI_CELLULAR, false)
             swapCellularAndNetworkTypeIcon = getBoolean(STATUSBAR_SWAP_CELLULAR_NETWORK_TYPE, false)
             clockOnRightSide = getBoolean(SHOW_CLOCK_ON_RIGHT_SIDE, false)
+            show4GInsteadOfLTE = getBoolean(SHOW_4G_INSTEAD_OF_LTE, false)
         }
 
         when (key.firstOrNull()) {
@@ -100,6 +103,7 @@ class Statusbar(context: Context) : ModPack(context) {
         swapWifiAndCellularIcon()
         swapCellularAndNetworkTypeIcon()
         clockOnRightSide()
+        show4GInsteadOfLTE()
     }
 
     private fun setColoredNotificationIcons() {
@@ -550,6 +554,17 @@ class Statusbar(context: Context) : ModPack(context) {
             .hookMethod("updateQQSPaddings")
             .suppressError()
             .runAfter { moveStatusBarClock() }
+    }
+
+    private fun show4GInsteadOfLTE() {
+        val mobileMappingsConfigClass =
+            findClass("com.android.settingslib.mobile.MobileMappings\$Config")
+
+        mobileMappingsConfigClass
+            .hookMethod("readConfig")
+            .runAfter { param ->
+                param.result.setField("show4gForLte", show4GInsteadOfLTE)
+            }
     }
 
     private fun moveStatusBarClock() {

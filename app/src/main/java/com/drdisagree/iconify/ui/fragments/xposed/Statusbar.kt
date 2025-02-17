@@ -2,6 +2,7 @@ package com.drdisagree.iconify.ui.fragments.xposed
 
 import com.drdisagree.iconify.R
 import com.drdisagree.iconify.common.Preferences.COLORED_STATUSBAR_ICON
+import com.drdisagree.iconify.common.Preferences.SHOW_4G_INSTEAD_OF_LTE
 import com.drdisagree.iconify.common.Preferences.STATUSBAR_SWAP_CELLULAR_NETWORK_TYPE
 import com.drdisagree.iconify.common.Preferences.STATUSBAR_SWAP_WIFI_CELLULAR
 import com.drdisagree.iconify.ui.activities.MainActivity
@@ -27,7 +28,8 @@ class Statusbar : ControlledPreferenceFragmentCompat() {
         when (key) {
             COLORED_STATUSBAR_ICON,
             STATUSBAR_SWAP_WIFI_CELLULAR,
-            STATUSBAR_SWAP_CELLULAR_NETWORK_TYPE -> {
+            STATUSBAR_SWAP_CELLULAR_NETWORK_TYPE,
+            SHOW_4G_INSTEAD_OF_LTE -> {
                 MainActivity.showOrHidePendingActionButton(
                     activityBinding = (requireActivity() as MainActivity).binding,
                     requiresSystemUiRestart = true

@@ -876,6 +876,8 @@
     <string name="sb_swap_cellular_network_type_desc">Swap cellular and network type (3G 4G LTE etc.) icons</string>
     <string name="sb_clock_on_right_side_title">Clock on Right Side</string>
     <string name="sb_clock_on_right_side_desc">Show clock on right side of statusbar</string>
+    <string name="sb_show_4g_icon_title">4G Icon</string>
+    <string name="sb_show_4g_icon_desc">Display 4G icon in statusbar instead of LTE</string>
 
     <!-- Xposed Others -->
     <string name="qs_header">QS Header</string>
