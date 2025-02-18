@@ -46,10 +46,10 @@ class AppIconsInStatusbar(context: Context) : ModPack(context) {
             "$SYSTEMUI_PACKAGE.statusbar.phone.LegacyNotificationIconAreaControllerImpl",
             "$SYSTEMUI_PACKAGE.statusbar.phone.NotificationIconAreaController"
         )
-        val drawableSizeClass: Class<*> = findClass(
+        val drawableSizeClass = findClass(
             "$SYSTEMUI_PACKAGE.util.drawable.DrawableSize",
             suppressError = true
-        ) ?: DrawableSize::class.java
+        )
         val scalingDrawableWrapperClass =
             findClass("$SYSTEMUI_PACKAGE.statusbar.ScalingDrawableWrapper")!!
         val statusBarIconViewClass = findClass("$SYSTEMUI_PACKAGE.statusbar.StatusBarIconView")
@@ -121,13 +121,22 @@ class AppIconsInStatusbar(context: Context) : ModPack(context) {
                     )
                 )
 
-                icon = drawableSizeClass.callStaticMethod(
-                    "downscaleToSize",
-                    res,
-                    icon,
-                    maxIconSize,
-                    maxIconSize
-                ) as Drawable
+                icon = if (drawableSizeClass != null) {
+                    drawableSizeClass.callStaticMethod(
+                        "downscaleToSize",
+                        res,
+                        icon,
+                        maxIconSize,
+                        maxIconSize
+                    )
+                } else {
+                    DrawableSize.downscaleToSize(
+                        res,
+                        icon,
+                        maxIconSize,
+                        maxIconSize
+                    )
+                } as Drawable
             }
 
             val typedValue = TypedValue()
