@@ -2,6 +2,7 @@ package com.drdisagree.iconify.ui.fragments.xposed
 
 import com.drdisagree.iconify.R
 import com.drdisagree.iconify.common.Preferences.COLORED_STATUSBAR_ICON
+import com.drdisagree.iconify.common.Preferences.DUAL_STATUSBAR
 import com.drdisagree.iconify.common.Preferences.NOTIFICATION_ICONS_LIMIT
 import com.drdisagree.iconify.common.Preferences.SHOW_4G_INSTEAD_OF_LTE
 import com.drdisagree.iconify.common.Preferences.SHOW_CLOCK_ON_RIGHT_SIDE
@@ -28,6 +29,7 @@ class Statusbar : ControlledPreferenceFragmentCompat() {
         super.updateScreen(key)
 
         when (key) {
+            DUAL_STATUSBAR,
             COLORED_STATUSBAR_ICON,
             STATUSBAR_SWAP_WIFI_CELLULAR,
             STATUSBAR_SWAP_CELLULAR_NETWORK_TYPE,

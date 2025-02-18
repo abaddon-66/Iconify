@@ -13,6 +13,7 @@ import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
 import com.drdisagree.iconify.common.Const.SYSTEMUI_PACKAGE
+import com.drdisagree.iconify.common.Preferences.DUAL_STATUSBAR
 import com.drdisagree.iconify.common.Preferences.HIDE_LOCKSCREEN_CARRIER
 import com.drdisagree.iconify.common.Preferences.HIDE_LOCKSCREEN_STATUSBAR
 import com.drdisagree.iconify.common.Preferences.NOTIFICATION_ICONS_LIMIT
@@ -50,6 +51,7 @@ class StatusbarMisc(context: Context) : ModPack(context) {
     private var clockOnRightSide = false
     private var show4GInsteadOfLTE = false
     private var notifIconsLimit = -1
+    private var dualStatusbarEnabled = false
 
     override fun updatePrefs(vararg key: String) {
         Xprefs.apply {
@@ -60,6 +62,7 @@ class StatusbarMisc(context: Context) : ModPack(context) {
             clockOnRightSide = getBoolean(SHOW_CLOCK_ON_RIGHT_SIDE, false)
             show4GInsteadOfLTE = getBoolean(SHOW_4G_INSTEAD_OF_LTE, false)
             notifIconsLimit = getSliderInt(NOTIFICATION_ICONS_LIMIT, -1)
+            dualStatusbarEnabled = getBoolean(DUAL_STATUSBAR, false)
         }
 
         when (key.firstOrNull()) {
@@ -266,7 +269,7 @@ class StatusbarMisc(context: Context) : ModPack(context) {
                 )
             )
 
-            if (clockOnRightSide) {
+            if (clockOnRightSide && !dualStatusbarEnabled) {
                 (statusBarClock?.parent as? ViewGroup)?.removeView(statusBarClock)
                 statusBarContents?.addView(statusBarClock)
                 statusBarClock?.setPaddingRelative(endPadding, 0, startPadding, 0)

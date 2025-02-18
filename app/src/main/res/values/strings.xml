@@ -99,6 +99,7 @@
     <string name="activity_desc_xposed_menu">LSPosed required for these options</string>
     <string name="activity_title_extras">Extras</string>
     <string name="activity_desc_extras">Additional tweaks and options</string>
+    <string name="activity_title_dual_statusbar">Dual Statusbar</string>
 
     <!-- Settings -->
     <string name="settings_section_title_general">General</string>
@@ -879,6 +880,19 @@
     <string name="sb_show_4g_icon_title">4G Icon</string>
     <string name="sb_show_4g_icon_desc">Display 4G icon in statusbar instead of LTE</string>
     <string name="sb_max_notification_icons_title">Notification Icons Limit</string>
+    <string name="dual_status_bar_title">Dual Statusbar</string>
+    <string name="dual_status_bar_desc">Display statusbar elements in two rows</string>
+
+    <!-- Xposed Dual Statusbar -->
+    <string name="dsb_title">Dual Row Statusbar</string>
+    <string name="dsb_portrait_only_title">Portrait Only</string>
+    <string name="dsb_single_line_start_side_title">Single-Line Start Side</string>
+    <string name="dsb_single_line_end_side_title">Single-Line End Side</string>
+    <string name="dsb_single_line_end_side_desc">Show one row on end side of statusbar</string>
+    <string name="dsb_statusbar_height_title">Statusbar Height</string>
+    <string name="dsb_start_padding_title">Start Padding</string>
+    <string name="dsb_end_padding_title">End Padding</string>
+    <string name="dsb_top_padding_title">Top Padding</string>
 
     <!-- Xposed Others -->
     <string name="qs_header">QS Header</string>

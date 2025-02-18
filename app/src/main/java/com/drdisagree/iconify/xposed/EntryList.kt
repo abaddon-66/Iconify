@@ -46,6 +46,7 @@ import com.drdisagree.iconify.xposed.modules.quicksettings.themes.QSLightThemeA1
 import com.drdisagree.iconify.xposed.modules.quicksettings.themes.QSLightThemeA14
 import com.drdisagree.iconify.xposed.modules.quicksettings.themes.QSLightThemeA15
 import com.drdisagree.iconify.xposed.modules.statusbar.AppIconsInStatusbar
+import com.drdisagree.iconify.xposed.modules.statusbar.DualStatusbar
 import com.drdisagree.iconify.xposed.modules.statusbar.StatusbarMisc
 import com.drdisagree.iconify.xposed.modules.statusbar.SwapSignalNetworkType
 import com.drdisagree.iconify.xposed.modules.statusbar.SwapWiFiCellular
@@ -75,6 +76,7 @@ object EntryList {
         AppIconsInStatusbar::class.java,
         SwapWiFiCellular::class.java,
         SwapSignalNetworkType::class.java,
+        DualStatusbar::class.java,
         StatusbarMisc::class.java,
         BatteryStyleManager::class.java,
         VolumePanel::class.java,
