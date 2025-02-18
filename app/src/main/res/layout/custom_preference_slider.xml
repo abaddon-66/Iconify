@@ -19,7 +19,7 @@
         android:visibility="gone"
         app:tint="?attr/colorPrimary" />
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
@@ -41,7 +41,6 @@
             style="@style/TextAppearance.Material3.BodyMedium"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@android:id/title"
             android:textAlignment="viewStart"
             android:textColor="@color/text_color_secondary" />
 
@@ -49,13 +48,11 @@
             android:id="@android:id/widget_frame"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@android:id/summary"
             android:orientation="vertical" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@android:id/widget_frame"
             android:layout_marginTop="8dp"
             android:orientation="horizontal">
 
@@ -93,5 +90,5 @@
                 app:icon="@drawable/ic_reset" />
 
         </LinearLayout>
-    </RelativeLayout>
+    </LinearLayout>
 </RelativeLayout>
