@@ -12,8 +12,10 @@ import com.drdisagree.iconify.common.Const.FRAMEWORK_PACKAGE
 import com.drdisagree.iconify.common.Const.SYSTEMUI_PACKAGE
 import com.drdisagree.iconify.common.Preferences.COLORED_STATUSBAR_ICON
 import com.drdisagree.iconify.xposed.ModPack
+import com.drdisagree.iconify.xposed.modules.extras.utils.DrawableSize
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.XposedHook.Companion.findClass
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.callMethod
+import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.callStaticMethod
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.getField
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.getFieldSilently
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookMethod
@@ -44,7 +46,10 @@ class AppIconsInStatusbar(context: Context) : ModPack(context) {
             "$SYSTEMUI_PACKAGE.statusbar.phone.LegacyNotificationIconAreaControllerImpl",
             "$SYSTEMUI_PACKAGE.statusbar.phone.NotificationIconAreaController"
         )
-        val drawableSizeClass = findClass("$SYSTEMUI_PACKAGE.util.drawable.DrawableSize")
+        val drawableSizeClass: Class<*> = findClass(
+            "$SYSTEMUI_PACKAGE.util.drawable.DrawableSize",
+            suppressError = true
+        ) ?: DrawableSize::class.java
         val scalingDrawableWrapperClass =
             findClass("$SYSTEMUI_PACKAGE.statusbar.ScalingDrawableWrapper")!!
         val statusBarIconViewClass = findClass("$SYSTEMUI_PACKAGE.statusbar.StatusBarIconView")
@@ -79,7 +84,6 @@ class AppIconsInStatusbar(context: Context) : ModPack(context) {
             statusBarIcon: Any?,
             context: Context,
             sysuiContext: Context,
-            drawableSize: Class<*>?,
             param: MethodHookParam,
             scalingDrawableWrapper: Class<*>
         ) {
@@ -117,16 +121,13 @@ class AppIconsInStatusbar(context: Context) : ModPack(context) {
                     )
                 )
 
-                if (drawableSize != null) {
-                    icon = callStaticMethod(
-                        drawableSize,
-                        "downscaleToSize",
-                        res,
-                        icon,
-                        maxIconSize,
-                        maxIconSize
-                    ) as Drawable
-                }
+                icon = drawableSizeClass.callStaticMethod(
+                    "downscaleToSize",
+                    res,
+                    icon,
+                    maxIconSize,
+                    maxIconSize
+                ) as Drawable
             }
 
             val typedValue = TypedValue()
@@ -221,7 +222,6 @@ class AppIconsInStatusbar(context: Context) : ModPack(context) {
                         statusBarIcon,
                         context,
                         sysuiContext,
-                        drawableSizeClass,
                         param,
                         scalingDrawableWrapperClass
                     )
@@ -253,7 +253,6 @@ class AppIconsInStatusbar(context: Context) : ModPack(context) {
                         statusBarIcon,
                         context,
                         sysuiContext,
-                        drawableSizeClass,
                         param,
                         scalingDrawableWrapperClass
                     )
