@@ -232,7 +232,11 @@ class StatusbarMisc(context: Context) : ModPack(context) {
         val shadeHeaderControllerClass =
             findClass("$SYSTEMUI_PACKAGE.shade.ShadeHeaderController")
 
-        fun ViewGroup.moveStatusBarClock() {
+        var phoneStatusBarViewParam: ViewGroup? = null
+
+        fun ViewGroup?.moveStatusBarClock() {
+            if (this == null) return
+
             val statusBarContents = findViewById<ViewGroup>(
                 mContext.resources.getIdentifier(
                     "status_bar_contents",
@@ -271,12 +275,16 @@ class StatusbarMisc(context: Context) : ModPack(context) {
 
         phoneStatusBarViewClass
             .hookMethod("onFinishInflate")
-            .runAfter { param -> (param.thisObject as ViewGroup).moveStatusBarClock() }
+            .runAfter { param ->
+                phoneStatusBarViewParam = param.thisObject as ViewGroup
+
+                phoneStatusBarViewParam.moveStatusBarClock()
+            }
 
         shadeHeaderControllerClass
             .hookMethod("updateQQSPaddings")
             .suppressError()
-            .runAfter { param -> (param.thisObject as ViewGroup).moveStatusBarClock() }
+            .runAfter { phoneStatusBarViewParam.moveStatusBarClock() }
     }
 
     private fun show4GInsteadOfLTE() {
