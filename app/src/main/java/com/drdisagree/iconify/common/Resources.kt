@@ -37,7 +37,6 @@ import com.drdisagree.iconify.utils.RootUtils.folderExists
 object Resources {
 
     // Preference files
-    const val SHARED_PREFERENCES = BuildConfig.APPLICATION_ID
     const val SHARED_XPREFERENCES = BuildConfig.APPLICATION_ID + "_xpreference"
 
     // Storage location
@@ -73,17 +72,6 @@ object Resources {
     val UNSIGNED_DIR = "$TEMP_OVERLAY_DIR/unsigned"
 
     val SIGNED_DIR = "$TEMP_OVERLAY_DIR/signed"
-
-    val COMPANION_TEMP_DIR = "$TEMP_DIR/companion"
-
-    val COMPANION_COMPILED_DIR = "$COMPANION_TEMP_DIR/compiled"
-
-    val COMPANION_MODULE_DIR = "$TEMP_DIR/module/IconifyCompanion"
-    private val COMPANION_RES_DIR = "$COMPANION_MODULE_DIR/substratumXML/SystemUI/res"
-
-    val COMPANION_DRAWABLE_DIR = "$COMPANION_RES_DIR/drawable"
-
-    val COMPANION_LAYOUT_DIR = "$COMPANION_RES_DIR/layout"
 
     // File resources
     const val FRAMEWORK_DIR = "/system/framework/framework-res.apk"

@@ -407,20 +407,17 @@
     <string name="vp_thick_background_desc">Make track of volume slider thick</string>
     <string name="vp_no_background_title">No Background</string>
     <string name="vp_no_background_desc">Remove track of volume slider</string>
-    <string name="section_title_custom_magisk_module">Custom Magisk Module</string>
+    <string name="read_carefully">Read Carefully!</string>
+
+    <!-- Volume Panel Style -->
     <string name="volume_style">Volume Style</string>
-    <string name="volume_module_desc">Creates a magisk flashable module for this style</string>
+    <string name="volume_style_default">Default</string>
     <string name="volume_style_gradient">Gradient</string>
     <string name="volume_style_doublelayer">Double Layer</string>
     <string name="volume_style_shadedlayer">Shaded Layer</string>
     <string name="volume_style_neumorph">Neumorph</string>
     <string name="volume_style_outline">Outline</string>
     <string name="volume_style_neumorphoutline">Neumorph Outline</string>
-    <string name="btn_create_module">Create Module</string>
-    <string name="toast_module_created">Module created successfully</string>
-    <string name="read_carefully">Read Carefully!</string>
-    <string name="volume_module_installation_guide">This option will create a magisk module inside Download folder in your Internal Storage. Flash the module named IconifyCompanion.zip in Magisk. Always uninstall previous Iconify Companion module (if installed) and reboot before flashing new one.\n\n<b>Note:</b>\n• Uninstall the module before updating rom.\n• Recreate the module if you change or update rom.\n• Do not flash a module which wasn\'t created based on your rom.</string>
-    <string name="volume_module_unstable_desc">Currently volume module is unstable on Android 14 and above. Try at your own risk.</string>
 
     <!-- Media Player -->
     <string name="cont_desc_media_player">Media Player Preview</string>

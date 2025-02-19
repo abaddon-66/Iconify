@@ -58,12 +58,7 @@ object OverlayCompiler {
     }
 
     fun runAapt(source: String, targetPackage: String?): Boolean {
-        val name = CompilerUtils.getOverlayName(source) +
-                if (source.contains("SpecialOverlays")) {
-                    ".zip"
-                } else {
-                    "-unsigned-unaligned.apk"
-                }
+        val name = CompilerUtils.getOverlayName(source) + "-unsigned-unaligned.apk"
         val aaptCommand = buildAAPT2Command(source, name)
         val splitLocations = getSplitLocations(targetPackage)
 
@@ -107,12 +102,7 @@ object OverlayCompiler {
     }
 
     private fun buildAAPT2Command(source: String, name: String): StringBuilder {
-        val outputDir =
-            if (source.contains("SpecialOverlays")) {
-                Resources.COMPANION_COMPILED_DIR
-            } else {
-                Resources.UNSIGNED_UNALIGNED_DIR
-            }
+        val outputDir = Resources.UNSIGNED_UNALIGNED_DIR
 
         return if (!isAtleastA14) {
             StringBuilder("$aapt p -f -M $source/AndroidManifest.xml -S $source/res -F $outputDir/$name -I $FRAMEWORK_DIR --include-meta-data --auto-add-overlay")

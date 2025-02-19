@@ -340,4 +340,25 @@
         <item>4</item>
     </string-array>
 
+    <!-- Volume Panel Styles -->
+    <string-array name="volume_panel_style_entries" translatable="false">
+        <item>@string/volume_style_default</item>
+        <item>@string/volume_style_gradient</item>
+        <item>@string/volume_style_doublelayer</item>
+        <item>@string/volume_style_shadedlayer</item>
+        <item>@string/volume_style_neumorph</item>
+        <item>@string/volume_style_outline</item>
+        <item>@string/volume_style_neumorphoutline</item>
+    </string-array>
+
+    <string-array name="volume_panel_style_values" translatable="false">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+    </string-array>
+
 </resources>
