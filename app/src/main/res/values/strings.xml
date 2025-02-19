@@ -887,6 +887,7 @@
     <string name="dsb_title">Dual Row Statusbar</string>
     <string name="dsb_portrait_only_title">Portrait Only</string>
     <string name="dsb_single_line_start_side_title">Single-Line Start Side</string>
+    <string name="dsb_single_line_start_side_desc">Show one row on start side of statusbar</string>
     <string name="dsb_single_line_end_side_title">Single-Line End Side</string>
     <string name="dsb_single_line_end_side_desc">Show one row on end side of statusbar</string>
     <string name="dsb_statusbar_height_title">Statusbar Height</string>
