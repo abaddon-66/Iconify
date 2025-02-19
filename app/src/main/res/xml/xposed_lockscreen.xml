@@ -56,10 +56,10 @@
             android:title="@string/ls_wallpaper_blur_radius_title"
             app:defaultValue="25"
             app:iconSpaceReserved="false"
-            app:maxVal="25"
+            app:maxVal="100"
             app:minVal="0"
             app:tickInterval="1"
-            app:valueFormat="px" />
+            app:valueFormat="%" />
 
         <com.drdisagree.iconify.ui.preferences.SwitchPreference
             android:key="xposed_hidelockscreenlockicon"

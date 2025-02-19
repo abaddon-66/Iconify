@@ -34,13 +34,13 @@ import java.util.Calendar
 class Lockscreen(context: Context) : ModPack(context) {
 
     private var wallpaperBlurEnabled = false
-    private var wallpaperBlurRadius = 25
+    private var wallpaperBlurRadius = 6.25f
     private var hideLockscreenLockIcon = false
 
     override fun updatePrefs(vararg key: String) {
         Xprefs.apply {
             wallpaperBlurEnabled = getBoolean(LOCKSCREEN_WALLPAPER_BLUR, false)
-            wallpaperBlurRadius = getSliderInt(LOCKSCREEN_WALLPAPER_BLUR_RADIUS, 25)
+            wallpaperBlurRadius = getSliderInt(LOCKSCREEN_WALLPAPER_BLUR_RADIUS, 25) / 100f * 25f
             hideLockscreenLockIcon = getBoolean(HIDE_LOCKSCREEN_LOCK_ICON, false)
         }
 
@@ -71,7 +71,7 @@ class Lockscreen(context: Context) : ModPack(context) {
                     val bitmap = param.args[0] as Bitmap
                     val displayContext = canvasEngine.callMethod("getDisplayContext") as Context
 
-                    param.args[0] = bitmap.applyBlur(displayContext, wallpaperBlurRadius.toFloat())
+                    param.args[0] = bitmap.applyBlur(displayContext, wallpaperBlurRadius)
                 }
             }
     }
