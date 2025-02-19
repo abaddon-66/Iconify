@@ -80,11 +80,11 @@ class AlbumArt(context: Context) : ModPack(context) {
         val scrimControllerClass = findClass(
             "$SYSTEMUI_PACKAGE.statusbar.phone.ScrimController"
         )
-        val mediaDataManager = findClass(
+        val mediaDataManagerClass = findClass(
             "$SYSTEMUI_PACKAGE.media.controls.domain.pipeline.MediaDataManager"
         )
-        val mediaDataManagerListener = findClass(
-            "$SYSTEMUI_PACKAGE.media.controls.domain.pipeline.MediaDataManager\$Listener"
+        val mediaDeviceManagerClass = findClass(
+            "$SYSTEMUI_PACKAGE.media.controls.domain.pipeline.MediaDeviceManager"
         )
         val keyguardSliceProviderClass = findClass(
             "$SYSTEMUI_PACKAGE.keyguard.KeyguardSliceProvider"
@@ -135,18 +135,18 @@ class AlbumArt(context: Context) : ModPack(context) {
             if (drawable != mArtworkDrawable) {
                 mArtworkDrawable = drawable
                 mAlbumArtView?.setImageDrawable(
-                    mArtworkDrawable!!.getFilteredArtWork()
+                    mArtworkDrawable?.getFilteredArtWork()
                 )
             }
         }
 
         try {
-            mediaDataManager
+            mediaDataManagerClass
                 .hookMethod("onMediaDataLoaded")
                 .throwError()
                 .runAfter { param -> hookMediaData(param) }
         } catch (ignored: Throwable) {
-            mediaDataManagerListener
+            mediaDeviceManagerClass
                 .hookMethod("onMediaDataLoaded")
                 .runAfter { param -> hookMediaData(param) }
         }
