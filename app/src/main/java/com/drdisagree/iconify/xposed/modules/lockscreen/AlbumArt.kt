@@ -12,9 +12,9 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import com.drdisagree.iconify.common.Const.ACTION_UPDATE_DEPTH_WALLPAPER_FOREGROUND_VISIBILITY
 import com.drdisagree.iconify.common.Const.SYSTEMUI_PACKAGE
-import com.drdisagree.iconify.common.Preferences.ALBUM_ART_LOCKSCREEN_BLUR
-import com.drdisagree.iconify.common.Preferences.ALBUM_ART_LOCKSCREEN_FILTER
 import com.drdisagree.iconify.common.Preferences.ALBUM_ART_ON_LOCKSCREEN
+import com.drdisagree.iconify.common.Preferences.ALBUM_ART_ON_LOCKSCREEN_BLUR
+import com.drdisagree.iconify.common.Preferences.ALBUM_ART_ON_LOCKSCREEN_FILTER
 import com.drdisagree.iconify.common.Preferences.DEPTH_WALLPAPER_SWITCH
 import com.drdisagree.iconify.xposed.ModPack
 import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.applyBlur
@@ -29,6 +29,7 @@ import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.getField
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookConstructor
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookMethod
 import com.drdisagree.iconify.xposed.utils.XPrefs.Xprefs
+import de.robv.android.xposed.XC_MethodHook.MethodHookParam
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam
 
 class AlbumArt(context: Context) : ModPack(context) {
@@ -50,8 +51,8 @@ class AlbumArt(context: Context) : ModPack(context) {
     override fun updatePrefs(vararg key: String) {
         Xprefs.apply {
             mAlbumArtEnabled = getBoolean(ALBUM_ART_ON_LOCKSCREEN, false)
-            mAlbumArtFilter = getString(ALBUM_ART_LOCKSCREEN_FILTER, "0")!!.toInt()
-            mAlbumArtBlurLevel = getSliderInt(ALBUM_ART_LOCKSCREEN_BLUR, 30) / 100f * 25f
+            mAlbumArtFilter = getString(ALBUM_ART_ON_LOCKSCREEN_FILTER, "0")!!.toInt()
+            mAlbumArtBlurLevel = getSliderInt(ALBUM_ART_ON_LOCKSCREEN_BLUR, 30) / 100f * 25f
             mDepthEnabled = getBoolean(DEPTH_WALLPAPER_SWITCH, false)
         }
 
@@ -62,8 +63,8 @@ class AlbumArt(context: Context) : ModPack(context) {
             }
 
             in setOf(
-                ALBUM_ART_LOCKSCREEN_FILTER,
-                ALBUM_ART_LOCKSCREEN_BLUR
+                ALBUM_ART_ON_LOCKSCREEN_FILTER,
+                ALBUM_ART_ON_LOCKSCREEN_BLUR
             ) -> updateAlbumArtFilter()
         }
     }
@@ -81,6 +82,9 @@ class AlbumArt(context: Context) : ModPack(context) {
         )
         val mediaDataManager = findClass(
             "$SYSTEMUI_PACKAGE.media.controls.domain.pipeline.MediaDataManager"
+        )
+        val mediaDataManagerListener = findClass(
+            "$SYSTEMUI_PACKAGE.media.controls.domain.pipeline.MediaDataManager\$Listener"
         )
         val keyguardSliceProviderClass = findClass(
             "$SYSTEMUI_PACKAGE.keyguard.KeyguardSliceProvider"
@@ -122,21 +126,30 @@ class AlbumArt(context: Context) : ModPack(context) {
                 }
             }
 
-        mediaDataManager
-            .hookMethod("onMediaDataLoaded")
-            .runAfter { param ->
-                val mediaData = param.args[2]
-                val artWork = mediaData.callMethodSilently("getArtwork") as? Icon
-                    ?: mediaData.getField("artwork") as Icon
-                val drawable = artWork.loadDrawable(mContext)
+        fun hookMediaData(param: MethodHookParam) {
+            val mediaData = param.args[2]
+            val artWork = mediaData.callMethodSilently("getArtwork") as? Icon
+                ?: mediaData.getField("artwork") as Icon
+            val drawable = artWork.loadDrawable(mContext)
 
-                if (drawable != mArtworkDrawable) {
-                    mArtworkDrawable = drawable
-                    mAlbumArtView?.setImageDrawable(
-                        mArtworkDrawable!!.getFilteredArtWork()
-                    )
-                }
+            if (drawable != mArtworkDrawable) {
+                mArtworkDrawable = drawable
+                mAlbumArtView?.setImageDrawable(
+                    mArtworkDrawable!!.getFilteredArtWork()
+                )
             }
+        }
+
+        try {
+            mediaDataManager
+                .hookMethod("onMediaDataLoaded")
+                .throwError()
+                .runAfter { param -> hookMediaData(param) }
+        } catch (ignored: Throwable) {
+            mediaDataManagerListener
+                .hookMethod("onMediaDataLoaded")
+                .runAfter { param -> hookMediaData(param) }
+        }
 
         keyguardSliceProviderClass
             .hookMethod("onPrimaryMetadataOrStateChanged")
@@ -184,7 +197,7 @@ class AlbumArt(context: Context) : ModPack(context) {
         if (!mAlbumArtEnabled) return
 
         mAlbumArtView?.setImageDrawable(
-            mArtworkDrawable!!.getFilteredArtWork()
+            mArtworkDrawable?.getFilteredArtWork()
         )
     }
 

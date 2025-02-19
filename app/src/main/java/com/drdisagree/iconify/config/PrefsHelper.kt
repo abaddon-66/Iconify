@@ -10,8 +10,8 @@ import com.drdisagree.iconify.Iconify.Companion.appContext
 import com.drdisagree.iconify.R
 import com.drdisagree.iconify.common.Dynamic.isAtleastA14
 import com.drdisagree.iconify.common.Preferences.AGGRESSIVE_QSPANEL_BLUR_SWITCH
-import com.drdisagree.iconify.common.Preferences.ALBUM_ART_LOCKSCREEN_BLUR
-import com.drdisagree.iconify.common.Preferences.ALBUM_ART_LOCKSCREEN_FILTER
+import com.drdisagree.iconify.common.Preferences.ALBUM_ART_ON_LOCKSCREEN_BLUR
+import com.drdisagree.iconify.common.Preferences.ALBUM_ART_ON_LOCKSCREEN_FILTER
 import com.drdisagree.iconify.common.Preferences.APP_DRAWER_THEMED_ICONS
 import com.drdisagree.iconify.common.Preferences.APP_LANGUAGE
 import com.drdisagree.iconify.common.Preferences.AUTO_UPDATE
@@ -325,8 +325,8 @@ object PrefsHelper {
 
             HIDE_QS_ON_LOCKSCREEN -> Build.VERSION.SDK_INT <= Build.VERSION_CODES.UPSIDE_DOWN_CAKE
 
-            ALBUM_ART_LOCKSCREEN_BLUR -> getString(
-                ALBUM_ART_LOCKSCREEN_FILTER,
+            ALBUM_ART_ON_LOCKSCREEN_BLUR -> getString(
+                ALBUM_ART_ON_LOCKSCREEN_FILTER,
                 "0"
             )!!.toInt() in setOf(3, 4)
 
