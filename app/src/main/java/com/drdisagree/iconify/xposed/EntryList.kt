@@ -52,6 +52,7 @@ import com.drdisagree.iconify.xposed.modules.statusbar.StatusbarMisc
 import com.drdisagree.iconify.xposed.modules.statusbar.SwapSignalNetworkType
 import com.drdisagree.iconify.xposed.modules.statusbar.SwapWiFiCellular
 import com.drdisagree.iconify.xposed.modules.volume.VolumePanel
+import com.drdisagree.iconify.xposed.modules.volume.VolumePanelStyle
 import com.drdisagree.iconify.xposed.utils.HookCheck
 
 object EntryList {
@@ -82,6 +83,7 @@ object EntryList {
         StatusbarMisc::class.java,
         BatteryStyleManager::class.java,
         VolumePanel::class.java,
+        VolumePanelStyle::class.java,
         ColorizeNotificationView::class.java,
         AppIconInNotification::class.java
     )
