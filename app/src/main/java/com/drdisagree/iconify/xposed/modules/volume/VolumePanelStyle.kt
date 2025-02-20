@@ -16,6 +16,7 @@ import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.XposedHook.Com
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.callMethod
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.getField
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookMethod
+import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.log
 import com.drdisagree.iconify.xposed.modules.quicksettings.themes.Utils.disableOverlay
 import com.drdisagree.iconify.xposed.modules.quicksettings.themes.Utils.enableOverlay
 import com.drdisagree.iconify.xposed.modules.volume.styles.VolumeDoubleLayer
@@ -59,7 +60,11 @@ class VolumePanelStyle(context: Context) : ModPack(context) {
         val alphaTintDrawableWrapperClass =
             findClass("$SYSTEMUI_PACKAGE.util.AlphaTintDrawableWrapper")!!
 
-        val xResources: XResources = resParams[SYSTEMUI_PACKAGE]?.res ?: return
+        val xResources: XResources = resParams[SYSTEMUI_PACKAGE]?.res
+            ?: run {
+                log(this@VolumePanelStyle, "$SYSTEMUI_PACKAGE resources not found")
+                return
+            }
 
         val volumeStyle: VolumeStyleBase? = when (volumePanelStyle) {
             1 -> VolumeGradient(
