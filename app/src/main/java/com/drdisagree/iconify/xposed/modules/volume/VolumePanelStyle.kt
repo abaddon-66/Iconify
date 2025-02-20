@@ -6,7 +6,11 @@ import android.content.res.ColorStateList
 import android.content.res.XResources
 import android.content.res.XResources.DrawableLoader
 import android.graphics.drawable.Drawable
+import android.graphics.drawable.LayerDrawable
+import android.graphics.drawable.RotateDrawable
+import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.SeekBar
 import com.drdisagree.iconify.common.Const.SYSTEMUI_PACKAGE
 import com.drdisagree.iconify.common.Preferences.VOLUME_PANEL_STYLE
 import com.drdisagree.iconify.xposed.HookRes.Companion.resParams
@@ -15,8 +19,10 @@ import com.drdisagree.iconify.xposed.modules.extras.utils.SettingsLibUtils.Compa
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.XposedHook.Companion.findClass
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.callMethod
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.getField
+import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookLayout
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookMethod
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.log
+import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.setField
 import com.drdisagree.iconify.xposed.modules.quicksettings.themes.Utils.disableOverlay
 import com.drdisagree.iconify.xposed.modules.quicksettings.themes.Utils.enableOverlay
 import com.drdisagree.iconify.xposed.modules.volume.styles.VolumeDoubleLayer
@@ -130,7 +136,96 @@ class VolumePanelStyle(context: Context) : ModPack(context) {
             }
         )
 
+        xResources.hookLayout()
+            .packageName(SYSTEMUI_PACKAGE)
+            .resource("layout", "volume_ringer_drawer")
+            .run { param ->
+                if (!volumePanelStyleEnabled) return@run
+
+                param.view.findViewById<ViewGroup>(
+                    mContext.resources.getIdentifier(
+                        "volume_drawer_selection_background",
+                        "id",
+                        SYSTEMUI_PACKAGE
+                    )
+                ).background = volumeStyle
+                    ?.createVolumeDrawerSelectionBgDrawable()
+                    ?.constantState
+                    ?.newDrawable()
+
+                param.view.findViewById<ViewGroup>(
+                    mContext.resources.getIdentifier(
+                        "volume_new_ringer_active_icon_container",
+                        "id",
+                        SYSTEMUI_PACKAGE
+                    )
+                ).background = volumeStyle
+                    ?.createVolumeDrawerSelectionBgDrawable()
+                    ?.constantState
+                    ?.newDrawable()
+            }
+
+        xResources.hookLayout()
+            .packageName(SYSTEMUI_PACKAGE)
+            .resource("layout", "volume_dialog_row")
+            .run { param ->
+                if (!volumePanelStyleEnabled) return@run
+
+                param.view.findViewById<SeekBar>(
+                    mContext.resources.getIdentifier(
+                        "volume_row_slider",
+                        "id",
+                        SYSTEMUI_PACKAGE
+                    )
+                ).background = volumeStyle
+                    ?.createVolumeRowSeekbarDrawable()
+                    ?.constantState
+                    ?.newDrawable()
+            }
+
         val volumeDialogImplClass = findClass("$SYSTEMUI_PACKAGE.volume.VolumeDialogImpl")
+
+        volumeDialogImplClass
+            .hookMethod("initRow")
+            .runAfter { param ->
+                if (!volumePanelStyleEnabled) return@runAfter
+
+                val row = param.args[0]
+
+                val seekbarDrawable = volumeStyle
+                    ?.createVolumeRowSeekbarDrawable()
+                    ?.constantState
+                    ?.newDrawable() as LayerDrawable
+
+                val seekbarProgressDrawable = seekbarDrawable
+                    .findDrawableByLayerId(android.R.id.progress)
+                    .callMethod("getDrawable") as LayerDrawable
+
+                row.setField(
+                    "sliderProgressSolid",
+                    seekbarProgressDrawable.findDrawableByLayerId(
+                        mContext.resources.getIdentifier(
+                            "volume_seekbar_progress_solid",
+                            "id",
+                            SYSTEMUI_PACKAGE
+                        )
+                    )
+                )
+
+                val sliderProgressIcon = seekbarProgressDrawable.findDrawableByLayerId(
+                    mContext.resources.getIdentifier(
+                        "volume_seekbar_progress_icon",
+                        "id",
+                        SYSTEMUI_PACKAGE
+                    )
+                )
+                row.setField(
+                    "sliderProgressIcon",
+                    if (sliderProgressIcon != null) (sliderProgressIcon as RotateDrawable).drawable
+                    else null
+                )
+                (row.getField("slider") as SeekBar).progressDrawable = seekbarDrawable
+            }
 
         volumeDialogImplClass
             .hookMethod("initDialog")
