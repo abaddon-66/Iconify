@@ -236,9 +236,8 @@ class OpQsHeader(context: Context) : ModPack(context) {
             "$SYSTEMUI_PACKAGE.media.controls.ui.controller.MediaControlPanel",
             "$SYSTEMUI_PACKAGE.media.controls.ui.MediaControlPanel"
         )
-        val volumeDialogImplClass = findClass(
-            "$SYSTEMUI_PACKAGE.volume.VolumeDialogImpl"
-        )
+        val volumeDialogImplClass = findClass("$SYSTEMUI_PACKAGE.volume.VolumeDialogImpl")
+        val utilsClass = findClass("$SYSTEMUI_PACKAGE.util.Utils")
         launchableImageView = findClass("$SYSTEMUI_PACKAGE.animation.view.LaunchableImageView")
         launchableLinearLayout =
             findClass("$SYSTEMUI_PACKAGE.animation.view.LaunchableLinearLayout")
@@ -566,6 +565,14 @@ class OpQsHeader(context: Context) : ModPack(context) {
                 val expansion = param.args[0] as Float
 
                 setExpansion(onKeyguardAndExpanded, expansion)
+            }
+
+        utilsClass
+            .hookMethod("useMediaResumption")
+            .runBefore { param ->
+                if (showOpQsHeaderView) {
+                    param.result = false
+                }
             }
 
         hookResources()
