@@ -154,6 +154,8 @@ object Preferences {
     const val DUAL_STATUSBAR_ONLY_PORTRAIT = "xposed_dualstatusbaronlyportrait"
     const val DUAL_STATUSBAR_START_SIDE_SINGLE_ROW = "xposed_dualstatusbarstartsidesinglerow"
     const val DUAL_STATUSBAR_END_SIDE_SINGLE_ROW = "xposed_dualstatusbarendsidesinglerow"
+    const val DUAL_STATUSBAR_SWAP_START_SIDE = "xposed_dualstatusbarswapstartside"
+    const val DUAL_STATUSBAR_SWAP_END_SIDE = "xposed_dualstatusbarswapendside"
     const val DUAL_STATUSBAR_HEIGHT = "xposed_dualstatusbarheight"
     const val DUAL_STATUSBAR_START_PADDING = "xposed_dualstatusbarstartpadding"
     const val DUAL_STATUSBAR_END_PADDING = "xposed_dualstatusbarendpadding"

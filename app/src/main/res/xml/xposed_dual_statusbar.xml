@@ -28,6 +28,20 @@
         android:title="@string/dsb_single_line_end_side_title"
         app:iconSpaceReserved="false" />
 
+    <com.drdisagree.iconify.ui.preferences.SwitchPreference
+        android:dependency="xposed_dualstatusbar"
+        android:key="xposed_dualstatusbarswapstartside"
+        android:summary="@string/dsb_swap_start_side_desc"
+        android:title="@string/dsb_swap_start_side_title"
+        app:iconSpaceReserved="false" />
+
+    <com.drdisagree.iconify.ui.preferences.SwitchPreference
+        android:dependency="xposed_dualstatusbar"
+        android:key="xposed_dualstatusbarswapendside"
+        android:summary="@string/dsb_swap_end_side_desc"
+        android:title="@string/dsb_swap_end_side_title"
+        app:iconSpaceReserved="false" />
+
     <com.drdisagree.iconify.ui.preferences.SliderPreference
         android:dependency="xposed_dualstatusbar"
         android:key="xposed_dualstatusbarheight"

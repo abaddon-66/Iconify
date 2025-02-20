@@ -17,6 +17,8 @@ import com.drdisagree.iconify.common.Preferences.DUAL_STATUSBAR_HEIGHT
 import com.drdisagree.iconify.common.Preferences.DUAL_STATUSBAR_ONLY_PORTRAIT
 import com.drdisagree.iconify.common.Preferences.DUAL_STATUSBAR_START_PADDING
 import com.drdisagree.iconify.common.Preferences.DUAL_STATUSBAR_START_SIDE_SINGLE_ROW
+import com.drdisagree.iconify.common.Preferences.DUAL_STATUSBAR_SWAP_END_SIDE
+import com.drdisagree.iconify.common.Preferences.DUAL_STATUSBAR_SWAP_START_SIDE
 import com.drdisagree.iconify.common.Preferences.DUAL_STATUSBAR_TOP_PADDING
 import com.drdisagree.iconify.common.Preferences.SHOW_CLOCK_ON_RIGHT_SIDE
 import com.drdisagree.iconify.xposed.ModPack
@@ -40,6 +42,8 @@ class DualStatusbar(context: Context) : ModPack(context) {
     private var portraitOnlyEnabled = false
     private var singleRowStartSide = false
     private var singleRowEndSide = false
+    private var swapStartSide = false
+    private var swapEndSide = false
     private var statusbarHeight = -1
     private var statusbarStartPadding = -1
     private var statusbarEndPadding = -1
@@ -64,6 +68,8 @@ class DualStatusbar(context: Context) : ModPack(context) {
             portraitOnlyEnabled = getBoolean(DUAL_STATUSBAR_ONLY_PORTRAIT, false)
             singleRowStartSide = getBoolean(DUAL_STATUSBAR_START_SIDE_SINGLE_ROW, false)
             singleRowEndSide = getBoolean(DUAL_STATUSBAR_END_SIDE_SINGLE_ROW, false)
+            swapStartSide = getBoolean(DUAL_STATUSBAR_SWAP_START_SIDE, false)
+            swapEndSide = getBoolean(DUAL_STATUSBAR_SWAP_END_SIDE, false)
             statusbarHeight = getSliderInt(DUAL_STATUSBAR_HEIGHT, -1)
             statusbarStartPadding = getSliderInt(DUAL_STATUSBAR_START_PADDING, -1)
             statusbarEndPadding = getSliderInt(DUAL_STATUSBAR_END_PADDING, -1)
@@ -75,8 +81,10 @@ class DualStatusbar(context: Context) : ModPack(context) {
             in setOf(
                 DUAL_STATUSBAR_ONLY_PORTRAIT,
                 DUAL_STATUSBAR_START_SIDE_SINGLE_ROW,
-                DUAL_STATUSBAR_END_SIDE_SINGLE_ROW
-            ) -> updateSingleRowIfNeeded()
+                DUAL_STATUSBAR_END_SIDE_SINGLE_ROW,
+                DUAL_STATUSBAR_SWAP_START_SIDE,
+                DUAL_STATUSBAR_SWAP_END_SIDE
+            ) -> updateRowsIfNeeded()
 
             in setOf(
                 DUAL_STATUSBAR_START_PADDING,
@@ -245,7 +253,7 @@ class DualStatusbar(context: Context) : ModPack(context) {
                     statusbarEndSideContainer.id = View.NO_ID
                 }
 
-                updateSingleRowIfNeeded()
+                updateRowsIfNeeded()
                 handleClockOnRightSide()
             }
 
@@ -284,7 +292,7 @@ class DualStatusbar(context: Context) : ModPack(context) {
             }
     }
 
-    private fun updateSingleRowIfNeeded() {
+    private fun updateRowsIfNeeded() {
         if (!dualStatusbarEnabled) return
 
         val requiresSingleLine = portraitOnlyEnabled && mContext.isLandscape
@@ -363,6 +371,18 @@ class DualStatusbar(context: Context) : ModPack(context) {
                     1f
                 )
             }
+        }
+
+        if (swapStartSide) {
+            newStartSideContainer?.reAddView(startBottomSideContainer, 0)
+        } else {
+            newStartSideContainer?.reAddView(startTopSideContainer, 0)
+        }
+
+        if (swapEndSide) {
+            newEndSideContainer?.reAddView(endBottomSideContainer, 0)
+        } else {
+            newEndSideContainer?.reAddView(endTopSideContainer, 0)
         }
     }
 

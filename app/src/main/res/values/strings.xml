@@ -888,6 +888,10 @@
     <string name="dsb_single_line_start_side_desc">Show one row on start side of statusbar</string>
     <string name="dsb_single_line_end_side_title">Single-Line End Side</string>
     <string name="dsb_single_line_end_side_desc">Show one row on end side of statusbar</string>
+    <string name="dsb_swap_start_side_title">Swap Start Side</string>
+    <string name="dsb_swap_start_side_desc">Swap the position of clock and notification icons</string>
+    <string name="dsb_swap_end_side_title">Swap End Side</string>
+    <string name="dsb_swap_end_side_desc">Swap the position of battery and status icons</string>
     <string name="dsb_statusbar_height_title">Statusbar Height</string>
     <string name="dsb_start_padding_title">Start Padding</string>
     <string name="dsb_end_padding_title">End Padding</string>
