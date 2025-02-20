@@ -190,7 +190,7 @@ class OpQsHeader(context: Context) : ModPack(context) {
         Xprefs.apply {
             showOpQsHeaderView = getBoolean(OP_QS_HEADER_SWITCH, false)
             vibrateOnClick = getBoolean(OP_QS_HEADER_VIBRATE, false)
-            mediaBlurLevel = getSliderInt(OP_QS_HEADER_BLUR_LEVEL, 10).toFloat()
+            mediaBlurLevel = getSliderInt(OP_QS_HEADER_BLUR_LEVEL, 40) / 100f * 25f
             topMarginValue = getSliderInt(OP_QS_HEADER_TOP_MARGIN, 0)
             expansionAmount = getSliderInt(OP_QS_HEADER_EXPANSION_Y, 0)
             expandedQsGap = getSliderInt(OP_QS_HEADER_GAP_EXPANDED, 0)

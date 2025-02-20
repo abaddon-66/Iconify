@@ -18,13 +18,13 @@
         android:dependency="xposed_opqsheader"
         android:key="xposed_opqsheaderblurlevel"
         android:title="@string/oneplus_qs_header_blur_level"
-        app:defaultValue="10"
+        app:defaultValue="40"
         app:iconSpaceReserved="false"
-        app:maxVal="25"
+        app:maxVal="100"
         app:minVal="0"
         app:showResetButton="true"
         app:tickInterval="1"
-        app:valueFormat="px" />
+        app:valueFormat="%" />
 
     <com.drdisagree.iconify.ui.preferences.SliderPreference
         android:dependency="xposed_opqsheader"
