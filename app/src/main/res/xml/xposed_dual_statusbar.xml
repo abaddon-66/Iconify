@@ -52,7 +52,7 @@
         app:maxVal="80"
         app:minVal="-1"
         app:tickInterval="1"
-        app:valueFormat="px" />
+        app:valueFormat="dp" />
 
     <com.drdisagree.iconify.ui.preferences.SliderPreference
         android:dependency="xposed_dualstatusbar"
@@ -64,7 +64,7 @@
         app:maxVal="140"
         app:minVal="-1"
         app:tickInterval="1"
-        app:valueFormat="px" />
+        app:valueFormat="dp" />
 
     <com.drdisagree.iconify.ui.preferences.SliderPreference
         android:dependency="xposed_dualstatusbar"
@@ -76,7 +76,7 @@
         app:maxVal="140"
         app:minVal="-1"
         app:tickInterval="1"
-        app:valueFormat="px" />
+        app:valueFormat="dp" />
 
     <com.drdisagree.iconify.ui.preferences.SliderPreference
         android:dependency="xposed_dualstatusbar"
@@ -88,6 +88,50 @@
         app:maxVal="40"
         app:minVal="-1"
         app:tickInterval="1"
-        app:valueFormat="px" />
+        app:valueFormat="dp" />
+
+    <com.drdisagree.iconify.ui.preferences.SliderPreference
+        android:dependency="xposed_dualstatusbar"
+        android:key="xposed_dualstatusbarstarttopmargin"
+        android:title="@string/dsb_start_top_margin_title"
+        app:defaultValue="0"
+        app:iconSpaceReserved="false"
+        app:maxVal="40"
+        app:minVal="0"
+        app:tickInterval="1"
+        app:valueFormat="dp" />
+
+    <com.drdisagree.iconify.ui.preferences.SliderPreference
+        android:dependency="xposed_dualstatusbar"
+        android:key="xposed_dualstatusbarstartbottommargin"
+        android:title="@string/dsb_start_bottom_margin_title"
+        app:defaultValue="0"
+        app:iconSpaceReserved="false"
+        app:maxVal="40"
+        app:minVal="0"
+        app:tickInterval="1"
+        app:valueFormat="dp" />
+
+    <com.drdisagree.iconify.ui.preferences.SliderPreference
+        android:dependency="xposed_dualstatusbar"
+        android:key="xposed_dualstatusbarendtopmargin"
+        android:title="@string/dsb_end_top_margin_title"
+        app:defaultValue="0"
+        app:iconSpaceReserved="false"
+        app:maxVal="40"
+        app:minVal="0"
+        app:tickInterval="1"
+        app:valueFormat="dp" />
+
+    <com.drdisagree.iconify.ui.preferences.SliderPreference
+        android:dependency="xposed_dualstatusbar"
+        android:key="xposed_dualstatusbarendbottommargin"
+        android:title="@string/dsb_end_bottom_margin_title"
+        app:defaultValue="0"
+        app:iconSpaceReserved="false"
+        app:maxVal="40"
+        app:minVal="0"
+        app:tickInterval="1"
+        app:valueFormat="dp" />
 
 </PreferenceScreen>

@@ -554,13 +554,7 @@ object ViewHelper {
     }
 
     fun ViewGroup.reAddView(childView: View?) {
-        childView?.let { view ->
-            val currentIndex = indexOfChild(view)
-            if (currentIndex != -1 && currentIndex == childCount - 1) return
-
-            (view.parent as? ViewGroup)?.removeView(view)
-            addView(view)
-        }
+        reAddView(childView, -1)
     }
 
     fun ViewGroup.reAddView(childView: View?, index: Int) {

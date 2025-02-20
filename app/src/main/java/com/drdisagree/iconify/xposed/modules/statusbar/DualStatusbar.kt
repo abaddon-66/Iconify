@@ -11,12 +11,16 @@ import android.widget.LinearLayout
 import com.drdisagree.iconify.common.Const.FRAMEWORK_PACKAGE
 import com.drdisagree.iconify.common.Const.SYSTEMUI_PACKAGE
 import com.drdisagree.iconify.common.Preferences.DUAL_STATUSBAR
+import com.drdisagree.iconify.common.Preferences.DUAL_STATUSBAR_END_BOTTOM_MARGIN
 import com.drdisagree.iconify.common.Preferences.DUAL_STATUSBAR_END_PADDING
 import com.drdisagree.iconify.common.Preferences.DUAL_STATUSBAR_END_SIDE_SINGLE_ROW
+import com.drdisagree.iconify.common.Preferences.DUAL_STATUSBAR_END_TOP_MARGIN
 import com.drdisagree.iconify.common.Preferences.DUAL_STATUSBAR_HEIGHT
 import com.drdisagree.iconify.common.Preferences.DUAL_STATUSBAR_ONLY_PORTRAIT
+import com.drdisagree.iconify.common.Preferences.DUAL_STATUSBAR_START_BOTTOM_MARGIN
 import com.drdisagree.iconify.common.Preferences.DUAL_STATUSBAR_START_PADDING
 import com.drdisagree.iconify.common.Preferences.DUAL_STATUSBAR_START_SIDE_SINGLE_ROW
+import com.drdisagree.iconify.common.Preferences.DUAL_STATUSBAR_START_TOP_MARGIN
 import com.drdisagree.iconify.common.Preferences.DUAL_STATUSBAR_SWAP_END_SIDE
 import com.drdisagree.iconify.common.Preferences.DUAL_STATUSBAR_SWAP_START_SIDE
 import com.drdisagree.iconify.common.Preferences.DUAL_STATUSBAR_TOP_PADDING
@@ -48,6 +52,10 @@ class DualStatusbar(context: Context) : ModPack(context) {
     private var statusbarStartPadding = -1
     private var statusbarEndPadding = -1
     private var statusbarTopPadding = -1
+    private var startTopMargin = 0
+    private var startBottomMargin = 0
+    private var endTopMargin = 0
+    private var endBottomMargin = 0
     private var statusbarContents: LinearLayout? = null
     private var newStartSideContainer: LinearLayout? = null
     private var newEndSideContainer: LinearLayout? = null
@@ -74,6 +82,10 @@ class DualStatusbar(context: Context) : ModPack(context) {
             statusbarStartPadding = getSliderInt(DUAL_STATUSBAR_START_PADDING, -1)
             statusbarEndPadding = getSliderInt(DUAL_STATUSBAR_END_PADDING, -1)
             statusbarTopPadding = getSliderInt(DUAL_STATUSBAR_TOP_PADDING, -1)
+            startTopMargin = getSliderInt(DUAL_STATUSBAR_START_TOP_MARGIN, 0)
+            startBottomMargin = getSliderInt(DUAL_STATUSBAR_START_BOTTOM_MARGIN, 0)
+            endTopMargin = getSliderInt(DUAL_STATUSBAR_END_TOP_MARGIN, 0)
+            endBottomMargin = getSliderInt(DUAL_STATUSBAR_END_BOTTOM_MARGIN, 0)
             clockOnRightSide = getBoolean(SHOW_CLOCK_ON_RIGHT_SIDE, false)
         }
 
@@ -90,7 +102,14 @@ class DualStatusbar(context: Context) : ModPack(context) {
                 DUAL_STATUSBAR_START_PADDING,
                 DUAL_STATUSBAR_END_PADDING,
                 DUAL_STATUSBAR_TOP_PADDING
-            ) -> setStatusbarHorizontalPadding()
+            ) -> setStatusbarPadding()
+
+            in setOf(
+                DUAL_STATUSBAR_START_TOP_MARGIN,
+                DUAL_STATUSBAR_START_BOTTOM_MARGIN,
+                DUAL_STATUSBAR_END_TOP_MARGIN,
+                DUAL_STATUSBAR_END_BOTTOM_MARGIN
+            ) -> setStatusbarRowMargin()
 
             DUAL_STATUSBAR_HEIGHT -> updateWindowHeight()
 
@@ -384,9 +403,11 @@ class DualStatusbar(context: Context) : ModPack(context) {
         } else {
             newEndSideContainer?.reAddView(endTopSideContainer, 0)
         }
+
+        setStatusbarRowMargin()
     }
 
-    private fun setStatusbarHorizontalPadding() {
+    private fun setStatusbarPadding() {
         val startPadding = mContext.resources.getDimensionPixelSize(
             mContext.resources.getIdentifier(
                 "status_bar_padding_start",
@@ -416,6 +437,33 @@ class DualStatusbar(context: Context) : ModPack(context) {
                 endPadding,
                 paddingBottom
             )
+        }
+    }
+
+    private fun setStatusbarRowMargin() {
+        val requiresSingleLine = portraitOnlyEnabled && mContext.isLandscape
+        val startSideRequiresSingleLine = singleRowStartSide || requiresSingleLine
+        val endSideRequiresSingleLine = singleRowEndSide || requiresSingleLine
+
+        newStartSideContainer?.getChildAt(0)?.apply {
+            setPaddingRelative(mContext.toPx(startTopMargin), 0, 0, 0)
+        }
+        newStartSideContainer?.getChildAt(1)?.apply {
+            if (!startSideRequiresSingleLine) {
+                setPaddingRelative(mContext.toPx(startBottomMargin), 0, 0, 0)
+            } else {
+                setPaddingRelative(0, 0, 0, 0)
+            }
+        }
+        newEndSideContainer?.getChildAt(0)?.apply {
+            if (!endSideRequiresSingleLine) {
+                setPaddingRelative(0, 0, mContext.toPx(endTopMargin), 0)
+            } else {
+                setPaddingRelative(0, 0, 0, 0)
+            }
+        }
+        newEndSideContainer?.getChildAt(1)?.apply {
+            setPaddingRelative(0, 0, mContext.toPx(endBottomMargin), 0)
         }
     }
 
