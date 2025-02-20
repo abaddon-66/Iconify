@@ -398,10 +398,14 @@ class DualStatusbar(context: Context) : ModPack(context) {
             newStartSideContainer?.reAddView(startTopSideContainer, 0)
         }
 
-        if (swapEndSide) {
-            newEndSideContainer?.reAddView(endBottomSideContainer, 0)
+        if (!endSideRequiresSingleLine) {
+            if (swapEndSide) {
+                newEndSideContainer?.reAddView(endBottomSideContainer, 0)
+            } else {
+                newEndSideContainer?.reAddView(endTopSideContainer, 0)
+            }
         } else {
-            newEndSideContainer?.reAddView(endTopSideContainer, 0)
+            newEndSideContainer?.reAddView(endBottomSideContainer, 0)
         }
 
         setStatusbarRowMargin()
