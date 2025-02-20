@@ -7,7 +7,7 @@ import android.widget.Toast
 import com.drdisagree.iconify.Iconify.Companion.appContext
 import com.drdisagree.iconify.Iconify.Companion.appContextLocale
 import com.drdisagree.iconify.R
-import com.drdisagree.iconify.common.Const
+import com.drdisagree.iconify.common.Const.DYNAMIC_OVERLAYABLE_PACKAGES
 import com.drdisagree.iconify.common.Preferences.DYNAMIC_OVERLAY_RESOURCES
 import com.drdisagree.iconify.common.Preferences.DYNAMIC_OVERLAY_RESOURCES_LAND
 import com.drdisagree.iconify.common.Preferences.DYNAMIC_OVERLAY_RESOURCES_NIGHT
@@ -26,7 +26,7 @@ import kotlin.concurrent.Volatile
 
 object ResourceManager {
 
-    private val TAG = ResourceManager::class.java.getSimpleName()
+    private val TAG = ResourceManager::class.java.simpleName
 
     fun buildOverlayWithResource(vararg resourceEntries: ResourceEntry?): Boolean {
         val hasErroredOut = AtomicBoolean(false)
@@ -175,23 +175,27 @@ object ResourceManager {
             val key = keys.next()
             val value = jsonObject[key]
 
-            if (Const.SYSTEM_PACKAGES.contains(key) && value is JSONObject) {
-                val xmlSerializer = Xml.newSerializer()
-                val writer = StringWriter()
-                val startEndTag = "resources"
+            if (DYNAMIC_OVERLAYABLE_PACKAGES.contains(key)) {
+                if (value is JSONObject) {
+                    val xmlSerializer = Xml.newSerializer()
+                    val writer = StringWriter()
+                    val startEndTag = "resources"
 
-                xmlSerializer.setOutput(writer)
-                xmlSerializer.startDocument("UTF-8", null)
-                xmlSerializer.startTag(null, startEndTag)
+                    xmlSerializer.setOutput(writer)
+                    xmlSerializer.startDocument("UTF-8", null)
+                    xmlSerializer.startTag(null, startEndTag)
 
-                addJsonToXml("", value, xmlSerializer)
+                    addJsonToXml("", value, xmlSerializer)
 
-                xmlSerializer.endTag(null, startEndTag)
-                xmlSerializer.endDocument()
+                    xmlSerializer.endTag(null, startEndTag)
+                    xmlSerializer.endDocument()
 
-                newJsonObject.put(key, writer.toString())
+                    newJsonObject.put(key, writer.toString())
+                } else {
+                    throw Exception("Invalid JSON format.\n$jsonObject")
+                }
             } else {
-                throw Exception("Invalid JSON format.\n$jsonObject")
+                throw Exception("Package $key is not overlayable.")
             }
         }
 
@@ -266,40 +270,21 @@ object ResourceManager {
 
     @Throws(Exception::class)
     private fun initResourceIfNull(jsonObject: JSONObject?): JSONObject {
-        var jsonObj = jsonObject
+        val jsonObj = jsonObject ?: JSONObject()
 
-        if (jsonObj == null) {
-            jsonObj = JSONObject()
+        for (i in DYNAMIC_OVERLAYABLE_PACKAGES.indices) {
+            val packageName = DYNAMIC_OVERLAYABLE_PACKAGES[i]
+
+            val resourceTypes = jsonObj.optJSONObject(packageName) ?: JSONObject().also {
+                jsonObj.put(packageName, it)
+            }
+
+            val resources = resourceTypes.optJSONObject("color") ?: JSONObject().also {
+                resourceTypes.put("color", it)
+            }
+
+            resources.put("dummy${i + 1}", "#00000000")
         }
-
-        var resourceTypes1 = jsonObj.optJSONObject(Const.FRAMEWORK_PACKAGE)
-        var resourceTypes2 = jsonObj.optJSONObject(Const.SYSTEMUI_PACKAGE)
-
-        if (resourceTypes1 == null) {
-            resourceTypes1 = JSONObject()
-            jsonObj.put(Const.FRAMEWORK_PACKAGE, resourceTypes1)
-        }
-
-        if (resourceTypes2 == null) {
-            resourceTypes2 = JSONObject()
-            jsonObj.put(Const.SYSTEMUI_PACKAGE, resourceTypes2)
-        }
-
-        var resources1 = resourceTypes1.optJSONObject("color")
-        var resources2 = resourceTypes2.optJSONObject("color")
-
-        if (resources1 == null) {
-            resources1 = JSONObject()
-            resourceTypes1.put("color", resources1)
-        }
-
-        if (resources2 == null) {
-            resources2 = JSONObject()
-            resourceTypes2.put("color", resources2)
-        }
-
-        resources1.put("dummy1", "#00000000")
-        resources2.put("dummy2", "#00000000")
 
         return jsonObj
     }

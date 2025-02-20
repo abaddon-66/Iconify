@@ -1,7 +1,11 @@
 package com.drdisagree.iconify.utils.overlay.compiler
 
 import android.util.Log
-import com.drdisagree.iconify.common.Const
+import com.drdisagree.iconify.common.Const.FRAMEWORK_PACKAGE
+import com.drdisagree.iconify.common.Const.LAUNCHER3_PACKAGE
+import com.drdisagree.iconify.common.Const.PIXEL_LAUNCHER_PACKAGE
+import com.drdisagree.iconify.common.Const.SETTINGS_PACKAGE
+import com.drdisagree.iconify.common.Const.SYSTEMUI_PACKAGE
 import com.drdisagree.iconify.common.Resources
 import com.drdisagree.iconify.utils.FileUtils.copyAssets
 import com.drdisagree.iconify.utils.RootUtils.setPermissions
@@ -52,7 +56,14 @@ object DynamicCompiler {
                         .replace("><", ">\n<")
                 }
 
-                mOverlayName = if (mPackage == Const.FRAMEWORK_PACKAGE) "Dynamic1" else "Dynamic2"
+                mOverlayName = when (mPackage) {
+                    FRAMEWORK_PACKAGE -> "Dynamic1"
+                    SYSTEMUI_PACKAGE -> "Dynamic2"
+                    PIXEL_LAUNCHER_PACKAGE -> "Dynamic3"
+                    LAUNCHER3_PACKAGE -> "Dynamic4"
+                    SETTINGS_PACKAGE -> "Dynamic5"
+                    else -> throw Exception("Unknown package: $mPackage")
+                }
 
                 preExecute()
                 moveOverlaysToCache()

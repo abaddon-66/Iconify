@@ -15,10 +15,12 @@ object Const {
     const val WELLBEING_PACKAGE = "com.google.android.apps.wellbeing"
     const val GMS_PACKAGE = "com.google.android.gms"
 
-    val SYSTEM_PACKAGES = listOf(
-        SYSTEMUI_PACKAGE,
+    val DYNAMIC_OVERLAYABLE_PACKAGES = listOf(
         FRAMEWORK_PACKAGE,
-        SETTINGS_PACKAGE
+        SYSTEMUI_PACKAGE,
+        SETTINGS_PACKAGE,
+        PIXEL_LAUNCHER_PACKAGE,
+        LAUNCHER3_PACKAGE
     )
 
     // 3rd party packages
