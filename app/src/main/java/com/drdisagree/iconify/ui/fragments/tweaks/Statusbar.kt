@@ -97,6 +97,12 @@ class Statusbar : BaseFragment() {
                 buildOverlayWithResource(
                     requireContext(),
                     ResourceEntry(
+                        SYSTEMUI_PACKAGE,
+                        "dimen",
+                        "status_bar_height",
+                        finalSBHeight[0].toString() + "dp"
+                    ),
+                    ResourceEntry(
                         FRAMEWORK_PACKAGE,
                         "dimen",
                         "status_bar_height",
@@ -182,6 +188,7 @@ class Statusbar : BaseFragment() {
 
             removeResourceFromOverlay(
                 requireContext(),
+                ResourceEntry(SYSTEMUI_PACKAGE, "dimen", "status_bar_height"),
                 ResourceEntry(FRAMEWORK_PACKAGE, "dimen", "status_bar_height"),
                 ResourceEntry(FRAMEWORK_PACKAGE, "dimen", "status_bar_height_default"),
                 ResourceEntry(FRAMEWORK_PACKAGE, "dimen", "status_bar_height_portrait"),
