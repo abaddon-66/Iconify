@@ -873,8 +873,8 @@
     <string name="sb_swap_wifi_cellular_desc">Swap wifi and cellular icons</string>
     <string name="sb_swap_cellular_network_type_title">Swap Cellular and Network Type</string>
     <string name="sb_swap_cellular_network_type_desc">Swap cellular and network type (3G 4G LTE etc.) icons</string>
-    <string name="sb_clock_on_right_side_title">Clock on Right Side</string>
-    <string name="sb_clock_on_right_side_desc">Show clock on right side of statusbar</string>
+    <string name="sb_clock_on_right_side_title">Clock on End Side</string>
+    <string name="sb_clock_on_right_side_desc">Show clock on end side of statusbar</string>
     <string name="sb_show_4g_icon_title">4G Icon</string>
     <string name="sb_show_4g_icon_desc">Display 4G icon in statusbar instead of LTE</string>
     <string name="sb_max_notification_icons_title">Notification Icons Limit</string>
