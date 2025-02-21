@@ -73,6 +73,9 @@ class VolumeDoubleLayer(
     override fun createVolumeRowSeekbarDrawable(): Drawable {
         val trackHeight = getSysUiDimen("volume_dialog_track_width")
         val cornerRadius = getSysUiDimen("volume_dialog_slider_corner_radius").toFloat()
+        val trackInset = if (trackHeight <= mContext.toPx(8)) {
+            getSysUiDimen("rounded_slider_track_inset")
+        } else 0
 
         val backgroundColor = TypedValue().apply {
             mContext.theme.resolveAttribute(android.R.attr.colorBackground, this, true)
@@ -84,7 +87,7 @@ class VolumeDoubleLayer(
                 shape = RoundRectShape(FloatArray(8) { cornerRadius }, null, null)
                 intrinsicHeight = trackHeight
             },
-            0
+            trackInset, 0, trackInset, 0
         )
 
         val insetProgressDrawable = roundedCornerProgressDrawable
