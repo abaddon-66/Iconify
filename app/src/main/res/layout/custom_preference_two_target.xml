@@ -64,7 +64,7 @@
         android:layout_height="32dp"
         android:layout_centerVertical="true"
         android:layout_toStartOf="@id/widget_frame"
-        android:alpha="0.3"
+        android:alpha="0.4"
         android:background="@color/colorAccent"
         android:maxHeight="40dp" />
 
