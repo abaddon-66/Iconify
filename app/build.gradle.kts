@@ -21,6 +21,10 @@ android {
         versionName = "7.0.0"
         setProperty("archivesBaseName", "Iconify v${defaultConfig.versionName}")
         buildConfigField("int", "MIN_SDK_VERSION", "$minSdk")
+
+        ksp {
+            arg("room.schemaLocation", "$projectDir/schemas")
+        }
     }
 
     val keystorePropertiesFile = rootProject.file("keystore.properties")
