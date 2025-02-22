@@ -20,8 +20,7 @@ glide = "4.16.0"
 googlePlayServicesMlkitSubjectSegmentationVersion = "16.0.0-beta1"
 guava = "33.2.1-jre"
 jsoup = "1.18.1"
-kapt = "2.1.0"
-kotlin = "2.0.21"
+kotlin = "2.1.0"
 kotlinxCoroutinesAndroid = "1.9.0"
 ksp = "2.1.0-1.0.29"
 library = "8.8.1"
@@ -94,6 +93,5 @@ zip4j = { module = "net.lingala.zip4j:zip4j", version.ref = "zip4j" }
 [plugins]
 agp-app = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
-kotlin-kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kapt" }
 kotlin-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "parcelize" }

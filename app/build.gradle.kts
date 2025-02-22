@@ -4,7 +4,6 @@ import java.util.Properties
 plugins {
     alias(libs.plugins.agp.app)
     alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.kotlin.kapt)
     alias(libs.plugins.kotlin.ksp)
     alias(libs.plugins.kotlin.parcelize)
 }
@@ -105,7 +104,6 @@ android {
 
     buildFeatures {
         viewBinding = true
-        dataBinding = true
         buildConfig = true
         aidl = true
     }
