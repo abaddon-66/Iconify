@@ -129,8 +129,8 @@ class AlbumArt(context: Context) : ModPack(context) {
         fun hookMediaData(param: MethodHookParam) {
             val mediaData = param.args[2]
             val artWork = mediaData.callMethodSilently("getArtwork") as? Icon
-                ?: mediaData.getField("artwork") as Icon
-            val drawable = artWork.loadDrawable(mContext)
+                ?: mediaData.getField("artwork") as? Icon
+            val drawable = artWork?.loadDrawable(mContext)
 
             if (drawable != mArtworkDrawable) {
                 mArtworkDrawable = drawable
