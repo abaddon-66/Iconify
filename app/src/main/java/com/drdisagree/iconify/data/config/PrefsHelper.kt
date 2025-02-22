@@ -330,6 +330,8 @@ object PrefsHelper {
                 "0"
             )!!.toInt() in setOf(3, 4)
 
+            "settingsIcon" -> Build.VERSION.SDK_INT <= Build.VERSION_CODES.UPSIDE_DOWN_CAKE
+
             else -> true
         }
     }
