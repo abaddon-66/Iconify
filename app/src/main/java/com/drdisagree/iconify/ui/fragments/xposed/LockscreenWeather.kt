@@ -11,11 +11,11 @@ import androidx.activity.result.contract.ActivityResultContracts
 import com.drdisagree.iconify.Iconify.Companion.appContext
 import com.drdisagree.iconify.Iconify.Companion.appContextLocale
 import com.drdisagree.iconify.R
-import com.drdisagree.iconify.common.Preferences.WEATHER_SWITCH
-import com.drdisagree.iconify.common.Preferences.WEATHER_TRIGGER_UPDATE
-import com.drdisagree.iconify.common.Resources.LOCKSCREEN_WEATHER_FONT_DIR
-import com.drdisagree.iconify.config.RPrefs.getBoolean
-import com.drdisagree.iconify.config.RPrefs.putBoolean
+import com.drdisagree.iconify.data.common.Preferences.WEATHER_SWITCH
+import com.drdisagree.iconify.data.common.Preferences.WEATHER_TRIGGER_UPDATE
+import com.drdisagree.iconify.data.common.Resources.LOCKSCREEN_WEATHER_FONT_DIR
+import com.drdisagree.iconify.data.config.RPrefs.getBoolean
+import com.drdisagree.iconify.data.config.RPrefs.putBoolean
 import com.drdisagree.iconify.ui.activities.MainActivity
 import com.drdisagree.iconify.ui.base.WeatherPreferenceFragment
 import com.drdisagree.iconify.ui.preferences.FilePickerPreference

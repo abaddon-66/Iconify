@@ -1,7 +1,7 @@
 package com.drdisagree.iconify.ui.fragments.xposed
 
 import com.drdisagree.iconify.R
-import com.drdisagree.iconify.common.Preferences.DUAL_STATUSBAR
+import com.drdisagree.iconify.data.common.Preferences.DUAL_STATUSBAR
 import com.drdisagree.iconify.ui.activities.MainActivity
 import com.drdisagree.iconify.ui.base.ControlledPreferenceFragmentCompat
 

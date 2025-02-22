@@ -11,10 +11,10 @@ import android.os.Looper
 import android.view.View
 import android.view.View.OnAttachStateChangeListener
 import android.view.ViewGroup
-import com.drdisagree.iconify.common.Const.SYSTEMUI_PACKAGE
-import com.drdisagree.iconify.common.Preferences.HIDE_LOCKSCREEN_LOCK_ICON
-import com.drdisagree.iconify.common.Preferences.LOCKSCREEN_WALLPAPER_BLUR
-import com.drdisagree.iconify.common.Preferences.LOCKSCREEN_WALLPAPER_BLUR_RADIUS
+import com.drdisagree.iconify.data.common.Const.SYSTEMUI_PACKAGE
+import com.drdisagree.iconify.data.common.Preferences.HIDE_LOCKSCREEN_LOCK_ICON
+import com.drdisagree.iconify.data.common.Preferences.LOCKSCREEN_WALLPAPER_BLUR
+import com.drdisagree.iconify.data.common.Preferences.LOCKSCREEN_WALLPAPER_BLUR_RADIUS
 import com.drdisagree.iconify.xposed.HookRes.Companion.resParams
 import com.drdisagree.iconify.xposed.ModPack
 import com.drdisagree.iconify.xposed.modules.extras.utils.TimeUtils.isSecurityPatchAfter

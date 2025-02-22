@@ -24,10 +24,10 @@ import android.widget.SeekBar
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import com.drdisagree.iconify.R
-import com.drdisagree.iconify.common.Const.SYSTEMUI_PACKAGE
-import com.drdisagree.iconify.common.Preferences.FLUID_NOTIF_TRANSPARENCY
-import com.drdisagree.iconify.common.Preferences.FLUID_POWERMENU_TRANSPARENCY
-import com.drdisagree.iconify.common.Preferences.FLUID_QSPANEL
+import com.drdisagree.iconify.data.common.Const.SYSTEMUI_PACKAGE
+import com.drdisagree.iconify.data.common.Preferences.FLUID_NOTIF_TRANSPARENCY
+import com.drdisagree.iconify.data.common.Preferences.FLUID_POWERMENU_TRANSPARENCY
+import com.drdisagree.iconify.data.common.Preferences.FLUID_QSPANEL
 import com.drdisagree.iconify.xposed.HookRes
 import com.drdisagree.iconify.xposed.ModPack
 import com.drdisagree.iconify.xposed.modules.extras.utils.SettingsLibUtils

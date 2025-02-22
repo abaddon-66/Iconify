@@ -4,7 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.provider.Settings
 import android.view.View
-import com.drdisagree.iconify.common.Const.SYSTEMUI_PACKAGE
+import com.drdisagree.iconify.data.common.Const.SYSTEMUI_PACKAGE
 import com.drdisagree.iconify.xposed.ModPack
 import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.getExpandableView
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.XposedHook.Companion.findClass

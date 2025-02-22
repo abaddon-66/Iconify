@@ -5,8 +5,8 @@ import android.content.Context
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.children
-import com.drdisagree.iconify.common.Const.SYSTEMUI_PACKAGE
-import com.drdisagree.iconify.common.Preferences.STATUSBAR_SWAP_WIFI_CELLULAR
+import com.drdisagree.iconify.data.common.Const.SYSTEMUI_PACKAGE
+import com.drdisagree.iconify.data.common.Preferences.STATUSBAR_SWAP_WIFI_CELLULAR
 import com.drdisagree.iconify.xposed.ModPack
 import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.reAddView
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.XposedHook.Companion.findClass

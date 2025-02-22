@@ -3,7 +3,7 @@ package com.drdisagree.iconify.utils.overlay.compiler
 import android.os.Build
 import android.util.Log
 import com.drdisagree.iconify.BuildConfig
-import com.drdisagree.iconify.common.References
+import com.drdisagree.iconify.data.common.References
 import java.io.File
 import java.io.StringWriter
 import java.util.Locale

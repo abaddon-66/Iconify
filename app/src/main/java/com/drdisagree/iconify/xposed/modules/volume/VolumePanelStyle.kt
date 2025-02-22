@@ -7,8 +7,8 @@ import android.content.res.XResources
 import android.content.res.XResources.DrawableLoader
 import android.graphics.drawable.Drawable
 import android.widget.ImageView
-import com.drdisagree.iconify.common.Const.SYSTEMUI_PACKAGE
-import com.drdisagree.iconify.common.Preferences.VOLUME_PANEL_STYLE
+import com.drdisagree.iconify.data.common.Const.SYSTEMUI_PACKAGE
+import com.drdisagree.iconify.data.common.Preferences.VOLUME_PANEL_STYLE
 import com.drdisagree.iconify.xposed.HookRes.Companion.resParams
 import com.drdisagree.iconify.xposed.ModPack
 import com.drdisagree.iconify.xposed.modules.extras.utils.SettingsLibUtils.Companion.getColorAttrDefaultColor

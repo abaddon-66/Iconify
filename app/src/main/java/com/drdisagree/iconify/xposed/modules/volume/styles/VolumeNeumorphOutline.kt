@@ -13,7 +13,7 @@ import android.graphics.drawable.shapes.RoundRectShape
 import android.util.TypedValue
 import android.view.Gravity
 import androidx.core.content.ContextCompat
-import com.drdisagree.iconify.common.Const.SYSTEMUI_PACKAGE
+import com.drdisagree.iconify.data.common.Const.SYSTEMUI_PACKAGE
 import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.toPx
 
 @SuppressLint("DiscouragedApi", "RtlHardcoded")

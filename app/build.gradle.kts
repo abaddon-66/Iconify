@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.agp.app)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.kapt)
+    alias(libs.plugins.kotlin.ksp)
     alias(libs.plugins.kotlin.parcelize)
 }
 
@@ -206,8 +207,7 @@ dependencies {
 
     // Glide
     implementation(libs.glide)
-    //noinspection KaptUsageInsteadOfKsp
-    kapt(libs.compiler)
+    ksp(libs.glide.compiler)
 
     // RecyclerView
     implementation(libs.androidx.recyclerview)
@@ -263,6 +263,11 @@ dependencies {
 
     // OkHttp
     implementation(libs.okhttp)
+
+    // Room Database
+    implementation(libs.room.runtime)
+    implementation(libs.room.ktx)
+    ksp(libs.room.compiler)
 }
 
 tasks.register("printVersionName") {

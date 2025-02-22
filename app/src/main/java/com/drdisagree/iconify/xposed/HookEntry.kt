@@ -12,7 +12,7 @@ import android.os.UserManager
 import com.drdisagree.iconify.BuildConfig
 import com.drdisagree.iconify.IRootProviderProxy
 import com.drdisagree.iconify.R
-import com.drdisagree.iconify.common.Const.FRAMEWORK_PACKAGE
+import com.drdisagree.iconify.data.common.Const.FRAMEWORK_PACKAGE
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.ResourceHookManager
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.XposedHook.Companion.findClass
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookMethod

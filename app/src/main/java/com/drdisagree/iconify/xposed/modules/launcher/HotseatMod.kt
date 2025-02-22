@@ -7,8 +7,8 @@ import android.os.Looper
 import android.util.AttributeSet
 import android.view.View
 import android.widget.Toast
-import com.drdisagree.iconify.common.Preferences.DESKTOP_DOCK_SPACING
-import com.drdisagree.iconify.common.Preferences.DESKTOP_SEARCH_BAR
+import com.drdisagree.iconify.data.common.Preferences.DESKTOP_DOCK_SPACING
+import com.drdisagree.iconify.data.common.Preferences.DESKTOP_SEARCH_BAR
 import com.drdisagree.iconify.xposed.HookEntry.Companion.enqueueProxyCommand
 import com.drdisagree.iconify.xposed.ModPack
 import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.toPx

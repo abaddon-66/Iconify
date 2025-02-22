@@ -3,9 +3,9 @@ package com.drdisagree.iconify.utils.helper
 import android.content.Context
 import android.os.LocaleList
 import com.drdisagree.iconify.R
-import com.drdisagree.iconify.common.Preferences.APP_LANGUAGE
-import com.drdisagree.iconify.config.RPrefs.getString
-import com.drdisagree.iconify.config.RPrefs.putString
+import com.drdisagree.iconify.data.common.Preferences.APP_LANGUAGE
+import com.drdisagree.iconify.data.config.RPrefs.getString
+import com.drdisagree.iconify.data.config.RPrefs.putString
 import java.util.Locale
 
 object LocaleHelper {

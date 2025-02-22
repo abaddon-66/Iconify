@@ -3,7 +3,7 @@ package com.drdisagree.iconify.xposed.modules.launcher
 import android.content.Context
 import android.os.SystemClock
 import android.view.MotionEvent
-import com.drdisagree.iconify.common.Preferences.DOUBLE_TAP_TO_SLEEP
+import com.drdisagree.iconify.data.common.Preferences.DOUBLE_TAP_TO_SLEEP
 import com.drdisagree.iconify.xposed.ModPack
 import com.drdisagree.iconify.xposed.modules.extras.utils.VibrationUtils
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.XposedHook.Companion.findClass

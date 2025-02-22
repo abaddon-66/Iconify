@@ -39,8 +39,8 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import com.drdisagree.iconify.BuildConfig
 import com.drdisagree.iconify.R
-import com.drdisagree.iconify.common.Const.FRAMEWORK_PACKAGE
-import com.drdisagree.iconify.common.Const.SYSTEMUI_PACKAGE
+import com.drdisagree.iconify.data.common.Const.FRAMEWORK_PACKAGE
+import com.drdisagree.iconify.data.common.Const.SYSTEMUI_PACKAGE
 import com.drdisagree.iconify.utils.OmniJawsClient
 import com.drdisagree.iconify.xposed.HookEntry.Companion.enqueueProxyCommand
 import com.drdisagree.iconify.xposed.HookRes.Companion.modRes

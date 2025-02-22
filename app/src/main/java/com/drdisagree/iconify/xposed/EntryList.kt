@@ -1,9 +1,9 @@
 package com.drdisagree.iconify.xposed
 
 import android.os.Build
-import com.drdisagree.iconify.common.Const.LAUNCHER3_PACKAGE
-import com.drdisagree.iconify.common.Const.PIXEL_LAUNCHER_PACKAGE
-import com.drdisagree.iconify.common.Const.SYSTEMUI_PACKAGE
+import com.drdisagree.iconify.data.common.Const.LAUNCHER3_PACKAGE
+import com.drdisagree.iconify.data.common.Const.PIXEL_LAUNCHER_PACKAGE
+import com.drdisagree.iconify.data.common.Const.SYSTEMUI_PACKAGE
 import com.drdisagree.iconify.xposed.modules.BackgroundChip
 import com.drdisagree.iconify.xposed.modules.BatteryStyleManager
 import com.drdisagree.iconify.xposed.modules.extras.callbacks.ControllersProvider

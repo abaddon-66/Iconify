@@ -2,8 +2,8 @@ package com.drdisagree.iconify.xposed.modules.launcher
 
 import android.content.Context
 import android.graphics.Rect
-import com.drdisagree.iconify.common.Preferences.APP_DRAWER_ICON_LABELS
-import com.drdisagree.iconify.common.Preferences.DESKTOP_ICON_LABELS
+import com.drdisagree.iconify.data.common.Preferences.APP_DRAWER_ICON_LABELS
+import com.drdisagree.iconify.data.common.Preferences.DESKTOP_ICON_LABELS
 import com.drdisagree.iconify.xposed.ModPack
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.XposedHook.Companion.findClass
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.callMethod

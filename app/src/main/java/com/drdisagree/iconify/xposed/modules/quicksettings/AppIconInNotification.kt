@@ -5,8 +5,8 @@ import android.app.Notification
 import android.content.Context
 import android.graphics.drawable.Drawable
 import android.widget.ImageView
-import com.drdisagree.iconify.common.Const.SYSTEMUI_PACKAGE
-import com.drdisagree.iconify.common.Preferences.COLORED_NOTIFICATION_ICON_SWITCH
+import com.drdisagree.iconify.data.common.Const.SYSTEMUI_PACKAGE
+import com.drdisagree.iconify.data.common.Preferences.COLORED_NOTIFICATION_ICON_SWITCH
 import com.drdisagree.iconify.xposed.ModPack
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.XposedHook.Companion.findClass
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.callMethod

@@ -1,19 +1,19 @@
 package com.drdisagree.iconify.ui.fragments.xposed
 
 import com.drdisagree.iconify.R
-import com.drdisagree.iconify.common.Preferences.COLORED_NOTIFICATION_ALTERNATIVE_SWITCH
-import com.drdisagree.iconify.common.Preferences.COLORED_NOTIFICATION_ICON_SWITCH
-import com.drdisagree.iconify.common.Preferences.COLORED_NOTIFICATION_VIEW_SWITCH
-import com.drdisagree.iconify.common.Preferences.CUSTOM_QS_TEXT_COLOR
-import com.drdisagree.iconify.common.Preferences.FIX_NOTIFICATION_COLOR
-import com.drdisagree.iconify.common.Preferences.FIX_NOTIFICATION_FOOTER_BUTTON_COLOR
-import com.drdisagree.iconify.common.Preferences.FIX_QS_TILE_COLOR
-import com.drdisagree.iconify.common.Preferences.HIDE_QSLABEL_SWITCH
-import com.drdisagree.iconify.common.Preferences.HIDE_QS_SILENT_TEXT
-import com.drdisagree.iconify.common.Preferences.HIDE_STATUS_ICONS_SWITCH
-import com.drdisagree.iconify.common.Preferences.QSPANEL_HIDE_CARRIER
-import com.drdisagree.iconify.common.Preferences.SELECTED_QS_TEXT_COLOR
-import com.drdisagree.iconify.common.Preferences.VERTICAL_QSTILE_SWITCH
+import com.drdisagree.iconify.data.common.Preferences.COLORED_NOTIFICATION_ALTERNATIVE_SWITCH
+import com.drdisagree.iconify.data.common.Preferences.COLORED_NOTIFICATION_ICON_SWITCH
+import com.drdisagree.iconify.data.common.Preferences.COLORED_NOTIFICATION_VIEW_SWITCH
+import com.drdisagree.iconify.data.common.Preferences.CUSTOM_QS_TEXT_COLOR
+import com.drdisagree.iconify.data.common.Preferences.FIX_NOTIFICATION_COLOR
+import com.drdisagree.iconify.data.common.Preferences.FIX_NOTIFICATION_FOOTER_BUTTON_COLOR
+import com.drdisagree.iconify.data.common.Preferences.FIX_QS_TILE_COLOR
+import com.drdisagree.iconify.data.common.Preferences.HIDE_QSLABEL_SWITCH
+import com.drdisagree.iconify.data.common.Preferences.HIDE_QS_SILENT_TEXT
+import com.drdisagree.iconify.data.common.Preferences.HIDE_STATUS_ICONS_SWITCH
+import com.drdisagree.iconify.data.common.Preferences.QSPANEL_HIDE_CARRIER
+import com.drdisagree.iconify.data.common.Preferences.SELECTED_QS_TEXT_COLOR
+import com.drdisagree.iconify.data.common.Preferences.VERTICAL_QSTILE_SWITCH
 import com.drdisagree.iconify.ui.activities.MainActivity
 import com.drdisagree.iconify.ui.base.ControlledPreferenceFragmentCompat
 

@@ -176,7 +176,7 @@
             android:name="xposedscope"
             android:resource="@array/module_scope" /> <!-- xposed meta data -->
         <provider
-            android:name=".provider.RemotePrefProvider"
+            android:name=".data.provider.RemotePrefProvider"
             android:authorities="${applicationId}"
             android:directBootAware="true"
             android:exported="true"

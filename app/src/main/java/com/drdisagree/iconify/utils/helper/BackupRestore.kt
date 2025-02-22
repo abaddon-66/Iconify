@@ -1,12 +1,24 @@
 package com.drdisagree.iconify.utils.helper
 
-import com.drdisagree.iconify.common.Resources.BACKUP_DIR
-import com.drdisagree.iconify.common.Resources.MODULE_DIR
-import com.drdisagree.iconify.common.Resources.OVERLAY_DIR
-import com.drdisagree.iconify.common.Resources.TEMP_MODULE_DIR
-import com.drdisagree.iconify.common.Resources.TEMP_MODULE_OVERLAY_DIR
+import com.drdisagree.iconify.data.common.Const.DYNAMIC_OVERLAYABLE_PACKAGES
+import com.drdisagree.iconify.data.common.Preferences.DYNAMIC_OVERLAY_RESOURCES
+import com.drdisagree.iconify.data.common.Preferences.DYNAMIC_OVERLAY_RESOURCES_LAND
+import com.drdisagree.iconify.data.common.Preferences.DYNAMIC_OVERLAY_RESOURCES_NIGHT
+import com.drdisagree.iconify.data.common.Resources.BACKUP_DIR
+import com.drdisagree.iconify.data.common.Resources.MODULE_DIR
+import com.drdisagree.iconify.data.common.Resources.OVERLAY_DIR
+import com.drdisagree.iconify.data.common.Resources.TEMP_MODULE_DIR
+import com.drdisagree.iconify.data.common.Resources.TEMP_MODULE_OVERLAY_DIR
+import com.drdisagree.iconify.data.config.RPrefs
+import com.drdisagree.iconify.data.database.DynamicResourceDatabase
+import com.drdisagree.iconify.data.entity.DynamicResourceEntity
+import com.drdisagree.iconify.data.repository.DynamicResourceRepository
 import com.drdisagree.iconify.utils.RootUtils
 import com.topjohnwu.superuser.Shell
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import org.json.JSONObject
 
 object BackupRestore {
 
@@ -27,6 +39,9 @@ object BackupRestore {
         backupFile("$OVERLAY_DIR/IconifyComponentSWITCH2.apk")
         backupFile("$OVERLAY_DIR/IconifyComponentDynamic1.apk")
         backupFile("$OVERLAY_DIR/IconifyComponentDynamic2.apk")
+        backupFile("$OVERLAY_DIR/IconifyComponentDynamic3.apk")
+        backupFile("$OVERLAY_DIR/IconifyComponentDynamic4.apk")
+        backupFile("$OVERLAY_DIR/IconifyComponentDynamic5.apk")
     }
 
     fun restoreFiles() {
@@ -43,6 +58,9 @@ object BackupRestore {
         restoreFile("IconifyComponentSWITCH2.apk", TEMP_MODULE_OVERLAY_DIR)
         restoreFile("IconifyComponentDynamic1.apk", TEMP_MODULE_OVERLAY_DIR)
         restoreFile("IconifyComponentDynamic2.apk", TEMP_MODULE_OVERLAY_DIR)
+        restoreFile("IconifyComponentDynamic3.apk", TEMP_MODULE_OVERLAY_DIR)
+        restoreFile("IconifyComponentDynamic4.apk", TEMP_MODULE_OVERLAY_DIR)
+        restoreFile("IconifyComponentDynamic5.apk", TEMP_MODULE_OVERLAY_DIR)
 
         restoreBlurSettings()
 
@@ -98,5 +116,71 @@ object BackupRestore {
             .exec()
         Shell.cmd("sed '/*}/a $blurCmd2' $TEMP_MODULE_DIR/service.sh > $TEMP_MODULE_DIR/service.sh.tmp && mv $TEMP_MODULE_DIR/service.sh.tmp $TEMP_MODULE_DIR/service.sh")
             .exec()
+    }
+
+    fun migrateToRoomDatabase() {
+        CoroutineScope(Dispatchers.IO).launch {
+            val resources = RPrefs.getString(DYNAMIC_OVERLAY_RESOURCES, "{}") ?: "{}"
+            val resourcesLand = RPrefs.getString(DYNAMIC_OVERLAY_RESOURCES_LAND, "{}") ?: "{}"
+            val resourcesNight = RPrefs.getString(DYNAMIC_OVERLAY_RESOURCES_NIGHT, "{}") ?: "{}"
+
+            val resourceList = listOf(
+                JSONObject(resources),
+                JSONObject(resourcesLand),
+                JSONObject(resourcesNight)
+            )
+            val resourceEntries = ArrayList<DynamicResourceEntity>()
+
+            for (i in resourceList.indices) {
+                val keys = resourceList[i].keys()
+
+                while (keys.hasNext()) {
+                    val packageName = keys.next()
+                    val value = resourceList[i].getString(packageName) ?: continue
+                    val valueJson = JSONObject(value)
+
+                    if (DYNAMIC_OVERLAYABLE_PACKAGES.contains(packageName)) {
+                        val innerKeys = valueJson.keys()
+
+                        while (innerKeys.hasNext()) {
+                            val resourceName = innerKeys.next()
+                            val innerValue = valueJson.getString(resourceName) ?: continue
+                            val innerValueJson = JSONObject(innerValue)
+                            val innerValueKeys = innerValueJson.keys()
+
+                            while (innerValueKeys.hasNext()) {
+                                val startEndTag = innerValueKeys.next()
+                                val resourceValue = innerValueJson.getString(startEndTag)
+                                    ?: continue
+
+                                resourceEntries.add(
+                                    DynamicResourceEntity(
+                                        packageName = packageName,
+                                        startEndTag = startEndTag,
+                                        resourceName = resourceName,
+                                        resourceValue = resourceValue,
+                                        isPortrait = i == 0,
+                                        isLandscape = i == 1,
+                                        isNightMode = i == 2
+                                    )
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (resourceEntries.isNotEmpty()) {
+                DynamicResourceRepository(
+                    DynamicResourceDatabase.getInstance().dynamicResourceDao()
+                ).insertResources(resourceEntries)
+
+                RPrefs.clearPrefs(
+                    DYNAMIC_OVERLAY_RESOURCES,
+                    DYNAMIC_OVERLAY_RESOURCES_LAND,
+                    DYNAMIC_OVERLAY_RESOURCES_NIGHT
+                )
+            }
+        }
     }
 }

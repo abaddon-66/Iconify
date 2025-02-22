@@ -5,9 +5,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.drdisagree.iconify.R
-import com.drdisagree.iconify.common.Const.SYSTEMUI_PACKAGE
-import com.drdisagree.iconify.common.Preferences.VOLUME_PANEL_BACKGROUND_WIDTH
-import com.drdisagree.iconify.config.RPrefs
+import com.drdisagree.iconify.data.common.Const.SYSTEMUI_PACKAGE
+import com.drdisagree.iconify.data.common.Preferences.VOLUME_PANEL_BACKGROUND_WIDTH
+import com.drdisagree.iconify.data.config.RPrefs
 import com.drdisagree.iconify.databinding.FragmentVolumePanelBinding
 import com.drdisagree.iconify.ui.base.BaseFragment
 import com.drdisagree.iconify.ui.utils.ViewHelper.setHeader
@@ -17,6 +17,9 @@ import com.drdisagree.iconify.utils.overlay.manager.resource.ResourceEntry
 import com.drdisagree.iconify.utils.overlay.manager.resource.ResourceManager.buildOverlayWithResource
 import com.drdisagree.iconify.utils.overlay.manager.resource.ResourceManager.removeResourceFromOverlay
 import com.google.android.material.button.MaterialButton
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class VolumePanel : BaseFragment() {
 
@@ -45,42 +48,42 @@ class VolumePanel : BaseFragment() {
                     requestStoragePermission(requireContext())
                     binding.toggleButtonGroup.uncheck(binding.thinBg.id)
                 } else {
+                    val resources = listOf(
+                        ResourceEntry(
+                            SYSTEMUI_PACKAGE,
+                            "dimen",
+                            "volume_dialog_slider_width",
+                            "42dp"
+                        ),
+                        ResourceEntry(
+                            SYSTEMUI_PACKAGE,
+                            "dimen",
+                            "volume_dialog_track_width",
+                            "4dp"
+                        ),
+                        ResourceEntry(
+                            SYSTEMUI_PACKAGE,
+                            "dimen",
+                            "rounded_slider_track_inset",
+                            "22dp"
+                        )
+                    )
+
                     if (isChecked) {
                         binding.toggleButtonGroup.uncheck(binding.thickBg.id)
                         binding.toggleButtonGroup.uncheck(binding.noBg.id)
 
                         RPrefs.putInt(VOLUME_PANEL_BACKGROUND_WIDTH, 1)
 
-                        buildOverlayWithResource(
-                            requireContext(),
-                            ResourceEntry(
-                                SYSTEMUI_PACKAGE,
-                                "dimen",
-                                "volume_dialog_slider_width",
-                                "42dp"
-                            ),
-                            ResourceEntry(
-                                SYSTEMUI_PACKAGE,
-                                "dimen",
-                                "volume_dialog_track_width",
-                                "4dp"
-                            ),
-                            ResourceEntry(
-                                SYSTEMUI_PACKAGE,
-                                "dimen",
-                                "rounded_slider_track_inset",
-                                "22dp"
-                            )
-                        )
+                        CoroutineScope(Dispatchers.IO).launch {
+                            buildOverlayWithResource(*resources.toTypedArray())
+                        }
                     } else {
                         RPrefs.putInt(VOLUME_PANEL_BACKGROUND_WIDTH, 0)
 
-                        removeResourceFromOverlay(
-                            requireContext(),
-                            ResourceEntry(SYSTEMUI_PACKAGE, "dimen", "volume_dialog_slider_width"),
-                            ResourceEntry(SYSTEMUI_PACKAGE, "dimen", "volume_dialog_track_width"),
-                            ResourceEntry(SYSTEMUI_PACKAGE, "dimen", "rounded_slider_track_inset")
-                        )
+                        CoroutineScope(Dispatchers.IO).launch {
+                            removeResourceFromOverlay(*resources.toTypedArray())
+                        }
                     }
                 }
             }
@@ -93,42 +96,42 @@ class VolumePanel : BaseFragment() {
                     requestStoragePermission(requireContext())
                     binding.toggleButtonGroup.uncheck(binding.thickBg.id)
                 } else {
+                    val resources = listOf(
+                        ResourceEntry(
+                            SYSTEMUI_PACKAGE,
+                            "dimen",
+                            "volume_dialog_slider_width",
+                            "42dp"
+                        ),
+                        ResourceEntry(
+                            SYSTEMUI_PACKAGE,
+                            "dimen",
+                            "volume_dialog_track_width",
+                            "42dp"
+                        ),
+                        ResourceEntry(
+                            SYSTEMUI_PACKAGE,
+                            "dimen",
+                            "rounded_slider_track_inset",
+                            "0dp"
+                        )
+                    )
+
                     if (isChecked) {
                         binding.toggleButtonGroup.uncheck(binding.thinBg.id)
                         binding.toggleButtonGroup.uncheck(binding.noBg.id)
 
                         RPrefs.putInt(VOLUME_PANEL_BACKGROUND_WIDTH, 2)
 
-                        buildOverlayWithResource(
-                            requireContext(),
-                            ResourceEntry(
-                                SYSTEMUI_PACKAGE,
-                                "dimen",
-                                "volume_dialog_slider_width",
-                                "42dp"
-                            ),
-                            ResourceEntry(
-                                SYSTEMUI_PACKAGE,
-                                "dimen",
-                                "volume_dialog_track_width",
-                                "42dp"
-                            ),
-                            ResourceEntry(
-                                SYSTEMUI_PACKAGE,
-                                "dimen",
-                                "rounded_slider_track_inset",
-                                "0dp"
-                            )
-                        )
+                        CoroutineScope(Dispatchers.IO).launch {
+                            buildOverlayWithResource(*resources.toTypedArray())
+                        }
                     } else {
                         RPrefs.putInt(VOLUME_PANEL_BACKGROUND_WIDTH, 0)
 
-                        removeResourceFromOverlay(
-                            requireContext(),
-                            ResourceEntry(SYSTEMUI_PACKAGE, "dimen", "volume_dialog_slider_width"),
-                            ResourceEntry(SYSTEMUI_PACKAGE, "dimen", "volume_dialog_track_width"),
-                            ResourceEntry(SYSTEMUI_PACKAGE, "dimen", "rounded_slider_track_inset")
-                        )
+                        CoroutineScope(Dispatchers.IO).launch {
+                            removeResourceFromOverlay(*resources.toTypedArray())
+                        }
                     }
                 }
             }
@@ -141,42 +144,42 @@ class VolumePanel : BaseFragment() {
                     requestStoragePermission(requireContext())
                     binding.toggleButtonGroup.uncheck(binding.noBg.id)
                 } else {
+                    val resources = listOf(
+                        ResourceEntry(
+                            SYSTEMUI_PACKAGE,
+                            "dimen",
+                            "volume_dialog_slider_width",
+                            "42dp"
+                        ),
+                        ResourceEntry(
+                            SYSTEMUI_PACKAGE,
+                            "dimen",
+                            "volume_dialog_track_width",
+                            "0dp"
+                        ),
+                        ResourceEntry(
+                            SYSTEMUI_PACKAGE,
+                            "dimen",
+                            "rounded_slider_track_inset",
+                            "24dp"
+                        )
+                    )
+
                     if (isChecked) {
                         binding.toggleButtonGroup.uncheck(binding.thinBg.id)
                         binding.toggleButtonGroup.uncheck(binding.thickBg.id)
 
                         RPrefs.putInt(VOLUME_PANEL_BACKGROUND_WIDTH, 3)
 
-                        buildOverlayWithResource(
-                            requireContext(),
-                            ResourceEntry(
-                                SYSTEMUI_PACKAGE,
-                                "dimen",
-                                "volume_dialog_slider_width",
-                                "42dp"
-                            ),
-                            ResourceEntry(
-                                SYSTEMUI_PACKAGE,
-                                "dimen",
-                                "volume_dialog_track_width",
-                                "0dp"
-                            ),
-                            ResourceEntry(
-                                SYSTEMUI_PACKAGE,
-                                "dimen",
-                                "rounded_slider_track_inset",
-                                "24dp"
-                            )
-                        )
+                        CoroutineScope(Dispatchers.IO).launch {
+                            buildOverlayWithResource(*resources.toTypedArray())
+                        }
                     } else {
                         RPrefs.putInt(VOLUME_PANEL_BACKGROUND_WIDTH, 0)
 
-                        removeResourceFromOverlay(
-                            requireContext(),
-                            ResourceEntry(SYSTEMUI_PACKAGE, "dimen", "volume_dialog_slider_width"),
-                            ResourceEntry(SYSTEMUI_PACKAGE, "dimen", "volume_dialog_track_width"),
-                            ResourceEntry(SYSTEMUI_PACKAGE, "dimen", "rounded_slider_track_inset")
-                        )
+                        CoroutineScope(Dispatchers.IO).launch {
+                            removeResourceFromOverlay(*resources.toTypedArray())
+                        }
                     }
                 }
             }

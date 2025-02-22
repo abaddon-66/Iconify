@@ -8,10 +8,10 @@ import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequest
 import androidx.work.WorkManager
 import com.drdisagree.iconify.BuildConfig
-import com.drdisagree.iconify.common.Preferences.AUTO_UPDATE
-import com.drdisagree.iconify.common.Preferences.UPDATE_CHECK_TIME
-import com.drdisagree.iconify.config.RPrefs.getBoolean
-import com.drdisagree.iconify.config.RPrefs.getLong
+import com.drdisagree.iconify.data.common.Preferences.AUTO_UPDATE
+import com.drdisagree.iconify.data.common.Preferences.UPDATE_CHECK_TIME
+import com.drdisagree.iconify.data.config.RPrefs.getBoolean
+import com.drdisagree.iconify.data.config.RPrefs.getLong
 import java.util.concurrent.TimeUnit
 
 object UpdateScheduler {

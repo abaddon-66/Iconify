@@ -11,11 +11,11 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import com.drdisagree.iconify.Iconify.Companion.appContext
 import com.drdisagree.iconify.R
-import com.drdisagree.iconify.common.Preferences.VOLUME_PANEL_PERCENTAGE
-import com.drdisagree.iconify.common.Preferences.VOLUME_PANEL_STYLE
-import com.drdisagree.iconify.common.Resources.searchableFragments
-import com.drdisagree.iconify.config.RPrefs
-import com.drdisagree.iconify.config.RPrefs.getPrefs
+import com.drdisagree.iconify.data.common.Preferences.VOLUME_PANEL_PERCENTAGE
+import com.drdisagree.iconify.data.common.Preferences.VOLUME_PANEL_STYLE
+import com.drdisagree.iconify.data.common.Resources.searchableFragments
+import com.drdisagree.iconify.data.config.RPrefs
+import com.drdisagree.iconify.data.config.RPrefs.getPrefs
 import com.drdisagree.iconify.databinding.FragmentXposedVolumePanelBinding
 import com.drdisagree.iconify.ui.activities.MainActivity.Companion.replaceFragment
 import com.drdisagree.iconify.ui.base.BaseFragment

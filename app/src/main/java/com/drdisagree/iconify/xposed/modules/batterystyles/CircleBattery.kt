@@ -20,8 +20,8 @@ import androidx.annotation.ColorInt
 import androidx.core.graphics.ColorUtils
 import androidx.core.graphics.PathParser
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator
-import com.drdisagree.iconify.common.Preferences
-import com.drdisagree.iconify.config.RPrefs.getBoolean
+import com.drdisagree.iconify.data.common.Preferences
+import com.drdisagree.iconify.data.config.RPrefs.getBoolean
 import com.drdisagree.iconify.xposed.modules.extras.utils.AlphaRefreshedPaint
 import com.drdisagree.iconify.xposed.utils.XPrefs.Xprefs
 

@@ -5,14 +5,14 @@ import android.view.View
 import androidx.preference.Preference
 import com.drdisagree.iconify.Iconify.Companion.appContext
 import com.drdisagree.iconify.R
-import com.drdisagree.iconify.common.Preferences.COLOR_ACCENT_PRIMARY
-import com.drdisagree.iconify.common.Preferences.COLOR_ACCENT_PRIMARY_LIGHT
-import com.drdisagree.iconify.common.Preferences.COLOR_ACCENT_SECONDARY
-import com.drdisagree.iconify.common.Preferences.COLOR_ACCENT_SECONDARY_LIGHT
-import com.drdisagree.iconify.common.Preferences.FIRST_INSTALL
-import com.drdisagree.iconify.common.Preferences.UPDATE_DETECTED
-import com.drdisagree.iconify.config.RPrefs.getBoolean
-import com.drdisagree.iconify.config.RPrefs.putBoolean
+import com.drdisagree.iconify.data.common.Preferences.COLOR_ACCENT_PRIMARY
+import com.drdisagree.iconify.data.common.Preferences.COLOR_ACCENT_PRIMARY_LIGHT
+import com.drdisagree.iconify.data.common.Preferences.COLOR_ACCENT_SECONDARY
+import com.drdisagree.iconify.data.common.Preferences.COLOR_ACCENT_SECONDARY_LIGHT
+import com.drdisagree.iconify.data.common.Preferences.FIRST_INSTALL
+import com.drdisagree.iconify.data.common.Preferences.UPDATE_DETECTED
+import com.drdisagree.iconify.data.config.RPrefs.getBoolean
+import com.drdisagree.iconify.data.config.RPrefs.putBoolean
 import com.drdisagree.iconify.services.UpdateScheduler.scheduleUpdates
 import com.drdisagree.iconify.ui.activities.MainActivity.Companion.replaceFragment
 import com.drdisagree.iconify.ui.base.ControlledPreferenceFragmentCompat
@@ -20,6 +20,7 @@ import com.drdisagree.iconify.ui.fragments.settings.AppUpdates
 import com.drdisagree.iconify.ui.preferences.UpdateCheckerPreference
 import com.drdisagree.iconify.utils.SystemUtils.saveBootId
 import com.drdisagree.iconify.utils.SystemUtils.saveVersionCode
+import com.drdisagree.iconify.utils.helper.BackupRestore.migrateToRoomDatabase
 import com.drdisagree.iconify.utils.overlay.FabricatedUtils
 import com.drdisagree.iconify.utils.overlay.OverlayUtils
 import com.drdisagree.iconify.utils.overlay.OverlayUtils.enableOverlay
@@ -70,6 +71,7 @@ class Home : ControlledPreferenceFragmentCompat(), AppBarLayout.OnOffsetChangedL
         putBoolean(UPDATE_DETECTED, false)
         saveVersionCode()
         saveBootId
+        migrateToRoomDatabase()
     }
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {

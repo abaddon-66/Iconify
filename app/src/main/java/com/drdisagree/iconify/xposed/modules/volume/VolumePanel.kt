@@ -7,9 +7,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
-import com.drdisagree.iconify.common.Const.SYSTEMUI_PACKAGE
-import com.drdisagree.iconify.common.Preferences.VOLUME_PANEL_PERCENTAGE
-import com.drdisagree.iconify.common.Preferences.VOLUME_PANEL_SAFETY_WARNING
+import com.drdisagree.iconify.data.common.Const.SYSTEMUI_PACKAGE
+import com.drdisagree.iconify.data.common.Preferences.VOLUME_PANEL_PERCENTAGE
+import com.drdisagree.iconify.data.common.Preferences.VOLUME_PANEL_SAFETY_WARNING
 import com.drdisagree.iconify.xposed.ModPack
 import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.toPx
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.XposedHook.Companion.findClass

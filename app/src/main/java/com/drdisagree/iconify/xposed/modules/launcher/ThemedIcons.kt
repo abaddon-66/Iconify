@@ -6,9 +6,9 @@ import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
-import com.drdisagree.iconify.common.Const.LAUNCHER3_PACKAGE
-import com.drdisagree.iconify.common.Preferences.APP_DRAWER_THEMED_ICONS
-import com.drdisagree.iconify.common.Preferences.FORCE_THEMED_ICONS
+import com.drdisagree.iconify.data.common.Const.LAUNCHER3_PACKAGE
+import com.drdisagree.iconify.data.common.Preferences.APP_DRAWER_THEMED_ICONS
+import com.drdisagree.iconify.data.common.Preferences.FORCE_THEMED_ICONS
 import com.drdisagree.iconify.xposed.ModPack
 import com.drdisagree.iconify.xposed.modules.extras.utils.MonochromeIconFactory
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.XposedHook.Companion.findClass

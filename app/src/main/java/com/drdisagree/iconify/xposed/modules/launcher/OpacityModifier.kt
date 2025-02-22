@@ -3,9 +3,9 @@ package com.drdisagree.iconify.xposed.modules.launcher
 import android.content.Context
 import android.graphics.Color
 import androidx.core.graphics.ColorUtils
-import com.drdisagree.iconify.common.Preferences.APP_DRAWER_BACKGROUND_OPACITY
-import com.drdisagree.iconify.common.Preferences.DISABLE_RECENTS_BLUR
-import com.drdisagree.iconify.common.Preferences.RECENTS_BACKGROUND_OPACITY
+import com.drdisagree.iconify.data.common.Preferences.APP_DRAWER_BACKGROUND_OPACITY
+import com.drdisagree.iconify.data.common.Preferences.DISABLE_RECENTS_BLUR
+import com.drdisagree.iconify.data.common.Preferences.RECENTS_BACKGROUND_OPACITY
 import com.drdisagree.iconify.xposed.ModPack
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.XposedHook.Companion.findClass
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.callMethod

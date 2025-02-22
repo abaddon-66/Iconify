@@ -9,26 +9,26 @@ import android.view.ViewGroup
 import android.widget.CompoundButton
 import androidx.annotation.IntRange
 import com.drdisagree.iconify.R
-import com.drdisagree.iconify.common.Const.FRAMEWORK_PACKAGE
-import com.drdisagree.iconify.common.Const.LAUNCHER3_PACKAGE
-import com.drdisagree.iconify.common.Const.PIXEL_LAUNCHER_PACKAGE
-import com.drdisagree.iconify.common.Const.SWITCH_ANIMATION_DELAY
-import com.drdisagree.iconify.common.Const.SYSTEMUI_PACKAGE
-import com.drdisagree.iconify.common.Preferences.NAVBAR_FULL_SCREEN
-import com.drdisagree.iconify.common.Preferences.NAVBAR_GCAM_LAG_FIX
-import com.drdisagree.iconify.common.Preferences.NAVBAR_HIDE_PILL
-import com.drdisagree.iconify.common.Preferences.NAVBAR_IMMERSIVE_V1
-import com.drdisagree.iconify.common.Preferences.NAVBAR_IMMERSIVE_V2
-import com.drdisagree.iconify.common.Preferences.NAVBAR_IMMERSIVE_V3
-import com.drdisagree.iconify.common.Preferences.NAVBAR_LOW_SENS
-import com.drdisagree.iconify.common.Preferences.PILL_SHAPE_SWITCH
-import com.drdisagree.iconify.common.References.FABRICATED_PILL_BOTTOM_SPACE
-import com.drdisagree.iconify.common.References.FABRICATED_PILL_THICKNESS
-import com.drdisagree.iconify.common.References.FABRICATED_PILL_WIDTH
-import com.drdisagree.iconify.config.RPrefs.getBoolean
-import com.drdisagree.iconify.config.RPrefs.getInt
-import com.drdisagree.iconify.config.RPrefs.putBoolean
-import com.drdisagree.iconify.config.RPrefs.putInt
+import com.drdisagree.iconify.data.common.Const.FRAMEWORK_PACKAGE
+import com.drdisagree.iconify.data.common.Const.LAUNCHER3_PACKAGE
+import com.drdisagree.iconify.data.common.Const.PIXEL_LAUNCHER_PACKAGE
+import com.drdisagree.iconify.data.common.Const.SWITCH_ANIMATION_DELAY
+import com.drdisagree.iconify.data.common.Const.SYSTEMUI_PACKAGE
+import com.drdisagree.iconify.data.common.Preferences.NAVBAR_FULL_SCREEN
+import com.drdisagree.iconify.data.common.Preferences.NAVBAR_GCAM_LAG_FIX
+import com.drdisagree.iconify.data.common.Preferences.NAVBAR_HIDE_PILL
+import com.drdisagree.iconify.data.common.Preferences.NAVBAR_IMMERSIVE_V1
+import com.drdisagree.iconify.data.common.Preferences.NAVBAR_IMMERSIVE_V2
+import com.drdisagree.iconify.data.common.Preferences.NAVBAR_IMMERSIVE_V3
+import com.drdisagree.iconify.data.common.Preferences.NAVBAR_LOW_SENS
+import com.drdisagree.iconify.data.common.Preferences.PILL_SHAPE_SWITCH
+import com.drdisagree.iconify.data.common.References.FABRICATED_PILL_BOTTOM_SPACE
+import com.drdisagree.iconify.data.common.References.FABRICATED_PILL_THICKNESS
+import com.drdisagree.iconify.data.common.References.FABRICATED_PILL_WIDTH
+import com.drdisagree.iconify.data.config.RPrefs.getBoolean
+import com.drdisagree.iconify.data.config.RPrefs.getInt
+import com.drdisagree.iconify.data.config.RPrefs.putBoolean
+import com.drdisagree.iconify.data.config.RPrefs.putInt
 import com.drdisagree.iconify.databinding.FragmentNavigationBarBinding
 import com.drdisagree.iconify.ui.base.BaseFragment
 import com.drdisagree.iconify.ui.utils.ViewHelper.setHeader
@@ -44,6 +44,10 @@ import com.drdisagree.iconify.utils.overlay.manager.resource.ResourceManager.bui
 import com.drdisagree.iconify.utils.overlay.manager.resource.ResourceManager.removeResourceFromOverlay
 import com.google.android.material.slider.Slider
 import com.topjohnwu.superuser.Shell
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.util.concurrent.atomic.AtomicBoolean
 
 class NavigationBar : BaseFragment() {
@@ -110,10 +114,10 @@ class NavigationBar : BaseFragment() {
                     binding.pillShape.pillShapeContainer.visibility = View.VISIBLE
                 }
 
-                Handler(Looper.getMainLooper()).postDelayed(
-                    { handleFullScreen(isSwitchChecked) },
-                    SWITCH_ANIMATION_DELAY
-                )
+                CoroutineScope(Dispatchers.IO).launch {
+                    delay(SWITCH_ANIMATION_DELAY)
+                    handleFullScreen(isSwitchChecked)
+                }
             }
         }
         binding.nbFullscreen.setBeforeSwitchChangeListener {
@@ -138,10 +142,10 @@ class NavigationBar : BaseFragment() {
 
                 disableOthers(NAVBAR_IMMERSIVE_V1)
 
-                Handler(Looper.getMainLooper()).postDelayed(
-                    { handleImmersive(isSwitchChecked, 1) },
-                    SWITCH_ANIMATION_DELAY
-                )
+                CoroutineScope(Dispatchers.IO).launch {
+                    delay(SWITCH_ANIMATION_DELAY)
+                    handleImmersive(isSwitchChecked, 1)
+                }
             }
         }
         binding.nbImmersive.setBeforeSwitchChangeListener {
@@ -165,10 +169,10 @@ class NavigationBar : BaseFragment() {
 
                 disableOthers(NAVBAR_IMMERSIVE_V2)
 
-                Handler(Looper.getMainLooper()).postDelayed(
-                    { handleImmersive(isSwitchChecked, 2) },
-                    SWITCH_ANIMATION_DELAY
-                )
+                CoroutineScope(Dispatchers.IO).launch {
+                    delay(SWITCH_ANIMATION_DELAY)
+                    handleImmersive(isSwitchChecked, 2)
+                }
             }
         }
         binding.nbImmersiveV2.setBeforeSwitchChangeListener {
@@ -192,10 +196,10 @@ class NavigationBar : BaseFragment() {
 
                 disableOthers(NAVBAR_IMMERSIVE_V3)
 
-                Handler(Looper.getMainLooper()).postDelayed(
-                    { handleImmersive(isSwitchChecked, 3) },
-                    SWITCH_ANIMATION_DELAY
-                )
+                CoroutineScope(Dispatchers.IO).launch {
+                    delay(SWITCH_ANIMATION_DELAY)
+                    handleImmersive(isSwitchChecked, 3)
+                }
             }
         }
         binding.nbImmersiveV3.setBeforeSwitchChangeListener {
@@ -223,7 +227,8 @@ class NavigationBar : BaseFragment() {
                 val immersive2 = getBoolean(NAVBAR_IMMERSIVE_V2)
                 val immersive3 = getBoolean(NAVBAR_IMMERSIVE_V3)
 
-                Handler(Looper.getMainLooper()).postDelayed({
+                CoroutineScope(Dispatchers.IO).launch {
+                    delay(SWITCH_ANIMATION_DELAY)
                     if (fullscreen) {
                         handleFullScreen(true)
                     } else if (immersive1) {
@@ -233,7 +238,7 @@ class NavigationBar : BaseFragment() {
                     } else if (immersive3) {
                         handleImmersive(true, 3)
                     }
-                }, SWITCH_ANIMATION_DELAY)
+                }
             }
         }
         binding.nbGcamLagFix.setBeforeSwitchChangeListener {
@@ -256,10 +261,10 @@ class NavigationBar : BaseFragment() {
                     return@setSwitchChangeListener
                 }
 
-                Handler(Looper.getMainLooper()).postDelayed(
-                    { handleLowSensitivity(isSwitchChecked) },
-                    SWITCH_ANIMATION_DELAY
-                )
+                CoroutineScope(Dispatchers.IO).launch {
+                    delay(SWITCH_ANIMATION_DELAY)
+                    handleLowSensitivity(isSwitchChecked)
+                }
             }
         }
         binding.nbLowerSens.setBeforeSwitchChangeListener {
@@ -282,14 +287,14 @@ class NavigationBar : BaseFragment() {
                     return@setSwitchChangeListener
                 }
 
-                Handler(Looper.getMainLooper()).postDelayed({
+                CoroutineScope(Dispatchers.IO).launch {
+                    delay(SWITCH_ANIMATION_DELAY)
+
                     handleHidePill(isSwitchChecked)
 
-                    Handler(Looper.getMainLooper()).postDelayed(
-                        { SystemUtils.handleSystemUIRestart() },
-                        2000
-                    )
-                }, SWITCH_ANIMATION_DELAY)
+                    delay(2000)
+                    SystemUtils.handleSystemUIRestart()
+                }
             }
         }
         binding.nbHidePill.setBeforeSwitchChangeListener {
@@ -315,31 +320,26 @@ class NavigationBar : BaseFragment() {
 
         // Hide Keyboard Buttons
         binding.nbHideKbButtons.setSwitchChangeListener { _: CompoundButton?, isSwitchChecked: Boolean ->
-            Handler(Looper.getMainLooper()).postDelayed(
-                {
-                    if (isSwitchChecked) {
-                        buildOverlayWithResource(
-                            ResourceEntry(
-                                FRAMEWORK_PACKAGE,
-                                "bool",
-                                "config_imeDrawsImeNavBar",
-                                "false"
-                            )
-                        )
-                        enableOverlay("IconifyComponentNBHideKBButton.overlay")
-                    } else {
-                        removeResourceFromOverlay(
-                            ResourceEntry(
-                                FRAMEWORK_PACKAGE,
-                                "bool",
-                                "config_imeDrawsImeNavBar",
-                                "false"
-                            )
-                        )
-                        disableOverlay("IconifyComponentNBHideKBButton.overlay")
-                    }
-                }, SWITCH_ANIMATION_DELAY
-            )
+            CoroutineScope(Dispatchers.IO).launch {
+                delay(SWITCH_ANIMATION_DELAY)
+
+                val resource = listOf(
+                    ResourceEntry(
+                        FRAMEWORK_PACKAGE,
+                        "bool",
+                        "config_imeDrawsImeNavBar",
+                        "false"
+                    )
+                )
+
+                if (isSwitchChecked) {
+                    buildOverlayWithResource(*resource.toTypedArray())
+                    enableOverlay("IconifyComponentNBHideKBButton.overlay")
+                } else {
+                    removeResourceFromOverlay(*resource.toTypedArray())
+                    disableOverlay("IconifyComponentNBHideKBButton.overlay")
+                }
+            }
         }
 
         // Disable left gesture
@@ -428,7 +428,7 @@ class NavigationBar : BaseFragment() {
                 return@setOnClickListener
             }
 
-            Handler(Looper.getMainLooper()).post {
+            CoroutineScope(Dispatchers.IO).launch {
                 putBoolean(PILL_SHAPE_SWITCH, true)
 
                 putInt(FABRICATED_PILL_WIDTH, finalPillWidth[0])
@@ -458,10 +458,8 @@ class NavigationBar : BaseFragment() {
 
                 binding.pillShape.pillShapeReset.visibility = View.VISIBLE
 
-                Handler(Looper.getMainLooper()).postDelayed(
-                    { restartSystemUI() },
-                    SWITCH_ANIMATION_DELAY
-                )
+                delay(SWITCH_ANIMATION_DELAY)
+                restartSystemUI()
             }
         }
 
@@ -479,7 +477,7 @@ class NavigationBar : BaseFragment() {
                 return@setOnClickListener
             }
 
-            Handler(Looper.getMainLooper()).post {
+            CoroutineScope(Dispatchers.IO).launch {
                 putBoolean(PILL_SHAPE_SWITCH, false)
 
                 removeResourceFromOverlay(
@@ -490,10 +488,8 @@ class NavigationBar : BaseFragment() {
 
                 binding.pillShape.pillShapeReset.visibility = View.GONE
 
-                Handler(Looper.getMainLooper()).postDelayed(
-                    { restartSystemUI() },
-                    SWITCH_ANIMATION_DELAY
-                )
+                delay(SWITCH_ANIMATION_DELAY)
+                restartSystemUI()
             }
         }
         return view
@@ -651,10 +647,12 @@ class NavigationBar : BaseFragment() {
             )
         )
 
-        if (enable) {
-            buildOverlayWithResource(*resources.toTypedArray())
-        } else {
-            removeResourceFromOverlay(*resources.toTypedArray())
+        CoroutineScope(Dispatchers.IO).launch {
+            if (enable) {
+                buildOverlayWithResource(*resources.toTypedArray())
+            } else {
+                removeResourceFromOverlay(*resources.toTypedArray())
+            }
         }
     }
 
@@ -774,10 +772,12 @@ class NavigationBar : BaseFragment() {
             )
         )
 
-        if (enable) {
-            buildOverlayWithResource(*resources.toTypedArray())
-        } else {
-            removeResourceFromOverlay(*resources.toTypedArray())
+        CoroutineScope(Dispatchers.IO).launch {
+            if (enable) {
+                buildOverlayWithResource(*resources.toTypedArray())
+            } else {
+                removeResourceFromOverlay(*resources.toTypedArray())
+            }
         }
     }
 
@@ -788,10 +788,12 @@ class NavigationBar : BaseFragment() {
             ResourceEntry(FRAMEWORK_PACKAGE, "dimen", "navigation_bar_gesture_height", "18dp")
         )
 
-        if (enable) {
-            buildOverlayWithResource(*resources.toTypedArray())
-        } else {
-            removeResourceFromOverlay(*resources.toTypedArray())
+        CoroutineScope(Dispatchers.IO).launch {
+            if (enable) {
+                buildOverlayWithResource(*resources.toTypedArray())
+            } else {
+                removeResourceFromOverlay(*resources.toTypedArray())
+            }
         }
     }
 
@@ -903,10 +905,12 @@ class NavigationBar : BaseFragment() {
             )
         )
 
-        if (enable) {
-            buildOverlayWithResource(*resources.toTypedArray())
-        } else {
-            removeResourceFromOverlay(*resources.toTypedArray())
+        CoroutineScope(Dispatchers.IO).launch {
+            if (enable) {
+                buildOverlayWithResource(*resources.toTypedArray())
+            } else {
+                removeResourceFromOverlay(*resources.toTypedArray())
+            }
         }
     }
 }

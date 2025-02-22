@@ -5,8 +5,8 @@ import android.content.Context
 import android.content.res.XResources
 import android.view.View
 import android.view.ViewGroup
-import com.drdisagree.iconify.common.Const.SYSTEMUI_PACKAGE
-import com.drdisagree.iconify.common.Preferences.STATUSBAR_SWAP_CELLULAR_NETWORK_TYPE
+import com.drdisagree.iconify.data.common.Const.SYSTEMUI_PACKAGE
+import com.drdisagree.iconify.data.common.Preferences.STATUSBAR_SWAP_CELLULAR_NETWORK_TYPE
 import com.drdisagree.iconify.xposed.HookRes.Companion.resParams
 import com.drdisagree.iconify.xposed.ModPack
 import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.reAddView

@@ -28,12 +28,12 @@ import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.PreferenceScreen
 import androidx.recyclerview.widget.RecyclerView
 import com.drdisagree.iconify.R
-import com.drdisagree.iconify.common.Dynamic
-import com.drdisagree.iconify.common.Resources.SHARED_XPREFERENCES
-import com.drdisagree.iconify.common.Resources.searchConfiguration
-import com.drdisagree.iconify.common.Resources.searchableFragments
-import com.drdisagree.iconify.config.PrefsHelper
-import com.drdisagree.iconify.config.RPrefs
+import com.drdisagree.iconify.data.common.Dynamic
+import com.drdisagree.iconify.data.common.Resources.SHARED_XPREFERENCES
+import com.drdisagree.iconify.data.common.Resources.searchConfiguration
+import com.drdisagree.iconify.data.common.Resources.searchableFragments
+import com.drdisagree.iconify.data.config.PrefsHelper
+import com.drdisagree.iconify.data.config.RPrefs
 import com.drdisagree.iconify.ui.activities.MainActivity
 import com.drdisagree.iconify.ui.activities.MainActivity.Companion.popCurrentFragment
 import com.drdisagree.iconify.ui.activities.MainActivity.Companion.replaceFragment
@@ -80,8 +80,7 @@ abstract class ControlledPreferenceFragmentCompat : PreferenceFragmentCompat() {
     ) { result: ActivityResult ->
         handleExportResult(
             result = result,
-            context = requireContext(),
-            contentResolver = requireContext().contentResolver
+            context = requireContext()
         )
     }
 
@@ -91,7 +90,7 @@ abstract class ControlledPreferenceFragmentCompat : PreferenceFragmentCompat() {
         handleImportResult(
             result = result,
             fragment = this,
-            loadingDialog = loadingDialog!!
+            loadingDialog = loadingDialog
         )
     }
 

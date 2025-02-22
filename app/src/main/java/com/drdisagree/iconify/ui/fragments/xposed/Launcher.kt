@@ -1,11 +1,11 @@
 package com.drdisagree.iconify.ui.fragments.xposed
 
 import com.drdisagree.iconify.R
-import com.drdisagree.iconify.common.Const.LAUNCHER3_PACKAGE
-import com.drdisagree.iconify.common.Const.PIXEL_LAUNCHER_PACKAGE
-import com.drdisagree.iconify.common.Preferences.DESKTOP_DOCK_SPACING
-import com.drdisagree.iconify.common.Preferences.DESKTOP_SEARCH_BAR
-import com.drdisagree.iconify.config.RPrefs
+import com.drdisagree.iconify.data.common.Const.LAUNCHER3_PACKAGE
+import com.drdisagree.iconify.data.common.Const.PIXEL_LAUNCHER_PACKAGE
+import com.drdisagree.iconify.data.common.Preferences.DESKTOP_DOCK_SPACING
+import com.drdisagree.iconify.data.common.Preferences.DESKTOP_SEARCH_BAR
+import com.drdisagree.iconify.data.config.RPrefs
 import com.drdisagree.iconify.ui.base.ControlledPreferenceFragmentCompat
 import com.drdisagree.iconify.xposed.utils.BootLoopProtector.LOAD_TIME_KEY_KEY
 import com.drdisagree.iconify.xposed.utils.BootLoopProtector.PACKAGE_STRIKE_KEY_KEY

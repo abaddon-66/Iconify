@@ -12,7 +12,7 @@ import android.view.ViewTreeObserver.OnGlobalLayoutListener
 import androidx.annotation.Keep
 import androidx.preference.PreferenceViewHolder
 import com.drdisagree.iconify.R
-import com.drdisagree.iconify.config.RPrefs.putBoolean
+import com.drdisagree.iconify.data.config.RPrefs.putBoolean
 import com.google.android.material.materialswitch.MaterialSwitch
 
 

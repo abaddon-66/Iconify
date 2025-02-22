@@ -28,10 +28,10 @@ import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.graphics.ColorUtils
-import com.drdisagree.iconify.common.Const.SYSTEMUI_PACKAGE
-import com.drdisagree.iconify.common.Preferences.DEPTH_WALLPAPER_SWITCH
-import com.drdisagree.iconify.common.Preferences.ICONIFY_DEPTH_WALLPAPER_FOREGROUND_TAG
-import com.drdisagree.iconify.common.Preferences.ICONIFY_LOCKSCREEN_CONTAINER_TAG
+import com.drdisagree.iconify.data.common.Const.SYSTEMUI_PACKAGE
+import com.drdisagree.iconify.data.common.Preferences.DEPTH_WALLPAPER_SWITCH
+import com.drdisagree.iconify.data.common.Preferences.ICONIFY_DEPTH_WALLPAPER_FOREGROUND_TAG
+import com.drdisagree.iconify.data.common.Preferences.ICONIFY_LOCKSCREEN_CONTAINER_TAG
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.XposedHook.Companion.findClass
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.callStaticMethod
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.isMethodAvailable

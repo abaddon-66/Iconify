@@ -8,8 +8,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.splashscreen.SplashScreen
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.drdisagree.iconify.Iconify.Companion.appContext
-import com.drdisagree.iconify.common.Preferences.XPOSED_ONLY_MODE
-import com.drdisagree.iconify.config.RPrefs
+import com.drdisagree.iconify.data.common.Preferences.XPOSED_ONLY_MODE
+import com.drdisagree.iconify.data.config.RPrefs
 import com.drdisagree.iconify.ui.activities.MainActivity
 import com.drdisagree.iconify.ui.activities.OnboardingActivity
 import com.drdisagree.iconify.utils.ModuleUtils
