@@ -340,7 +340,8 @@ class LockscreenClock(context: Context) : ModPack(context) {
 
         val legacyNotificationIconAreaControllerImplClass = findClass(
             "$SYSTEMUI_PACKAGE.statusbar.phone.LegacyNotificationIconAreaControllerImpl",
-            "$SYSTEMUI_PACKAGE.statusbar.phone.NotificationIconAreaController"
+            "$SYSTEMUI_PACKAGE.statusbar.phone.NotificationIconAreaController",
+            suppressError = true
         )
 
         legacyNotificationIconAreaControllerImplClass

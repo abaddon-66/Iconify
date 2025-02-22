@@ -44,7 +44,8 @@ class AppIconsInStatusbar(context: Context) : ModPack(context) {
             findClass("$SYSTEMUI_PACKAGE.statusbar.phone.NotificationIconContainer\$IconState")
         val legacyNotificationIconAreaControllerImplClass = findClass(
             "$SYSTEMUI_PACKAGE.statusbar.phone.LegacyNotificationIconAreaControllerImpl",
-            "$SYSTEMUI_PACKAGE.statusbar.phone.NotificationIconAreaController"
+            "$SYSTEMUI_PACKAGE.statusbar.phone.NotificationIconAreaController",
+            suppressError = true
         )
         val drawableSizeClass = findClass(
             "$SYSTEMUI_PACKAGE.util.drawable.DrawableSize",
