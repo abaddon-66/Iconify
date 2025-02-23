@@ -47,6 +47,7 @@ import com.drdisagree.iconify.xposed.modules.quicksettings.themes.QSLightThemeA1
 import com.drdisagree.iconify.xposed.modules.quicksettings.themes.QSLightThemeA13
 import com.drdisagree.iconify.xposed.modules.quicksettings.themes.QSLightThemeA14
 import com.drdisagree.iconify.xposed.modules.quicksettings.themes.QSLightThemeA15
+import com.drdisagree.iconify.xposed.modules.settings.GoogleIcon
 import com.drdisagree.iconify.xposed.modules.settings.ZenPriorityModeIcon
 import com.drdisagree.iconify.xposed.modules.statusbar.AppIconsInStatusbar
 import com.drdisagree.iconify.xposed.modules.statusbar.DualStatusbar
@@ -144,6 +145,10 @@ object EntryList {
         HotseatMod::class.java
     )
 
+    private val settingsCommonModPacks: List<Class<out ModPack>> = listOf(
+        GoogleIcon::class.java
+    )
+
     private val settingsAndroid15ModPacks: List<Class<out ModPack>> = listOf(
         ZenPriorityModeIcon::class.java
     )
@@ -187,6 +192,8 @@ object EntryList {
             }
 
             SETTINGS_PACKAGE -> {
+                modPacks.addAll(settingsCommonModPacks)
+
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
                     modPacks.addAll(settingsAndroid15ModPacks)
                 }
