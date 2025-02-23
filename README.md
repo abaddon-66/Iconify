@@ -133,6 +133,12 @@ You can help translate Iconify [on Crowdin](https://crowdin.com/project/iconify)
 </details>
 
 <details>
+  <summary>What is the difference between FOSS build and Standard build?</summary>
+
+- FOSS does not include [ML Kit](https://developers.google.com/ml-kit/vision/subject-segmentation/android), which is essential for automatically extracting subjects from depth wallpapers using AI. Everything else remains the same.
+</details>
+
+<details>
   <summary>Can I use Iconify in conjunction with other customization apps?</summary>
 
 - Yes, Iconify can be used alongside other customization apps. However, it's important to note that conflicts or overlapping modifications may occur, which could affect the overall user experience.
