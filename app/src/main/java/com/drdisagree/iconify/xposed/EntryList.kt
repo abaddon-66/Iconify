@@ -3,6 +3,7 @@ package com.drdisagree.iconify.xposed
 import android.os.Build
 import com.drdisagree.iconify.data.common.Const.LAUNCHER3_PACKAGE
 import com.drdisagree.iconify.data.common.Const.PIXEL_LAUNCHER_PACKAGE
+import com.drdisagree.iconify.data.common.Const.SETTINGS_PACKAGE
 import com.drdisagree.iconify.data.common.Const.SYSTEMUI_PACKAGE
 import com.drdisagree.iconify.xposed.modules.BackgroundChip
 import com.drdisagree.iconify.xposed.modules.BatteryStyleManager
@@ -46,6 +47,7 @@ import com.drdisagree.iconify.xposed.modules.quicksettings.themes.QSLightThemeA1
 import com.drdisagree.iconify.xposed.modules.quicksettings.themes.QSLightThemeA13
 import com.drdisagree.iconify.xposed.modules.quicksettings.themes.QSLightThemeA14
 import com.drdisagree.iconify.xposed.modules.quicksettings.themes.QSLightThemeA15
+import com.drdisagree.iconify.xposed.modules.settings.ZenPriorityModeIcon
 import com.drdisagree.iconify.xposed.modules.statusbar.AppIconsInStatusbar
 import com.drdisagree.iconify.xposed.modules.statusbar.DualStatusbar
 import com.drdisagree.iconify.xposed.modules.statusbar.StatusbarMisc
@@ -142,6 +144,10 @@ object EntryList {
         HotseatMod::class.java
     )
 
+    private val settingsAndroid15ModPacks: List<Class<out ModPack>> = listOf(
+        ZenPriorityModeIcon::class.java
+    )
+
     fun getEntries(packageName: String): ArrayList<Class<out ModPack>> {
         val modPacks = ArrayList<Class<out ModPack>>()
 
@@ -178,6 +184,12 @@ object EntryList {
 
             LAUNCHER3_PACKAGE -> {
                 modPacks.addAll(launcher3ModPacks)
+            }
+
+            SETTINGS_PACKAGE -> {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+                    modPacks.addAll(settingsAndroid15ModPacks)
+                }
             }
         }
 
