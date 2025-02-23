@@ -3,8 +3,8 @@ package com.drdisagree.iconify.utils.helper
 import android.os.Build
 import android.util.Log
 import com.drdisagree.iconify.BuildConfig
-import com.drdisagree.iconify.common.Resources.DOCUMENTS_DIR
-import com.drdisagree.iconify.common.Resources.LOG_DIR
+import com.drdisagree.iconify.data.common.Resources.DOCUMENTS_DIR
+import com.drdisagree.iconify.data.common.Resources.LOG_DIR
 import java.io.BufferedWriter
 import java.io.File
 import java.io.FileWriter

@@ -2,12 +2,12 @@ package com.drdisagree.iconify.utils.overlay.compiler
 
 import android.util.Log
 import com.drdisagree.iconify.Iconify.Companion.appContext
-import com.drdisagree.iconify.common.Dynamic.AAPT
-import com.drdisagree.iconify.common.Dynamic.AAPT2
-import com.drdisagree.iconify.common.Dynamic.ZIPALIGN
-import com.drdisagree.iconify.common.Dynamic.isAtleastA14
-import com.drdisagree.iconify.common.Resources
-import com.drdisagree.iconify.common.Resources.FRAMEWORK_DIR
+import com.drdisagree.iconify.data.common.Dynamic.AAPT
+import com.drdisagree.iconify.data.common.Dynamic.AAPT2
+import com.drdisagree.iconify.data.common.Dynamic.ZIPALIGN
+import com.drdisagree.iconify.data.common.Dynamic.isAtleastA14
+import com.drdisagree.iconify.data.common.Resources
+import com.drdisagree.iconify.data.common.Resources.FRAMEWORK_DIR
 import com.drdisagree.iconify.utils.AppUtils.getSplitLocations
 import com.drdisagree.iconify.utils.apksigner.CryptoUtils
 import com.drdisagree.iconify.utils.apksigner.SignAPK
@@ -58,12 +58,7 @@ object OverlayCompiler {
     }
 
     fun runAapt(source: String, targetPackage: String?): Boolean {
-        val name = CompilerUtils.getOverlayName(source) +
-                if (source.contains("SpecialOverlays")) {
-                    ".zip"
-                } else {
-                    "-unsigned-unaligned.apk"
-                }
+        val name = CompilerUtils.getOverlayName(source) + "-unsigned-unaligned.apk"
         val aaptCommand = buildAAPT2Command(source, name)
         val splitLocations = getSplitLocations(targetPackage)
 
@@ -107,12 +102,7 @@ object OverlayCompiler {
     }
 
     private fun buildAAPT2Command(source: String, name: String): StringBuilder {
-        val outputDir =
-            if (source.contains("SpecialOverlays")) {
-                Resources.COMPANION_COMPILED_DIR
-            } else {
-                Resources.UNSIGNED_UNALIGNED_DIR
-            }
+        val outputDir = Resources.UNSIGNED_UNALIGNED_DIR
 
         return if (!isAtleastA14) {
             StringBuilder("$aapt p -f -M $source/AndroidManifest.xml -S $source/res -F $outputDir/$name -I $FRAMEWORK_DIR --include-meta-data --auto-add-overlay")
