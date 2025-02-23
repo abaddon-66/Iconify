@@ -94,6 +94,7 @@
     <string name="activity_desc_xposed_menu">برای استفاده از این گزینه‌ها داشتن برنامه LSPosed الزامی است</string>
     <string name="activity_title_extras">موارد بیشتر</string>
     <string name="activity_desc_extras">تنظیمات و گزینه‌های اضافه</string>
+    <string name="activity_title_dual_statusbar">Dual Statusbar</string>
     <!-- Settings -->
     <string name="settings_section_title_general">عمومی</string>
     <string name="settings_app_language">زبان</string>
@@ -377,20 +378,16 @@
     <string name="vp_thick_background_desc">ضخیم کردن بخش میزان صدا</string>
     <string name="vp_no_background_title">بدون پیش‌زمینه</string>
     <string name="vp_no_background_desc">حذف بخش میزان صدا</string>
-    <string name="section_title_custom_magisk_module">ماژول سفارشی مجسیک</string>
+    <string name="read_carefully">توجه!</string>
+    <!-- Volume Panel Style -->
     <string name="volume_style">ظاهر نوار تنظیم صدا</string>
-    <string name="volume_module_desc">ساخت ماژول قابل فلش در مجیسک برای این استایل</string>
+    <string name="volume_style_default">Default</string>
     <string name="volume_style_gradient">گرادیان</string>
     <string name="volume_style_doublelayer">دو لایه</string>
     <string name="volume_style_shadedlayer">لایه سایه دار</string>
     <string name="volume_style_neumorph">نئومورف</string>
     <string name="volume_style_outline">برون نما</string>
     <string name="volume_style_neumorphoutline">نئومورف برون نما</string>
-    <string name="btn_create_module">ساختن ماژول</string>
-    <string name="toast_module_created">ماژول با موفقیت ساخته شد</string>
-    <string name="read_carefully">توجه!</string>
-    <string name="volume_module_installation_guide">با استفاده از این گزینه فایل ماژول در درون پوشه دانلود در حافظه داخلی ساخته می‌شود. فایل ماژول را که نام آن IconifyCompanion.zip است را باید در مجیسک فلش بزنید. همیشه قبل از نصب ماژول جدید نسخه قبلی را (در صورت وجود) از مجیسک پاک کرده و دستگاه خود را یکبار ریستارت کنید.\n\n<b>نکات:</b>\n• قبل از آپدیت کردن رام خود ماژول را حتما پاک کنید.\n• در صورت آپدیت رام و یا تغییر دادن ماژول آن را دوباره بسازید.\n• به هیچ وجه ماژولی را که مخصوص رام شما ساخته نشده فلش نرنید.</string>
-    <string name="volume_module_unstable_desc">در حال حاضر ماژول صدا در اندروید 14 و بالاتر ناپایدار است. با مسئولیت خودتان استفاده کنید.</string>
     <!-- Media Player -->
     <string name="cont_desc_media_player">پیش‌نمایش مدیا پلیر</string>
     <string name="media_player_preview_music_title">عنوان موسیقی</string>
@@ -453,6 +450,7 @@
     <string name="activity_title_xposed_weather_settings">تنظیمات آب و هوا</string>
     <string name="activity_title_xposed_launcher">راه‌انداز</string>
     <string name="activity_desc_xposed_launcher">تغییرات مربوط به راه‌انداز</string>
+    <string name="activity_title_lockscreen_album_art">Media Album Art</string>
     <!-- Oneplus QS Header -->
     <string name="oneplus_qs_header_title">سربرگ تنظیم سریع وان پلاس</string>
     <string name="oneplus_qs_header_desc">پخش کننده رسانه سبک وان‌پلاس و کاشی ها را در تنظیم سریع فعال کنید</string>
@@ -826,8 +824,32 @@
     <string name="sb_swap_wifi_cellular_desc">تعویض نماد های وای‌فای و داده همراه</string>
     <string name="sb_swap_cellular_network_type_title">Swap Cellular and Network Type</string>
     <string name="sb_swap_cellular_network_type_desc">Swap cellular and network type (3G 4G LTE etc.) icons</string>
-    <string name="sb_clock_on_right_side_title">ساعت سمت راست</string>
-    <string name="sb_clock_on_right_side_desc">نمایش ساعت در سمت راست نوار‌اعلان</string>
+    <string name="sb_clock_on_right_side_title">Clock on End Side</string>
+    <string name="sb_clock_on_right_side_desc">Show clock on end side of statusbar</string>
+    <string name="sb_show_4g_icon_title">4G Icon</string>
+    <string name="sb_show_4g_icon_desc">Display 4G icon in statusbar instead of LTE</string>
+    <string name="sb_max_notification_icons_title">Notification Icons Limit</string>
+    <string name="dual_status_bar_title">Dual Statusbar</string>
+    <string name="dual_status_bar_desc">Display statusbar elements in two rows</string>
+    <!-- Xposed Dual Statusbar -->
+    <string name="dsb_title">Dual Row Statusbar</string>
+    <string name="dsb_portrait_only_title">Portrait Only</string>
+    <string name="dsb_single_line_start_side_title">Single-Line Start Side</string>
+    <string name="dsb_single_line_start_side_desc">Show one row on start side of statusbar</string>
+    <string name="dsb_single_line_end_side_title">Single-Line End Side</string>
+    <string name="dsb_single_line_end_side_desc">Show one row on end side of statusbar</string>
+    <string name="dsb_swap_start_side_title">Swap Start Side</string>
+    <string name="dsb_swap_start_side_desc">Swap the position of clock and notification icons</string>
+    <string name="dsb_swap_end_side_title">Swap End Side</string>
+    <string name="dsb_swap_end_side_desc">Swap the position of battery and status icons</string>
+    <string name="dsb_statusbar_height_title">Statusbar Height</string>
+    <string name="dsb_start_padding_title">Start Padding</string>
+    <string name="dsb_end_padding_title">End Padding</string>
+    <string name="dsb_top_padding_title">Top Padding</string>
+    <string name="dsb_start_top_margin_title">Start Top Margin</string>
+    <string name="dsb_start_bottom_margin_title">Start Bottom Margin</string>
+    <string name="dsb_end_top_margin_title">End Top Margin</string>
+    <string name="dsb_end_bottom_margin_title">End Bottom Margin</string>
     <!-- Xposed Others -->
     <string name="qs_header">سربرگ تنظیم‌سریع</string>
     <string name="hide_carrier_group_title">مخفی کردن اپراتور</string>
@@ -1212,6 +1234,17 @@
     <string name="lockscreen_weather_selection_str_border_gradient">تاریک با حاشیه های گرادیان</string>
     <string name="lockscreen_weather_font_title">فونت آب و هوا</string>
     <string name="lockscreen_weather_font_desc">استفاده از فونت سفارشی برای متن آب و هوا</string>
+    <!-- Media art -->
+    <string name="media_art_title">Show Media Album Art</string>
+    <string name="media_art_summary">Display media album art when available</string>
+    <string name="media_art_blur_level_title">Blur Level</string>
+    <!-- Album art filter -->
+    <string name="albumart_filter_title">Media Album Art Filter</string>
+    <string name="albumart_filter_none">None</string>
+    <string name="albumart_filter_grayscale">Grayscale</string>
+    <string name="albumart_filter_tint">Accent Tinted</string>
+    <string name="albumart_filter_blur">Blur</string>
+    <string name="albumart_filter_grayblur">Grayscale and Blurred</string>
     <!-- Launcher mods -->
     <string name="section_title_icons">Icons</string>
     <string name="section_title_home_screen">Home Screen</string>
