@@ -180,3 +180,15 @@ private fun repeatString(str: String, times: Int): String {
     }
     return result.toString()
 }
+
+fun Any.dumpPreferenceKeys() {
+    for (i in 0 until callMethod("getPreferenceCount") as Int) {
+        val preference = callMethod("getPreference", i)!!
+
+        log("${preference::class.java.simpleName} -> Key: ${preference.callMethod("getKey")}")
+
+        if (preference::class.java.simpleName == "PreferenceCategory") {
+            preference.dumpPreferenceKeys()
+        }
+    }
+}
