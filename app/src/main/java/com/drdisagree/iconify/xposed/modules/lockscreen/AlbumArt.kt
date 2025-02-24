@@ -26,6 +26,7 @@ import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.XposedHook.Com
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.callMethod
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.callMethodSilently
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.getField
+import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.getFieldSilently
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookConstructor
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookMethod
 import com.drdisagree.iconify.xposed.utils.XPrefs.Xprefs
@@ -132,7 +133,7 @@ class AlbumArt(context: Context) : ModPack(context) {
         fun hookMediaData(param: MethodHookParam) {
             val mediaData = param.args[2]
             val artWork = mediaData.callMethodSilently("getArtwork") as? Icon
-                ?: mediaData.getField("artwork") as? Icon
+                ?: mediaData.getFieldSilently("artwork") as? Icon
             val drawable = artWork?.loadDrawable(mContext)
 
             if (drawable != mArtworkDrawable) {
