@@ -48,6 +48,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.concurrent.atomic.AtomicBoolean
 
 class NavigationBar : BaseFragment() {
@@ -453,10 +454,24 @@ class NavigationBar : BaseFragment() {
                         "dimen",
                         "navigation_handle_bottom",
                         finalBottomSpace[0].toString() + "dp"
+                    ),
+                    ResourceEntry(
+                        PIXEL_LAUNCHER_PACKAGE,
+                        "dimen",
+                        "taskbar_stashed_handle_width",
+                        finalPillWidth[0].toString() + "dp"
+                    ),
+                    ResourceEntry(
+                        LAUNCHER3_PACKAGE,
+                        "dimen",
+                        "taskbar_stashed_handle_width",
+                        finalPillWidth[0].toString() + "dp"
                     )
                 )
 
-                binding.pillShape.pillShapeReset.visibility = View.VISIBLE
+                withContext(Dispatchers.Main) {
+                    binding.pillShape.pillShapeReset.visibility = View.VISIBLE
+                }
 
                 delay(SWITCH_ANIMATION_DELAY)
                 restartSystemUI()
@@ -483,10 +498,14 @@ class NavigationBar : BaseFragment() {
                 removeResourceFromOverlay(
                     ResourceEntry(SYSTEMUI_PACKAGE, "dimen", "navigation_home_handle_width"),
                     ResourceEntry(SYSTEMUI_PACKAGE, "dimen", "navigation_handle_radius"),
-                    ResourceEntry(SYSTEMUI_PACKAGE, "dimen", "navigation_handle_bottom")
+                    ResourceEntry(SYSTEMUI_PACKAGE, "dimen", "navigation_handle_bottom"),
+                    ResourceEntry(PIXEL_LAUNCHER_PACKAGE, "dimen", "taskbar_stashed_handle_width"),
+                    ResourceEntry(LAUNCHER3_PACKAGE, "dimen", "taskbar_stashed_handle_width")
                 )
 
-                binding.pillShape.pillShapeReset.visibility = View.GONE
+                withContext(Dispatchers.Main) {
+                    binding.pillShape.pillShapeReset.visibility = View.GONE
+                }
 
                 delay(SWITCH_ANIMATION_DELAY)
                 restartSystemUI()
