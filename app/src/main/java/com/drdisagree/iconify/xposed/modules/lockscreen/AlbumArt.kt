@@ -82,10 +82,12 @@ class AlbumArt(context: Context) : ModPack(context) {
         )
         val mediaDataManagerClass = findClass(
             "$SYSTEMUI_PACKAGE.media.controls.domain.pipeline.MediaDataManager",
+            "$SYSTEMUI_PACKAGE.media.controls.pipeline.MediaDataManager",
             suppressError = true
         )
         val mediaDeviceManagerClass = findClass(
-            "$SYSTEMUI_PACKAGE.media.controls.domain.pipeline.MediaDeviceManager"
+            "$SYSTEMUI_PACKAGE.media.controls.domain.pipeline.MediaDeviceManager",
+            "$SYSTEMUI_PACKAGE.media.controls.pipeline.MediaDeviceManager"
         )
         val keyguardSliceProviderClass = findClass(
             "$SYSTEMUI_PACKAGE.keyguard.KeyguardSliceProvider"
