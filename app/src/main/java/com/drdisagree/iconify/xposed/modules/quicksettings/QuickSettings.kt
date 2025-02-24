@@ -738,7 +738,10 @@ class QuickSettings(context: Context) : ModPack(context) {
 
     private fun compactMediaPlayer() {
         val mediaViewControllerClass =
-            findClass("$SYSTEMUI_PACKAGE.media.controls.ui.controller.MediaViewController")
+            findClass(
+                "$SYSTEMUI_PACKAGE.media.controls.ui.controller.MediaViewController",
+                "$SYSTEMUI_PACKAGE.media.controls.ui.MediaViewController"
+            )
 
         mediaViewControllerClass
             .hookMethod("obtainViewState")
@@ -747,7 +750,7 @@ class QuickSettings(context: Context) : ModPack(context) {
 
                 val mediaHostState = param.args[0] ?: return@runBefore
 
-                // for a14 and above
+                // For a14 and above
                 mediaHostState.javaClass
                     .hookMethod("getExpansion")
                     .suppressError()
@@ -757,7 +760,7 @@ class QuickSettings(context: Context) : ModPack(context) {
                         param2.result = 0f
                     }
 
-                // for a13 and below
+                // For some a13 and below ROMs
                 mediaHostState.javaClass
                     .hookConstructor()
                     .runAfter { param2 ->
