@@ -383,6 +383,7 @@ class ColorizeNotificationView(context: Context) : ModPack(context) {
 
         notificationBackgroundViewClass
             .hookMethod("setTint")
+            .suppressError()
             .parameters(Int::class.javaPrimitiveType)
             .runBefore { param ->
                 if (!coloredNotificationView) return@runBefore
