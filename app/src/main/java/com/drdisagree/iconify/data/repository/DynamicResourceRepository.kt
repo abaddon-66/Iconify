@@ -18,7 +18,6 @@ class DynamicResourceRepository(
         val packageNames = resources.map { it.packageName }
         val startEndTags = resources.map { it.startEndTag }
         val resourceNames = resources.map { it.resourceName }
-        val resourceValues = resources.map { it.resourceValue }
         val isPortraits = resources.map { it.isPortrait }
         val isLandscapes = resources.map { it.isLandscape }
         val isNightModes = resources.map { it.isNightMode }
@@ -27,7 +26,6 @@ class DynamicResourceRepository(
             packageNames,
             startEndTags,
             resourceNames,
-            resourceValues,
             isPortraits,
             isLandscapes,
             isNightModes

@@ -11,14 +11,10 @@ import com.drdisagree.iconify.data.entity.DynamicResourceEntity
 import com.drdisagree.iconify.data.repository.DynamicResourceRepository
 import com.drdisagree.iconify.utils.SystemUtils.hasStoragePermission
 import com.drdisagree.iconify.utils.SystemUtils.requestStoragePermission
-import com.drdisagree.iconify.utils.extension.TaskExecutor
-import com.drdisagree.iconify.utils.overlay.compiler.DynamicCompiler.buildOverlay
+import com.drdisagree.iconify.utils.overlay.compiler.DynamicCompiler.buildDynamicOverlay
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
-import java.io.IOException
 import java.util.concurrent.atomic.AtomicBoolean
-import kotlin.concurrent.Volatile
 
 object ResourceManager {
 
@@ -37,10 +33,33 @@ object ResourceManager {
             try {
                 withContext(Dispatchers.IO) {
                     saveResources(*resourceEntries.filterNotNull().toTypedArray())
+
+                    try {
+                        buildDynamicOverlay()
+                    } catch (e: Exception) {
+                        Log.i(TAG, "buildDynamicOverlay: ", e)
+                        hasErroredOut.set(true)
+                    }
                 }
             } catch (e: Exception) {
                 hasErroredOut.set(true)
                 Log.e(TAG, "buildOverlayWithResource:", e)
+            }
+
+            withContext(Dispatchers.Main) {
+                if (!hasErroredOut.get()) {
+                    Toast.makeText(
+                        appContext,
+                        appContextLocale.resources.getString(R.string.toast_applied),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                } else {
+                    Toast.makeText(
+                        appContext,
+                        appContextLocale.resources.getString(R.string.toast_error),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
             }
 
             return hasErroredOut.get()
@@ -58,10 +77,33 @@ object ResourceManager {
             try {
                 withContext(Dispatchers.IO) {
                     removeResources(*resourceEntries.filterNotNull().toTypedArray())
+
+                    try {
+                        buildDynamicOverlay()
+                    } catch (e: Exception) {
+                        Log.i(TAG, "buildDynamicOverlay: ", e)
+                        hasErroredOut.set(true)
+                    }
                 }
             } catch (e: Exception) {
                 hasErroredOut.set(true)
                 Log.e(TAG, "removeResourceFromOverlay:", e)
+            }
+
+            withContext(Dispatchers.Main) {
+                if (!hasErroredOut.get()) {
+                    Toast.makeText(
+                        appContext,
+                        appContextLocale.resources.getString(R.string.toast_applied),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                } else {
+                    Toast.makeText(
+                        appContext,
+                        appContextLocale.resources.getString(R.string.toast_error),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
             }
 
             return hasErroredOut.get()
@@ -86,8 +128,6 @@ object ResourceManager {
                 }
             )
         }
-
-        DynamicCompilerExecutor().execute()
     }
 
     private suspend fun removeResources(vararg resourceEntries: ResourceEntry) {
@@ -106,8 +146,6 @@ object ResourceManager {
                 }
             )
         }
-
-        DynamicCompilerExecutor().execute()
     }
 
     suspend fun generateXmlStructureForAllResources(): MutableMap<String, MutableMap<String, ArrayList<String>>> {
@@ -178,42 +216,5 @@ object ResourceManager {
         }
 
         return result
-    }
-
-    private class DynamicCompilerExecutor : TaskExecutor<Void?, Void?, Void?>() {
-
-        @Volatile
-        var hasErroredOut = false
-
-        override fun onPreExecute() {}
-
-        override fun doInBackground(vararg params: Void?): Void? {
-            try {
-                runBlocking {
-                    buildOverlay()
-                }
-            } catch (e: IOException) {
-                Log.i(TAG, "doInBackground: ", e)
-                hasErroredOut = true
-            }
-
-            return null
-        }
-
-        override fun onPostExecute(result: Void?) {
-            if (!hasErroredOut) {
-                Toast.makeText(
-                    appContext,
-                    appContextLocale.resources.getString(R.string.toast_applied),
-                    Toast.LENGTH_SHORT
-                ).show()
-            } else {
-                Toast.makeText(
-                    appContext,
-                    appContextLocale.resources.getString(R.string.toast_error),
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-        }
     }
 }

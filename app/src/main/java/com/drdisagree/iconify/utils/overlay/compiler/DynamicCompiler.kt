@@ -37,7 +37,7 @@ object DynamicCompiler {
 
     @JvmOverloads
     @Throws(IOException::class)
-    suspend fun buildOverlay(force: Boolean = true): Boolean {
+    suspend fun buildDynamicOverlay(force: Boolean = true): Boolean {
         mForce = force
 
         try {

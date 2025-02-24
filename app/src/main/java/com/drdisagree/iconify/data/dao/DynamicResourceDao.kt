@@ -22,7 +22,6 @@ interface DynamicResourceDao {
         packageName IN (:packageNames) AND
         startEndTag IN (:startEndTags) AND
         resourceName IN (:resourceNames) AND
-        resourceValue IN (:resourceValues) AND
         isPortrait IN (:isPortraits) AND
         isLandscape IN (:isLandscapes) AND
         isNightMode IN (:isNightModes))
@@ -32,7 +31,6 @@ interface DynamicResourceDao {
         packageNames: List<String>,
         startEndTags: List<String>,
         resourceNames: List<String>,
-        resourceValues: List<String>,
         isPortraits: List<Boolean>,
         isLandscapes: List<Boolean>,
         isNightModes: List<Boolean>

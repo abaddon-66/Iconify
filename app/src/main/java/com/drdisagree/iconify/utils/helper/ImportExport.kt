@@ -556,7 +556,7 @@ object ImportExport {
                                 key.contains("IconifyComponentDynamic") && !dynamicOverlay -> { // Dynamic overlays
                                     dynamicOverlay = true
                                     try {
-                                        DynamicCompiler.buildOverlay(false)
+                                        DynamicCompiler.buildDynamicOverlay(false)
                                     } catch (exception: Exception) {
                                         Log.e(
                                             "ImportSettings",
