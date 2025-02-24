@@ -388,7 +388,10 @@ class QSFluidThemeA13(context: Context) : ModPack(context) {
             }
 
         brightnessMirrorControllerClass
-            .hookMethod("onFinishInflate")
+            .hookMethod(
+                "onFinishInflate",
+                "reinflate"
+            )
             .runAfter { param ->
                 if (!fluidQsThemeEnabled) return@runAfter
 
