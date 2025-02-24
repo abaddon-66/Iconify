@@ -81,7 +81,8 @@ class AlbumArt(context: Context) : ModPack(context) {
             "$SYSTEMUI_PACKAGE.statusbar.phone.ScrimController"
         )
         val mediaDataManagerClass = findClass(
-            "$SYSTEMUI_PACKAGE.media.controls.domain.pipeline.MediaDataManager"
+            "$SYSTEMUI_PACKAGE.media.controls.domain.pipeline.MediaDataManager",
+            suppressError = true
         )
         val mediaDeviceManagerClass = findClass(
             "$SYSTEMUI_PACKAGE.media.controls.domain.pipeline.MediaDeviceManager"
@@ -141,6 +142,8 @@ class AlbumArt(context: Context) : ModPack(context) {
         }
 
         try {
+            if (mediaDataManagerClass == null) throw Throwable()
+
             mediaDataManagerClass
                 .hookMethod("onMediaDataLoaded")
                 .throwError()
