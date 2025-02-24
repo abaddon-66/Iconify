@@ -293,9 +293,20 @@ class OpQsHeader(context: Context) : ModPack(context) {
             .hookConstructor()
             .run(getMediaOutputDialog)
 
+        var lastInitTime = 0L
+        val cooldownTime = 500L
+
         qsTileViewImplClass
             .hookConstructor()
-            .runAfter { param -> qsTileViewImplParam = param }
+            .runAfter { param ->
+                qsTileViewImplParam = param
+
+                val currentTime = System.currentTimeMillis()
+                if (currentTime - lastInitTime >= cooldownTime) {
+                    initResources()
+                    lastInitTime = currentTime
+                }
+            }
 
         tileLayoutClass
             .hookConstructor()
