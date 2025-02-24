@@ -83,8 +83,9 @@ class OpacityModifier(context: Context) : ModPack(context) {
                 val deviceProfile = launcher.callMethod("getDeviceProfile")
                 val isTaskbarPresentInApps =
                     deviceProfile.callMethod("isTaskbarPresentInApps") as Boolean
+                val currentResult = param.result as Int
 
-                if (!isTaskbarPresentInApps) {
+                if (currentResult != Color.TRANSPARENT && !isTaskbarPresentInApps) {
                     param.result = ColorUtils.setAlphaComponent(
                         param.result as Int,
                         recentsBackgroundOpacity
