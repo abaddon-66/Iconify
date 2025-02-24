@@ -76,7 +76,6 @@ import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.applyBlur
 import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.findChildIndexContainsTag
 import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.reAddView
 import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.toPx
-import com.drdisagree.iconify.xposed.modules.extras.utils.isQsTileOverlayEnabled
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.ResourceHookManager
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.XposedHook.Companion.findClass
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.callMethod
@@ -196,6 +195,7 @@ class OpQsHeader(context: Context) : ModPack(context) {
             expandedQsGap = getSliderInt(OP_QS_HEADER_GAP_EXPANDED, 0)
             customQsTextColor = getBoolean(CUSTOM_QS_TEXT_COLOR, false)
             selectedQsTextColor = getString(SELECTED_QS_TEXT_COLOR, "0")!!.toInt()
+            isQsTileOverlayEnabled = getIsQsTileOverlayEnabled()
         }
 
         when (key.firstOrNull()) {
@@ -1916,5 +1916,17 @@ class OpQsHeader(context: Context) : ModPack(context) {
     companion object {
         var launchableImageView: Class<*>? = null
         var launchableLinearLayout: Class<*>? = null
+        var isQsTileOverlayEnabled = getIsQsTileOverlayEnabled()
+
+        private fun getIsQsTileOverlayEnabled(): Boolean {
+            for (i in 0..25) {
+                if (Xprefs.getBoolean("IconifyComponentQSSN$i.overlay") ||
+                    Xprefs.getBoolean("IconifyComponentQSSP$i.overlay")
+                ) {
+                    return true
+                }
+            }
+            return false
+        }
     }
 }
