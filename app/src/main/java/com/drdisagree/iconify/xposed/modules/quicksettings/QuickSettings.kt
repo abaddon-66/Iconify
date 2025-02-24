@@ -342,12 +342,10 @@ class QuickSettings(context: Context) : ModPack(context) {
 
         qsTileViewImplClass
             .hookConstructor()
-            .runAfter { initQsAccentColor() }
-
-        qsTileViewImplClass
-            .hookConstructor()
             .runAfter { param ->
                 if (!customQsTextColor) return@runAfter
+
+                initQsAccentColor()
 
                 @ColorInt val color: Int = qsIconLabelColor
                 @ColorInt val colorAlpha =

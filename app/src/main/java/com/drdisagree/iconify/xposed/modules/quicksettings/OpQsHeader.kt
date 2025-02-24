@@ -295,10 +295,7 @@ class OpQsHeader(context: Context) : ModPack(context) {
 
         qsTileViewImplClass
             .hookConstructor()
-            .runAfter { param ->
-                qsTileViewImplParam = param
-                initResources()
-            }
+            .runAfter { param -> qsTileViewImplParam = param }
 
         tileLayoutClass
             .hookConstructor()

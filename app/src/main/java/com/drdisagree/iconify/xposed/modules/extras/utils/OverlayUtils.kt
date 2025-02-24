@@ -1,16 +1,30 @@
 package com.drdisagree.iconify.xposed.modules.extras.utils
 
-import com.topjohnwu.superuser.Shell
+import com.drdisagree.iconify.data.common.References.FABRICATED_SB_COLOR_SOURCE
+import com.drdisagree.iconify.xposed.utils.XPrefs.Xprefs
 
 val isQsTileOverlayEnabled: Boolean
-    get() = Shell.cmd(
-            "[[ $(cmd overlay list | grep -oE '\\[x\\] IconifyComponentQSS[N|P][0-9]+.overlay') ]] && echo 1 || echo 0"
-    ).exec().out.firstOrNull() == "1"
+    get() {
+        for (i in 0..25) {
+            if (Xprefs.getBoolean("IconifyComponentQSSN$i.overlay") ||
+                Xprefs.getBoolean("IconifyComponentQSSP$i.overlay")
+            ) {
+                return true
+            }
+        }
+        return false
+    }
 
 val isPixelVariant: Boolean
-    get() = Shell.cmd(
-        "[[ $(cmd overlay list | grep -oE '\\[x\\] IconifyComponentQSSP[0-9]+.overlay') ]] && echo 1 || echo 0"
-    ).exec().out.firstOrNull() == "1"
+    get() {
+        for (i in 0..25) {
+            if (Xprefs.getBoolean("IconifyComponentQSSP$i.overlay")) {
+                return true
+            }
+        }
+        return false
+    }
 
 val coloredStatusbarOverlayEnabled: Boolean
-    get() = Shell.cmd("cmd overlay list | grep 'SBTint'").exec().out.any { it.contains("[x]") }
+    get() = Xprefs.getBoolean("IconifyComponentSBTint.overlay") ||
+            Xprefs.getString(FABRICATED_SB_COLOR_SOURCE, "System") == "System"
