@@ -143,13 +143,13 @@ object BackupRestore {
                         val innerKeys = valueJson.keys()
 
                         while (innerKeys.hasNext()) {
-                            val resourceName = innerKeys.next()
-                            val innerValue = valueJson.getString(resourceName) ?: continue
+                            val startEndTag = innerKeys.next()
+                            val innerValue = valueJson.getString(startEndTag) ?: continue
                             val innerValueJson = JSONObject(innerValue)
                             val innerValueKeys = innerValueJson.keys()
 
                             while (innerValueKeys.hasNext()) {
-                                val startEndTag = innerValueKeys.next()
+                                val resourceName = innerValueKeys.next()
                                 val resourceValue = innerValueJson.getString(startEndTag)
                                     ?: continue
 
