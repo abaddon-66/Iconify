@@ -170,16 +170,33 @@ object BackupRestore {
                 }
             }
 
+            val repository = DynamicResourceRepository(
+                DynamicResourceDatabase.getInstance().dynamicResourceDao()
+            )
+
             if (resourceEntries.isNotEmpty()) {
-                DynamicResourceRepository(
-                    DynamicResourceDatabase.getInstance().dynamicResourceDao()
-                ).insertResources(resourceEntries)
+                repository.insertResources(resourceEntries)
 
                 RPrefs.clearPrefs(
                     DYNAMIC_OVERLAY_RESOURCES,
                     DYNAMIC_OVERLAY_RESOURCES_LAND,
                     DYNAMIC_OVERLAY_RESOURCES_NIGHT
                 )
+            }
+
+            // Fix inverted startEndTag & resourceName
+            repository.getAllResources().forEach { entry ->
+                if (entry.startEndTag.contains("dummy") || entry.startEndTag.contains("_")) {
+                    repository.deleteResources(listOf(entry))
+                    repository.insertResources(
+                        listOf(
+                            entry.copy(
+                                startEndTag = entry.resourceName,
+                                resourceName = entry.startEndTag
+                            )
+                        )
+                    )
+                }
             }
         }
     }
