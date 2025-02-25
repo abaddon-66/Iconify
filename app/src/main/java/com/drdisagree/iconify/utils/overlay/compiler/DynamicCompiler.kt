@@ -123,7 +123,7 @@ object DynamicCompiler {
                 Shell.cmd("rm -rf $BACKUP_DIR").exec()
 
                 // Disable the overlays in case they are already enabled
-                disableOverlays(*dynamicOverlayList.toTypedArray())
+                disableOverlays(*resourcesMap.keys.toTypedArray())
 
                 // Install from files dir
                 for (packageName in resourcesMap.keys) {
@@ -146,7 +146,7 @@ object DynamicCompiler {
                 mountRO()
 
                 // Enable the overlays
-                enableOverlays(*dynamicOverlayList.toTypedArray())
+                enableOverlays(*resourcesMap.keys.toTypedArray())
             }
         } catch (e: Exception) {
             Log.e(TAG, "Failed to build overlay! Exiting...", e)
@@ -241,9 +241,7 @@ object DynamicCompiler {
                     "rm -f $filePath",              // Remove the file if it exists
                     "touch $filePath"               // Create an empty file
                 ).apply {
-                    resourceList.forEach { line ->
-                        add("echo '$line\n' >> $filePath")
-                    }
+                    add("echo '${resourceList.joinToString("\n")}' >> $filePath")
                 }
 
                 Shell.cmd(*commands.toTypedArray()).exec()
