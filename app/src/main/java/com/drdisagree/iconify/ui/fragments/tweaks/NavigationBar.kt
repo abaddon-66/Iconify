@@ -38,7 +38,6 @@ import com.drdisagree.iconify.utils.SystemUtils.hasStoragePermission
 import com.drdisagree.iconify.utils.SystemUtils.requestStoragePermission
 import com.drdisagree.iconify.utils.SystemUtils.restartSystemUI
 import com.drdisagree.iconify.utils.overlay.OverlayUtils
-import com.drdisagree.iconify.utils.overlay.OverlayUtils.disableOverlay
 import com.drdisagree.iconify.utils.overlay.OverlayUtils.enableOverlay
 import com.drdisagree.iconify.utils.overlay.manager.resource.ResourceEntry
 import com.drdisagree.iconify.utils.overlay.manager.resource.ResourceManager.buildOverlayWithResource
@@ -81,10 +80,8 @@ class NavigationBar : BaseFragment() {
         binding.nbGcamLagFix.isSwitchChecked = getBoolean(NAVBAR_GCAM_LAG_FIX)
         binding.nbLowerSens.isSwitchChecked = getBoolean(NAVBAR_LOW_SENS)
         binding.nbHidePill.isSwitchChecked = getBoolean(NAVBAR_HIDE_PILL)
-        binding.nbMonetPill.isSwitchChecked =
-            getBoolean("IconifyComponentNBMonetPill.overlay")
-        binding.nbHideKbButtons.isSwitchChecked =
-            getBoolean("IconifyComponentNBHideKBButton.overlay")
+        binding.nbMonetPill.isSwitchChecked = getBoolean("IconifyComponentNBMonetPill.overlay")
+        binding.nbHideKbButtons.isSwitchChecked = getBoolean("NBHideKBButton")
 
         binding.nbDisableLeftGesture.isSwitchChecked = isLeftGestureDisabled
         binding.nbDisableRightGesture.isSwitchChecked = isRightGestureDisabled
@@ -183,6 +180,7 @@ class NavigationBar : BaseFragment() {
                 true
             )
         }
+        binding.nbImmersiveV2.visibility = if (isAtleastA14) View.GONE else View.VISIBLE
 
         // Immersive V3
         val nbImmersiveV3Clicked = AtomicBoolean(false)
@@ -210,6 +208,7 @@ class NavigationBar : BaseFragment() {
                 true
             )
         }
+        binding.nbImmersiveV3.visibility = if (isAtleastA14) View.GONE else View.VISIBLE
 
         // GCam Lag Fix
         val nbGcamLagFixClicked = AtomicBoolean(false)
@@ -325,26 +324,44 @@ class NavigationBar : BaseFragment() {
         binding.nbHideKbButtons.setSwitchChangeListener { _: CompoundButton?, isSwitchChecked: Boolean ->
             CoroutineScope(Dispatchers.IO).launch {
                 delay(SWITCH_ANIMATION_DELAY)
+                putBoolean("NBHideKBButton", isSwitchChecked)
 
-                val resource = listOf(
+                val resource = mutableListOf(
                     ResourceEntry(
-                        FRAMEWORK_PACKAGE,
-                        "bool",
-                        "config_imeDrawsImeNavBar",
-                        "false"
-                    )
-                )
+                        SYSTEMUI_PACKAGE,
+                        "string",
+                        "config_navBarLayoutHandle",
+                        ";home_handle;"
+                    ).apply {
+                        isPortrait = true
+                        isLandscape = true
+                    },
+                    ResourceEntry(
+                        SYSTEMUI_PACKAGE,
+                        "string",
+                        "config_navBarLayout",
+                        ""
+                    ).apply {
+                        isPortrait = true
+                        isLandscape = true
+                    }
+                ).apply {
+                    if (isAtleastA14) {
+                        add(
+                            ResourceEntry(
+                                FRAMEWORK_PACKAGE,
+                                "bool",
+                                "config_imeDrawsImeNavBar",
+                                "false"
+                            )
+                        )
+                    }
+                }
 
                 if (isSwitchChecked) {
-                    if (isAtleastA14) {
-                        buildOverlayWithResource(*resource.toTypedArray())
-                    }
-                    enableOverlay("IconifyComponentNBHideKBButton.overlay")
+                    buildOverlayWithResource(*resource.toTypedArray())
                 } else {
-                    if (isAtleastA14) {
-                        removeResourceFromOverlay(*resource.toTypedArray())
-                    }
-                    disableOverlay("IconifyComponentNBHideKBButton.overlay")
+                    removeResourceFromOverlay(*resource.toTypedArray())
                 }
             }
         }
@@ -704,12 +721,6 @@ class NavigationBar : BaseFragment() {
         val resources = mutableListOf(
             ResourceEntry(
                 FRAMEWORK_PACKAGE,
-                "bool",
-                "config_imeDrawsImeNavBar",
-                "false"
-            ),
-            ResourceEntry(
-                FRAMEWORK_PACKAGE,
                 "dimen",
                 "navigation_bar_height",
                 barHeight
@@ -808,6 +819,15 @@ class NavigationBar : BaseFragment() {
                             "taskbar_stashed_handle_height",
                             "0dp"
                         )
+                    )
+                )
+            } else {
+                add(
+                    ResourceEntry(
+                        FRAMEWORK_PACKAGE,
+                        "bool",
+                        "config_imeDrawsImeNavBar",
+                        "false"
                     )
                 )
             }
