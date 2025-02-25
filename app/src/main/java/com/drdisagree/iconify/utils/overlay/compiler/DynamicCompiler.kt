@@ -129,8 +129,10 @@ object DynamicCompiler {
                 for (packageName in resourcesMap.keys) {
                     val apkName = "IconifyComponent${getOverlayName(packageName)}.apk"
 
-                    Shell.cmd("pm install -r $DATA_DIR/$apkName").exec()
-                    Shell.cmd("rm -rf $DATA_DIR/$apkName").exec()
+                    Shell.cmd(
+                        "pm install -r $DATA_DIR/$apkName",
+                        "rm -rf $DATA_DIR/$apkName"
+                    ).exec()
                 }
 
                 // Move to system overlay dir
@@ -161,21 +163,25 @@ object DynamicCompiler {
         symLinkBinaries()
 
         // Clean data directory
-        Shell.cmd("rm -rf $TEMP_DIR").exec()
-        Shell.cmd("rm -rf $DATA_DIR/Overlays").exec()
+        Shell.cmd(
+            "rm -rf $TEMP_DIR",
+            "rm -rf $DATA_DIR/Overlays"
+        ).exec()
 
         // Extract overlay from assets
         copyAssets("Overlays/$mPackage/$mOverlayName")
 
         // Create temp directory
-        Shell.cmd("rm -rf $TEMP_DIR; mkdir -p $TEMP_DIR").exec()
-        Shell.cmd("mkdir -p $TEMP_OVERLAY_DIR").exec()
-        Shell.cmd("mkdir -p $TEMP_CACHE_DIR").exec()
-        Shell.cmd("mkdir -p $UNSIGNED_UNALIGNED_DIR").exec()
-        Shell.cmd("mkdir -p $UNSIGNED_DIR").exec()
-        Shell.cmd("mkdir -p $SIGNED_DIR").exec()
-        Shell.cmd("mkdir -p $TEMP_CACHE_DIR/$mPackage/").exec()
-        Shell.cmd("mkdir -p $BACKUP_DIR").exec()
+        Shell.cmd(
+            "rm -rf $TEMP_DIR; mkdir -p $TEMP_DIR",
+            "mkdir -p $TEMP_OVERLAY_DIR",
+            "mkdir -p $TEMP_CACHE_DIR",
+            "mkdir -p $UNSIGNED_UNALIGNED_DIR",
+            "mkdir -p $UNSIGNED_DIR",
+            "mkdir -p $SIGNED_DIR",
+            "mkdir -p $TEMP_CACHE_DIR/$mPackage/",
+            "mkdir -p $BACKUP_DIR"
+        ).exec()
     }
 
     private fun postExecute(hasErroredOut: Boolean) {
@@ -199,8 +205,10 @@ object DynamicCompiler {
         }
 
         // Clean temp directory
-        Shell.cmd("rm -rf $TEMP_DIR").exec()
-        Shell.cmd("rm -rf $DATA_DIR/Overlays").exec()
+        Shell.cmd(
+            "rm -rf $TEMP_DIR",
+            "rm -rf $DATA_DIR/Overlays"
+        ).exec()
     }
 
     private fun moveOverlaysToCache() {
@@ -216,24 +224,29 @@ object DynamicCompiler {
     ): Boolean {
         Shell.cmd("mkdir -p $source/res").exec()
 
-        val values = arrayOf("values", "values-land", "values-night")
+        val resourceTypes = arrayOf(
+            ResourceType.PORTRAIT to "values",
+            ResourceType.LANDSCAPE to "values-land",
+            ResourceType.NIGHT to "values-night"
+        )
 
-        for (i in 0..2) {
-            Shell.cmd("mkdir -p " + source + "/res/" + values[i]).exec()
-
-            val resourceType = when (i) {
-                0 -> ResourceType.PORTRAIT
-                1 -> ResourceType.LANDSCAPE
-                2 -> ResourceType.NIGHT
-                else -> throw Exception("Invalid resource type")
-            }
-
-            val filePath = "$source/res/${values[i]}/iconify.xml"
+        resourceTypes.forEach { (resourceType, values) ->
+            val dirPath = "$source/res/${values}"
+            val filePath = "$source/res/${values}/iconify.xml"
             val resourceList = mResource[resourceType]?.let { ArrayList(it) }
 
             if (!resourceList.isNullOrEmpty()) {
-                Shell.cmd("rm -f $filePath; touch $filePath").exec()
-                resourceList.forEach { line -> Shell.cmd("echo '$line\n' >> $filePath").exec() }
+                val commands = mutableListOf(
+                    "mkdir -p $dirPath",            // Create the directory
+                    "rm -f $filePath",              // Remove the file if it exists
+                    "touch $filePath"               // Create an empty file
+                ).apply {
+                    resourceList.forEach { line ->
+                        add("echo '$line\n' >> $filePath")
+                    }
+                }
+
+                Shell.cmd(*commands.toTypedArray()).exec()
             }
         }
 
