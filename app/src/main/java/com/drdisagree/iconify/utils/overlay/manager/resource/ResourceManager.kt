@@ -13,6 +13,7 @@ import com.drdisagree.iconify.utils.SystemUtils.hasStoragePermission
 import com.drdisagree.iconify.utils.SystemUtils.requestStoragePermission
 import com.drdisagree.iconify.utils.overlay.compiler.DynamicCompiler
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -38,14 +39,18 @@ object ResourceManager {
                 saveResources(*resourceEntries.filterNotNull().toTypedArray())
 
                 try {
-                    hasErroredOut.set(DynamicCompiler.buildDynamicOverlay())
+                    val distinctPackageNames = resourceEntries.filterNotNull()
+                        .map { it.packageName }
+                        .distinct()
+
+                    hasErroredOut.set(DynamicCompiler.buildDynamicOverlay(overlaysToUpdate = distinctPackageNames))
                 } catch (e: Exception) {
                     Log.i(TAG, "buildOverlayWithResource: ", e)
                     hasErroredOut.set(true)
                 }
-            }
 
-            showToast(hasErroredOut)
+                showToast(hasErroredOut)
+            }
 
             return hasErroredOut.get()
         }
@@ -63,14 +68,18 @@ object ResourceManager {
                 removeResources(*resourceEntries.filterNotNull().toTypedArray())
 
                 try {
-                    hasErroredOut.set(DynamicCompiler.buildDynamicOverlay())
+                    val distinctPackageNames = resourceEntries.filterNotNull()
+                        .map { it.packageName }
+                        .distinct()
+
+                    hasErroredOut.set(DynamicCompiler.buildDynamicOverlay(overlaysToUpdate = distinctPackageNames))
                 } catch (e: Exception) {
                     Log.i(TAG, "removeResourceFromOverlay: ", e)
                     hasErroredOut.set(true)
                 }
-            }
 
-            showToast(hasErroredOut)
+                showToast(hasErroredOut)
+            }
 
             return hasErroredOut.get()
         }
@@ -114,7 +123,7 @@ object ResourceManager {
         }
     }
 
-    suspend fun generateXmlStructureForAllResources(): MutableMap<String, MutableMap<ResourceType, ArrayList<String>>> {
+    suspend fun generateXmlStructureForAllResources(overlaysToUpdate: List<String>? = null): MutableMap<String, MutableMap<ResourceType, ArrayList<String>>> {
         return withContext(Dispatchers.IO) {
             val resourceEntries = repository.getAllResources()
             val resourcesGrouped = resourceEntries.groupBy { it.packageName }
@@ -123,6 +132,8 @@ object ResourceManager {
             val emptyResources = getEmptyResources()
 
             resourcesGrouped.forEach { (packageName, resources) ->
+                if (overlaysToUpdate?.contains(packageName) == false) return@forEach
+
                 if (!DYNAMIC_OVERLAYABLE_PACKAGES.contains(packageName)) {
                     throw Exception("Package $packageName is not dynamically overlayable.")
                 }
@@ -158,14 +169,6 @@ object ResourceManager {
                 result[packageName] = xmlPartsMap
             }
 
-            DYNAMIC_OVERLAYABLE_PACKAGES.forEach { packageName ->
-                if (!result.containsKey(packageName)) {
-                    val xmlPartsMap: MutableMap<ResourceType, ArrayList<String>> = mutableMapOf()
-                    xmlPartsMap[ResourceType.PORTRAIT] = emptyResources[packageName]!!
-                    result[packageName] = xmlPartsMap
-                }
-            }
-
             result
         }
     }
@@ -187,6 +190,7 @@ object ResourceManager {
 
     private suspend fun showToast(hasErroredOut: AtomicBoolean) {
         withContext(Dispatchers.Main) {
+            delay(500)
             if (!hasErroredOut.get()) {
                 Toast.makeText(
                     appContext,

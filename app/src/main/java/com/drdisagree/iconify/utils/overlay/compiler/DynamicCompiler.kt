@@ -45,16 +45,20 @@ object DynamicCompiler {
 
     @JvmOverloads
     @Throws(IOException::class)
-    suspend fun buildDynamicOverlay(force: Boolean = true): Boolean {
+    suspend fun buildDynamicOverlay(
+        force: Boolean = true,
+        overlaysToUpdate: List<String>? = null
+    ): Boolean {
         mForce = force
 
         try {
             Shell.cmd("mkdir -p $BACKUP_DIR").exec()
 
-            val resourcesMap = generateXmlStructureForAllResources()
+            val resourcesMap = generateXmlStructureForAllResources(overlaysToUpdate)
 
             // Create overlay for each package
             for (packageName in resourcesMap.keys) {
+                Log.i(TAG, packageName)
                 mPackage = packageName
 
                 mResource.clear()
@@ -67,14 +71,7 @@ object DynamicCompiler {
                     mResource[ResourceType.NIGHT] = ArrayList(it)
                 }
 
-                mOverlayName = when (mPackage) {
-                    FRAMEWORK_PACKAGE -> "Dynamic1"
-                    SYSTEMUI_PACKAGE -> "Dynamic2"
-                    PIXEL_LAUNCHER_PACKAGE -> "Dynamic3"
-                    LAUNCHER3_PACKAGE -> "Dynamic4"
-                    SETTINGS_PACKAGE -> "Dynamic5"
-                    else -> throw Exception("Unknown package: $mPackage")
-                }
+                mOverlayName = getOverlayName(packageName)
 
                 preExecute()
                 moveOverlaysToCache()
@@ -118,6 +115,7 @@ object DynamicCompiler {
                     postExecute(true)
                     return true
                 }
+
                 postExecute(false)
             }
 
@@ -128,8 +126,8 @@ object DynamicCompiler {
                 disableOverlays(*dynamicOverlayList.toTypedArray())
 
                 // Install from files dir
-                dynamicOverlayList.forEach { overlay ->
-                    val apkName = overlay.replace(".overlay", ".apk")
+                for (packageName in resourcesMap.keys) {
+                    val apkName = "IconifyComponent${getOverlayName(packageName)}.apk"
 
                     Shell.cmd("pm install -r $DATA_DIR/$apkName").exec()
                     Shell.cmd("rm -rf $DATA_DIR/$apkName").exec()
@@ -137,8 +135,8 @@ object DynamicCompiler {
 
                 // Move to system overlay dir
                 mountRW()
-                dynamicOverlayList.forEach { overlay ->
-                    val apkName = overlay.replace(".overlay", ".apk")
+                for (packageName in resourcesMap.keys) {
+                    val apkName = "IconifyComponent${getOverlayName(packageName)}.apk"
 
                     Shell.cmd("cp -rf $SIGNED_DIR/$apkName $SYSTEM_OVERLAY_DIR/$apkName").exec()
                     setPermissions(644, "/system/product/overlay/$apkName")
@@ -240,5 +238,16 @@ object DynamicCompiler {
         }
 
         return OverlayCompiler.createManifest(overlayName, targetPackage, source)
+    }
+
+    private fun getOverlayName(packageName: String): String {
+        return when (packageName) {
+            FRAMEWORK_PACKAGE -> "Dynamic1"
+            SYSTEMUI_PACKAGE -> "Dynamic2"
+            PIXEL_LAUNCHER_PACKAGE -> "Dynamic3"
+            LAUNCHER3_PACKAGE -> "Dynamic4"
+            SETTINGS_PACKAGE -> "Dynamic5"
+            else -> throw Exception("Unknown package: $packageName")
+        }
     }
 }
