@@ -94,9 +94,20 @@ object OverlayCompiler {
         } else {
             Log.e(
                 "$TAG - AAPT",
-                "Failed to build APK for $name\n${java.lang.String.join("\n", result.out)}"
+                "Failed to build APK for $name\n${result.out.joinToString("\n")}"
             )
-            writeLog("$TAG - AAPT", "Failed to build APK for $name", result.out)
+
+            val fileContents = Shell.cmd(
+                "find $source/res/values -type f -exec sh -c 'echo \"===== \$1 =====\"; cat \"\$1\"; echo' sh {} \\;"
+            ).exec().out
+
+            writeLog(
+                tag = "$TAG - AAPT",
+                header = "Failed to build APK for $name",
+                command = command,
+                fileContents = fileContents,
+                errorLog = result.out
+            )
         }
 
         return !result.isSuccess
