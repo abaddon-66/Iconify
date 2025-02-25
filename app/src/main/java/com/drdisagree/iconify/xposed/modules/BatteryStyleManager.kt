@@ -810,7 +810,12 @@ class BatteryStyleManager(context: Context) : ModPack(context) {
             BATTERY_STYLE_LANDSCAPE_BATTERYM -> LandscapeBatteryM(context, frameColor)
             BATTERY_STYLE_LANDSCAPE_BATTERYN -> LandscapeBatteryN(context, frameColor)
             BATTERY_STYLE_LANDSCAPE_BATTERYO -> LandscapeBatteryO(context, frameColor)
-            BATTERY_STYLE_CIRCLE, BATTERY_STYLE_DOTTED_CIRCLE -> CircleBattery(context, frameColor)
+            BATTERY_STYLE_CIRCLE, BATTERY_STYLE_DOTTED_CIRCLE -> CircleBattery(
+                context,
+                frameColor
+            ).apply {
+                setMeterStyle(mBatteryStyle)
+            }
             BATTERY_STYLE_FILLED_CIRCLE -> CircleFilledBattery(context, frameColor)
             BATTERY_STYLE_LANDSCAPE_KIM -> LandscapeBatteryKim(context, frameColor)
             else -> null
