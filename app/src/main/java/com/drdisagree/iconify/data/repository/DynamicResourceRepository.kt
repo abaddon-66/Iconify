@@ -15,20 +15,13 @@ class DynamicResourceRepository(
     }
 
     suspend fun deleteResources(resources: List<DynamicResourceEntity>) {
-        val packageNames = resources.map { it.packageName }
-        val startEndTags = resources.map { it.startEndTag }
-        val resourceNames = resources.map { it.resourceName }
-        val isPortraits = resources.map { it.isPortrait }
-        val isLandscapes = resources.map { it.isLandscape }
-        val isNightModes = resources.map { it.isNightMode }
-
         dynamicResourceDao.deleteResources(
-            packageNames,
-            startEndTags,
-            resourceNames,
-            isPortraits,
-            isLandscapes,
-            isNightModes
+            resources.map { it.packageName },
+            resources.map { it.startEndTag },
+            resources.map { it.resourceName },
+            resources.map { it.isPortrait },
+            resources.map { it.isLandscape },
+            resources.map { it.isNightMode }
         )
     }
 

@@ -23,6 +23,7 @@ import com.drdisagree.iconify.utils.SystemUtils.mountRW
 import com.drdisagree.iconify.utils.helper.BinaryInstaller.symLinkBinaries
 import com.drdisagree.iconify.utils.overlay.OverlayUtils.disableOverlays
 import com.drdisagree.iconify.utils.overlay.OverlayUtils.enableOverlays
+import com.drdisagree.iconify.utils.overlay.manager.resource.ResourceManager.ResourceType
 import com.drdisagree.iconify.utils.overlay.manager.resource.ResourceManager.generateXmlStructureForAllResources
 import com.topjohnwu.superuser.Shell
 import java.io.IOException
@@ -33,7 +34,14 @@ object DynamicCompiler {
     private var mForce = false
     private var mPackage: String? = null
     private var mOverlayName: String? = null
-    private val mResource: MutableMap<String, ArrayList<String>> = mutableMapOf()
+    private val mResource: MutableMap<ResourceType, ArrayList<String>> = mutableMapOf()
+    private val dynamicOverlayList = listOf(
+        "IconifyComponentDynamic1.overlay",
+        "IconifyComponentDynamic2.overlay",
+        "IconifyComponentDynamic3.overlay",
+        "IconifyComponentDynamic4.overlay",
+        "IconifyComponentDynamic5.overlay"
+    )
 
     @JvmOverloads
     @Throws(IOException::class)
@@ -50,9 +58,14 @@ object DynamicCompiler {
                 mPackage = packageName
 
                 mResource.clear()
-                mResource["portrait"] = resourcesMap[packageName]!!["portrait"]!!
-                resourcesMap[packageName]!!["landscape"]?.let { mResource["landscape"] = it }
-                resourcesMap[packageName]!!["night"]?.let { mResource["night"] = it }
+                mResource[ResourceType.PORTRAIT] =
+                    ArrayList(resourcesMap[packageName]!![ResourceType.PORTRAIT]!!)
+                resourcesMap[packageName]!![ResourceType.LANDSCAPE]?.let {
+                    mResource[ResourceType.LANDSCAPE] = ArrayList(it)
+                }
+                resourcesMap[packageName]!![ResourceType.NIGHT]?.let {
+                    mResource[ResourceType.NIGHT] = ArrayList(it)
+                }
 
                 mOverlayName = when (mPackage) {
                     FRAMEWORK_PACKAGE -> "Dynamic1"
@@ -112,42 +125,35 @@ object DynamicCompiler {
                 Shell.cmd("rm -rf $BACKUP_DIR").exec()
 
                 // Disable the overlays in case they are already enabled
-                disableOverlays(
-                    "IconifyComponentDynamic1.overlay",
-                    "IconifyComponentDynamic2.overlay"
-                )
+                disableOverlays(*dynamicOverlayList.toTypedArray())
 
                 // Install from files dir
-                for (i in 1..2) {
-                    Shell.cmd(
-                        "pm install -r $DATA_DIR/IconifyComponentDynamic$i.apk"
-                    ).exec()
-                    Shell.cmd(
-                        "rm -rf $DATA_DIR/IconifyComponentDynamic$i.apk"
-                    ).exec()
+                dynamicOverlayList.forEach { overlay ->
+                    val apkName = overlay.replace(".overlay", ".apk")
+
+                    Shell.cmd("pm install -r $DATA_DIR/$apkName").exec()
+                    Shell.cmd("rm -rf $DATA_DIR/$apkName").exec()
                 }
 
                 // Move to system overlay dir
                 mountRW()
-                for (i in 1..2) {
-                    Shell.cmd(
-                        "cp -rf $SIGNED_DIR/IconifyComponentDynamic$i.apk $SYSTEM_OVERLAY_DIR/IconifyComponentDynamic$i.apk"
-                    ).exec()
-                    setPermissions(644, "/system/product/overlay/IconifyComponentDynamic$i.apk")
+                dynamicOverlayList.forEach { overlay ->
+                    val apkName = overlay.replace(".overlay", ".apk")
+
+                    Shell.cmd("cp -rf $SIGNED_DIR/$apkName $SYSTEM_OVERLAY_DIR/$apkName").exec()
+                    setPermissions(644, "/system/product/overlay/$apkName")
                 }
                 mountRO()
 
                 // Enable the overlays
-                enableOverlays(
-                    "IconifyComponentDynamic1.overlay",
-                    "IconifyComponentDynamic2.overlay"
-                )
+                enableOverlays(*dynamicOverlayList.toTypedArray())
             }
         } catch (e: Exception) {
             Log.e(TAG, "Failed to build overlay! Exiting...", e)
             postExecute(true)
             return true
         }
+
         return false
     }
 
@@ -218,21 +224,18 @@ object DynamicCompiler {
             Shell.cmd("mkdir -p " + source + "/res/" + values[i]).exec()
 
             val resourceType = when (i) {
-                0 -> "portrait"
-                1 -> "landscape"
-                2 -> "night"
+                0 -> ResourceType.PORTRAIT
+                1 -> ResourceType.LANDSCAPE
+                2 -> ResourceType.NIGHT
                 else -> throw Exception("Invalid resource type")
             }
 
             val filePath = "$source/res/${values[i]}/iconify.xml"
-            val resourceList = mResource[resourceType]
+            val resourceList = mResource[resourceType]?.let { ArrayList(it) }
 
             if (!resourceList.isNullOrEmpty()) {
-                Shell.cmd("echo '${resourceList.first()}' > $filePath").exec()
-
-                resourceList.drop(1).forEach { line ->
-                    Shell.cmd("echo '$line' >> $filePath").exec()
-                }
+                Shell.cmd("rm -f $filePath; touch $filePath").exec()
+                resourceList.forEach { line -> Shell.cmd("echo '$line\n' >> $filePath").exec() }
             }
         }
 

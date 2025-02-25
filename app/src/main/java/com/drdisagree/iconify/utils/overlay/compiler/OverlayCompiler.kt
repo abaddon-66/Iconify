@@ -8,6 +8,7 @@ import com.drdisagree.iconify.data.common.Dynamic.ZIPALIGN
 import com.drdisagree.iconify.data.common.Dynamic.isAtleastA14
 import com.drdisagree.iconify.data.common.Resources
 import com.drdisagree.iconify.data.common.Resources.FRAMEWORK_DIR
+import com.drdisagree.iconify.data.common.Resources.UNSIGNED_DIR
 import com.drdisagree.iconify.utils.AppUtils.getSplitLocations
 import com.drdisagree.iconify.utils.apksigner.CryptoUtils
 import com.drdisagree.iconify.utils.apksigner.SignAPK
@@ -125,7 +126,8 @@ object OverlayCompiler {
         val fileName = CompilerUtils.getOverlayName(source)
         val result =
             Shell.cmd(
-                zipalign + " 4 " + source + ' ' + Resources.UNSIGNED_DIR + "/" + fileName + "-unsigned.apk"
+                "rm -rf $UNSIGNED_DIR/$fileName-unsigned.apk",
+                "$zipalign 4 $source $UNSIGNED_DIR/$fileName-unsigned.apk"
             ).exec()
 
         if (result.isSuccess) Log.i(

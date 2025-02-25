@@ -11,12 +11,16 @@ import com.drdisagree.iconify.data.entity.DynamicResourceEntity
 import com.drdisagree.iconify.data.repository.DynamicResourceRepository
 import com.drdisagree.iconify.utils.SystemUtils.hasStoragePermission
 import com.drdisagree.iconify.utils.SystemUtils.requestStoragePermission
-import com.drdisagree.iconify.utils.overlay.compiler.DynamicCompiler.buildDynamicOverlay
+import com.drdisagree.iconify.utils.overlay.compiler.DynamicCompiler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.util.concurrent.atomic.AtomicBoolean
 
 object ResourceManager {
+
+    enum class ResourceType {
+        PORTRAIT, LANDSCAPE, NIGHT
+    }
 
     private val TAG = ResourceManager::class.java.simpleName
     private val repository: DynamicResourceRepository
@@ -30,37 +34,18 @@ object ResourceManager {
         } else {
             val hasErroredOut = AtomicBoolean(false)
 
-            try {
-                withContext(Dispatchers.IO) {
-                    saveResources(*resourceEntries.filterNotNull().toTypedArray())
+            withContext(Dispatchers.IO) {
+                saveResources(*resourceEntries.filterNotNull().toTypedArray())
 
-                    try {
-                        buildDynamicOverlay()
-                    } catch (e: Exception) {
-                        Log.i(TAG, "buildDynamicOverlay: ", e)
-                        hasErroredOut.set(true)
-                    }
-                }
-            } catch (e: Exception) {
-                hasErroredOut.set(true)
-                Log.e(TAG, "buildOverlayWithResource:", e)
-            }
-
-            withContext(Dispatchers.Main) {
-                if (!hasErroredOut.get()) {
-                    Toast.makeText(
-                        appContext,
-                        appContextLocale.resources.getString(R.string.toast_applied),
-                        Toast.LENGTH_SHORT
-                    ).show()
-                } else {
-                    Toast.makeText(
-                        appContext,
-                        appContextLocale.resources.getString(R.string.toast_error),
-                        Toast.LENGTH_SHORT
-                    ).show()
+                try {
+                    hasErroredOut.set(DynamicCompiler.buildDynamicOverlay())
+                } catch (e: Exception) {
+                    Log.i(TAG, "buildOverlayWithResource: ", e)
+                    hasErroredOut.set(true)
                 }
             }
+
+            showToast(hasErroredOut)
 
             return hasErroredOut.get()
         }
@@ -74,37 +59,18 @@ object ResourceManager {
         } else {
             val hasErroredOut = AtomicBoolean(false)
 
-            try {
-                withContext(Dispatchers.IO) {
-                    removeResources(*resourceEntries.filterNotNull().toTypedArray())
+            withContext(Dispatchers.IO) {
+                removeResources(*resourceEntries.filterNotNull().toTypedArray())
 
-                    try {
-                        buildDynamicOverlay()
-                    } catch (e: Exception) {
-                        Log.i(TAG, "buildDynamicOverlay: ", e)
-                        hasErroredOut.set(true)
-                    }
-                }
-            } catch (e: Exception) {
-                hasErroredOut.set(true)
-                Log.e(TAG, "removeResourceFromOverlay:", e)
-            }
-
-            withContext(Dispatchers.Main) {
-                if (!hasErroredOut.get()) {
-                    Toast.makeText(
-                        appContext,
-                        appContextLocale.resources.getString(R.string.toast_applied),
-                        Toast.LENGTH_SHORT
-                    ).show()
-                } else {
-                    Toast.makeText(
-                        appContext,
-                        appContextLocale.resources.getString(R.string.toast_error),
-                        Toast.LENGTH_SHORT
-                    ).show()
+                try {
+                    hasErroredOut.set(DynamicCompiler.buildDynamicOverlay())
+                } catch (e: Exception) {
+                    Log.i(TAG, "removeResourceFromOverlay: ", e)
+                    hasErroredOut.set(true)
                 }
             }
+
+            showToast(hasErroredOut)
 
             return hasErroredOut.get()
         }
@@ -148,11 +114,12 @@ object ResourceManager {
         }
     }
 
-    suspend fun generateXmlStructureForAllResources(): MutableMap<String, MutableMap<String, ArrayList<String>>> {
+    suspend fun generateXmlStructureForAllResources(): MutableMap<String, MutableMap<ResourceType, ArrayList<String>>> {
         return withContext(Dispatchers.IO) {
             val resourceEntries = repository.getAllResources()
             val resourcesGrouped = resourceEntries.groupBy { it.packageName }
-            val result: MutableMap<String, MutableMap<String, ArrayList<String>>> = mutableMapOf()
+            val result: MutableMap<String, MutableMap<ResourceType, ArrayList<String>>> =
+                mutableMapOf()
             val emptyResources = getEmptyResources()
 
             resourcesGrouped.forEach { (packageName, resources) ->
@@ -160,13 +127,13 @@ object ResourceManager {
                     throw Exception("Package $packageName is not dynamically overlayable.")
                 }
 
-                val xmlPartsMap: MutableMap<String, ArrayList<String>> = mutableMapOf()
+                val xmlPartsMap: MutableMap<ResourceType, ArrayList<String>> = mutableMapOf()
 
                 val groupedByType = resources.groupBy {
                     when {
-                        it.isPortrait -> "portrait"
-                        it.isLandscape -> "landscape"
-                        it.isNightMode -> "night"
+                        it.isPortrait -> ResourceType.PORTRAIT
+                        it.isLandscape -> ResourceType.LANDSCAPE
+                        it.isNightMode -> ResourceType.NIGHT
                         else -> throw Exception("Invalid resource type")
                     }
                 }
@@ -181,11 +148,11 @@ object ResourceManager {
                     }
                     xmlParts.add("</resources>")
 
-                    xmlPartsMap[type] = xmlParts
-                }
+                    xmlPartsMap[type] = ArrayList(xmlParts)
 
-                if (xmlPartsMap["portrait"].isNullOrEmpty()) {
-                    xmlPartsMap["portrait"] = emptyResources[packageName]!!
+                    if (type == ResourceType.PORTRAIT && group.isEmpty()) {
+                        xmlPartsMap[type] = ArrayList(emptyResources[packageName]!!)
+                    }
                 }
 
                 result[packageName] = xmlPartsMap
@@ -193,8 +160,8 @@ object ResourceManager {
 
             DYNAMIC_OVERLAYABLE_PACKAGES.forEach { packageName ->
                 if (!result.containsKey(packageName)) {
-                    val xmlPartsMap: MutableMap<String, ArrayList<String>> = mutableMapOf()
-                    xmlPartsMap["portrait"] = emptyResources[packageName]!!
+                    val xmlPartsMap: MutableMap<ResourceType, ArrayList<String>> = mutableMapOf()
+                    xmlPartsMap[ResourceType.PORTRAIT] = emptyResources[packageName]!!
                     result[packageName] = xmlPartsMap
                 }
             }
@@ -216,5 +183,23 @@ object ResourceManager {
         }
 
         return result
+    }
+
+    private suspend fun showToast(hasErroredOut: AtomicBoolean) {
+        withContext(Dispatchers.Main) {
+            if (!hasErroredOut.get()) {
+                Toast.makeText(
+                    appContext,
+                    appContextLocale.resources.getString(R.string.toast_applied),
+                    Toast.LENGTH_SHORT
+                ).show()
+            } else {
+                Toast.makeText(
+                    appContext,
+                    appContextLocale.resources.getString(R.string.toast_error),
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
     }
 }

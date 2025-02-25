@@ -99,7 +99,7 @@ class SliderWidget : RelativeLayout {
         }
 
         setSelectedText()
-        handleResetButton()
+        handleResetButtonState()
         setOnSliderTouchListener(null)
         setResetClickListener(null)
 
@@ -162,7 +162,7 @@ class SliderWidget : RelativeLayout {
         set(value) {
             materialSlider.value = value.toFloat()
             setSelectedText()
-            handleResetButton()
+            handleResetButtonState()
             if (showController) updateControllerButtons()
             notifyOnSliderTouchStopped(materialSlider)
         }
@@ -193,27 +193,7 @@ class SliderWidget : RelativeLayout {
     fun setOnSliderTouchListener(listener: Slider.OnSliderTouchListener?) {
         onSliderTouchListener = listener
 
-        materialSlider.addOnSliderTouchListener(object : Slider.OnSliderTouchListener {
-            override fun onStartTrackingTouch(slider: Slider) {
-                notifyOnSliderTouchStarted(slider)
-            }
-
-            override fun onStopTrackingTouch(slider: Slider) {
-                setSelectedText()
-                handleResetButton()
-                notifyOnSliderTouchStopped(slider)
-                if (showController) updateControllerButtons()
-            }
-        })
-
-        materialSlider.setLabelFormatter {
-            if (valueFormat!!.isBlank() || valueFormat!!.isEmpty()) (
-                    if (!isDecimalFormat) (materialSlider.value / outputScale).toInt()
-                    else DecimalFormat(decimalFormat)
-                .format((materialSlider.value / outputScale).toDouble())).toString() + valueFormat else (if (!isDecimalFormat) materialSlider.value.toInt()
-                .toString() else DecimalFormat(decimalFormat)
-                .format((materialSlider.value / outputScale).toDouble())) + valueFormat
-        }
+        setOnSliderTouchListenerOnce()
     }
 
     fun setOnSliderChangeListener(listener: Slider.OnChangeListener) {
@@ -223,17 +203,7 @@ class SliderWidget : RelativeLayout {
     fun setResetClickListener(listener: OnLongClickListener?) {
         resetClickListener = listener
 
-        resetButton.setOnClickListener { v: View ->
-            if (defaultValue == Int.MAX_VALUE) {
-                return@setOnClickListener
-            }
-
-            sliderValue = defaultValue
-
-            handleResetButton()
-            notifyOnResetClicked(v)
-            if (showController) updateControllerButtons()
-        }
+        setResetClickListenerOnce()
     }
 
     fun resetSlider() {
@@ -253,7 +223,7 @@ class SliderWidget : RelativeLayout {
         resetClickListener?.onLongClick(v)
     }
 
-    private fun handleResetButton() {
+    private fun handleResetButtonState() {
         if (defaultValue != Int.MAX_VALUE) {
             resetButton.visibility = VISIBLE
             resetButton.isEnabled = isEnabled && materialSlider.value != defaultValue.toFloat()
@@ -309,7 +279,7 @@ class SliderWidget : RelativeLayout {
         super.onRestoreInstanceState(state.superState)
         materialSlider.value = state.sliderValue
         setSelectedText()
-        handleResetButton()
+        handleResetButtonState()
         if (showController) updateControllerButtons()
     }
 
@@ -318,4 +288,53 @@ class SliderWidget : RelativeLayout {
         private val parentState: @RawValue Parcelable?,
         val sliderValue: Float
     ) : BaseSavedState(parentState)
+
+    companion object {
+
+        private fun SliderWidget.setOnSliderTouchListenerOnce() {
+            if (getTag(R.id.tag_slider_touch_listener_set) != null) return
+
+            materialSlider.addOnSliderTouchListener(object : Slider.OnSliderTouchListener {
+                override fun onStartTrackingTouch(slider: Slider) {
+                    notifyOnSliderTouchStarted(slider)
+                }
+
+                override fun onStopTrackingTouch(slider: Slider) {
+                    setSelectedText()
+                    handleResetButtonState()
+                    notifyOnSliderTouchStopped(slider)
+                    if (showController) updateControllerButtons()
+                }
+            })
+
+            setTag(R.id.tag_slider_touch_listener_set, "set")
+
+            materialSlider.setLabelFormatter {
+                if (valueFormat!!.isBlank() || valueFormat!!.isEmpty()) (
+                        if (!isDecimalFormat) (materialSlider.value / outputScale).toInt()
+                        else DecimalFormat(decimalFormat)
+                            .format((materialSlider.value / outputScale).toDouble())).toString() + valueFormat else (if (!isDecimalFormat) materialSlider.value.toInt()
+                    .toString() else DecimalFormat(decimalFormat)
+                    .format((materialSlider.value / outputScale).toDouble())) + valueFormat
+            }
+        }
+
+        private fun SliderWidget.setResetClickListenerOnce() {
+            if (getTag(R.id.tag_slider_reset_listener_set) != null) return
+
+            resetButton.setOnClickListener { v: View ->
+                if (defaultValue == Int.MAX_VALUE) {
+                    return@setOnClickListener
+                }
+
+                materialSlider.value = defaultValue.toFloat()
+                setSelectedText()
+                handleResetButtonState()
+                notifyOnResetClicked(v)
+                if (showController) updateControllerButtons()
+            }
+
+            setTag(R.id.tag_slider_reset_listener_set, "set")
+        }
+    }
 }
