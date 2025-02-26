@@ -127,6 +127,8 @@ import com.drdisagree.iconify.data.common.Preferences.LSCLOCK_TOPMARGIN
 import com.drdisagree.iconify.data.common.Preferences.LSCLOCK_USERNAME
 import com.drdisagree.iconify.data.common.Preferences.NEW_UPDATE_FOUND
 import com.drdisagree.iconify.data.common.Preferences.NOTIF_TRANSPARENCY_SWITCH
+import com.drdisagree.iconify.data.common.Preferences.OP_QS_HEADER_BLUR_LEVEL
+import com.drdisagree.iconify.data.common.Preferences.OP_QS_HEADER_SHOW_ARTWORK
 import com.drdisagree.iconify.data.common.Preferences.PREF_KEY_UPDATE_STATUS
 import com.drdisagree.iconify.data.common.Preferences.QSALPHA_LEVEL
 import com.drdisagree.iconify.data.common.Preferences.QSPANEL_BLUR_SWITCH
@@ -329,6 +331,8 @@ object PrefsHelper {
                 ALBUM_ART_ON_LOCKSCREEN_FILTER,
                 "0"
             )!!.toInt() in setOf(3, 4)
+
+            OP_QS_HEADER_BLUR_LEVEL -> getBoolean(OP_QS_HEADER_SHOW_ARTWORK)
 
             else -> true
         }
