@@ -33,10 +33,6 @@ class OpacityModifier(context: Context) : ModPack(context) {
             recentsBackgroundOpacity = getSliderInt(RECENTS_BACKGROUND_OPACITY, 100) * 255 / 100
             disableRecentsBlur = getBoolean(DISABLE_RECENTS_BLUR, false)
         }
-
-        when (key.firstOrNull()) {
-            in setOf(DISABLE_RECENTS_BLUR) -> reloadDepthAndBlur()
-        }
     }
 
     override fun handleLoadPackage(loadPackageParam: LoadPackageParam) {
@@ -65,6 +61,8 @@ class OpacityModifier(context: Context) : ModPack(context) {
                     param.result as Int,
                     appDrawerBackgroundOpacity
                 )
+
+                reloadDepthAndBlur(false)
             }
 
         overviewStateClass
@@ -74,6 +72,8 @@ class OpacityModifier(context: Context) : ModPack(context) {
                     param.result as Int,
                     recentsBackgroundOpacity
                 )
+
+                reloadDepthAndBlur(true)
             }
 
         quickSwitchStateClass
@@ -92,6 +92,8 @@ class OpacityModifier(context: Context) : ModPack(context) {
                         recentsBackgroundOpacity
                     )
                 }
+
+                reloadDepthAndBlur(true)
             }
 
         recentsStateClass
@@ -101,6 +103,8 @@ class OpacityModifier(context: Context) : ModPack(context) {
                     param.result as Int,
                     recentsBackgroundOpacity
                 )
+
+                reloadDepthAndBlur(true)
             }
 
         hintStateClass
@@ -110,6 +114,8 @@ class OpacityModifier(context: Context) : ModPack(context) {
                     param.result as Int,
                     recentsBackgroundOpacity
                 )
+
+                reloadDepthAndBlur(true)
             }
 
         val baseDepthControllerClass = findClass("com.android.quickstep.util.BaseDepthController")
@@ -128,15 +134,13 @@ class OpacityModifier(context: Context) : ModPack(context) {
                         mMaxBlurRadius as Int
                     }
                 }
-
-                reloadDepthAndBlur()
             }
     }
 
-    private fun reloadDepthAndBlur() {
+    private fun reloadDepthAndBlur(disable: Boolean) {
         if (baseDepthControllerInstance == null || originalBlurValue == -1) return
 
-        if (disableRecentsBlur) {
+        if (disableRecentsBlur && disable) {
             baseDepthControllerInstance.setField("mMaxBlurRadius", 0)
         } else {
             baseDepthControllerInstance.setField("mMaxBlurRadius", originalBlurValue)
