@@ -7,15 +7,30 @@
     android:clipChildren="false"
     tools:context=".ui.fragments.home.ToastFrame">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/toast_styles_container"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_gravity="top|center"
-        android:clipToPadding="false"
         android:orientation="vertical"
-        android:paddingVertical="8dp"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <com.drdisagree.iconify.ui.widgets.SwitchWidget
+            android:id="@+id/white_toast_switch"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:summaryText="@string/toast_frame_always_white_desc"
+            app:titleText="@string/toast_frame_always_white_title" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/toast_styles_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="top|center"
+            android:clipToPadding="false"
+            android:orientation="vertical"
+            android:paddingVertical="8dp" />
+
+    </LinearLayout>
 
     <include
         android:id="@+id/header"

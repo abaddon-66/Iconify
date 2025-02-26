@@ -1057,6 +1057,8 @@
     <string name="btn_negative">No</string>
 
     <!-- Toast -->
+    <string name="toast_frame_always_white_title">White Background</string>
+    <string name="toast_frame_always_white_desc">Keep toast background white even in dark mode</string>
     <string name="toast_applied">Applied</string>
     <string name="toast_disabled">Disabled</string>
     <string name="toast_reset">Reset</string>
