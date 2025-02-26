@@ -329,6 +329,33 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
                 initializeLockscreenLayout(param)
             }
 
+        // Hide stock clock for ROMs with MigrateClocksToBlueprint disabled
+        val keyguardClockSwitchClass = findClass("com.android.keyguard.KeyguardClockSwitch")
+
+        keyguardClockSwitchClass
+            .hookMethod("onFinishInflate")
+            .runAfter { param ->
+                if (!showLockscreenClock) return@runAfter
+
+                val parent = param.thisObject as ViewGroup
+
+                parent.findViewById<View?>(
+                    mContext.resources.getIdentifier(
+                        "lockscreen_clock_view",
+                        "id",
+                        SYSTEMUI_PACKAGE
+                    )
+                ).hideView()
+
+                parent.findViewById<View?>(
+                    mContext.resources.getIdentifier(
+                        "lockscreen_clock_view_large",
+                        "id",
+                        SYSTEMUI_PACKAGE
+                    )
+                ).hideView()
+            }
+
         val defaultNotificationStackScrollLayoutSectionClass =
             findClass("$SYSTEMUI_PACKAGE.keyguard.ui.view.layout.sections.DefaultNotificationStackScrollLayoutSection")
 
