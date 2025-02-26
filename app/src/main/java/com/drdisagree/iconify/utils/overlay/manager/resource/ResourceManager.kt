@@ -99,7 +99,7 @@ object ResourceManager {
         )
     }
 
-    private suspend fun removeResources(vararg resourceEntries: ResourceEntry) {
+    suspend fun removeResources(vararg resourceEntries: ResourceEntry) {
         repository.deleteResources(
             resourceEntries.map { entry ->
                 DynamicResourceEntity(

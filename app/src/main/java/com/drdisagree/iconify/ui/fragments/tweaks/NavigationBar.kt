@@ -30,6 +30,8 @@ import com.drdisagree.iconify.data.config.RPrefs.getBoolean
 import com.drdisagree.iconify.data.config.RPrefs.getInt
 import com.drdisagree.iconify.data.config.RPrefs.putBoolean
 import com.drdisagree.iconify.data.config.RPrefs.putInt
+import com.drdisagree.iconify.data.database.DynamicResourceDatabase
+import com.drdisagree.iconify.data.repository.DynamicResourceRepository
 import com.drdisagree.iconify.databinding.FragmentNavigationBarBinding
 import com.drdisagree.iconify.ui.base.BaseFragment
 import com.drdisagree.iconify.ui.utils.ViewHelper.setHeader
@@ -42,6 +44,7 @@ import com.drdisagree.iconify.utils.overlay.OverlayUtils.enableOverlay
 import com.drdisagree.iconify.utils.overlay.manager.resource.ResourceEntry
 import com.drdisagree.iconify.utils.overlay.manager.resource.ResourceManager.buildOverlayWithResource
 import com.drdisagree.iconify.utils.overlay.manager.resource.ResourceManager.removeResourceFromOverlay
+import com.drdisagree.iconify.utils.overlay.manager.resource.ResourceManager.removeResources
 import com.google.android.material.slider.Slider
 import com.topjohnwu.superuser.Shell
 import kotlinx.coroutines.CoroutineScope
@@ -55,6 +58,9 @@ class NavigationBar : BaseFragment() {
 
     private lateinit var binding: FragmentNavigationBarBinding
     private var isAtleastA14 = Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE
+    private val repository = DynamicResourceRepository(
+        DynamicResourceDatabase.getInstance().dynamicResourceDao()
+    )
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -106,8 +112,6 @@ class NavigationBar : BaseFragment() {
                 binding.nbHidePill.setEnabled(!isSwitchChecked)
                 binding.nbMonetPill.setEnabled(!isSwitchChecked && !binding.nbHidePill.isSwitchChecked)
 
-                disableOthers(NAVBAR_FULL_SCREEN)
-
                 if (isSwitchChecked) {
                     binding.pillShape.pillShapeContainer.visibility = View.GONE
                 } else {
@@ -115,6 +119,7 @@ class NavigationBar : BaseFragment() {
                 }
 
                 CoroutineScope(Dispatchers.IO).launch {
+                    disableOthers(NAVBAR_FULL_SCREEN)
                     delay(SWITCH_ANIMATION_DELAY)
                     handleFullScreen(isSwitchChecked)
                 }
@@ -140,9 +145,8 @@ class NavigationBar : BaseFragment() {
                     return@setSwitchChangeListener
                 }
 
-                disableOthers(NAVBAR_IMMERSIVE_V1)
-
                 CoroutineScope(Dispatchers.IO).launch {
+                    disableOthers(NAVBAR_IMMERSIVE_V1)
                     delay(SWITCH_ANIMATION_DELAY)
                     handleImmersive(isSwitchChecked, 1)
                 }
@@ -167,9 +171,8 @@ class NavigationBar : BaseFragment() {
                     return@setSwitchChangeListener
                 }
 
-                disableOthers(NAVBAR_IMMERSIVE_V2)
-
                 CoroutineScope(Dispatchers.IO).launch {
+                    disableOthers(NAVBAR_IMMERSIVE_V2)
                     delay(SWITCH_ANIMATION_DELAY)
                     handleImmersive(isSwitchChecked, 2)
                 }
@@ -195,9 +198,8 @@ class NavigationBar : BaseFragment() {
                     return@setSwitchChangeListener
                 }
 
-                disableOthers(NAVBAR_IMMERSIVE_V3)
-
                 CoroutineScope(Dispatchers.IO).launch {
+                    disableOthers(NAVBAR_IMMERSIVE_V3)
                     delay(SWITCH_ANIMATION_DELAY)
                     handleImmersive(isSwitchChecked, 3)
                 }
@@ -557,25 +559,37 @@ class NavigationBar : BaseFragment() {
             false
         }
 
-    private fun disableOthers(identifier: String) {
+    private suspend fun disableOthers(identifier: String) {
         if (identifier != NAVBAR_FULL_SCREEN) {
             putBoolean(NAVBAR_FULL_SCREEN, false)
-            binding.nbFullscreen.isSwitchChecked = false
+            withContext(Dispatchers.Main) {
+                binding.nbFullscreen.isSwitchChecked = false
+            }
+            removeResources(*getFullScreenResources("", "").toTypedArray())
         }
 
         if (identifier != NAVBAR_IMMERSIVE_V1) {
             putBoolean(NAVBAR_IMMERSIVE_V1, false)
-            binding.nbImmersive.isSwitchChecked = false
+            withContext(Dispatchers.Main) {
+                binding.nbImmersive.isSwitchChecked = false
+            }
+            removeResources(*getImmersiveResources("", "").toTypedArray())
         }
 
         if (identifier != NAVBAR_IMMERSIVE_V2) {
             putBoolean(NAVBAR_IMMERSIVE_V2, false)
-            binding.nbImmersiveV2.isSwitchChecked = false
+            withContext(Dispatchers.Main) {
+                binding.nbImmersiveV2.isSwitchChecked = false
+            }
+            removeResources(*getImmersiveResources("", "").toTypedArray())
         }
 
         if (identifier != NAVBAR_IMMERSIVE_V3) {
             putBoolean(NAVBAR_IMMERSIVE_V3, false)
-            binding.nbImmersiveV3.isSwitchChecked = false
+            withContext(Dispatchers.Main) {
+                binding.nbImmersiveV3.isSwitchChecked = false
+            }
+            removeResources(*getImmersiveResources("", "").toTypedArray())
         }
     }
 
@@ -586,7 +600,22 @@ class NavigationBar : BaseFragment() {
         val barHeight = if (gcamLagFix) "0.3dp" else "0dp"
         val frameHeight = if (gcamLagFix) "0.1dp" else "0dp"
 
-        val resources = mutableListOf(
+        val fullScreenResources = getFullScreenResources(barHeight, frameHeight)
+
+        CoroutineScope(Dispatchers.IO).launch {
+            if (enable) {
+                buildOverlayWithResource(*fullScreenResources.toTypedArray())
+            } else {
+                removeResourceFromOverlay(*fullScreenResources.toTypedArray())
+            }
+        }
+    }
+
+    private fun getFullScreenResources(
+        barHeight: String,
+        frameHeight: String
+    ): List<ResourceEntry> {
+        return mutableListOf(
             ResourceEntry(
                 FRAMEWORK_PACKAGE,
                 "bool",
@@ -667,24 +696,12 @@ class NavigationBar : BaseFragment() {
                             FRAMEWORK_PACKAGE,
                             "dimen",
                             "navigation_bar_gesture_height",
-                            "0.2dp"
-                        ),
-                        ResourceEntry(
-                            PIXEL_LAUNCHER_PACKAGE,
-                            "dimen",
-                            "taskbar_nav_buttons_size",
-                            "0dp"
+                            "24dp"
                         ),
                         ResourceEntry(
                             PIXEL_LAUNCHER_PACKAGE,
                             "dimen",
                             "taskbar_stashed_handle_height",
-                            "0dp"
-                        ),
-                        ResourceEntry(
-                            LAUNCHER3_PACKAGE,
-                            "dimen",
-                            "taskbar_nav_buttons_size",
                             "0dp"
                         ),
                         ResourceEntry(
@@ -695,14 +712,6 @@ class NavigationBar : BaseFragment() {
                         )
                     )
                 )
-            }
-        }
-
-        CoroutineScope(Dispatchers.IO).launch {
-            if (enable) {
-                buildOverlayWithResource(*resources.toTypedArray())
-            } else {
-                removeResourceFromOverlay(*resources.toTypedArray())
             }
         }
     }
@@ -718,7 +727,22 @@ class NavigationBar : BaseFragment() {
         val barHeight = if (gcamLagFix) "0.3dp" else "0dp"
         val frameHeight = if (version == 1) "48dp" else if (version == 2) "26dp" else "16dp"
 
-        val resources = mutableListOf(
+        val resources = getImmersiveResources(barHeight, frameHeight)
+
+        CoroutineScope(Dispatchers.IO).launch {
+            if (enable) {
+                buildOverlayWithResource(*resources.toTypedArray())
+            } else {
+                removeResourceFromOverlay(*resources.toTypedArray())
+            }
+        }
+    }
+
+    private fun getImmersiveResources(
+        barHeight: String,
+        frameHeight: String
+    ): List<ResourceEntry> {
+        return mutableListOf(
             ResourceEntry(
                 FRAMEWORK_PACKAGE,
                 "dimen",
@@ -793,24 +817,12 @@ class NavigationBar : BaseFragment() {
                             FRAMEWORK_PACKAGE,
                             "dimen",
                             "navigation_bar_gesture_height",
-                            "0.2dp"
-                        ),
-                        ResourceEntry(
-                            PIXEL_LAUNCHER_PACKAGE,
-                            "dimen",
-                            "taskbar_nav_buttons_size",
-                            "0dp"
+                            "24dp"
                         ),
                         ResourceEntry(
                             PIXEL_LAUNCHER_PACKAGE,
                             "dimen",
                             "taskbar_stashed_handle_height",
-                            "0dp"
-                        ),
-                        ResourceEntry(
-                            LAUNCHER3_PACKAGE,
-                            "dimen",
-                            "taskbar_nav_buttons_size",
                             "0dp"
                         ),
                         ResourceEntry(
@@ -832,21 +844,13 @@ class NavigationBar : BaseFragment() {
                 )
             }
         }
-
-        CoroutineScope(Dispatchers.IO).launch {
-            if (enable) {
-                buildOverlayWithResource(*resources.toTypedArray())
-            } else {
-                removeResourceFromOverlay(*resources.toTypedArray())
-            }
-        }
     }
 
     private fun handleLowSensitivity(enable: Boolean) {
         putBoolean(NAVBAR_LOW_SENS, enable)
 
         val resources = listOf(
-            ResourceEntry(FRAMEWORK_PACKAGE, "dimen", "navigation_bar_gesture_height", "18dp")
+            ResourceEntry(FRAMEWORK_PACKAGE, "dimen", "navigation_bar_gesture_height", "12dp")
         )
 
         CoroutineScope(Dispatchers.IO).launch {
