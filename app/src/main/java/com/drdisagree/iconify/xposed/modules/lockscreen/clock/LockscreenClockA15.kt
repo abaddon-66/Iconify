@@ -75,6 +75,7 @@ import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.findViewWit
 import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.getLsItemsContainer
 import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.hideView
 import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.reAddView
+import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.removeViewFromParent
 import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.setMargins
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.XposedHook.Companion.findClass
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.getFieldSilently
@@ -654,12 +655,14 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
         }
     }
 
+    @Synchronized
     private fun updateClockView() {
         if (mLsItemsContainer == null) return
 
         val currentTime = System.currentTimeMillis()
-        val isClockAdded =
-            mLsItemsContainer!!.findViewWithTag<View?>(ICONIFY_LOCKSCREEN_CLOCK_TAG) != null
+        var currentClockView =
+            mLsItemsContainer!!.findViewWithTag<View?>(ICONIFY_LOCKSCREEN_CLOCK_TAG)
+        val isClockAdded = currentClockView != null
 
         if (isClockAdded && currentTime - lastUpdated < THRESHOLD_TIME) {
             return
@@ -668,12 +671,9 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
         }
 
         // Remove existing clock view
-        if (isClockAdded) {
-            mLsItemsContainer!!.removeView(
-                mLsItemsContainer!!.findViewWithTag(
-                    ICONIFY_LOCKSCREEN_CLOCK_TAG
-                )
-            )
+        while (currentClockView != null) {
+            currentClockView.removeViewFromParent()
+            currentClockView = mLsItemsContainer?.findViewWithTag(ICONIFY_LOCKSCREEN_CLOCK_TAG)
         }
 
         clockViewLayout?.apply {
