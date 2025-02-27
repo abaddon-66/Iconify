@@ -286,7 +286,17 @@ class OnboardingView : FrameLayout {
                 }, (if (clickedButton) 10 else 1000).toLong())
             } else {
                 if (!moduleExists()) {
+                    // Clear shared preferences
                     RPrefs.clearAllPrefs()
+
+                    // Clear dynamic resource database
+                    CoroutineScope(Dispatchers.IO).launch {
+                        DynamicResourceRepository(
+                            DynamicResourceDatabase.getInstance().dynamicResourceDao()
+                        ).apply {
+                            deleteResources(getAllResources())
+                        }
+                    }
 
                     handleInstallation()
                 } else {
