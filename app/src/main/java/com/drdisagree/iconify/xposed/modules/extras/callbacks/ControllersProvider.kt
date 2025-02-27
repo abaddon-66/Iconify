@@ -1,6 +1,5 @@
 package com.drdisagree.iconify.xposed.modules.extras.callbacks
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.provider.Settings
 import android.view.View
@@ -327,7 +326,6 @@ class ControllersProvider(context: Context) : ModPack(context) {
     }
 
     companion object {
-        @SuppressLint("StaticFieldLeak")
         @Volatile
         private lateinit var instance: ControllersProvider
 

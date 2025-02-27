@@ -334,6 +334,8 @@ object PrefsHelper {
 
             OP_QS_HEADER_BLUR_LEVEL -> getBoolean(OP_QS_HEADER_SHOW_ARTWORK)
 
+            LOCKSCREEN_WIDGETS_DEVICE_WIDGET_STYLE -> getBoolean(LOCKSCREEN_WIDGETS_DEVICE_WIDGET)
+
             else -> true
         }
     }
