@@ -344,7 +344,6 @@ object Preferences {
     const val SELECTED_SETTINGS_ICONS_SHAPE = "selectedSettignsIconsShape"
     const val SELECTED_SETTINGS_ICONS_SIZE = "selectedSettignsIconsSize"
     const val SELECTED_SETTINGS_ICONS_SET = "selectedSettignsIconsSet"
-    const val TOAST_FRAME_ALWAYS_WHITE = "toastFrameAlwaysWhite"
     const val SELECTED_TOAST_FRAME = "selectedToastFrame"
     const val SELECTED_ICON_SHAPE = "selectedIconShape"
     const val RESTART_SYSUI_AFTER_BOOT = "restartSysuiAfterBoot"

@@ -7,7 +7,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.CompoundButton
 import android.widget.Toast
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.GridLayoutManager.SpanSizeLookup
@@ -16,17 +15,13 @@ import com.drdisagree.iconify.Iconify.Companion.appContextLocale
 import com.drdisagree.iconify.R
 import com.drdisagree.iconify.data.common.Const.FRAMEWORK_PACKAGE
 import com.drdisagree.iconify.data.common.Preferences.SELECTED_TOAST_FRAME
-import com.drdisagree.iconify.data.common.Preferences.TOAST_FRAME_ALWAYS_WHITE
 import com.drdisagree.iconify.data.config.RPrefs
-import com.drdisagree.iconify.data.config.RPrefs.getBoolean
-import com.drdisagree.iconify.data.config.RPrefs.putBoolean
 import com.drdisagree.iconify.data.models.ToastModel
 import com.drdisagree.iconify.databinding.FragmentToastFrameBinding
 import com.drdisagree.iconify.ui.adapters.ToastAdapter
 import com.drdisagree.iconify.ui.base.BaseFragment
 import com.drdisagree.iconify.ui.dialogs.LoadingDialog
 import com.drdisagree.iconify.ui.utils.ViewHelper.setHeader
-import com.drdisagree.iconify.utils.MiscUtils.requiresNewToastStyle
 import com.drdisagree.iconify.utils.SystemUtils.hasStoragePermission
 import com.drdisagree.iconify.utils.SystemUtils.requestStoragePermission
 import com.drdisagree.iconify.utils.overlay.OverlayUtils
@@ -74,13 +69,6 @@ class ToastFrame : BaseFragment() {
         binding.toastStylesContainer.setLayoutManager(gridLayout)
         binding.toastStylesContainer.setAdapter(initToastFrameItems())
         binding.toastStylesContainer.setHasFixedSize(true)
-
-        binding.whiteToastSwitch.visibility =
-            if (requiresNewToastStyle()) View.VISIBLE else View.GONE
-        binding.whiteToastSwitch.isSwitchChecked = getBoolean(TOAST_FRAME_ALWAYS_WHITE, false)
-        binding.whiteToastSwitch.setSwitchChangeListener { _: CompoundButton?, isChecked: Boolean ->
-            putBoolean(TOAST_FRAME_ALWAYS_WHITE, isChecked)
-        }
 
         return view
     }
