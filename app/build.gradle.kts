@@ -48,7 +48,7 @@ android {
         debug {
             isMinifyEnabled = true
             isShrinkResources = true
-            isCrunchPngs = true
+            isCrunchPngs = false
             proguardFiles("proguard-android-optimize.txt", "proguard.pro", "proguard-rules.pro")
             applicationIdSuffix = ".debug"
             resValue("string", "derived_app_name", "Iconify (Debug)")
@@ -58,7 +58,7 @@ android {
         release {
             isMinifyEnabled = true
             isShrinkResources = true
-            isCrunchPngs = true
+            isCrunchPngs = false
             proguardFiles("proguard-android-optimize.txt", "proguard.pro", "proguard-rules.pro")
             resValue("string", "derived_app_name", "Iconify")
             signingConfig = releaseSigning
