@@ -66,15 +66,52 @@ class ControllersProvider(context: Context) : ModPack(context) {
         // Internet Tile - for opening Internet Dialog
         findClass("$SYSTEMUI_PACKAGE.qs.tiles.InternetTile")
             .hookConstructor()
-            .runAfter { param -> mCellularTile = param.thisObject }
+            .runAfter { param ->
+                if (mCellularTile == null) {
+                    mCellularTile = param.thisObject
+                }
+                if (mAccessPointController == null) {
+                    mAccessPointController = param.thisObject
+                        .getFieldSilently("mAccessPointController")
+                }
+                if (mInternetDialogManager == null) {
+                    mInternetDialogManager = param.thisObject
+                        .getFieldSilently("mInternetDialogManager")
+                }
+            }
+
+        findClass("$SYSTEMUI_PACKAGE.qs.tiles.InternetTileNewImpl", suppressError = true)
+            .hookConstructor()
+            .runAfter { param ->
+                if (mCellularTile == null) {
+                    mCellularTile = param.thisObject
+                }
+                if (mAccessPointController == null) {
+                    mAccessPointController = param.thisObject
+                        .getFieldSilently("accessPointController")
+                }
+                if (mInternetDialogManager == null) {
+                    mInternetDialogManager = param.thisObject
+                        .getFieldSilently("internetDialogManager")
+                }
+            }
 
         // Stole also Internet Dialog Manager in case no tile is available
         findClass("$SYSTEMUI_PACKAGE.statusbar.connectivity.NetworkControllerImpl")
             .hookConstructor()
             .runAfter { param ->
-                mAccessPointController = param.thisObject.getFieldSilently("mAccessPoints")
-                mInternetDialogManager = param.thisObject.getFieldSilently("mInternetDialogManager")
-                mInternetDialogFactory = param.thisObject.getFieldSilently("mInternetDialogFactory")
+                if (mAccessPointController == null) {
+                    mAccessPointController = param.thisObject
+                        .getFieldSilently("mAccessPoints")
+                }
+                if (mInternetDialogManager == null) {
+                    mInternetDialogManager = param.thisObject
+                        .getFieldSilently("mInternetDialogManager")
+                }
+                if (mInternetDialogFactory == null) {
+                    mInternetDialogFactory = param.thisObject
+                        .getFieldSilently("mInternetDialogFactory")
+                }
             }
 
         // Bluetooth Controller
