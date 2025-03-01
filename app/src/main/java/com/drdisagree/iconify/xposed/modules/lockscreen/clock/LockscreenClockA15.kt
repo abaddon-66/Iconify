@@ -520,6 +520,16 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
                     }
             }
 
+        val dozeTriggersClass = findClass("$SYSTEMUI_PACKAGE.doze.DozeTriggers")
+
+        dozeTriggersClass
+            .hookMethod("gentleWakeUp")
+            .runAfter {
+                if (!showLockscreenClock) return@runAfter
+
+                Handler(Looper.getMainLooper()).post { updateClockView() }
+            }
+
         fun onDozingChanged(isDozing: Boolean) {
             aodBurnInProtection?.setMovementEnabled(isDozing)
         }
