@@ -25,6 +25,9 @@
 
         <!-- ColorBlendr -->
         <package android:name="com.drdisagree.colorblendr" />
+
+        <!-- AI Plugins -->
+        <package android:name="it.dhd.oxygencustomizer.aiplugin" />
     </queries>
 
     <!-- Weather Updater -->
