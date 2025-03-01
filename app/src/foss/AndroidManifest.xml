@@ -23,11 +23,10 @@
         <package android:name="app.revanced.android.youtube" />
         <package android:name="app.revanced.android.apps.youtube.music" />
 
-        <!-- ColorBlendr -->
+        <!-- Other Apps -->
         <package android:name="com.drdisagree.colorblendr" />
-
-        <!-- AI Plugins -->
         <package android:name="it.dhd.oxygencustomizer.aiplugin" />
+        <package android:name="org.lsposed.manager" />
     </queries>
 
     <!-- Weather Updater -->
