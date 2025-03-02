@@ -1258,8 +1258,8 @@
     <string name="double_tap_to_sleep_desc">Double appui sur un espace vide de l\'écran d\'accueil pour éteindre l\'écran</string>
     <string name="desktop_icon_labels_title">Labels d\'icônes sur le bureau</string>
     <string name="app_drawer_icon_labels_title">Étiquettes d\'icônes dans le tiroir d\'applications</string>
-    <string name="disable_recents_blur_title">Désactiver le flou des applications récentes</string>
-    <string name="disable_recents_blur_desc">Désactiver le flou si l\'écran des applications récentes est bogué</string>
+    <string name="disable_recents_live_tile_title">Désactiver le flou des applications récentes</string>
+    <string name="disable_recents_live_tile_desc">Désactiver le flou si l\'écran des applications récentes est bogué</string>
     <string name="hide_desktop_search_bar_title">Masquer la barre de recherche du bureau</string>
     <string name="hide_desktop_search_bar_desc">Masquer la barre de recherche dans le dock du bureau</string>
     <string name="dock_spacing_title">Espacement du dock</string>

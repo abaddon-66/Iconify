@@ -1258,8 +1258,8 @@
     <string name="double_tap_to_sleep_desc">Koppintson duplán a kezdőképernyő üres területére a képernyő kikapcsolásához</string>
     <string name="desktop_icon_labels_title">Asztali ikonfeliratok</string>
     <string name="app_drawer_icon_labels_title">Alkalmazásfióki ikonfeliratok</string>
-    <string name="disable_recents_blur_title">Az Előzmények elhomályosításának letiltása</string>
-    <string name="disable_recents_blur_desc">Az elmosás letiltása, ha az Előzmények-képernyő bugos</string>
+    <string name="disable_recents_live_tile_title">Az Előzmények elhomályosításának letiltása</string>
+    <string name="disable_recents_live_tile_desc">Az elmosás letiltása, ha az Előzmények-képernyő bugos</string>
     <string name="hide_desktop_search_bar_title">Az asztali keresősáv eltüntetése</string>
     <string name="hide_desktop_search_bar_desc">A keresősáv elrejtése az asztali dokkolóból</string>
     <string name="dock_spacing_title">Dokkpanel-távolság</string>

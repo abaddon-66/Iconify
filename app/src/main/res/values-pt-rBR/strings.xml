@@ -1258,8 +1258,8 @@
     <string name="double_tap_to_sleep_desc">Toque duas vezes no espaço vazio da tela inicial para desligar a tela</string>
     <string name="desktop_icon_labels_title">Nome dos ícones na tela inicial</string>
     <string name="app_drawer_icon_labels_title">Nome dos ícones na gaveta de apps</string>
-    <string name="disable_recents_blur_title">Desativar blur nos recentes</string>
-    <string name="disable_recents_blur_desc">Desative o blur se a tela dos apps recentes estiver com erros</string>
+    <string name="disable_recents_live_tile_title">Desativar blur nos recentes</string>
+    <string name="disable_recents_live_tile_desc">Desative o blur se a tela dos apps recentes estiver com erros</string>
     <string name="hide_desktop_search_bar_title">Ocultar barra de pesquisa na tela inicial</string>
     <string name="hide_desktop_search_bar_desc">Oculte a barra de pesquisa da dock da tela inicial</string>
     <string name="dock_spacing_title">Espaçamento da dock</string>

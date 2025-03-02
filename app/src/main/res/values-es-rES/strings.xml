@@ -1258,8 +1258,8 @@
     <string name="double_tap_to_sleep_desc">Doble toque en un espacio vacío de la pantalla de inicio para apagar la pantalla</string>
     <string name="desktop_icon_labels_title">Etiquetas de iconos en la pantalla de inicio</string>
     <string name="app_drawer_icon_labels_title">Etiquetas de icono en el cajón de aplicaciones</string>
-    <string name="disable_recents_blur_title">Desactivar desenfoque de Apps Recientes</string>
-    <string name="disable_recents_blur_desc">Desactivar desenfoque si la pantalla de recientes es problemática</string>
+    <string name="disable_recents_live_tile_title">Desactivar desenfoque de Apps Recientes</string>
+    <string name="disable_recents_live_tile_desc">Desactivar desenfoque si la pantalla de recientes es problemática</string>
     <string name="hide_desktop_search_bar_title">Ocultar barra de búsqueda de escritorio</string>
     <string name="hide_desktop_search_bar_desc">Ocultar la barra de búsqueda del dock</string>
     <string name="dock_spacing_title">Espaciado del dock</string>

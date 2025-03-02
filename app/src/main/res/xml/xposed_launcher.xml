@@ -92,9 +92,9 @@
         search:ignore="true">
 
         <com.drdisagree.iconify.ui.preferences.SwitchPreference
-            android:key="xposed_disablerecentsblur"
-            android:summary="@string/disable_recents_blur_desc"
-            android:title="@string/disable_recents_blur_title"
+            android:key="xposed_disablerecentslivetile"
+            android:summary="@string/disable_recents_live_tile_desc"
+            android:title="@string/disable_recents_live_tile_title"
             app:iconSpaceReserved="false" />
 
         <com.drdisagree.iconify.ui.preferences.SliderPreference

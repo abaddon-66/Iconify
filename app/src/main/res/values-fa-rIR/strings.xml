@@ -1258,8 +1258,8 @@
     <string name="double_tap_to_sleep_desc">روی فضای خالی صفحه اصلی دو ضربه سریع بزنید تا صفحه خاموش شود</string>
     <string name="desktop_icon_labels_title">Icon Labels on Desktop</string>
     <string name="app_drawer_icon_labels_title">Icon Labels in App Drawer</string>
-    <string name="disable_recents_blur_title">غیرفعال کردن تاری اخیراً</string>
-    <string name="disable_recents_blur_desc">در صورتی که صفحه اخیراً لگ داره تاری را غیرفعال کنید</string>
+    <string name="disable_recents_live_tile_title">غیرفعال کردن تاری اخیراً</string>
+    <string name="disable_recents_live_tile_desc">در صورتی که صفحه اخیراً لگ داره تاری را غیرفعال کنید</string>
     <string name="hide_desktop_search_bar_title">Hide Desktop Search Bar</string>
     <string name="hide_desktop_search_bar_desc">Hide search bar from desktop dock</string>
     <string name="dock_spacing_title">Dock Spacing</string>

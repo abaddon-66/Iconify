@@ -249,7 +249,7 @@ object Preferences {
     const val APP_DRAWER_THEMED_ICONS = "xposed_appdrawerthemedicons"
     const val APP_DRAWER_BACKGROUND_OPACITY = "xposed_appdrawerbackgroundopacity"
     const val RECENTS_BACKGROUND_OPACITY = "xposed_recentsbackgroundopacity"
-    const val DISABLE_RECENTS_BLUR = "xposed_disablerecentsblur"
+    const val DISABLE_RECENTS_LIVE_TILE = "xposed_disablerecentslivetile"
     const val DOUBLE_TAP_TO_SLEEP = "xposed_doubletaptosleep"
     const val DESKTOP_ICON_LABELS = "xposed_desktopiconlabels"
     const val APP_DRAWER_ICON_LABELS = "xposed_appdrawericonlabels"

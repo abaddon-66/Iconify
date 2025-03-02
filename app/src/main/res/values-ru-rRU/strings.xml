@@ -1258,8 +1258,8 @@
     <string name="double_tap_to_sleep_desc">Дважды нажмите на пустое место на главном экране, чтобы выключить экран.</string>
     <string name="desktop_icon_labels_title">Наименование приложений на главном экране</string>
     <string name="app_drawer_icon_labels_title">Наименование приложений в меню приложений</string>
-    <string name="disable_recents_blur_title">Отключить размытие в \"Недавние\"</string>
-    <string name="disable_recents_blur_desc">Отключить размытие, если экран последних приложений глючит</string>
+    <string name="disable_recents_live_tile_title">Отключить размытие в \"Недавние\"</string>
+    <string name="disable_recents_live_tile_desc">Отключить размытие, если экран последних приложений глючит</string>
     <string name="hide_desktop_search_bar_title">Убрать панель поиска</string>
     <string name="hide_desktop_search_bar_desc">Скрывает панель поиска с рабочего стола</string>
     <string name="dock_spacing_title">Расстояние между док-панелью</string>
