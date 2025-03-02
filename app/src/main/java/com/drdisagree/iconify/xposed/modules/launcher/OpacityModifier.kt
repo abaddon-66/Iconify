@@ -11,6 +11,7 @@ import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.XposedHook.Com
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.callMethod
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.callMethodSilently
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.getField
+import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.getFieldSilently
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookMethod
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.setFieldSilently
 import com.drdisagree.iconify.xposed.utils.XPrefs.Xprefs
@@ -53,10 +54,16 @@ class OpacityModifier(context: Context) : ModPack(context) {
         allAppsStateClass
             .hookMethod("getWorkspaceScrimColor")
             .runAfter { param ->
-                param.result = ColorUtils.setAlphaComponent(
-                    param.result as Int,
-                    appDrawerBackgroundOpacity
-                )
+                val isTablet = param.args[0]
+                    .callMethodSilently("getDeviceProfile")
+                    .getFieldSilently("isTablet") as? Boolean ?: false
+
+                if (!isTablet) {
+                    param.result = ColorUtils.setAlphaComponent(
+                        param.result as Int,
+                        appDrawerBackgroundOpacity
+                    )
+                }
             }
 
         overviewStateClass
