@@ -54,6 +54,7 @@ import com.drdisagree.iconify.xposed.modules.extras.callbacks.ThemeChange
 import com.drdisagree.iconify.xposed.modules.extras.utils.ActivityLauncherUtils
 import com.drdisagree.iconify.xposed.modules.extras.utils.DisplayUtils.isNightMode
 import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.getExpandableView
+import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.reAddView
 import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.toPx
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.callMethod
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.getField
@@ -256,14 +257,11 @@ class LockscreenWidgetsView(private val context: Context, activityStarter: Any?)
                 ViewGroup.LayoutParams.WRAP_CONTENT
             )
 
-            if (mDeviceWidgetView == null) mDeviceWidgetView = DeviceWidgetView(context)
-
-            try {
-                (mDeviceWidgetView!!.parent as ViewGroup).removeView(mDeviceWidgetView)
-            } catch (ignored: Throwable) {
+            if (mDeviceWidgetView == null) mDeviceWidgetView = DeviceWidgetView(context).apply {
+                setScaling(mWidgetsScale)
             }
 
-            addView(mDeviceWidgetView)
+            reAddView(mDeviceWidgetView)
             setPadding(0, 0, 0, mContext.toPx(18))
         }
     }
@@ -301,9 +299,11 @@ class LockscreenWidgetsView(private val context: Context, activityStarter: Any?)
         return ExtendedFAB(context).apply {
             id = generateViewId()
             layoutParams = LayoutParams(
-                (mFabWidth * mWidgetsScale).toInt(),
-                (mFabHeight * mWidgetsScale).toInt()
+                0,
+                (mFabHeight * mWidgetsScale).toInt(),
+                1f
             ).apply {
+                maxWidth = (mFabWidth * mWidgetsScale).toInt()
                 setMargins(
                     (mFabMarginStart * mWidgetsScale).toInt(),
                     0,
@@ -944,6 +944,9 @@ class LockscreenWidgetsView(private val context: Context, activityStarter: Any?)
             if (mediaButtonFab == this) {
                 attachSwipeGesture(this)
             }
+            iconSize =
+                ((mWidgetCircleSize * mWidgetsScale) - (mWidgetIconPadding * 2 * mWidgetsScale)).toInt()
+            textSize = 14f * mWidgetsScale
         }
 
         imageView?.apply {
@@ -1450,9 +1453,10 @@ class LockscreenWidgetsView(private val context: Context, activityStarter: Any?)
         val container = LinearLayout(mContext)
         container.orientation = VERTICAL
         container.layoutParams = LayoutParams(
-            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT,
             ViewGroup.LayoutParams.WRAP_CONTENT
         )
+        container.gravity = Gravity.CENTER
 
         // Device Widget Container
         mDeviceWidgetContainer = createDeviceWidgetContainer(mContext)
@@ -1780,6 +1784,7 @@ class LockscreenWidgetsView(private val context: Context, activityStarter: Any?)
             removeAllViews()
             drawUI()
             updateWidgetViews()
+            mDeviceWidgetView?.setScaling(scale)
         }
     }
 
