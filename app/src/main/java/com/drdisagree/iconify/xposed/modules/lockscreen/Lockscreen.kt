@@ -3,6 +3,7 @@ package com.drdisagree.iconify.xposed.modules.lockscreen
 import android.annotation.SuppressLint
 import android.app.WallpaperManager
 import android.content.Context
+import android.content.res.Resources
 import android.content.res.XResources
 import android.content.res.XResources.DrawableLoader
 import android.graphics.Bitmap
@@ -201,25 +202,29 @@ class Lockscreen(context: Context) : ModPack(context) {
             "ic_lock_aod",
             "ic_lock_face",
             "ic_lock_lock",
+            "ic_lock_locked",
             "ic_lock_open",
             "ic_lock_open_24dp",
             "ic_unlock",
             "ic_unlocked",
             "ic_unlocked_aod"
         ).forEach { drawableResource ->
-            xResources.setReplacement(
-                SYSTEMUI_PACKAGE,
-                "drawable",
-                drawableResource,
-                object : DrawableLoader() {
-                    override fun newDrawable(res: XResources, id: Int): Drawable? {
-                        return GradientDrawable().apply {
-                            shape = GradientDrawable.OVAL
-                            setColor(Color.TRANSPARENT)
-                        }.constantState?.newDrawable()
+            try {
+                xResources.setReplacement(
+                    SYSTEMUI_PACKAGE,
+                    "drawable",
+                    drawableResource,
+                    object : DrawableLoader() {
+                        override fun newDrawable(res: XResources, id: Int): Drawable? {
+                            return GradientDrawable().apply {
+                                shape = GradientDrawable.OVAL
+                                setColor(Color.TRANSPARENT)
+                            }.constantState?.newDrawable()
+                        }
                     }
-                }
-            )
+                )
+            } catch (ignored: Resources.NotFoundException) {
+            }
         }
     }
 
