@@ -9,6 +9,10 @@ import android.content.IntentFilter
 import android.content.res.ColorStateList
 import android.content.res.Configuration
 import android.graphics.drawable.Drawable
+import android.graphics.drawable.GradientDrawable
+import android.graphics.drawable.RippleDrawable
+import android.graphics.drawable.ShapeDrawable
+import android.graphics.drawable.shapes.RoundRectShape
 import android.hardware.camera2.CameraManager
 import android.media.AudioManager
 import android.media.MediaMetadata
@@ -62,7 +66,7 @@ import kotlin.math.abs
 import kotlin.math.min
 
 @SuppressLint("ViewConstructor")
-class LockscreenWidgetsView(context: Context, activityStarter: Any?) :
+class LockscreenWidgetsView(private val context: Context, activityStarter: Any?) :
     LinearLayout(context), OmniJawsClient.OmniJawsObserver {
 
     private val mContext: Context
@@ -119,6 +123,7 @@ class LockscreenWidgetsView(context: Context, activityStarter: Any?) :
     private var mWidgetMarginHorizontal = 0
     private var mWidgetMarginVertical = 0
     private var mWidgetIconPadding = 0
+    private var mWidgetsRoundness = 100
     private var mWidgetsScale = 1f
 
     private var mMainLockscreenWidgetsList: String? = null
@@ -663,11 +668,7 @@ class LockscreenWidgetsView(context: Context, activityStarter: Any?) :
     private fun updateWidgetsResources(iv: ImageView?) {
         if (iv == null) return
 
-        iv.background = ResourcesCompat.getDrawable(
-            modRes,
-            R.drawable.lockscreen_widget_background_circle,
-            mContext.theme
-        )
+        iv.background = createWidgetBackgroundDrawable()
         setButtonActiveState(iv, null, false)
     }
 
@@ -782,10 +783,7 @@ class LockscreenWidgetsView(context: Context, activityStarter: Any?) :
                     imageView = iv,
                     extendedFAB = efab,
                     clickListener = { toggleBluetoothState() },
-                    icon = getDrawable(
-                        BT_ICON,
-                        SYSTEMUI_PACKAGE
-                    ),
+                    icon = getDrawable(BT_ICON, SYSTEMUI_PACKAGE),
                     text = getString(BT_LABEL, SYSTEMUI_PACKAGE)
                 )
             }
@@ -1767,6 +1765,15 @@ class LockscreenWidgetsView(context: Context, activityStarter: Any?) :
         }
     }
 
+    fun setRoundness(roundness: Int) {
+        instance?.apply {
+            mWidgetsRoundness = roundness
+            removeAllViews()
+            drawUI()
+            updateWidgetViews()
+        }
+    }
+
     fun setScale(scale: Float) {
         instance?.apply {
             mWidgetsScale = scale
@@ -1871,6 +1878,32 @@ class LockscreenWidgetsView(context: Context, activityStarter: Any?) :
 
             return modRes.getString(resName)
         }
+
+    private fun createWidgetBackgroundDrawable(): RippleDrawable {
+        val rippleDrawable = ResourcesCompat.getDrawable(
+            modRes,
+            R.drawable.lockscreen_widget_background_circle,
+            mContext.theme
+        ) as RippleDrawable
+        val cornerRadiusPx = mWidgetsRoundness.toFloat()
+        val radii = FloatArray(8) { cornerRadiusPx }
+
+        val backgroundDrawable = rippleDrawable.findDrawableByLayerId(android.R.id.background)
+        if (backgroundDrawable is GradientDrawable) {
+            backgroundDrawable.cornerRadius = cornerRadiusPx
+        } else if (backgroundDrawable is ShapeDrawable) {
+            backgroundDrawable.shape = RoundRectShape(radii, null, null)
+        }
+
+        val maskDrawable = rippleDrawable.findDrawableByLayerId(android.R.id.mask)
+        if (maskDrawable is GradientDrawable) {
+            maskDrawable.cornerRadius = cornerRadiusPx
+        } else if (maskDrawable is ShapeDrawable) {
+            maskDrawable.shape = RoundRectShape(radii, null, null)
+        }
+
+        return rippleDrawable
+    }
 
     /**
      * Vibrate the device

@@ -291,6 +291,17 @@
 
         <com.drdisagree.iconify.ui.preferences.SliderPreference
             android:dependency="lockscreen_widgets_enabled"
+            android:key="lockscreen_widgets_roundness"
+            android:title="@string/lockscreen_widgets_roundness"
+            app:defaultValue="100"
+            app:iconSpaceReserved="false"
+            app:maxVal="140"
+            app:minVal="0"
+            app:tickInterval="1"
+            app:valueFormat="dp" />
+
+        <com.drdisagree.iconify.ui.preferences.SliderPreference
+            android:dependency="lockscreen_widgets_enabled"
             android:key="lockscreen_widgets_scale"
             android:title="@string/lockscreen_widgets_scale"
             app:decimalFormat="#.##"

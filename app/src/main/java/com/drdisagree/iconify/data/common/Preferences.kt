@@ -140,6 +140,7 @@ object Preferences {
     const val LOCKSCREEN_WIDGETS_SMALL_ICON_INACTIVE = "lockscreen_widgets_small_icon_inactive"
     const val LOCKSCREEN_WIDGETS_TOP_MARGIN = "lockscreen_widgets_top_margin"
     const val LOCKSCREEN_WIDGETS_BOTTOM_MARGIN = "lockscreen_widgets_bottom_margin"
+    const val LOCKSCREEN_WIDGETS_ROUNDNESS = "lockscreen_widgets_roundness"
     const val LOCKSCREEN_WIDGETS_SCALE = "lockscreen_widgets_scale"
     const val FIXED_STATUS_ICONS_SWITCH = "xposed_fixedstatusicons"
     const val FIXED_STATUS_ICONS_SIDEMARGIN = "xposed_fixedstatusiconssidemargin"
