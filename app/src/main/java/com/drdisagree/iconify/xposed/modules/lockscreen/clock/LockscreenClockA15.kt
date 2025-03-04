@@ -145,6 +145,7 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
         "${Environment.getExternalStorageDirectory()}/.iconify_files/lsclock_image1.png"
     private val customImage2Directory =
         "${Environment.getExternalStorageDirectory()}/.iconify_files/lsclock_image2.png"
+    private var currentClockView: View? = null
 
     private val coroutineScope = CoroutineScope(Dispatchers.Main + Job())
     private var aodBurnInProtection: AodBurnInProtection? = null
@@ -226,7 +227,7 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
                 DEPTH_WALLPAPER_SWITCH
             ) -> {
                 mLsItemsContainer?.let { applyLayoutConstraints(it) }
-                updateClockView()
+                updateClockView(key[0] == LSCLOCK_STYLE)
             }
 
             in setOf(
@@ -676,12 +677,11 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
     }
 
     @Synchronized
-    private fun updateClockView() {
+    private fun updateClockView(force: Boolean = false) {
         if (mLsItemsContainer == null) return
 
         val currentTime = System.currentTimeMillis()
-        var currentClockView =
-            mLsItemsContainer!!.findViewWithTag<View?>(ICONIFY_LOCKSCREEN_CLOCK_TAG)
+        currentClockView = mLsItemsContainer!!.findViewWithTag(ICONIFY_LOCKSCREEN_CLOCK_TAG)
         val isClockAdded = currentClockView != null
 
         if (isClockAdded && currentTime - lastUpdated < THRESHOLD_TIME) {
@@ -690,27 +690,34 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
             lastUpdated = currentTime
         }
 
-        // Remove existing clock view
-        while (currentClockView != null) {
-            currentClockView.removeViewFromParent()
-            currentClockView = mLsItemsContainer?.findViewWithTag(ICONIFY_LOCKSCREEN_CLOCK_TAG)
-        }
+        if (!isClockAdded || force) {
+            currentClockView = clockViewLayout?.apply {
+                tag = ICONIFY_LOCKSCREEN_CLOCK_TAG
+                id = View.generateViewId()
 
-        clockViewLayout?.apply {
-            tag = ICONIFY_LOCKSCREEN_CLOCK_TAG
-            id = View.generateViewId()
+                var currentClockView =
+                    mLsItemsContainer!!.findViewWithTag<View?>(ICONIFY_LOCKSCREEN_CLOCK_TAG)
+                while (currentClockView != null) {
+                    currentClockView.removeViewFromParent()
+                    currentClockView =
+                        mLsItemsContainer!!.findViewWithTag(ICONIFY_LOCKSCREEN_CLOCK_TAG)
+                }
+                mLsItemsContainer!!.addView(this, 0)
 
-            (parent as? ViewGroup)?.removeView(this)
-            mLsItemsContainer!!.addView(this, 0)
+                modifyClockView(this)
+                initSoundManager()
+                initBatteryStatus()
 
-            modifyClockView(this)
-            initSoundManager()
-            initBatteryStatus()
-
-            // Clock placed, now inflate weather or widgets
-            val broadcast = Intent(ACTION_LS_CLOCK_INFLATED)
-            broadcast.setFlags(Intent.FLAG_RECEIVER_FOREGROUND)
-            Thread { mContext.sendBroadcast(broadcast) }.start()
+                // Clock placed, now inflate weather or widgets
+                val broadcast = Intent(ACTION_LS_CLOCK_INFLATED)
+                broadcast.setFlags(Intent.FLAG_RECEIVER_FOREGROUND)
+                Thread { mContext.sendBroadcast(broadcast) }.start()
+            }
+        } else {
+            currentClockView!!.apply {
+                modifyClockView(this)
+                requestLayout()
+            }
         }
     }
 
