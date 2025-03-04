@@ -1331,10 +1331,12 @@ class LockscreenWidgetsView(private val context: Context, activityStarter: Any?)
     init {
         instance = this
 
-        this.layoutParams = LayoutParams(
+        layoutParams = LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT,
             ViewGroup.LayoutParams.WRAP_CONTENT
         )
+        orientation = VERTICAL
+        gravity = Gravity.CENTER
 
         mContext = context
         mAudioManager = mContext.getSystemService(AudioManager::class.java)
