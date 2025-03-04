@@ -36,7 +36,6 @@ import com.drdisagree.iconify.R
 import com.drdisagree.iconify.data.common.Const.ACTION_LS_CLOCK_INFLATED
 import com.drdisagree.iconify.data.common.Const.RESET_LOCKSCREEN_CLOCK_COMMAND
 import com.drdisagree.iconify.data.common.Const.SYSTEMUI_PACKAGE
-import com.drdisagree.iconify.data.common.Preferences.DEPTH_WALLPAPER_SWITCH
 import com.drdisagree.iconify.data.common.Preferences.ICONIFY_LOCKSCREEN_CLOCK_TAG
 import com.drdisagree.iconify.data.common.Preferences.LSCLOCK_BOTTOMMARGIN
 import com.drdisagree.iconify.data.common.Preferences.LSCLOCK_COLOR_CODE_ACCENT1
@@ -104,7 +103,6 @@ import java.util.concurrent.TimeUnit
 class LockscreenClockA15(context: Context) : ModPack(context) {
 
     private var showLockscreenClock = false
-    private var showDepthWallpaper = false
     private var mLockscreenRootView: ViewGroup? = null
     private var mLsItemsContainer: LinearLayout? = null
     private var mUserManager: UserManager? = null
@@ -190,7 +188,6 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
 
         Xprefs.apply {
             showLockscreenClock = getBoolean(LSCLOCK_SWITCH, false)
-            showDepthWallpaper = getBoolean(DEPTH_WALLPAPER_SWITCH, false)
             clockStyle = getInt(LSCLOCK_STYLE, 0)
             topMargin = getSliderInt(LSCLOCK_TOPMARGIN, 100)
             bottomMargin = getSliderInt(LSCLOCK_BOTTOMMARGIN, 40)
@@ -214,20 +211,30 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
         when (key.firstOrNull()) {
             in setOf(
                 LSCLOCK_SWITCH,
+                LSCLOCK_STYLE
+            ) -> updateClockView(true)
+
+            in setOf(
                 LSCLOCK_COLOR_SWITCH,
-                LSCLOCK_STYLE,
-                LSCLOCK_TOPMARGIN,
-                LSCLOCK_BOTTOMMARGIN,
                 LSCLOCK_FONT_LINEHEIGHT,
                 LSCLOCK_FONT_SWITCH,
                 LSCLOCK_IMAGE_SWITCH,
-                LSCLOCK_FONT_TEXT_SCALING,
                 LSCLOCK_USERNAME,
-                LSCLOCK_DEVICENAME,
-                DEPTH_WALLPAPER_SWITCH
+                LSCLOCK_DEVICENAME
+            ) -> modifyClockView(currentClockView)
+
+            in setOf(
+                LSCLOCK_TOPMARGIN,
+                LSCLOCK_BOTTOMMARGIN
             ) -> {
                 mLsItemsContainer?.let { applyLayoutConstraints(it) }
-                updateClockView(key[0] == LSCLOCK_STYLE)
+                modifyClockView(currentClockView)
+            }
+
+            LSCLOCK_FONT_TEXT_SCALING -> {
+                // recreate clock view to get original size
+                updateClockView(true)
+                updateScaling(currentClockView)
             }
 
             in setOf(
@@ -238,7 +245,7 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
                 LSCLOCK_COLOR_CODE_TEXT2
             ) -> {
                 loadColors()
-                updateClockView()
+                modifyClockView(currentClockView)
             }
         }
     }
@@ -622,7 +629,7 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
                     File(Environment.getExternalStorageDirectory().toString() + "/Android")
 
                 if (androidDir.isDirectory) {
-                    updateClockView()
+                    updateClockView(true)
                     executor.shutdown()
                     executor.shutdownNow()
                 }
@@ -705,6 +712,7 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
                 mLsItemsContainer!!.addView(this, 0)
 
                 modifyClockView(this)
+                updateScaling(this)
                 initSoundManager()
                 initBatteryStatus()
 
@@ -714,10 +722,7 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
                 Thread { mContext.sendBroadcast(broadcast) }.start()
             }
         } else {
-            currentClockView!!.apply {
-                modifyClockView(this)
-                requestLayout()
-            }
+            currentClockView!!.requestLayout()
         }
     }
 
@@ -743,8 +748,8 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
             mTemperatureArcProgress
         )
 
-    private fun modifyClockView(clockView: View) {
-        if (!XprefsIsInitialized || mLsItemsContainer == null) return
+    private fun modifyClockView(clockView: View?) {
+        if (!XprefsIsInitialized || mLsItemsContainer == null || clockView == null) return
 
         clockView.layoutParams.width = LinearLayout.LayoutParams.MATCH_PARENT
 
@@ -861,7 +866,9 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
 
         val imageView = clockView.findViewContainsTag("profile_picture") as ImageView?
         userImage?.let { imageView?.setImageDrawable(it) }
+    }
 
+    private fun updateScaling(clockView: View?) {
         if (textScaleFactor != 1f) {
             applyTextScalingRecursively(clockView, textScaleFactor)
 
