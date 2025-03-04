@@ -551,13 +551,13 @@ class LockscreenWidgetsA15(context: Context) : ModPack(context) {
         if (widgetView.parent != mWidgetsContainer) {
             (mWidgetsContainer.parent as? ViewGroup)?.removeView(widgetView)
             mWidgetsContainer.addView(widgetView)
-        }
 
-        updateLockscreenWidgets()
-        updateLsDeviceWidget()
-        updateLockscreenWidgetsColors()
-        updateMargins()
-        updateLockscreenWidgetsScale()
+            updateLockscreenWidgets()
+            updateLsDeviceWidget()
+            updateLockscreenWidgetsColors()
+            updateMargins()
+            updateLockscreenWidgetsScale()
+        }
     }
 
     @SuppressLint("DiscouragedApi")
