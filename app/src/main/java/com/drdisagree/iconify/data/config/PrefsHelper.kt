@@ -87,6 +87,8 @@ import com.drdisagree.iconify.data.common.Preferences.HEADER_CLOCK_COLOR_CODE_TE
 import com.drdisagree.iconify.data.common.Preferences.HEADER_CLOCK_COLOR_CODE_TEXT2
 import com.drdisagree.iconify.data.common.Preferences.HEADER_CLOCK_COLOR_SWITCH
 import com.drdisagree.iconify.data.common.Preferences.HEADER_CLOCK_EXPANSION_Y
+import com.drdisagree.iconify.data.common.Preferences.HEADER_CLOCK_FONT_PICKER
+import com.drdisagree.iconify.data.common.Preferences.HEADER_CLOCK_FONT_SWITCH
 import com.drdisagree.iconify.data.common.Preferences.HEADER_CLOCK_LANDSCAPE_SWITCH
 import com.drdisagree.iconify.data.common.Preferences.HIDE_QSLABEL_SWITCH
 import com.drdisagree.iconify.data.common.Preferences.HIDE_QS_ON_LOCKSCREEN
@@ -119,6 +121,7 @@ import com.drdisagree.iconify.data.common.Preferences.LSCLOCK_COLOR_CODE_TEXT2
 import com.drdisagree.iconify.data.common.Preferences.LSCLOCK_COLOR_SWITCH
 import com.drdisagree.iconify.data.common.Preferences.LSCLOCK_DEVICENAME
 import com.drdisagree.iconify.data.common.Preferences.LSCLOCK_FONT_LINEHEIGHT
+import com.drdisagree.iconify.data.common.Preferences.LSCLOCK_FONT_PICKER
 import com.drdisagree.iconify.data.common.Preferences.LSCLOCK_FONT_SWITCH
 import com.drdisagree.iconify.data.common.Preferences.LSCLOCK_FONT_TEXT_SCALING
 import com.drdisagree.iconify.data.common.Preferences.LSCLOCK_MOVE_NOTIFICATION_ICONS
@@ -339,6 +342,10 @@ object PrefsHelper {
 
             BLUR_RADIUS_VALUE -> getBoolean(QSPANEL_BLUR_SWITCH)
 
+            HEADER_CLOCK_FONT_PICKER -> getBoolean(HEADER_CLOCK_FONT_SWITCH)
+
+            LSCLOCK_FONT_PICKER -> getBoolean(LSCLOCK_FONT_SWITCH)
+
             else -> true
         }
     }
@@ -444,7 +451,7 @@ object PrefsHelper {
             CUSTOM_BATTERY_HEIGHT -> getString(CUSTOM_BATTERY_STYLE, 0.toString())!!.toInt() != 0
 
             LSCLOCK_FONT_SWITCH,
-            "xposed_lockscreenclockfontpicker",
+            LSCLOCK_FONT_PICKER,
             LSCLOCK_STYLE,
             LSCLOCK_TOPMARGIN,
             LSCLOCK_BOTTOMMARGIN,

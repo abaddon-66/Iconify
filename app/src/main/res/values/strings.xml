@@ -760,6 +760,8 @@
     <string name="lockscreen_clock_move_notification_icon_desc">Move AOD icons below custom clock, might be buggy on older ROMs</string>
     <string name="lockscreen_clock_font_title">Clock Font</string>
     <string name="lockscreen_clock_font_desc">Use custom font for lockscreen clock</string>
+    <string name="lockscreen_clock_image_title">Custom Image</string>
+    <string name="lockscreen_clock_image_desc">Use custom image for lockscreen clock</string>
     <string name="lsclock_custom_color_title">Custom Clock Color</string>
     <string name="lsclock_custom_color_desc">Custom colors instead of system colors</string>
     <string name="lsclock_color_picker_title">Clock Color Picker</string>
@@ -1199,7 +1201,7 @@
     <string name="text_color_inverse">Text Color Inverse</string>
     <string name="learn_more">Learn more</string>
     <string name="custom_tiles_footer_info">To ensure custom tiles work properly, first use the default internet and bluetooth tiles once before using the custom ones.</string>
-    <string name="hig_res_image_footer_info">Avoid using high-resolution images, as they may cause your system UI to crash.</string>
+    <string name="hig_res_image_footer_info">Avoid using high-resolution images, as they may cause your SystemUI to crash.</string>
     <string name="more">More</string>
 
     <!-- Weather -->

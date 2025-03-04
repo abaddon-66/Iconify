@@ -13,6 +13,7 @@ import com.drdisagree.iconify.Iconify.Companion.appContextLocale
 import com.drdisagree.iconify.R
 import com.drdisagree.iconify.data.common.Const.RESET_LOCKSCREEN_CLOCK_COMMAND
 import com.drdisagree.iconify.data.common.Dynamic.isAtleastA14
+import com.drdisagree.iconify.data.common.Preferences.LSCLOCK_FONT_PICKER
 import com.drdisagree.iconify.data.common.Preferences.LSCLOCK_FONT_SWITCH
 import com.drdisagree.iconify.data.common.Preferences.LSCLOCK_MOVE_NOTIFICATION_ICONS
 import com.drdisagree.iconify.data.common.Preferences.LSCLOCK_SWITCH
@@ -103,7 +104,7 @@ class LockscreenClock : ControlledPreferenceFragmentCompat() {
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         super.onCreatePreferences(savedInstanceState, rootKey)
 
-        findPreference<FilePickerPreference>("xposed_lockscreenclockfontpicker")?.apply {
+        findPreference<FilePickerPreference>(LSCLOCK_FONT_PICKER)?.apply {
             setOnButtonClick {
                 launchFilePicker(context, "font", startActivityIntent)
             }
