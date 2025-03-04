@@ -751,11 +751,12 @@ class LockscreenWidgetsView(context: Context, activityStarter: Any?) :
                     imageView = iv,
                     extendedFAB = efab,
                     clickListener = { toggleRingerMode() },
-                    icon = ResourcesCompat.getDrawable(
-                        modRes,
-                        R.drawable.ic_ringer_normal,
-                        mContext.theme
-                    ),
+                    icon = getDrawable(RING_VOLUME, SYSTEMUI_PACKAGE)
+                        ?: ResourcesCompat.getDrawable(
+                            modRes,
+                            R.drawable.ic_ringer_normal,
+                            mContext.theme
+                        ),
                     text = ringerText
                 )
             }
@@ -868,11 +869,12 @@ class LockscreenWidgetsView(context: Context, activityStarter: Any?) :
                 setUpWidgetResources(
                     imageView = iv, extendedFAB = efab,
                     clickListener = { toggleMediaPlaybackState() },
-                    icon = ResourcesCompat.getDrawable(
-                        modRes,
-                        R.drawable.ic_play,
-                        mContext.theme
-                    ),
+                    icon = getDrawable(MEDIA_PLAY, SYSTEMUI_PACKAGE)
+                        ?: ResourcesCompat.getDrawable(
+                            modRes,
+                            R.drawable.ic_play,
+                            mContext.theme
+                        ),
                     text = getString(MEDIA_PLAY_LABEL, SYSTEMUI_PACKAGE)
                 )
             }
@@ -1098,7 +1100,10 @@ class LockscreenWidgetsView(context: Context, activityStarter: Any?) :
 
     private fun updateMediaPlaybackState() {
         val isPlaying = isMediaPlaying
-        val icon = ResourcesCompat.getDrawable(
+        val icon = getDrawable(
+            if (isPlaying) MEDIA_PAUSE else MEDIA_PLAY,
+            SYSTEMUI_PACKAGE
+        ) ?: ResourcesCompat.getDrawable(
             modRes,
             if (isPlaying) R.drawable.ic_pause else R.drawable.ic_play,
             mContext.theme
@@ -1836,16 +1841,21 @@ class LockscreenWidgetsView(context: Context, activityStarter: Any?) :
 
     private val ringerDrawable: Drawable?
         get() {
-            val resName = when (mAudioManager!!.ringerMode) {
-                AudioManager.RINGER_MODE_NORMAL -> R.drawable.ic_ringer_normal
-                AudioManager.RINGER_MODE_VIBRATE -> R.drawable.ic_ringer_vibrate
-                AudioManager.RINGER_MODE_SILENT -> R.drawable.ic_ringer_mute
-                else -> throw IllegalStateException("Unexpected value: " + mAudioManager.ringerMode)
-            }
-
-            return ResourcesCompat.getDrawable(
+            return getDrawable(
+                when (mAudioManager!!.ringerMode) {
+                    AudioManager.RINGER_MODE_NORMAL -> RING_VOLUME
+                    AudioManager.RINGER_MODE_VIBRATE -> RING_VOLUME_VIBRATE
+                    AudioManager.RINGER_MODE_SILENT -> RING_VOLUME_MUTE
+                    else -> throw IllegalStateException("Unexpected value: " + mAudioManager.ringerMode)
+                }, SYSTEMUI_PACKAGE
+            ) ?: ResourcesCompat.getDrawable(
                 modRes,
-                resName,
+                when (mAudioManager.ringerMode) {
+                    AudioManager.RINGER_MODE_NORMAL -> R.drawable.ic_ringer_normal
+                    AudioManager.RINGER_MODE_VIBRATE -> R.drawable.ic_ringer_vibrate
+                    AudioManager.RINGER_MODE_SILENT -> R.drawable.ic_ringer_mute
+                    else -> throw IllegalStateException("Unexpected value: " + mAudioManager.ringerMode)
+                },
                 mContext.theme
             )
         }
@@ -1891,6 +1901,11 @@ class LockscreenWidgetsView(context: Context, activityStarter: Any?) :
         const val WALLET_ICON: String = "ic_wallet_lockscreen"
         const val HOTSPOT_ACTIVE: String = "qs_hotspot_icon_on"
         const val HOTSPOT_INACTIVE: String = "qs_hotspot_icon_off"
+        const val RING_VOLUME: String = "ic_volume_ringer"
+        const val RING_VOLUME_MUTE: String = "ic_volume_ringer_mute"
+        const val RING_VOLUME_VIBRATE: String = "ic_volume_ringer_vibrate"
+        const val MEDIA_PLAY: String = "ic_media_play"
+        const val MEDIA_PAUSE: String = "ic_media_pause"
 
         // A12 icons
         const val HOTSPOT_A12: String = "ic_hotspot"
