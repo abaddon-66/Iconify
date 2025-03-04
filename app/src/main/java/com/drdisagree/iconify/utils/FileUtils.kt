@@ -162,26 +162,16 @@ object FileUtils {
         if (!hasStoragePermission()) {
             requestStoragePermission(context)
         } else {
-            var fileType = "*/*"
-
-            if (type.isNullOrEmpty() || type == "all") {
-                fileType = "*/*"
-            } else if (type == "image") {
-                fileType = "image/*"
-            } else if (type == "font") {
-                fileType = "font/*"
-            } else if (type == "video") {
-                fileType = "video/*"
-            } else if (type == "audio") {
-                fileType = "audio/*"
-            } else if (type == "pdf") {
-                fileType = "application/pdf"
-            } else if (type == "text") {
-                fileType = "text/*"
-            } else if (type == "zip") {
-                fileType = "application/zip"
-            } else if (type == "apk") {
-                fileType = "application/vnd.android.package-archive"
+            val fileType = when (type) {
+                "image" -> "image/*"
+                "font" -> "font/*"
+                "video" -> "video/*"
+                "audio" -> "audio/*"
+                "pdf" -> "application/pdf"
+                "text" -> "text/*"
+                "zip" -> "application/zip"
+                "apk" -> "application/vnd.android.package-archive"
+                else -> "*/*"
             }
 
             launchFilePicker(launcher, fileType)

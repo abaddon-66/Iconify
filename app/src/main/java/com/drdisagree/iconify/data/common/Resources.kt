@@ -81,6 +81,10 @@ object Resources {
 
     val LSCLOCK_FONT_DIR = "$XPOSED_RESOURCE_TEMP_DIR/lsclock_font.ttf"
 
+    val LSCLOCK_IMAGE1_DIR = "$XPOSED_RESOURCE_TEMP_DIR/lsclock_image1.png"
+
+    val LSCLOCK_IMAGE2_DIR = "$XPOSED_RESOURCE_TEMP_DIR/lsclock_image2.png"
+
     val HEADER_CLOCK_FONT_DIR = "$XPOSED_RESOURCE_TEMP_DIR/headerclock_font.ttf"
 
     val HEADER_IMAGE_DIR = "$XPOSED_RESOURCE_TEMP_DIR/header_image.png"

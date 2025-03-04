@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
@@ -15,9 +16,14 @@ import com.drdisagree.iconify.data.common.Const.RESET_LOCKSCREEN_CLOCK_COMMAND
 import com.drdisagree.iconify.data.common.Dynamic.isAtleastA14
 import com.drdisagree.iconify.data.common.Preferences.LSCLOCK_FONT_PICKER
 import com.drdisagree.iconify.data.common.Preferences.LSCLOCK_FONT_SWITCH
+import com.drdisagree.iconify.data.common.Preferences.LSCLOCK_IMAGE_PICKER1
+import com.drdisagree.iconify.data.common.Preferences.LSCLOCK_IMAGE_PICKER2
+import com.drdisagree.iconify.data.common.Preferences.LSCLOCK_IMAGE_SWITCH
 import com.drdisagree.iconify.data.common.Preferences.LSCLOCK_MOVE_NOTIFICATION_ICONS
 import com.drdisagree.iconify.data.common.Preferences.LSCLOCK_SWITCH
 import com.drdisagree.iconify.data.common.Resources.LSCLOCK_FONT_DIR
+import com.drdisagree.iconify.data.common.Resources.LSCLOCK_IMAGE1_DIR
+import com.drdisagree.iconify.data.common.Resources.LSCLOCK_IMAGE2_DIR
 import com.drdisagree.iconify.data.config.RPrefs.getBoolean
 import com.drdisagree.iconify.data.config.RPrefs.putBoolean
 import com.drdisagree.iconify.ui.activities.MainActivity
@@ -46,6 +52,7 @@ class LockscreenClock : ControlledPreferenceFragmentCompat() {
         get() = true
 
     private lateinit var startActivityIntent: ActivityResultLauncher<Intent?>
+    private var copyToDirectory: String? = null
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -56,10 +63,17 @@ class LockscreenClock : ControlledPreferenceFragmentCompat() {
             if (result.resultCode == Activity.RESULT_OK) {
                 val data = result.data
                 val path = getRealPath(data)
+                val directory = copyToDirectory ?: return@registerForActivityResult
+                Log.d("LockscreenClock", "Directory: $directory")
 
-                if (path != null && moveToIconifyHiddenDir(path, LSCLOCK_FONT_DIR)) {
-                    putBoolean(LSCLOCK_FONT_SWITCH, false)
-                    putBoolean(LSCLOCK_FONT_SWITCH, true)
+                if (path != null && moveToIconifyHiddenDir(path, directory)) {
+                    if (directory == LSCLOCK_FONT_DIR) {
+                        putBoolean(LSCLOCK_FONT_SWITCH, false)
+                        putBoolean(LSCLOCK_FONT_SWITCH, true)
+                    } else if (directory == LSCLOCK_IMAGE1_DIR || directory == LSCLOCK_IMAGE2_DIR) {
+                        putBoolean(LSCLOCK_IMAGE_SWITCH, false)
+                        putBoolean(LSCLOCK_IMAGE_SWITCH, true)
+                    }
 
                     Toast.makeText(
                         appContext,
@@ -106,7 +120,22 @@ class LockscreenClock : ControlledPreferenceFragmentCompat() {
 
         findPreference<FilePickerPreference>(LSCLOCK_FONT_PICKER)?.apply {
             setOnButtonClick {
+                copyToDirectory = LSCLOCK_FONT_DIR
                 launchFilePicker(context, "font", startActivityIntent)
+            }
+        }
+
+        findPreference<FilePickerPreference>(LSCLOCK_IMAGE_PICKER1)?.apply {
+            setOnButtonClick {
+                copyToDirectory = LSCLOCK_IMAGE1_DIR
+                launchFilePicker(context, "image", startActivityIntent)
+            }
+        }
+
+        findPreference<FilePickerPreference>(LSCLOCK_IMAGE_PICKER2)?.apply {
+            setOnButtonClick {
+                copyToDirectory = LSCLOCK_IMAGE2_DIR
+                launchFilePicker(context, "image", startActivityIntent)
             }
         }
     }

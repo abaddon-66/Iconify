@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.graphics.Typeface
 import android.graphics.drawable.BitmapDrawable
@@ -50,6 +51,7 @@ import com.drdisagree.iconify.data.common.Preferences.LSCLOCK_DEVICENAME
 import com.drdisagree.iconify.data.common.Preferences.LSCLOCK_FONT_LINEHEIGHT
 import com.drdisagree.iconify.data.common.Preferences.LSCLOCK_FONT_SWITCH
 import com.drdisagree.iconify.data.common.Preferences.LSCLOCK_FONT_TEXT_SCALING
+import com.drdisagree.iconify.data.common.Preferences.LSCLOCK_IMAGE_SWITCH
 import com.drdisagree.iconify.data.common.Preferences.LSCLOCK_MOVE_NOTIFICATION_ICONS
 import com.drdisagree.iconify.data.common.Preferences.LSCLOCK_STYLE
 import com.drdisagree.iconify.data.common.Preferences.LSCLOCK_SWITCH
@@ -140,6 +142,11 @@ class LockscreenClock(context: Context) : ModPack(context) {
     private var customTypeface: Typeface? = null
     private val customFontDirectory = Environment.getExternalStorageDirectory().toString() +
             "/.iconify_files/lsclock_font.ttf"
+    private var customImageEnabled = false
+    private val customImage1Directory =
+        "${Environment.getExternalStorageDirectory()}/.iconify_files/lsclock_image1.png"
+    private val customImage2Directory =
+        "${Environment.getExternalStorageDirectory()}/.iconify_files/lsclock_image2.png"
 
     init {
         ThemeChange.getInstance().registerThemeChangedCallback(mThemeChangeCallback)
@@ -152,6 +159,7 @@ class LockscreenClock(context: Context) : ModPack(context) {
             showLockscreenClock = getBoolean(LSCLOCK_SWITCH, false)
             showDepthWallpaper = isAndroid13OrBelow && getBoolean(DEPTH_WALLPAPER_SWITCH, false)
             moveNotificationIcons = getBoolean(LSCLOCK_MOVE_NOTIFICATION_ICONS, !isAndroid13OrBelow)
+            customImageEnabled = getBoolean(LSCLOCK_IMAGE_SWITCH, false)
             customFontEnabled = getBoolean(LSCLOCK_FONT_SWITCH, false)
             customTypeface = if (customFontEnabled && File(customFontDirectory).exists()) {
                 Typeface.createFromFile(File(customFontDirectory))
@@ -171,6 +179,7 @@ class LockscreenClock(context: Context) : ModPack(context) {
                 LSCLOCK_BOTTOMMARGIN,
                 LSCLOCK_FONT_LINEHEIGHT,
                 LSCLOCK_FONT_SWITCH,
+                LSCLOCK_IMAGE_SWITCH,
                 LSCLOCK_FONT_TEXT_SCALING,
                 LSCLOCK_USERNAME,
                 LSCLOCK_DEVICENAME
@@ -577,6 +586,24 @@ class LockscreenClock(context: Context) : ModPack(context) {
 
         if (clockStyle != 10) {
             TextUtils.convertTextViewsToTitleCase(clockView)
+        }
+
+        if (customImageEnabled) {
+            listOf(
+                "custom_image1" to customImage1Directory,
+                "custom_image2" to customImage2Directory
+            ).forEach { (tag, path) ->
+                if (File(path).exists()) {
+                    clockView.findViewContainsTag(tag)?.let { view ->
+                        val bitmap = BitmapFactory.decodeFile(path)
+                        if (view is ImageView) {
+                            view.setImageBitmap(bitmap)
+                        } else {
+                            view.background = BitmapDrawable(view.resources, bitmap)
+                        }
+                    }
+                }
+            }
         }
 
         mBatteryLevelView = null

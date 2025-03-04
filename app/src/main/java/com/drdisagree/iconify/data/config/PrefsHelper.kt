@@ -124,6 +124,9 @@ import com.drdisagree.iconify.data.common.Preferences.LSCLOCK_FONT_LINEHEIGHT
 import com.drdisagree.iconify.data.common.Preferences.LSCLOCK_FONT_PICKER
 import com.drdisagree.iconify.data.common.Preferences.LSCLOCK_FONT_SWITCH
 import com.drdisagree.iconify.data.common.Preferences.LSCLOCK_FONT_TEXT_SCALING
+import com.drdisagree.iconify.data.common.Preferences.LSCLOCK_IMAGE_PICKER1
+import com.drdisagree.iconify.data.common.Preferences.LSCLOCK_IMAGE_PICKER2
+import com.drdisagree.iconify.data.common.Preferences.LSCLOCK_IMAGE_SWITCH
 import com.drdisagree.iconify.data.common.Preferences.LSCLOCK_MOVE_NOTIFICATION_ICONS
 import com.drdisagree.iconify.data.common.Preferences.LSCLOCK_STYLE
 import com.drdisagree.iconify.data.common.Preferences.LSCLOCK_SWITCH
@@ -168,6 +171,8 @@ object PrefsHelper {
 
     fun isVisible(key: String?): Boolean {
         val lockscreenClockStyle = getInt(LSCLOCK_STYLE, 0)
+        val lockscreenClockWithImage1 = lockscreenClockStyle in setOf(26, 27, 30, 39, 40, 53)
+        val lockscreenClockWithImage2 = lockscreenClockStyle in setOf(26)
 
         return when (key) {
             UPDATE_OVER_WIFI -> getBoolean(AUTO_UPDATE, true)
@@ -346,6 +351,12 @@ object PrefsHelper {
 
             LSCLOCK_FONT_PICKER -> getBoolean(LSCLOCK_FONT_SWITCH)
 
+            LSCLOCK_IMAGE_SWITCH -> lockscreenClockWithImage1
+
+            LSCLOCK_IMAGE_PICKER1 -> getBoolean(LSCLOCK_IMAGE_SWITCH) && lockscreenClockWithImage1
+
+            LSCLOCK_IMAGE_PICKER2 -> getBoolean(LSCLOCK_IMAGE_SWITCH) && lockscreenClockWithImage2
+
             else -> true
         }
     }
@@ -452,6 +463,8 @@ object PrefsHelper {
 
             LSCLOCK_FONT_SWITCH,
             LSCLOCK_FONT_PICKER,
+            LSCLOCK_IMAGE_PICKER1,
+            LSCLOCK_IMAGE_PICKER2,
             LSCLOCK_STYLE,
             LSCLOCK_TOPMARGIN,
             LSCLOCK_BOTTOMMARGIN,
