@@ -722,7 +722,10 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
                 Thread { mContext.sendBroadcast(broadcast) }.start()
             }
         } else {
-            currentClockView!!.requestLayout()
+            currentClockView!!.apply {
+                updateClockViewElements(this)
+                requestLayout()
+            }
         }
     }
 
@@ -769,10 +772,6 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
 
         applyTextMarginRecursively(mContext, clockView, lineHeight)
 
-        if (clockStyle != 10) {
-            TextUtils.convertTextViewsToTitleCase(clockView)
-        }
-
         if (customImageEnabled) {
             listOf(
                 "custom_image1" to customImage1Directory,
@@ -801,20 +800,6 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
 
         clockView.apply {
             when (clockStyle) {
-                2, 20 -> {
-                    val tickIndicator = findViewContainsTag("tickIndicator") as TextClock
-                    val hourView = findViewContainsTag("hours") as TextView
-
-                    tickIndicator.setTextColor(Color.TRANSPARENT)
-                    hourView.visibility = View.VISIBLE
-
-                    TimeUtils.setCurrentTimeTextClockRed(
-                        tickIndicator,
-                        hourView,
-                        if (customColorEnabled) mAccentColor1 else mSystemAccent
-                    )
-                }
-
                 5 -> {
                     mBatteryStatusView = findViewContainsTag("battery_status") as TextView?
                     mBatteryLevelView = findViewContainsTag("battery_percentage") as TextView?
@@ -830,14 +815,6 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
                     addArcProgressView("ram_usage_info")
                 }
 
-                22 -> {
-                    val hourView = findViewContainsTag("textHour") as TextView
-                    val minuteView = findViewContainsTag("textMinute") as TextView
-                    val tickIndicator = findViewContainsTag("tickIndicator") as TextClock
-
-                    TimeUtils.setCurrentTimeTextClock(mContext, tickIndicator, hourView, minuteView)
-                }
-
                 56 -> {
                     addArcProgressView("volume_progress")
                     addArcProgressView("ram_usage_info")
@@ -847,6 +824,8 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
 
                 else -> {}
             }
+
+            updateClockViewElements(this)
         }
 
         allArcProgressImageViews.forEach { arcProgressImageView ->
@@ -866,6 +845,40 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
 
         val imageView = clockView.findViewContainsTag("profile_picture") as ImageView?
         userImage?.let { imageView?.setImageDrawable(it) }
+    }
+
+    private fun updateClockViewElements(clockView: View?) {
+        if (clockView == null) return
+
+        clockView.apply {
+            if (clockStyle != 10) {
+                TextUtils.convertTextViewsToTitleCase(this)
+            }
+
+            when (clockStyle) {
+                2, 20 -> {
+                    val tickIndicator = findViewContainsTag("tickIndicator") as TextClock
+                    val hourView = findViewContainsTag("hours") as TextView
+
+                    tickIndicator.setTextColor(Color.TRANSPARENT)
+                    hourView.visibility = View.VISIBLE
+
+                    TimeUtils.setCurrentTimeTextClockRed(
+                        tickIndicator,
+                        hourView,
+                        if (customColorEnabled) mAccentColor1 else mSystemAccent
+                    )
+                }
+
+                22 -> {
+                    val hourView = findViewContainsTag("textHour") as TextView
+                    val minuteView = findViewContainsTag("textMinute") as TextView
+                    val tickIndicator = findViewContainsTag("tickIndicator") as TextClock
+
+                    TimeUtils.setCurrentTimeTextClock(mContext, tickIndicator, hourView, minuteView)
+                }
+            }
+        }
     }
 
     private fun updateScaling(clockView: View?) {
