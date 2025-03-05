@@ -10,7 +10,6 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.graphics.Typeface
-import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.media.AudioManager
 import android.os.BatteryManager
@@ -31,6 +30,7 @@ import android.widget.TextClock
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.content.res.ResourcesCompat
+import androidx.core.graphics.drawable.toDrawable
 import com.drdisagree.iconify.BuildConfig
 import com.drdisagree.iconify.R
 import com.drdisagree.iconify.data.common.Const.ACTION_LS_CLOCK_INFLATED
@@ -216,8 +216,6 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
 
             in setOf(
                 LSCLOCK_COLOR_SWITCH,
-                LSCLOCK_FONT_LINEHEIGHT,
-                LSCLOCK_FONT_SWITCH,
                 LSCLOCK_IMAGE_SWITCH,
                 LSCLOCK_USERNAME,
                 LSCLOCK_DEVICENAME
@@ -231,10 +229,18 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
                 modifyClockView(currentClockView)
             }
 
+            LSCLOCK_FONT_SWITCH -> updateClockView(true)
+
             LSCLOCK_FONT_TEXT_SCALING -> {
                 // recreate clock view to get original size
                 updateClockView(true)
                 updateScaling(currentClockView)
+            }
+
+            LSCLOCK_FONT_LINEHEIGHT -> {
+                // recreate clock view to get original line height
+                updateClockView(true)
+                updateLineHeight(currentClockView)
             }
 
             in setOf(
@@ -712,6 +718,7 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
                 mLsItemsContainer!!.addView(this, 0)
 
                 modifyClockView(this)
+                updateLineHeight(this)
                 updateScaling(this)
                 initSoundManager()
                 initBatteryStatus()
@@ -770,8 +777,6 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
             applyFontRecursively(clockView, it)
         }
 
-        applyTextMarginRecursively(mContext, clockView, lineHeight)
-
         if (customImageEnabled) {
             listOf(
                 "custom_image1" to customImage1Directory,
@@ -783,7 +788,7 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
                         if (view is ImageView) {
                             view.setImageBitmap(bitmap)
                         } else {
-                            view.background = BitmapDrawable(view.resources, bitmap)
+                            view.background = bitmap.toDrawable(view.resources)
                         }
                     }
                 }
@@ -879,6 +884,12 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
                 }
             }
         }
+    }
+
+    private fun updateLineHeight(clockView: View?) {
+        if (clockView == null) return
+
+        applyTextMarginRecursively(mContext, clockView, lineHeight)
     }
 
     private fun updateScaling(clockView: View?) {
@@ -1146,7 +1157,7 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
             val userId = UserHandle::class.java.getDeclaredMethod("myUserId").invoke(null) as Int
             val bitmapUserIcon = getUserIconMethod.invoke(mUserManager, userId) as Bitmap
 
-            BitmapDrawable(mContext.resources, bitmapUserIcon)
+            bitmapUserIcon.toDrawable(mContext.resources)
         } catch (throwable: Throwable) {
             if (throwable !is NullPointerException) {
                 log(this@LockscreenClockA15, throwable)
