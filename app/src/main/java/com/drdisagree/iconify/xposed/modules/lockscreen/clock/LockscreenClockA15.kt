@@ -231,16 +231,11 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
 
             LSCLOCK_FONT_SWITCH -> updateClockView(true)
 
+            LSCLOCK_FONT_LINEHEIGHT,
             LSCLOCK_FONT_TEXT_SCALING -> {
                 // recreate clock view to get original size
                 updateClockView(true)
                 updateScaling(currentClockView)
-            }
-
-            LSCLOCK_FONT_LINEHEIGHT -> {
-                // recreate clock view to get original line height
-                updateClockView(true)
-                updateLineHeight(currentClockView)
             }
 
             in setOf(
@@ -718,7 +713,6 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
                 mLsItemsContainer!!.addView(this, 0)
 
                 modifyClockView(this)
-                updateLineHeight(this)
                 updateScaling(this)
                 initSoundManager()
                 initBatteryStatus()
@@ -886,13 +880,11 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
         }
     }
 
-    private fun updateLineHeight(clockView: View?) {
+    private fun updateScaling(clockView: View?) {
         if (clockView == null) return
 
         applyTextMarginRecursively(mContext, clockView, lineHeight)
-    }
 
-    private fun updateScaling(clockView: View?) {
         if (textScaleFactor != 1f) {
             applyTextScalingRecursively(clockView, textScaleFactor)
 
