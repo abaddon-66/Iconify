@@ -211,7 +211,10 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
         when (key.firstOrNull()) {
             in setOf(
                 LSCLOCK_SWITCH,
-                LSCLOCK_STYLE
+                LSCLOCK_STYLE,
+                LSCLOCK_FONT_SWITCH,
+                LSCLOCK_FONT_LINEHEIGHT,
+                LSCLOCK_FONT_TEXT_SCALING
             ) -> updateClockView(true)
 
             in setOf(
@@ -227,15 +230,6 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
             ) -> {
                 mLsItemsContainer?.let { applyLayoutConstraints(it) }
                 modifyClockView(currentClockView)
-            }
-
-            LSCLOCK_FONT_SWITCH -> updateClockView(true)
-
-            LSCLOCK_FONT_LINEHEIGHT,
-            LSCLOCK_FONT_TEXT_SCALING -> {
-                // recreate clock view to get original size
-                updateClockView(force = true, scaleView = false)
-                updateScaling(currentClockView)
             }
 
             in setOf(
@@ -685,7 +679,7 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
     }
 
     @Synchronized
-    private fun updateClockView(force: Boolean = false, scaleView: Boolean = true) {
+    private fun updateClockView(force: Boolean = false) {
         if (mLsItemsContainer == null) return
 
         val currentTime = System.currentTimeMillis()
@@ -713,9 +707,7 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
                 mLsItemsContainer!!.addView(this, 0)
 
                 modifyClockView(this)
-                if (scaleView) {
-                    updateScaling(this)
-                }
+                updateScaling(this)
                 initSoundManager()
                 initBatteryStatus()
 
