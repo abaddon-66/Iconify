@@ -236,31 +236,31 @@ class Lockscreen(context: Context) : ModPack(context) {
     }
 
     private fun disableQsOnSecureLockScreen() {
+        val phoneStatusBarPolicyClass =
+            findClass("$SYSTEMUI_PACKAGE.statusbar.phone.PhoneStatusBarPolicy")
+        val scrimManagerClass = findClass(
+            "$SYSTEMUI_PACKAGE.ambient.touch.scrim.ScrimManager",
+            "$SYSTEMUI_PACKAGE.dreams.touch.scrim.ScrimManager"
+        )
+        val getKeyguardStateController = object : XC_MethodHook() {
+            override fun afterHookedMethod(param: MethodHookParam) {
+                param.thisObject.getFieldSilently("mKeyguardStateController")?.let {
+                    mKeyguardStateController = it
+                }
+            }
+        }
+
+        phoneStatusBarPolicyClass
+            .hookConstructor()
+            .run(getKeyguardStateController)
+
+        scrimManagerClass
+            .hookConstructor()
+            .run(getKeyguardStateController)
+
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             val remoteInputQuickSettingsDisablerClass =
                 findClass("$SYSTEMUI_PACKAGE.statusbar.policy.RemoteInputQuickSettingsDisabler")
-            val phoneStatusBarPolicyClass =
-                findClass("$SYSTEMUI_PACKAGE.statusbar.phone.PhoneStatusBarPolicy")
-            val scrimManagerClass = findClass(
-                "$SYSTEMUI_PACKAGE.ambient.touch.scrim.ScrimManager",
-                "$SYSTEMUI_PACKAGE.dreams.touch.scrim.ScrimManager"
-            )
-
-            val getKeyguardStateController = object : XC_MethodHook() {
-                override fun afterHookedMethod(param: MethodHookParam) {
-                    param.thisObject.getFieldSilently("mKeyguardStateController")?.let {
-                        mKeyguardStateController = it
-                    }
-                }
-            }
-
-            phoneStatusBarPolicyClass
-                .hookConstructor()
-                .run(getKeyguardStateController)
-
-            scrimManagerClass
-                .hookConstructor()
-                .run(getKeyguardStateController)
 
             remoteInputQuickSettingsDisablerClass
                 .hookMethod("adjustDisableFlags")
@@ -282,7 +282,6 @@ class Lockscreen(context: Context) : ModPack(context) {
                 }
         } else {
             var mActivityStarter: Any? = null
-            var mKeyguardShowing = false
 
             val keyguardQuickAffordanceInteractorClass =
                 findClass("$SYSTEMUI_PACKAGE.keyguard.domain.interactor.KeyguardQuickAffordanceInteractor")
@@ -291,15 +290,6 @@ class Lockscreen(context: Context) : ModPack(context) {
                 .hookConstructor()
                 .runAfter { param ->
                     mActivityStarter = param.thisObject.getFieldSilently("activityStarter")
-                }
-
-            val keyguardStateControllerImplClass =
-                findClass("$SYSTEMUI_PACKAGE.statusbar.policy.KeyguardStateControllerImpl")
-
-            keyguardStateControllerImplClass
-                .hookMethod("notifyKeyguardState")
-                .runAfter { param ->
-                    mKeyguardShowing = param.args[0] as Boolean
                 }
 
             val qsTiles = listOf(
@@ -337,43 +327,53 @@ class Lockscreen(context: Context) : ModPack(context) {
                 "$SYSTEMUI_PACKAGE.qs.tiles.WorkModeTile"
             )
 
+            fun handleTileClick(
+                mActivityStarter: Any?,
+                param: XC_MethodHook.MethodHookParam,
+                methodName: String
+            ) {
+                val isUnlocked = try {
+                    !(mKeyguardStateController.getField("mShowing") as Boolean) ||
+                            mKeyguardStateController.getField("mCanDismissLockScreen") as Boolean
+                } catch (ignored: Throwable) {
+                    mKeyguardStateController.callMethod("isUnlocked") as Boolean
+                }
+
+                if (!isUnlocked && hideQsOnLockscreen) {
+                    mActivityStarter.callMethod(
+                        "postQSRunnableDismissingKeyguard",
+                        Runnable {
+                            Handler(Looper.getMainLooper()).postDelayed({
+                                param.thisObject.callMethod(
+                                    methodName,
+                                    param.args[0]
+                                )
+                            }, 800)
+                        }
+                    )
+                    param.result = null
+                }
+            }
+
             qsTiles.forEach { tileClassName ->
                 val tileClass = findClass(tileClassName, suppressError = true)
 
                 tileClass.hookMethod("handleClick")
                     .runBefore { param ->
-                        if (mKeyguardShowing && hideQsOnLockscreen) {
-                            mActivityStarter.callMethod(
-                                "postQSRunnableDismissingKeyguard",
-                                Runnable {
-                                    Handler(Looper.getMainLooper()).postDelayed({
-                                        param.thisObject.callMethod(
-                                            "handleClick",
-                                            param.args[0]
-                                        )
-                                    }, 1000)
-                                }
-                            )
-                            param.result = null
-                        }
+                        handleTileClick(
+                            mActivityStarter,
+                            param,
+                            "handleClick"
+                        )
                     }
 
                 tileClass.hookMethod("handleSecondaryClick")
                     .runBefore { param ->
-                        if (mKeyguardShowing && hideQsOnLockscreen) {
-                            mActivityStarter.callMethod(
-                                "postQSRunnableDismissingKeyguard",
-                                Runnable {
-                                    Handler(Looper.getMainLooper()).postDelayed({
-                                        param.thisObject.callMethod(
-                                            "handleSecondaryClick",
-                                            param.args[0]
-                                        )
-                                    }, 1000)
-                                }
-                            )
-                            param.result = null
-                        }
+                        handleTileClick(
+                            mActivityStarter,
+                            param,
+                            "handleSecondaryClick"
+                        )
                     }
             }
         }
