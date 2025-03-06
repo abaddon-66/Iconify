@@ -334,8 +334,6 @@ object PrefsHelper {
 
             LSCLOCK_MOVE_NOTIFICATION_ICONS -> Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM
 
-            HIDE_QS_ON_LOCKSCREEN -> Build.VERSION.SDK_INT <= Build.VERSION_CODES.UPSIDE_DOWN_CAKE
-
             ALBUM_ART_ON_LOCKSCREEN_BLUR -> getString(
                 ALBUM_ART_ON_LOCKSCREEN_FILTER,
                 "0"

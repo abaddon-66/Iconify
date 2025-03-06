@@ -33,7 +33,6 @@ import com.drdisagree.iconify.data.common.Preferences.FIX_QS_TILE_COLOR
 import com.drdisagree.iconify.data.common.Preferences.HEADER_CLOCK_SWITCH
 import com.drdisagree.iconify.data.common.Preferences.HIDE_QSLABEL_SWITCH
 import com.drdisagree.iconify.data.common.Preferences.HIDE_QS_FOOTER_BUTTONS
-import com.drdisagree.iconify.data.common.Preferences.HIDE_QS_ON_LOCKSCREEN
 import com.drdisagree.iconify.data.common.Preferences.HIDE_QS_SILENT_TEXT
 import com.drdisagree.iconify.data.common.Preferences.QQS_TOPMARGIN_LANDSCAPE
 import com.drdisagree.iconify.data.common.Preferences.QQS_TOPMARGIN_PORTRAIT
@@ -73,7 +72,6 @@ class QuickSettings(context: Context) : ModPack(context) {
     private var customQsTextColor = false
     private var selectedQsTextColor = 0
     private var qsTextAccentColor = Color.BLUE
-    private var hideQsOnLockscreen = false
     private var hideSilentText = false
     private var hideFooterButtons = false
     private var qqsTopMarginPort = 100
@@ -85,7 +83,6 @@ class QuickSettings(context: Context) : ModPack(context) {
     private var mFooterButtonsOnDrawListener: OnDrawListener? = null
     private var mSilentTextContainer: ViewGroup? = null
     private var mSilentTextOnDrawListener: OnDrawListener? = null
-    private var mKeyguardStateController: Any? = null
     private val isAtLeastAndroid14 = Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE
     private var isVerticalQSTileActive = false
     private var isHideLabelActive = false
@@ -112,7 +109,6 @@ class QuickSettings(context: Context) : ModPack(context) {
                     getBoolean(FIX_NOTIFICATION_FOOTER_BUTTON_COLOR, false)
             customQsTextColor = getBoolean(CUSTOM_QS_TEXT_COLOR, false)
             selectedQsTextColor = getString(SELECTED_QS_TEXT_COLOR, "0")!!.toInt()
-            hideQsOnLockscreen = getBoolean(HIDE_QS_ON_LOCKSCREEN, false)
             hideSilentText = getBoolean(HIDE_QS_SILENT_TEXT, false)
             hideFooterButtons = getBoolean(HIDE_QS_FOOTER_BUTTONS, false)
             showHeaderClock = getBoolean(HEADER_CLOCK_SWITCH, false)
@@ -130,7 +126,6 @@ class QuickSettings(context: Context) : ModPack(context) {
         fixQsTileAndLabelColorA14()
         fixNotificationColorA14()
         manageQsElementVisibility()
-        disableQsOnSecureLockScreen()
         compactMediaPlayer()
     }
 
@@ -686,54 +681,6 @@ class QuickSettings(context: Context) : ModPack(context) {
             }
     }
 
-    private fun disableQsOnSecureLockScreen() {
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.UPSIDE_DOWN_CAKE) return
-
-        val remoteInputQuickSettingsDisablerClass =
-            findClass("$SYSTEMUI_PACKAGE.statusbar.policy.RemoteInputQuickSettingsDisabler")
-        val phoneStatusBarPolicyClass =
-            findClass("$SYSTEMUI_PACKAGE.statusbar.phone.PhoneStatusBarPolicy")
-        val scrimManagerClass = findClass(
-            "$SYSTEMUI_PACKAGE.ambient.touch.scrim.ScrimManager",
-            "$SYSTEMUI_PACKAGE.dreams.touch.scrim.ScrimManager"
-        )
-
-        val getKeyguardStateController = object : XC_MethodHook() {
-            override fun afterHookedMethod(param: MethodHookParam) {
-                param.thisObject.getFieldSilently("mKeyguardStateController")?.let {
-                    mKeyguardStateController = it
-                }
-            }
-        }
-
-        phoneStatusBarPolicyClass
-            .hookConstructor()
-            .run(getKeyguardStateController)
-
-        scrimManagerClass
-            .hookConstructor()
-            .run(getKeyguardStateController)
-
-        remoteInputQuickSettingsDisablerClass
-            .hookMethod("adjustDisableFlags")
-            .runBefore { param ->
-                if (!hideQsOnLockscreen || mKeyguardStateController == null) return@runBefore
-
-                val isUnlocked = try {
-                    !(mKeyguardStateController.getField("mShowing") as Boolean) ||
-                            mKeyguardStateController.getField("mCanDismissLockScreen") as Boolean
-                } catch (ignored: Throwable) {
-                    mKeyguardStateController.callMethod("isUnlocked") as Boolean
-                }
-
-                param.result = if (hideQsOnLockscreen && !isUnlocked) {
-                    param.args[0] as Int or DISABLE2_QUICK_SETTINGS
-                } else {
-                    param.args[0]
-                }
-            }
-    }
-
     private fun compactMediaPlayer() {
         val mediaViewControllerClass =
             findClass(
@@ -904,10 +851,6 @@ class QuickSettings(context: Context) : ModPack(context) {
     }
 
     companion object {
-        /*
-         * Source: frameworks/base/core/java/android/app/StatusBarManager.java
-         */
-        private const val DISABLE2_QUICK_SETTINGS = 1
         var isPixelVariant = getIsPixelVariant()
 
         private fun getIsPixelVariant(): Boolean {
