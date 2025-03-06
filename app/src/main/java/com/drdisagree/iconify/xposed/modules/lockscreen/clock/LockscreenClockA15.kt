@@ -724,8 +724,8 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
             }
         } else {
             currentClockView!!.apply {
+                refreshTextClock()
                 updateClockViewElements(this)
-                requestLayout()
             }
         }
     }
@@ -1161,6 +1161,33 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
                 appContext.theme
             )
         }
+
+    private fun View.refreshTextClock() {
+        if (this !is ViewGroup) return
+
+        for (i in 0 until childCount) {
+            when (val child = getChildAt(i)) {
+                is TextClock -> {
+                    child.apply {
+                        format12Hour = format12Hour
+                        format24Hour = format24Hour
+                        invalidate()
+                        requestLayout()
+                    }
+                }
+
+                is TextView -> {
+                    child.apply {
+                        text = text
+                        invalidate()
+                        requestLayout()
+                    }
+                }
+
+                is ViewGroup -> child.refreshTextClock()
+            }
+        }
+    }
 
     private fun resetStockClock() {
         if (showLockscreenClock) {
