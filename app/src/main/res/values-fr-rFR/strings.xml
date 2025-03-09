@@ -498,6 +498,7 @@
     <string name="mini_widget_icon_active">Couleur active de l\'icône du mini widget</string>
     <string name="mini_widget_icon_inactive">Couleur inactive de l\'icône du mini widget</string>
     <string name="weather_settings">Paramètres de la météo</string>
+    <string name="lockscreen_widgets_roundness">Widgets Roundness</string>
     <string name="lockscreen_widgets_scale">Échelle des widgets</string>
     <string name="lockscreen_device_widget_style_title">Style du Widget de l\'appareil</string>
     <string name="lockscreen_device_widget_style_classic">Barre avec deux arcs</string>
@@ -576,6 +577,8 @@
     <string name="section_title_qs_elements">Éléments des réglages rapides</string>
     <string name="hide_qs_on_lockscreen_title">Masquer les réglages rapides sur l\'écran de verrouillage</string>
     <string name="hide_qs_on_lockscreen_desc">Désactiver les réglages rapides sur écran de verrouillage sécurisé</string>
+    <string name="hide_qs_on_lockscreen_a15_title">Disable QS on Lockscreen</string>
+    <string name="hide_qs_on_lockscreen_a15_desc">Disable quick settings tiles on secured lockscreen</string>
     <string name="hide_qs_silent_text_title">Masquer le message silencieux</string>
     <string name="hide_qs_silent_text_desc">Masquer le message silencieux affiché sous forme d\'en-tête de notifications silencieuses</string>
     <string name="hide_qs_footer_buttons_title">Masquer les boutons de pied de page</string>
@@ -714,6 +717,8 @@
     <string name="lockscreen_clock_move_notification_icon_desc">Déplacer les icônes AOD sous l\'horloge personnalisée, peut être buggé sur les anciennes ROM</string>
     <string name="lockscreen_clock_font_title">Police de l\'horloge</string>
     <string name="lockscreen_clock_font_desc">Utiliser une police personnalisée pour l\'horloge de l\'écran de verrouillage</string>
+    <string name="lockscreen_clock_image_title">Custom Image</string>
+    <string name="lockscreen_clock_image_desc">Use custom image for lockscreen clock</string>
     <string name="lsclock_custom_color_title">Couleur de l\'horloge personnalisée</string>
     <string name="lsclock_custom_color_desc">Couleurs personnalisées au lieu des couleurs système</string>
     <string name="lsclock_color_picker_title">Sélecteur de couleurs d\'horloge</string>
@@ -950,7 +955,7 @@
     <string name="unzoom_depth_wallpaper_title">Dézoomer la profondeur du fond d\'écran</string>
     <string name="unzoom_depth_wallpaper_desc">Supprimer l\'effet de zoom sur le fond d\'écran de profondeur</string>
     <string name="hide_data_disabled_icon_title">Masquer l\'icône de données désactivées</string>
-    <string name="hide_data_disabled_icon_desc">Masquer l\'indicateur de données désactivées</string>
+    <string name="hide_data_disabled_icon_desc">Toggle mobile data off and on to see the effect</string>
     <string name="colorize_notification_view_title">Coloriser la vue des notifications</string>
     <string name="colorize_notification_view_desc">Faire de la vue des notifications la même couleur que l\'icône de l\'application</string>
     <string name="colorize_notification_alternative_color_generation_title">Génération de couleurs alternatives</string>

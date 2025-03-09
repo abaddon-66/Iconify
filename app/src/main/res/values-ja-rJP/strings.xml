@@ -498,6 +498,7 @@
     <string name="mini_widget_icon_active">Mini Widget Icon Active Color</string>
     <string name="mini_widget_icon_inactive">Mini Widget Icon Inactive Color</string>
     <string name="weather_settings">Weather Settings</string>
+    <string name="lockscreen_widgets_roundness">Widgets Roundness</string>
     <string name="lockscreen_widgets_scale">Widgets Scale</string>
     <string name="lockscreen_device_widget_style_title">Device Widget Style</string>
     <string name="lockscreen_device_widget_style_classic">Bar with Two Arcs</string>
@@ -576,6 +577,8 @@
     <string name="section_title_qs_elements">クイック設定の要素</string>
     <string name="hide_qs_on_lockscreen_title">Hide QS on Lockscreen</string>
     <string name="hide_qs_on_lockscreen_desc">Disable quick settings panel on secured lockscreen</string>
+    <string name="hide_qs_on_lockscreen_a15_title">Disable QS on Lockscreen</string>
+    <string name="hide_qs_on_lockscreen_a15_desc">Disable quick settings tiles on secured lockscreen</string>
     <string name="hide_qs_silent_text_title">サイレント テキストを非表示</string>
     <string name="hide_qs_silent_text_desc">Hide silent text shown as header of silent notifications</string>
     <string name="hide_qs_footer_buttons_title">フッターのボタンを非表示</string>
@@ -714,6 +717,8 @@
     <string name="lockscreen_clock_move_notification_icon_desc">Move AOD icons below custom clock, might be buggy on older ROMs</string>
     <string name="lockscreen_clock_font_title">時計フォント</string>
     <string name="lockscreen_clock_font_desc">Use custom font for lockscreen clock</string>
+    <string name="lockscreen_clock_image_title">Custom Image</string>
+    <string name="lockscreen_clock_image_desc">Use custom image for lockscreen clock</string>
     <string name="lsclock_custom_color_title">カスタム時計色</string>
     <string name="lsclock_custom_color_desc">Custom colors instead of system colors</string>
     <string name="lsclock_color_picker_title">時計カラーピッカー</string>
@@ -950,7 +955,7 @@
     <string name="unzoom_depth_wallpaper_title">Unzoom Depth Wallpaper</string>
     <string name="unzoom_depth_wallpaper_desc">Remove the zoom effect on depth wallpaper</string>
     <string name="hide_data_disabled_icon_title">データ通信無効アイコンを非表示</string>
-    <string name="hide_data_disabled_icon_desc">データ通信インジケーターを非表示</string>
+    <string name="hide_data_disabled_icon_desc">Toggle mobile data off and on to see the effect</string>
     <string name="colorize_notification_view_title">Colorize Notification View</string>
     <string name="colorize_notification_view_desc">Make notification view same color as app icon</string>
     <string name="colorize_notification_alternative_color_generation_title">Alternative Color Generation</string>
@@ -1131,7 +1136,7 @@
     <string name="text_color_inverse">Text Color Inverse</string>
     <string name="learn_more">Learn more</string>
     <string name="custom_tiles_footer_info">To ensure custom tiles work properly, first use the default internet and bluetooth tiles once before using the custom ones.</string>
-    <string name="hig_res_image_footer_info">Avoid using high-resolution images, as they may cause your system UI to crash.</string>
+    <string name="hig_res_image_footer_info">Avoid using high-resolution images, as they may cause your SystemUI to crash.</string>
     <string name="more">More</string>
     <!-- Weather -->
     <!-- Omni Jaws Strings -->
