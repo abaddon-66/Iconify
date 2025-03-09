@@ -415,12 +415,12 @@
     <string name="disable_progress_wave_desc">غیرفعال کردن انیمیشن موج نوار پیشرفت</string>
     <!-- Xposed Menu -->
     <string name="lsposed_warn">قبل از فعال کردن Iconify از ماژول های LSPosed، روی Iconify طولانی فشار دهید و روی بهینه‌سازی دوباره کلیک کنید. پس از آن Iconify را فعال کرده و رابط سیستم خود را مجددا راه‌اندازی کنید. این برای یک تجربه روان تر لازم است.</string>
-    <string name="lsposed_bootloop_warn">One of the features you enabled is not compatible with your ROM. Please disable it and restart your SystemUI.</string>
+    <string name="lsposed_bootloop_warn">یکی از ویژگی‌هایی که فعال کرده‌اید با رام شما سازگار نیست. لطفاً آن را غیرفعال کنید و رابط سیستم خود را مجدداً راه‌اندازی کنید.</string>
     <string name="xposed_only_desc">شما در حال حاضر در حالت Xposed Only هستید. برای این کار باید iconify در برنامه LSPosed فعال شود. همچنین مطمئن شوید که ماژول Iconify در Magisk manager نشان داده شده است. برای دسترسی به تمام ویژگی ها، داده های برنامه iconify را پاک کنید و مراحل نصب را طی کنید!</string>
     <string name="xposed_module_disabled_title">ماژول فعال نیست</string>
     <string name="xposed_module_disabled_desc">سرویس سیستم اجرا نمی‌شود</string>
-    <string name="xposed_module_bootlooped_title">Bootloop Detected</string>
-    <string name="xposed_module_bootlooped_desc">Module has been disabled</string>
+    <string name="xposed_module_bootlooped_title">بوت‌لوپ شناسایی شد</string>
+    <string name="xposed_module_bootlooped_desc">ماژول غیرفعال شد</string>
     <string name="activity_title_transparency_blur">افکت شفافیت و محو کردن نوار‌ابزار</string>
     <string name="activity_desc_transparency_blur">فعال‌سازی افکت شفافیت و محو بودن در نوارابزار</string>
     <string name="activity_title_themes">پوسته‌ها</string>
@@ -498,6 +498,7 @@
     <string name="mini_widget_icon_active">رنگ فعال ابزارک کوچک</string>
     <string name="mini_widget_icon_inactive">رنگ غیر‌فعال ابزارک کوچک</string>
     <string name="weather_settings">تنظیمات آب و هوا</string>
+    <string name="lockscreen_widgets_roundness">گردی ابزارک‌ها</string>
     <string name="lockscreen_widgets_scale">مقیاس ابزارک ها</string>
     <string name="lockscreen_device_widget_style_title">سبک ابزارک دستگاه</string>
     <string name="lockscreen_device_widget_style_classic">نوار با دو قوس</string>
@@ -576,6 +577,8 @@
     <string name="section_title_qs_elements">عناصر تنظیم‌سریع</string>
     <string name="hide_qs_on_lockscreen_title">تنظیم‌سریع را در صفحه قفل مخفی کنید</string>
     <string name="hide_qs_on_lockscreen_desc">پانل تنظیمات سریع را در صفحه قفل ایمن غیرفعال کنید</string>
+    <string name="hide_qs_on_lockscreen_a15_title">Disable QS on Lockscreen</string>
+    <string name="hide_qs_on_lockscreen_a15_desc">Disable quick settings tiles on secured lockscreen</string>
     <string name="hide_qs_silent_text_title">مخفی کردن متن اعلان بی صدا</string>
     <string name="hide_qs_silent_text_desc">مخفی کردن متن اعلان بیصدا در سربرگ اعلان‌های بی‌صدا</string>
     <string name="hide_qs_footer_buttons_title">پنهان کردن دکمه های پاورقی</string>
@@ -714,6 +717,8 @@
     <string name="lockscreen_clock_move_notification_icon_desc">نمادهای همیشه روشن را به زیر ساعت سفارشی منتقل کنید، ممکن است در رام‌های قدیمی‌تر باگ داشته باشد</string>
     <string name="lockscreen_clock_font_title">فونت ساعت</string>
     <string name="lockscreen_clock_font_desc">برای ساعت قفل صفحه از فونت سفارشی استفاده کنید</string>
+    <string name="lockscreen_clock_image_title">تصویر سفارشی</string>
+    <string name="lockscreen_clock_image_desc">استفاده از تصویر سفارشی برای ساعت صفحه‌قفل</string>
     <string name="lsclock_custom_color_title">رنگ ساعت سفارشی</string>
     <string name="lsclock_custom_color_desc">رنگ های سفارشی به جای رنگ های سیستمی</string>
     <string name="lsclock_color_picker_title">انتخابگر رنگ ساعت</string>
@@ -950,7 +955,7 @@
     <string name="unzoom_depth_wallpaper_title">زوم نکردن تصویر زمینه عمق</string>
     <string name="unzoom_depth_wallpaper_desc">جلوه زوم را روی تصویر‌زمینه با عمق حذف کنید</string>
     <string name="hide_data_disabled_icon_title">پنهان کردن نماد بدون داده ها</string>
-    <string name="hide_data_disabled_icon_desc">نشانگر غیرفعال بودن داده ها را پنهان کنید</string>
+    <string name="hide_data_disabled_icon_desc">Toggle mobile data off and on to see the effect</string>
     <string name="colorize_notification_view_title">رنگی کردن نمای اعلان</string>
     <string name="colorize_notification_view_desc">نمای اعلان را همرنگ نماد برنامه کنید</string>
     <string name="colorize_notification_alternative_color_generation_title">تولید رنگ جایگزین</string>
@@ -1132,7 +1137,7 @@
     <string name="learn_more">بیشتر بدانید</string>
     <string name="custom_tiles_footer_info">برای اطمینان از عملکرد صحیح کاشی‌های سفارشی، ابتدا یک بار از کاشی‌های پیش‌فرض اینترنت و بلوتوث استفاده کنید، سپس از کاشی‌های سفارشی استفاده کنید.</string>
     <string name="hig_res_image_footer_info">از استفاده از تصاویر با وضوح بالا خودداری کنید، زیرا ممکن است باعث خراب شدن رابط کاربری سیستم شما شوند.</string>
-    <string name="more">More</string>
+    <string name="more">بیشتر</string>
     <!-- Weather -->
     <!-- Omni Jaws Strings -->
     <string name="units_title">واحد</string>
@@ -1266,8 +1271,8 @@
     <string name="double_tap_to_sleep_desc">روی فضای خالی صفحه اصلی دو ضربه سریع بزنید تا صفحه خاموش شود</string>
     <string name="desktop_icon_labels_title">عنوان نماد روی صفحه‌اصلی</string>
     <string name="app_drawer_icon_labels_title">عنوان نماد روی کشوی برنامه</string>
-    <string name="disable_recents_live_tile_title">Disable Recents Live Tile</string>
-    <string name="disable_recents_live_tile_desc">Disable live tile if recents screen is buggy</string>
+    <string name="disable_recents_live_tile_title">غیرفعال کردن کاشی زنده صفحه اخیراً</string>
+    <string name="disable_recents_live_tile_desc">غیرفعال کردن کاشی زنده در صورتی که صفحه اخیراً دچار اشکال است</string>
     <string name="hide_desktop_search_bar_title">پنهان کردن نوار جستجوی صفحه‌اصلی</string>
     <string name="hide_desktop_search_bar_desc">پنهان کردن نوار جستجو در صفحه‌اصلی</string>
     <string name="dock_spacing_title">فاصله اسکله</string>

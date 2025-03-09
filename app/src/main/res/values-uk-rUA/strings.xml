@@ -498,6 +498,7 @@
     <string name="mini_widget_icon_active">Значок мінівіджета: активний колір</string>
     <string name="mini_widget_icon_inactive">Значок мінівіджета: неактивний колір</string>
     <string name="weather_settings">Налаштування погоди</string>
+    <string name="lockscreen_widgets_roundness">Widgets Roundness</string>
     <string name="lockscreen_widgets_scale">Масштаб віджетів</string>
     <string name="lockscreen_device_widget_style_title">Device Widget Style</string>
     <string name="lockscreen_device_widget_style_classic">Bar with Two Arcs</string>
@@ -576,6 +577,8 @@
     <string name="section_title_qs_elements">Елементи швидких налаштувань</string>
     <string name="hide_qs_on_lockscreen_title">Приховати швидкі налаштування на екрані блокування</string>
     <string name="hide_qs_on_lockscreen_desc">Вимкнути швидкі налаштування на заблокованому екрані</string>
+    <string name="hide_qs_on_lockscreen_a15_title">Disable QS on Lockscreen</string>
+    <string name="hide_qs_on_lockscreen_a15_desc">Disable quick settings tiles on secured lockscreen</string>
     <string name="hide_qs_silent_text_title">Приховати напис «Без звуку» в сповіщеннях</string>
     <string name="hide_qs_silent_text_desc">Приховати беззвучний текст, що показується в заголовку беззвучних сповіщень</string>
     <string name="hide_qs_footer_buttons_title">Приховати кнопки нижнього колонтитула</string>
@@ -714,6 +717,8 @@
     <string name="lockscreen_clock_move_notification_icon_desc">Move AOD icons below custom clock, might be buggy on older ROMs</string>
     <string name="lockscreen_clock_font_title">Шрифт будильника</string>
     <string name="lockscreen_clock_font_desc">Використовувати власний шрифт для годинника на екрані блокування</string>
+    <string name="lockscreen_clock_image_title">Custom Image</string>
+    <string name="lockscreen_clock_image_desc">Use custom image for lockscreen clock</string>
     <string name="lsclock_custom_color_title">Свій колір годинника</string>
     <string name="lsclock_custom_color_desc">Власні кольори замість системних</string>
     <string name="lsclock_color_picker_title">Вибір кольорів для годинника</string>
@@ -950,7 +955,7 @@
     <string name="unzoom_depth_wallpaper_title">Не збільшувати шпалери з ефектом глибини</string>
     <string name="unzoom_depth_wallpaper_desc">Прибрати ефект збільшення на шпалерах з ефектом глибини</string>
     <string name="hide_data_disabled_icon_title">Сховати вимкнений значок даних</string>
-    <string name="hide_data_disabled_icon_desc">Сховати вимкнений індикатор даних</string>
+    <string name="hide_data_disabled_icon_desc">Toggle mobile data off and on to see the effect</string>
     <string name="colorize_notification_view_title">Colorize Notification View</string>
     <string name="colorize_notification_view_desc">Make notification view same color as app icon</string>
     <string name="colorize_notification_alternative_color_generation_title">Alternative Color Generation</string>
@@ -1131,7 +1136,7 @@
     <string name="text_color_inverse">Інвертувати колір тексту</string>
     <string name="learn_more">Learn more</string>
     <string name="custom_tiles_footer_info">To ensure custom tiles work properly, first use the default internet and bluetooth tiles once before using the custom ones.</string>
-    <string name="hig_res_image_footer_info">Avoid using high-resolution images, as they may cause your system UI to crash.</string>
+    <string name="hig_res_image_footer_info">Avoid using high-resolution images, as they may cause your SystemUI to crash.</string>
     <string name="more">More</string>
     <!-- Weather -->
     <!-- Omni Jaws Strings -->

@@ -461,7 +461,7 @@
     <string name="oneplus_qs_header_vibrate_desc">Добавить виброотклик на плитки</string>
     <string name="oneplus_qs_header_hide_stock_media_player_title">Скрыть стандартный медиаплеер</string>
     <string name="oneplus_qs_header_hide_stock_media_player_desc">Удалить медиаплеер из панели быстрых настроек</string>
-    <string name="oneplus_qs_header_show_artwork_title">Показать картинку</string>
+    <string name="oneplus_qs_header_show_artwork_title">Показать обложку</string>
     <string name="oneplus_qs_header_show_artwork_desc">Показывать обложку проигрываемого медиа</string>
     <string name="oneplus_qs_header_blur_level">Уровень размытия</string>
     <string name="oneplus_qs_header_fade_level">Уровень затемнения</string>
@@ -498,6 +498,7 @@
     <string name="mini_widget_icon_active">Иконка мини-виджета активный цвет</string>
     <string name="mini_widget_icon_inactive">Иконка мини-виджета неактивный цвет</string>
     <string name="weather_settings">Настройки погоды</string>
+    <string name="lockscreen_widgets_roundness">Скругление виджетов</string>
     <string name="lockscreen_widgets_scale">Масштаб виджетов</string>
     <string name="lockscreen_device_widget_style_title">Стиль виджета устройства</string>
     <string name="lockscreen_device_widget_style_classic">Бар с двумя дугами</string>
@@ -576,6 +577,8 @@
     <string name="section_title_qs_elements">Элементы быстрых настроек</string>
     <string name="hide_qs_on_lockscreen_title">Скрыть QS на экране блокировки</string>
     <string name="hide_qs_on_lockscreen_desc">Отключить панель быстрых настроек на заблокированном экране блокировки</string>
+    <string name="hide_qs_on_lockscreen_a15_title">Disable QS on Lockscreen</string>
+    <string name="hide_qs_on_lockscreen_a15_desc">Disable quick settings tiles on secured lockscreen</string>
     <string name="hide_qs_silent_text_title">Скрыть надпись Без звука у уведомлений</string>
     <string name="hide_qs_silent_text_desc">Скрыть беззвучный текст, отображаемый в заголовке беззвучных уведомлений</string>
     <string name="hide_qs_footer_buttons_title">Скрыть кнопки нижнего колонтитула</string>
@@ -701,7 +704,7 @@
     <string name="header_clock_white_text_title">Белый текст</string>
     <string name="header_clock_white_text_desc">Изменить цвет текста на белый</string>
     <string name="header_clock_center_clock_title">Часы по центру</string>
-    <string name="header_clock_center_clock_desc">Пересестить часы в центр</string>
+    <string name="header_clock_center_clock_desc">Переместить часы в центр</string>
     <string name="header_clock_hide_landscape_title">Скрыть в ландшафтном режиме</string>
     <string name="header_clock_hide_landscape_desc">Скрыть часы в ландшафтном режиме</string>
     <!-- Xposed Lockscreen Clock -->
@@ -714,6 +717,8 @@
     <string name="lockscreen_clock_move_notification_icon_desc">Перемещает значки AOD под пользовательские часы, это может привести к ошибкам на старых прошивках.</string>
     <string name="lockscreen_clock_font_title">Шрифт часов</string>
     <string name="lockscreen_clock_font_desc">Использовать пользовательский шрифт для часов на экране блокировки</string>
+    <string name="lockscreen_clock_image_title">Пользовательское изображение</string>
+    <string name="lockscreen_clock_image_desc">Используйте пользовательское изображение для часов на экране блокировки</string>
     <string name="lsclock_custom_color_title">Кастомный цвет часов</string>
     <string name="lsclock_custom_color_desc">Пользовательские цвета вместо системных</string>
     <string name="lsclock_color_picker_title">Выбор цвета часов</string>
@@ -950,7 +955,7 @@
     <string name="unzoom_depth_wallpaper_title">Не увеличивать глубинные обои</string>
     <string name="unzoom_depth_wallpaper_desc">Убрать эффект увеличения у глубинных обоев</string>
     <string name="hide_data_disabled_icon_title">Скрыть отключеную иконку данных</string>
-    <string name="hide_data_disabled_icon_desc">Скрыть отключеный индикатор данных</string>
+    <string name="hide_data_disabled_icon_desc">Выключите и включите мобильную передачу данных чтобы увидеть результат</string>
     <string name="colorize_notification_view_title">Раскрасить вид уведомления</string>
     <string name="colorize_notification_view_desc">Сделать вид уведомления того же цвета, что и значок приложения</string>
     <string name="colorize_notification_alternative_color_generation_title">Альтернативная генерация цвета</string>
@@ -1266,8 +1271,8 @@
     <string name="double_tap_to_sleep_desc">Дважды нажмите на пустое место на главном экране, чтобы выключить экран.</string>
     <string name="desktop_icon_labels_title">Наименование приложений на главном экране</string>
     <string name="app_drawer_icon_labels_title">Наименование приложений в меню приложений</string>
-    <string name="disable_recents_live_tile_title">Disable Recents Live Tile</string>
-    <string name="disable_recents_live_tile_desc">Disable live tile if recents screen is buggy</string>
+    <string name="disable_recents_live_tile_title">Отключить живую плитку «Недавние»</string>
+    <string name="disable_recents_live_tile_desc">Отключить живую плитку, если экран недавних посещений глючит</string>
     <string name="hide_desktop_search_bar_title">Убрать панель поиска</string>
     <string name="hide_desktop_search_bar_desc">Скрывает панель поиска с рабочего стола</string>
     <string name="dock_spacing_title">Расстояние между док-панелью</string>
