@@ -420,6 +420,10 @@ object ViewHelper {
 
         var tempImage = this
 
+        if (config == Bitmap.Config.HARDWARE) {
+            tempImage = copy(Bitmap.Config.ARGB_8888, true)
+        }
+
         try {
             tempImage = rgb565toArgb888()
         } catch (e: Exception) {
