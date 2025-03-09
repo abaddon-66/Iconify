@@ -42,11 +42,10 @@ class HookEntry : ServiceConnection {
     }
 
     fun handleLoadPackage(loadPackageParam: LoadPackageParam) {
-        try {
-            isChildProcess = loadPackageParam.processName.contains(":")
-            processName = loadPackageParam.processName
+        isChildProcess = try {
+            loadPackageParam.processName.contains(":")
         } catch (ignored: Throwable) {
-            isChildProcess = false
+            false
         }
 
         when (loadPackageParam.packageName) {
@@ -78,32 +77,34 @@ class HookEntry : ServiceConnection {
             }
 
             else -> {
-                Instrumentation::class.java
-                    .hookMethod("newApplication")
-                    .parameters(
-                        ClassLoader::class.java,
-                        String::class.java,
-                        Context::class.java
-                    )
-                    .runAfter { param ->
-                        try {
-                            if (!::mContext.isInitialized) {
-                                mContext = param.args[2] as Context
+                if (!isChildProcess) {
+                    Instrumentation::class.java
+                        .hookMethod("newApplication")
+                        .parameters(
+                            ClassLoader::class.java,
+                            String::class.java,
+                            Context::class.java
+                        )
+                        .runAfter { param ->
+                            try {
+                                if (!::mContext.isInitialized) {
+                                    mContext = param.args[2] as Context
 
-                                HookRes.modRes = mContext.createPackageContext(
-                                    BuildConfig.APPLICATION_ID,
-                                    Context.CONTEXT_IGNORE_SECURITY
-                                ).resources
+                                    HookRes.modRes = mContext.createPackageContext(
+                                        BuildConfig.APPLICATION_ID,
+                                        Context.CONTEXT_IGNORE_SECURITY
+                                    ).resources
 
-                                XPrefs.init(mContext)
-                                ResourceHookManager.init(mContext)
+                                    XPrefs.init(mContext)
+                                    ResourceHookManager.init(mContext)
 
-                                waitForXprefsLoad(loadPackageParam)
+                                    waitForXprefsLoad(loadPackageParam)
+                                }
+                            } catch (throwable: Throwable) {
+                                log(this@HookEntry, throwable)
                             }
-                        } catch (throwable: Throwable) {
-                            log(this@HookEntry, throwable)
                         }
-                    }
+                }
             }
         }
     }
@@ -245,7 +246,6 @@ class HookEntry : ServiceConnection {
 
         val runningMods = ArrayList<ModPack>()
         var isChildProcess = false
-        var processName = ""
 
         private var rootProxyIPC: IRootProviderProxy? = null
         private val proxyQueue: Queue<ProxyRunnable> = LinkedList()
