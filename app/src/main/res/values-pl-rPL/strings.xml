@@ -498,6 +498,7 @@
     <string name="mini_widget_icon_active">Kolor ikony aktywnego mini widżetu</string>
     <string name="mini_widget_icon_inactive">Kolor ikony nieaktywnego mini widżetu</string>
     <string name="weather_settings">Ustawienia pogody</string>
+    <string name="lockscreen_widgets_roundness">Widgets Roundness</string>
     <string name="lockscreen_widgets_scale">Skala widżetów</string>
     <string name="lockscreen_device_widget_style_title">Styl widżetów urządzenia</string>
     <string name="lockscreen_device_widget_style_classic">Pasek z dwoma łukami</string>
@@ -576,6 +577,8 @@
     <string name="section_title_qs_elements">Elementy szybkich ustawień</string>
     <string name="hide_qs_on_lockscreen_title">Ukryj Szybkie ustawienia na ekranie blokady</string>
     <string name="hide_qs_on_lockscreen_desc">Wyłącz szybkie ustawienia na zabezpieczonym ekranie blokady</string>
+    <string name="hide_qs_on_lockscreen_a15_title">Disable QS on Lockscreen</string>
+    <string name="hide_qs_on_lockscreen_a15_desc">Disable quick settings tiles on secured lockscreen</string>
     <string name="hide_qs_silent_text_title">Ukryj ciche powiadomienia</string>
     <string name="hide_qs_silent_text_desc">Ukryj cichy tekst wyświetlany jako nagłówek cichych powiadomień</string>
     <string name="hide_qs_footer_buttons_title">Ukryj przyciski stopki</string>
@@ -714,6 +717,8 @@
     <string name="lockscreen_clock_move_notification_icon_desc">Przenieś ikony AOD poniżej zegara niestandardowego, mogą być błędne na starszych ROMach</string>
     <string name="lockscreen_clock_font_title">Czcionka zegara</string>
     <string name="lockscreen_clock_font_desc">Użyj niestandardowej czcionki dla zegara na ekranie blokady</string>
+    <string name="lockscreen_clock_image_title">Custom Image</string>
+    <string name="lockscreen_clock_image_desc">Use custom image for lockscreen clock</string>
     <string name="lsclock_custom_color_title">Niestandardowy kolor zegara</string>
     <string name="lsclock_custom_color_desc">Niestandardowe kolory zamiast systemowych kolorów</string>
     <string name="lsclock_color_picker_title">Selektor kolorów zegara</string>
@@ -950,7 +955,7 @@
     <string name="unzoom_depth_wallpaper_title">Głębia tapety</string>
     <string name="unzoom_depth_wallpaper_desc">Usuń efekt przybliżania głębi tapety</string>
     <string name="hide_data_disabled_icon_title">Ukryj ikonę wyłączonych danych mobilnych</string>
-    <string name="hide_data_disabled_icon_desc">Ukryj ikonę wyłączonych danych mobilnych</string>
+    <string name="hide_data_disabled_icon_desc">Toggle mobile data off and on to see the effect</string>
     <string name="colorize_notification_view_title">Koloruj widok powiadomień</string>
     <string name="colorize_notification_view_desc">Wyświetlaj powiadomienia w tym samym kolorze co ikona aplikacji</string>
     <string name="colorize_notification_alternative_color_generation_title">Alternatywne generowanie kolorów</string>
@@ -1131,7 +1136,7 @@
     <string name="text_color_inverse">Odwrotny kolor tekstu</string>
     <string name="learn_more">Learn more</string>
     <string name="custom_tiles_footer_info">To ensure custom tiles work properly, first use the default internet and bluetooth tiles once before using the custom ones.</string>
-    <string name="hig_res_image_footer_info">Avoid using high-resolution images, as they may cause your system UI to crash.</string>
+    <string name="hig_res_image_footer_info">Avoid using high-resolution images, as they may cause your SystemUI to crash.</string>
     <string name="more">More</string>
     <!-- Weather -->
     <!-- Omni Jaws Strings -->

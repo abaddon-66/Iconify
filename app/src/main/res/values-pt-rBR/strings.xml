@@ -498,6 +498,7 @@
     <string name="mini_widget_icon_active">Cor ativa do ícone do mini widget</string>
     <string name="mini_widget_icon_inactive">Cor inativa do ícone do mini widget</string>
     <string name="weather_settings">Configurações do clima</string>
+    <string name="lockscreen_widgets_roundness">Redondeza dos widgets</string>
     <string name="lockscreen_widgets_scale">Escala de widgets</string>
     <string name="lockscreen_device_widget_style_title">Estilo do widget do dispositivo</string>
     <string name="lockscreen_device_widget_style_classic">Barra com dois arcos</string>
@@ -576,6 +577,8 @@
     <string name="section_title_qs_elements">Elementos QS</string>
     <string name="hide_qs_on_lockscreen_title">Ocultar QS na tela de bloqueio</string>
     <string name="hide_qs_on_lockscreen_desc">Desative o painel de configurações rápidas na tela de bloqueio segura</string>
+    <string name="hide_qs_on_lockscreen_a15_title">Desativar QS na tela de bloqueio</string>
+    <string name="hide_qs_on_lockscreen_a15_desc">Desative os blocos de configurações rápidas na tela de bloqueio protegida</string>
     <string name="hide_qs_silent_text_title">Ocultar texto silencioso</string>
     <string name="hide_qs_silent_text_desc">Oculte o texto silencioso mostrado como cabeçalho de notificações silenciosas</string>
     <string name="hide_qs_footer_buttons_title">Ocultar botões do rodapé</string>
@@ -714,6 +717,8 @@
     <string name="lockscreen_clock_move_notification_icon_desc">Move ícones AOD abaixo do relógio personalizado. Pode apresentar erros em ROMs mais antigas.</string>
     <string name="lockscreen_clock_font_title">Fonte do relógio</string>
     <string name="lockscreen_clock_font_desc">Use fonte personalizada para o relógio da tela de bloqueio</string>
+    <string name="lockscreen_clock_image_title">Imagem personalizada</string>
+    <string name="lockscreen_clock_image_desc">Use uma imagem personalizada para o relógio da tela de bloqueio</string>
     <string name="lsclock_custom_color_title">Cor do relógio personalizada</string>
     <string name="lsclock_custom_color_desc">Cores personalizadas em vez das cores do sistema</string>
     <string name="lsclock_color_picker_title">Seletor de cores do relógio</string>
@@ -950,7 +955,7 @@
     <string name="unzoom_depth_wallpaper_title">Diminuir zoom do plano de fundo com profundidade</string>
     <string name="unzoom_depth_wallpaper_desc">Remova o efeito de zoom no plano de fundo com profundidade</string>
     <string name="hide_data_disabled_icon_title">Ocultar ícone de dados desativado</string>
-    <string name="hide_data_disabled_icon_desc">Oculte o indicador de dados desativados</string>
+    <string name="hide_data_disabled_icon_desc">Desligue e ligue os dados móveis para ver o efeito</string>
     <string name="colorize_notification_view_title">Visualização de notificação colorida</string>
     <string name="colorize_notification_view_desc">Faça com que a visualização da notificação tenha a mesma cor do ícone do app</string>
     <string name="colorize_notification_alternative_color_generation_title">Geração de cores alternativas</string>
@@ -1266,8 +1271,8 @@
     <string name="double_tap_to_sleep_desc">Toque duas vezes no espaço vazio da tela inicial para desligar a tela</string>
     <string name="desktop_icon_labels_title">Nome dos ícones na tela inicial</string>
     <string name="app_drawer_icon_labels_title">Nome dos ícones na gaveta de apps</string>
-    <string name="disable_recents_live_tile_title">Disable Recents Live Tile</string>
-    <string name="disable_recents_live_tile_desc">Disable live tile if recents screen is buggy</string>
+    <string name="disable_recents_live_tile_title">Desativar bloco dinâmico</string>
+    <string name="disable_recents_live_tile_desc">Desative o bloco dinâmico se a tela recente estiver com bugs</string>
     <string name="hide_desktop_search_bar_title">Ocultar barra de pesquisa na tela inicial</string>
     <string name="hide_desktop_search_bar_desc">Oculte a barra de pesquisa da dock da tela inicial</string>
     <string name="dock_spacing_title">Espaçamento da dock</string>
