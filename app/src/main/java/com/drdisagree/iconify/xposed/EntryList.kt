@@ -15,6 +15,7 @@ import com.drdisagree.iconify.xposed.modules.launcher.GestureMod
 import com.drdisagree.iconify.xposed.modules.launcher.HotseatMod
 import com.drdisagree.iconify.xposed.modules.launcher.IconLabels
 import com.drdisagree.iconify.xposed.modules.launcher.IconUpdater
+import com.drdisagree.iconify.xposed.modules.launcher.LauncherUtils
 import com.drdisagree.iconify.xposed.modules.launcher.OpacityModifier
 import com.drdisagree.iconify.xposed.modules.launcher.ThemedIcons
 import com.drdisagree.iconify.xposed.modules.lockscreen.AlbumArt
@@ -129,6 +130,7 @@ object EntryList {
     )
 
     private val pixelLauncherModPacks: List<Class<out ModPack>> = listOf(
+        LauncherUtils::class.java,
         IconUpdater::class.java,
         ThemedIcons::class.java,
         OpacityModifier::class.java,
@@ -138,6 +140,7 @@ object EntryList {
     )
 
     private val launcher3ModPacks: List<Class<out ModPack>> = listOf(
+        LauncherUtils::class.java,
         ThemedIcons::class.java,
         OpacityModifier::class.java,
         GestureMod::class.java,

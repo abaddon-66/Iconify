@@ -1,5 +1,6 @@
 package com.drdisagree.iconify.xposed.modules.launcher
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.drawable.AdaptiveIconDrawable
 import android.graphics.drawable.Drawable
@@ -20,6 +21,7 @@ import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.getField
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.getStaticField
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookConstructor
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookMethod
+import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.setField
 import com.drdisagree.iconify.xposed.utils.XPrefs.Xprefs
 import de.robv.android.xposed.XposedHelpers.setAdditionalInstanceField
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam
@@ -46,6 +48,7 @@ class ThemedIcons(context: Context) : ModPack(context) {
         }
     }
 
+    @SuppressLint("DiscouragedApi")
     override fun handleLoadPackage(loadPackageParam: LoadPackageParam) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) return
 
@@ -137,29 +140,95 @@ class ThemedIcons(context: Context) : ModPack(context) {
             .hookMethod("shouldUseTheme")
             .runAfter { param ->
                 if (param.result == false && appDrawerThemedIcons) {
-                    param.result = param.thisObject.getField("mDisplay") in setOf(
-                        DISPLAY_ALL_APPS,
-                        DISPLAY_SEARCH_RESULT,
-                        DISPLAY_SEARCH_RESULT_SMALL,
-                        DISPLAY_PREDICTION_ROW,
-                        DISPLAY_SEARCH_RESULT_APP_ROW
-                    ) && try {
-                        themesClass.callStaticMethod(
-                            "isThemedIconEnabled",
-                            param.thisObject.callMethod("getContext")
-                        )
+                    val context = param.thisObject.callMethod("getContext") as Context
+                    val mDisplay = param.thisObject.getField("mDisplay") as Int
+
+                    param.result = mDisplay.shouldUseTheme(
+                        context,
+                        themesClass,
+                        themeManagerClass
+                    )
+                }
+            }
+
+        bubbleTextViewClass
+            .hookMethod("applyIconAndLabel")
+            .parameters("com.android.launcher3.model.data.ItemInfoWithIcon")
+            .runBefore { param ->
+                if (appDrawerThemedIcons) {
+                    val info = param.args[0]
+                    val context = param.thisObject.callMethod("getContext") as Context
+                    val mDisplay = param.thisObject.getField("mDisplay") as Int
+                    val mHideBadge = param.thisObject.getField("mHideBadge") as Boolean
+                    val mSkipUserBadge = param.thisObject.getField("mSkipUserBadge") as Boolean
+                    val shouldUseTheme = mDisplay.shouldUseTheme(
+                        context,
+                        themesClass,
+                        themeManagerClass
+                    )
+
+                    var flags = if (shouldUseTheme) FLAG_THEMED else 0
+
+                    // Remove badge on icons smaller than 48dp.
+                    if (mHideBadge || mDisplay == DISPLAY_SEARCH_RESULT_SMALL) {
+                        flags = flags or FLAG_NO_BADGE
+                    }
+                    if (mSkipUserBadge) {
+                        flags = flags or FLAG_SKIP_USER_BADGE
+                    }
+
+                    val iconDrawable = try {
+                        info.callMethod("newIcon", context, flags)
                     } catch (ignored: Throwable) {
-                        val themeManagerInstance = themeManagerClass
-                            .getStaticField("INSTANCE")
-                            .callMethod(
-                                "get",
-                                param.thisObject.callMethod("getContext")
+                        info.callMethod("newIcon", flags, context)
+                    }
+                    val mDotParams = param.thisObject.getField("mDotParams")
+
+                    mDotParams.setField(
+                        "appColor",
+                        iconDrawable.callMethod("getIconColor")
+                    )
+                    mDotParams.setField(
+                        "dotColor",
+                        LauncherUtils.getAttrColor(
+                            context,
+                            mContext.resources.getIdentifier(
+                                "notificationDotColor",
+                                "attr",
+                                mContext.packageName
                             )
-                        themeManagerInstance.callMethod("isMonoThemeEnabled")
-                    } as Boolean
+                        )
+                    )
+
+                    param.thisObject.callMethod("setIcon", iconDrawable)
+                    param.thisObject.callMethod("applyLabel", info)
+
+                    param.result = null
                 }
             }
     }
+
+    private fun Int.shouldUseTheme(
+        context: Context,
+        themesClass: Class<*>?,
+        themeManagerClass: Class<*>?
+    ) = this in setOf(
+        DISPLAY_WORKSPACE,
+        DISPLAY_ALL_APPS,
+        DISPLAY_FOLDER,
+        DISPLAY_TASKBAR,
+        DISPLAY_SEARCH_RESULT,
+        DISPLAY_SEARCH_RESULT_SMALL,
+        DISPLAY_PREDICTION_ROW,
+        DISPLAY_SEARCH_RESULT_APP_ROW
+    ) && try {
+        themesClass.callStaticMethod("isThemedIconEnabled", context)
+    } catch (ignored: Throwable) {
+        themeManagerClass
+            .getStaticField("INSTANCE")
+            .callMethod("get", context)
+            .callMethod("isMonoThemeEnabled")
+    } as Boolean
 
     private fun reloadIcons() {
         Handler(Looper.getMainLooper()).post {
@@ -170,7 +239,14 @@ class ThemedIcons(context: Context) : ModPack(context) {
     }
 
     companion object {
+        const val FLAG_THEMED: Int = 1 shl 0
+        const val FLAG_NO_BADGE: Int = 1 shl 1
+        const val FLAG_SKIP_USER_BADGE: Int = 1 shl 2
+
+        const val DISPLAY_WORKSPACE: Int = 0
         const val DISPLAY_ALL_APPS: Int = 1
+        const val DISPLAY_FOLDER: Int = 2
+        const val DISPLAY_TASKBAR: Int = 5
         const val DISPLAY_SEARCH_RESULT: Int = 6
         const val DISPLAY_SEARCH_RESULT_SMALL: Int = 7
         const val DISPLAY_PREDICTION_ROW: Int = 8
