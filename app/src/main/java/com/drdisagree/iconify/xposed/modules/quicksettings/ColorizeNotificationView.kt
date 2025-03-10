@@ -9,8 +9,8 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
-import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
+import android.graphics.drawable.LayerDrawable
 import android.os.Handler
 import android.os.Looper
 import android.view.View
@@ -18,7 +18,9 @@ import android.widget.LinearLayout
 import android.widget.RemoteViews
 import android.widget.TextView
 import androidx.core.graphics.ColorUtils
+import androidx.core.graphics.createBitmap
 import androidx.core.graphics.drawable.DrawableCompat
+import androidx.core.graphics.drawable.toDrawable
 import com.drdisagree.iconify.data.common.Const.FRAMEWORK_PACKAGE
 import com.drdisagree.iconify.data.common.Const.SYSTEMUI_PACKAGE
 import com.drdisagree.iconify.data.common.Preferences.COLORED_NOTIFICATION_ALTERNATIVE_SWITCH
@@ -114,7 +116,7 @@ class ColorizeNotificationView(context: Context) : ModPack(context) {
             val notifyIcon = try {
                 packageManager.getApplicationIcon(pkgName)
             } catch (ignored: Throwable) {
-                ColorDrawable(fallbackColor)
+                fallbackColor.toDrawable()
             }
 
             builder.callMethod("makeNotificationGroupHeader")
@@ -133,7 +135,7 @@ class ColorizeNotificationView(context: Context) : ModPack(context) {
                 bitmap.getPixels(pixels, 0, width, 0, 0, width, height)
                 primaryColor = Score.score(QuantizerCelebi.quantize(pixels, 25)).firstOrNull()
                     ?: fallbackColor
-                wallpaperColors = WallpaperColors.fromDrawable(ColorDrawable(primaryColor))
+                wallpaperColors = WallpaperColors.fromDrawable(primaryColor.toDrawable())
             }
 
             if (Color.luminance(primaryColor) > 0.9) {
@@ -346,7 +348,7 @@ class ColorizeNotificationView(context: Context) : ModPack(context) {
                     var bgColor = mNotifyBackgroundColor as Int
                     val mCurrentBackgroundTint = try {
                         param.thisObject.callMethod("getCurrentBackgroundTint")
-                    } catch (ignore: Throwable) {
+                    } catch (ignored: Throwable) {
                         param.thisObject.getField("mCurrentBackgroundTint")
                     } as Int
 
@@ -370,13 +372,13 @@ class ColorizeNotificationView(context: Context) : ModPack(context) {
                         ) as? Drawable
 
                         if (bgDrawable != null) {
-                            if (!bgDrawable::class.java.simpleName
-                                    .lowercase()
-                                    .contains("blur")
+                            // Blur drawable support
+                            if (bgDrawable is LayerDrawable && bgDrawable.numberOfLayers > 2 &&
+                                bgDrawable.getDrawable(2)::class.java.simpleName.contains("BackgroundBlurDrawable")
                             ) {
-                                DrawableCompat.setTint(bgDrawable, bgColor)
+                                bgDrawable.getDrawable(2).callMethod("setColor", bgColor)
                             } else {
-                                bgDrawable.callMethod("setColor", bgColor)
+                                DrawableCompat.setTint(bgDrawable, bgColor)
                             }
                         }
 
@@ -484,10 +486,9 @@ class ColorizeNotificationView(context: Context) : ModPack(context) {
         return if (this is BitmapDrawable && bitmap != null) {
             bitmap
         } else {
-            val bitmap = Bitmap.createBitmap(
+            val bitmap = createBitmap(
                 intrinsicWidth.coerceAtLeast(1),
-                intrinsicHeight.coerceAtLeast(1),
-                Bitmap.Config.ARGB_8888
+                intrinsicHeight.coerceAtLeast(1)
             )
             val canvas = Canvas(bitmap)
             setBounds(0, 0, canvas.width, canvas.height)

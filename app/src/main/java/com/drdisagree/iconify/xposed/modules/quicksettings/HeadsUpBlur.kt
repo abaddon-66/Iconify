@@ -11,7 +11,9 @@ import android.os.Looper
 import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.ColorUtils
+import androidx.core.graphics.drawable.DrawableCompat
 import com.drdisagree.iconify.data.common.Const.SYSTEMUI_PACKAGE
+import com.drdisagree.iconify.data.common.Preferences.COLORED_NOTIFICATION_VIEW_SWITCH
 import com.drdisagree.iconify.data.common.Preferences.NOTIFICATION_HEADSUP_BLUR
 import com.drdisagree.iconify.xposed.ModPack
 import com.drdisagree.iconify.xposed.modules.extras.utils.DisplayUtils.isNightMode
@@ -38,10 +40,12 @@ class HeadsUpBlur(context: Context) : ModPack(context) {
     private val notificationViews: MutableSet<View> = Collections.newSetFromMap(WeakHashMap())
     private var isKeyguard = true
     private var isQsExpanded = false
+    private var coloredNotificationView = false
 
     override fun updatePrefs(vararg key: String) {
         Xprefs.apply {
             headsUpBlurEnabled = getBoolean(NOTIFICATION_HEADSUP_BLUR, false)
+            coloredNotificationView = getBoolean(COLORED_NOTIFICATION_VIEW_SWITCH, false)
         }
     }
 
@@ -58,6 +62,14 @@ class HeadsUpBlur(context: Context) : ModPack(context) {
                 val mBackgroundNormal = param.thisObject.getField("mBackgroundNormal") as View
 
                 mBackgroundNormal.setExtraField("shouldApplyBlur", isHeadsUpState)
+
+                notificationViews.add(param.thisObject as View)
+            }
+
+        expandableNotificationRowClass
+            .hookMethod("onAppearAnimationFinished")
+            .runAfter { param ->
+                if (!headsUpBlurEnabled) return@runAfter
 
                 notificationViews.add(param.thisObject as View)
             }
@@ -82,8 +94,6 @@ class HeadsUpBlur(context: Context) : ModPack(context) {
                         param.thisObject.updateNotificationBackground(false)
                     }, 500)
                 }
-
-                notificationViews.add(param.thisObject as View)
             }
 
         val keyguardUpdateMonitorClass = findClass("com.android.keyguard.KeyguardUpdateMonitor")
@@ -184,34 +194,36 @@ class HeadsUpBlur(context: Context) : ModPack(context) {
             )
         ) as LayerDrawable
 
+        val colorName = if (context.isNightMode) "system_neutral1_900" else "system_neutral2_10"
+        var notificationColor = context.resources.getColor(
+            context.resources.getIdentifier(
+                "android:color/$colorName",
+                "color",
+                context.packageName
+            ),
+            context.theme
+        )
+        var shouldApplyTint = false
+
+        // Colored notification view support
+        getFieldSilently("mEntry")?.let { mEntry ->
+            val mSbn = mEntry.getField("mSbn")
+            val notification = mSbn.callMethod("getNotification") as Notification
+            val mNotifyBackgroundColor =
+                notification.getExtraFieldSilently("mNotifyBackgroundColor") as? Int
+
+            if (mNotifyBackgroundColor != null) {
+                notificationColor = mNotifyBackgroundColor
+                shouldApplyTint = true
+            }
+        }
+
         if (shouldApplyBlur) {
             val alpha = (255 * 0.7f).toInt()
             val blurDrawable = mBackgroundNormal
                 .callMethod("getViewRootImpl")
                 .callMethod("createBackgroundBlurDrawable") as? Drawable
                 ?: return
-            var notificationColor = context.resources.getColor(
-                context.resources.getIdentifier(
-                    "android:color/" +
-                            if (context.isNightMode) "system_neutral1_900"
-                            else "system_neutral2_10",
-                    "color",
-                    context.packageName
-                ),
-                context.theme
-            )
-
-            // Colored notification view support
-            getFieldSilently("mEntry")?.let { mEntry ->
-                val mSbn = mEntry.getField("mSbn")
-                val notification = mSbn.callMethod("getNotification") as Notification
-                val mNotifyBackgroundColor =
-                    notification.getExtraFieldSilently("mNotifyBackgroundColor") as? Int
-
-                if (mNotifyBackgroundColor != null) {
-                    notificationColor = mNotifyBackgroundColor
-                }
-            }
 
             blurDrawable.callMethod(
                 "setCornerRadius",
@@ -229,8 +241,9 @@ class HeadsUpBlur(context: Context) : ModPack(context) {
                 ColorUtils.setAlphaComponent(notificationColor, alpha)
             )
 
-            val baseLayer = notificationBgDrawable.getDrawable(0)
-            val statefulLayer = notificationBgDrawable.getDrawable(1)
+            val mutatedDrawable = notificationBgDrawable.mutate() as LayerDrawable
+            val baseLayer = mutatedDrawable.getDrawable(0)
+            val statefulLayer = mutatedDrawable.getDrawable(1)
 
             val layerDrawable = LayerDrawable(
                 arrayOf(
@@ -244,9 +257,15 @@ class HeadsUpBlur(context: Context) : ModPack(context) {
 
             setNotificationBackground(mBackgroundNormal, layerDrawable)
         } else {
-            mBackgroundNormal.setExtraField("mBackgroundDrawable", notificationBgDrawable)
+            val mutatedDrawable = notificationBgDrawable.mutate() as LayerDrawable
 
-            setNotificationBackground(mBackgroundNormal, notificationBgDrawable)
+            if (shouldApplyTint) {
+                DrawableCompat.setTint(mutatedDrawable, notificationColor)
+            }
+
+            mBackgroundNormal.setExtraField("mBackgroundDrawable", mutatedDrawable)
+
+            setNotificationBackground(mBackgroundNormal, mutatedDrawable)
         }
 
         callMethod("updateBackgroundColors")
