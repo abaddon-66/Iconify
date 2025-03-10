@@ -368,8 +368,16 @@ class ColorizeNotificationView(context: Context) : ModPack(context) {
                         val bgDrawable = notificationBackgroundView.getFieldSilently(
                             "mBackground"
                         ) as? Drawable
+
                         if (bgDrawable != null) {
-                            DrawableCompat.setTint(bgDrawable, bgColor)
+                            if (!bgDrawable::class.java.simpleName
+                                    .lowercase()
+                                    .contains("blur")
+                            ) {
+                                DrawableCompat.setTint(bgDrawable, bgColor)
+                            } else {
+                                bgDrawable.callMethod("setColor", bgColor)
+                            }
                         }
 
                         notificationBackgroundView.setFieldSilently("mTintColor", bgColor)

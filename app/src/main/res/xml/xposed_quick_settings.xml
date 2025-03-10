@@ -123,6 +123,12 @@
             android:title="@string/colorize_notification_alternative_color_generation_title"
             app:iconSpaceReserved="false" />
 
+        <com.drdisagree.iconify.ui.preferences.SwitchPreference
+            android:key="xposed_notificationsheadsupblur"
+            android:summary="@string/notification_headsup_blur_desc"
+            android:title="@string/notification_headsup_blur_title"
+            app:iconSpaceReserved="false" />
+
     </com.drdisagree.iconify.ui.preferences.PreferenceCategory>
 
     <com.drdisagree.iconify.ui.preferences.PreferenceCategory

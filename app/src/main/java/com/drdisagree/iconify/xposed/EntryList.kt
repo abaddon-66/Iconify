@@ -33,6 +33,7 @@ import com.drdisagree.iconify.xposed.modules.misc.Miscellaneous
 import com.drdisagree.iconify.xposed.modules.quicksettings.AppIconInNotification
 import com.drdisagree.iconify.xposed.modules.quicksettings.ColorizeNotificationView
 import com.drdisagree.iconify.xposed.modules.quicksettings.HeaderImage
+import com.drdisagree.iconify.xposed.modules.quicksettings.HeadsUpBlur
 import com.drdisagree.iconify.xposed.modules.quicksettings.OpQsHeader
 import com.drdisagree.iconify.xposed.modules.quicksettings.QSTransparency
 import com.drdisagree.iconify.xposed.modules.quicksettings.QuickSettings
@@ -89,7 +90,8 @@ object EntryList {
         VolumePanel::class.java,
         VolumePanelStyle::class.java,
         ColorizeNotificationView::class.java,
-        AppIconInNotification::class.java
+        AppIconInNotification::class.java,
+        HeadsUpBlur::class.java
     )
 
     private val systemUiAndroid12ModPacks: List<Class<out ModPack>> = listOf(

@@ -1,0 +1,296 @@
+package com.drdisagree.iconify.xposed.modules.quicksettings
+
+import android.annotation.SuppressLint
+import android.app.Notification
+import android.content.Context
+import android.graphics.drawable.Drawable
+import android.graphics.drawable.LayerDrawable
+import android.graphics.drawable.RippleDrawable
+import android.os.Handler
+import android.os.Looper
+import android.view.View
+import androidx.core.content.ContextCompat
+import androidx.core.graphics.ColorUtils
+import com.drdisagree.iconify.data.common.Const.SYSTEMUI_PACKAGE
+import com.drdisagree.iconify.data.common.Preferences.NOTIFICATION_HEADSUP_BLUR
+import com.drdisagree.iconify.xposed.ModPack
+import com.drdisagree.iconify.xposed.modules.extras.utils.DisplayUtils.isNightMode
+import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.toPx
+import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.XposedHook.Companion.findClass
+import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.callMethod
+import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.getExtraFieldSilently
+import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.getField
+import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.getFieldSilently
+import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookConstructor
+import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookMethod
+import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookMethodMatchPattern
+import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.isMethodAvailable
+import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.setExtraField
+import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.setField
+import com.drdisagree.iconify.xposed.utils.XPrefs.Xprefs
+import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam
+import java.util.Collections
+import java.util.WeakHashMap
+
+class HeadsUpBlur(context: Context) : ModPack(context) {
+
+    private var headsUpBlurEnabled = false
+    private val notificationViews: MutableSet<View> = Collections.newSetFromMap(WeakHashMap())
+    private var isKeyguard = true
+    private var isQsExpanded = false
+
+    override fun updatePrefs(vararg key: String) {
+        Xprefs.apply {
+            headsUpBlurEnabled = getBoolean(NOTIFICATION_HEADSUP_BLUR, false)
+        }
+    }
+
+    override fun handleLoadPackage(loadPackageParam: LoadPackageParam) {
+        val expandableNotificationRowClass =
+            findClass("$SYSTEMUI_PACKAGE.statusbar.notification.row.ExpandableNotificationRow")
+
+        expandableNotificationRowClass
+            .hookMethod("setHeadsUp")
+            .runAfter { param ->
+                if (!headsUpBlurEnabled) return@runAfter
+
+                val isHeadsUpState = param.thisObject.callMethod("isHeadsUpState") as Boolean
+                val mBackgroundNormal = param.thisObject.getField("mBackgroundNormal") as View
+
+                mBackgroundNormal.setExtraField("shouldApplyBlur", isHeadsUpState)
+
+                notificationViews.add(param.thisObject as View)
+            }
+
+        val activatableNotificationViewClass =
+            findClass("$SYSTEMUI_PACKAGE.statusbar.notification.row.ActivatableNotificationView")
+
+        activatableNotificationViewClass
+            .hookMethod("startAppearAnimation")
+            .runAfter { param ->
+                if (!headsUpBlurEnabled) return@runAfter
+
+                val isAppearing = param.args[0] as Boolean
+                val mBackgroundNormal = param.thisObject.getField("mBackgroundNormal") as View
+                val shouldApplyBlur = mBackgroundNormal.getExtraFieldSilently("shouldApplyBlur")
+                        as? Boolean ?: false
+
+                if (shouldApplyBlur && isAppearing && !isQsExpanded) {
+                    param.thisObject.updateNotificationBackground(true)
+                } else {
+                    Handler(Looper.getMainLooper()).postDelayed({
+                        param.thisObject.updateNotificationBackground(false)
+                    }, 500)
+                }
+
+                notificationViews.add(param.thisObject as View)
+            }
+
+        val keyguardUpdateMonitorClass = findClass("com.android.keyguard.KeyguardUpdateMonitor")
+
+        keyguardUpdateMonitorClass
+            .hookConstructor()
+            .runAfter { param ->
+                if (!headsUpBlurEnabled) return@runAfter
+
+                val mStatusBarStateControllerListener =
+                    param.thisObject.getField("mStatusBarStateControllerListener")
+
+                mStatusBarStateControllerListener::class.java
+                    .hookMethod("onStateChanged")
+                    .runAfter runAfter2@{ param2 ->
+                        if (!headsUpBlurEnabled) return@runAfter2
+
+                        val newState = param2.args[0] as Int
+                        isKeyguard = newState in setOf(KEYGUARD, SHADE_LOCKED)
+
+                        notificationViews.forEach { view ->
+                            view.updateNotificationBackground(!isQsExpanded && !isKeyguard)
+                        }
+                    }
+
+                mStatusBarStateControllerListener::class.java
+                    .hookMethod("onExpandedChanged")
+                    .runAfter runAfter2@{ param2 ->
+                        if (!headsUpBlurEnabled) return@runAfter2
+
+                        isQsExpanded = param2.args[0] as Boolean
+
+                        if (!isKeyguard) {
+                            notificationViews.forEach { view ->
+                                view.updateNotificationBackground(!isQsExpanded)
+                            }
+                        }
+                    }
+            }
+
+        val notificationBackgroundViewClass =
+            findClass("$SYSTEMUI_PACKAGE.statusbar.notification.row.NotificationBackgroundView")
+
+        // Replace original notification background drawable with out blur drawable
+        notificationBackgroundViewClass
+            .hookMethodMatchPattern("setCustomBackground.*")
+            .runBefore { param ->
+                if (!headsUpBlurEnabled) return@runBefore
+
+                val mBackgroundNormal = param.thisObject as View
+
+                val blurDrawable = mBackgroundNormal.getExtraFieldSilently("mBackgroundDrawable")
+                        as? Drawable ?: return@runBefore
+
+                if (param.args.isNotEmpty() && param.args[0] is Drawable) {
+                    param.args[0] = blurDrawable
+                    return@runBefore
+                }
+
+                var mBackground = mBackgroundNormal.getFieldSilently("mBackground") as? Drawable
+                if (mBackground != null) {
+                    mBackground.callback = null
+                    mBackgroundNormal.callMethod("unscheduleDrawable", mBackground)
+                }
+
+                mBackground = blurDrawable
+                mBackgroundNormal.setField("mBackground", blurDrawable)
+                mBackgroundNormal.setField("mRippleColor", null)
+                blurDrawable.mutate()
+
+                mBackground.callback = mBackgroundNormal
+                val mTintColor = mBackgroundNormal.getField("mTintColor")
+                mBackgroundNormal.callMethod("setTint", mTintColor)
+
+                if (mBackground is RippleDrawable) {
+                    mBackground.callMethod("setForceSoftware", true)
+                }
+
+                mBackgroundNormal.callMethod("updateBackgroundRadii")
+                mBackgroundNormal.callMethod("invalidate")
+
+                param.result = null
+            }
+    }
+
+    // Create blur drawable and set it to notification background
+    @SuppressLint("DiscouragedApi")
+    private fun Any.updateNotificationBackground(shouldApplyBlur: Boolean) {
+        val mBackgroundNormal = getField("mBackgroundNormal") as View
+        val context = mBackgroundNormal.context
+
+        val notificationBgDrawable = ContextCompat.getDrawable(
+            context,
+            context.resources.getIdentifier(
+                "notification_material_bg",
+                "drawable",
+                SYSTEMUI_PACKAGE
+            )
+        ) as LayerDrawable
+
+        if (shouldApplyBlur) {
+            val alpha = (255 * 0.7f).toInt()
+            val blurDrawable = mBackgroundNormal
+                .callMethod("getViewRootImpl")
+                .callMethod("createBackgroundBlurDrawable") as? Drawable
+                ?: return
+            var notificationColor = context.resources.getColor(
+                context.resources.getIdentifier(
+                    "android:color/" +
+                            if (context.isNightMode) "system_neutral1_900"
+                            else "system_neutral2_10",
+                    "color",
+                    context.packageName
+                ),
+                context.theme
+            )
+
+            // Colored notification view support
+            getFieldSilently("mEntry")?.let { mEntry ->
+                val mSbn = mEntry.getField("mSbn")
+                val notification = mSbn.callMethod("getNotification") as Notification
+                val mNotifyBackgroundColor =
+                    notification.getExtraFieldSilently("mNotifyBackgroundColor") as? Int
+
+                if (mNotifyBackgroundColor != null) {
+                    notificationColor = mNotifyBackgroundColor
+                }
+            }
+
+            blurDrawable.callMethod(
+                "setCornerRadius",
+                context.resources.getDimensionPixelSize(
+                    context.resources.getIdentifier(
+                        "notification_scrim_corner_radius",
+                        "dimen",
+                        SYSTEMUI_PACKAGE
+                    )
+                ).toFloat()
+            )
+            blurDrawable.callMethod("setBlurRadius", context.toPx(12))
+            blurDrawable.callMethod(
+                "setColor",
+                ColorUtils.setAlphaComponent(notificationColor, alpha)
+            )
+
+            val baseLayer = notificationBgDrawable.getDrawable(0)
+            val statefulLayer = notificationBgDrawable.getDrawable(1)
+
+            val layerDrawable = LayerDrawable(
+                arrayOf(
+                    baseLayer,
+                    statefulLayer,
+                    blurDrawable
+                )
+            )
+
+            mBackgroundNormal.setExtraField("mBackgroundDrawable", layerDrawable)
+
+            setNotificationBackground(mBackgroundNormal, layerDrawable)
+        } else {
+            mBackgroundNormal.setExtraField("mBackgroundDrawable", notificationBgDrawable)
+
+            setNotificationBackground(mBackgroundNormal, notificationBgDrawable)
+        }
+
+        callMethod("updateBackgroundColors")
+
+        callMethod("updateBackgroundTint", true)
+
+        val outlineAlphaValue = 0.0f
+        val mOutlineAlpha = getField("mOutlineAlpha") as Float
+
+        if (outlineAlphaValue != mOutlineAlpha) {
+            setField("mOutlineAlpha", outlineAlphaValue)
+            callMethod("applyRoundnessAndInvalidate")
+        }
+    }
+
+    private fun setNotificationBackground(
+        mBackgroundNormal: View,
+        layerDrawable: LayerDrawable
+    ) {
+        if (mBackgroundNormal.isMethodAvailable("setCustomBackground", Drawable::class.java)) {
+            mBackgroundNormal.callMethod("setCustomBackground", layerDrawable)
+        } else {
+            mBackgroundNormal.callMethod("setCustomBackground$1")
+        }
+    }
+
+    companion object {
+        /**
+         * The status bar is in the "normal", unlocked mode or the device is still locked but we're
+         * accessing camera from power button double-tap shortcut.
+         */
+        const val SHADE: Int = 0
+
+        /**
+         * Status bar is currently the Keyguard. In single column mode, when you swipe from the top of
+         * the keyguard to expand QS immediately, it's still KEYGUARD state.
+         */
+        const val KEYGUARD: Int = 1
+
+        /**
+         * Status bar is in the special mode, where it was transitioned from lockscreen to shade.
+         * Depending on user's security settings, dismissing the shade will either show the
+         * bouncer or go directly to unlocked [.SHADE] mode.
+         */
+        const val SHADE_LOCKED: Int = 2
+    }
+}
