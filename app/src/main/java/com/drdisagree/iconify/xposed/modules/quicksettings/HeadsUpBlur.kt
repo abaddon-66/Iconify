@@ -38,7 +38,6 @@ class HeadsUpBlur(context: Context) : ModPack(context) {
 
     private var headsUpBlurEnabled = false
     private val notificationViews: MutableSet<View> = Collections.newSetFromMap(WeakHashMap())
-    private var isKeyguard = true
     private var isQsExpanded = false
     private var coloredNotificationView = false
 
@@ -85,7 +84,7 @@ class HeadsUpBlur(context: Context) : ModPack(context) {
                 val isAppearing = param.args[0] as Boolean
                 val mBackgroundNormal = param.thisObject.getField("mBackgroundNormal") as View
                 val shouldApplyBlur = mBackgroundNormal.getExtraFieldSilently("shouldApplyBlur")
-                        as? Boolean ?: false
+                        as? Boolean == true
 
                 if (shouldApplyBlur && isAppearing && !isQsExpanded) {
                     param.thisObject.updateNotificationBackground(true)
@@ -96,9 +95,10 @@ class HeadsUpBlur(context: Context) : ModPack(context) {
                 }
             }
 
-        val keyguardUpdateMonitorClass = findClass("com.android.keyguard.KeyguardUpdateMonitor")
+        val visualStabilityCoordinatorClass =
+            findClass("$SYSTEMUI_PACKAGE.statusbar.notification.collection.coordinator.VisualStabilityCoordinator")
 
-        keyguardUpdateMonitorClass
+        visualStabilityCoordinatorClass
             .hookConstructor()
             .runAfter { param ->
                 if (!headsUpBlurEnabled) return@runAfter
@@ -107,29 +107,14 @@ class HeadsUpBlur(context: Context) : ModPack(context) {
                     param.thisObject.getField("mStatusBarStateControllerListener")
 
                 mStatusBarStateControllerListener::class.java
-                    .hookMethod("onStateChanged")
-                    .runAfter runAfter2@{ param2 ->
-                        if (!headsUpBlurEnabled) return@runAfter2
-
-                        val newState = param2.args[0] as Int
-                        isKeyguard = newState in setOf(KEYGUARD, SHADE_LOCKED)
-
-                        notificationViews.forEach { view ->
-                            view.updateNotificationBackground(!isQsExpanded && !isKeyguard)
-                        }
-                    }
-
-                mStatusBarStateControllerListener::class.java
                     .hookMethod("onExpandedChanged")
                     .runAfter runAfter2@{ param2 ->
                         if (!headsUpBlurEnabled) return@runAfter2
 
                         isQsExpanded = param2.args[0] as Boolean
 
-                        if (!isKeyguard) {
-                            notificationViews.forEach { view ->
-                                view.updateNotificationBackground(!isQsExpanded)
-                            }
+                        notificationViews.forEach { view ->
+                            view.updateNotificationBackground(!isQsExpanded)
                         }
                     }
             }
@@ -290,26 +275,5 @@ class HeadsUpBlur(context: Context) : ModPack(context) {
         } else {
             mBackgroundNormal.callMethod("setCustomBackground$1")
         }
-    }
-
-    companion object {
-        /**
-         * The status bar is in the "normal", unlocked mode or the device is still locked but we're
-         * accessing camera from power button double-tap shortcut.
-         */
-        const val SHADE: Int = 0
-
-        /**
-         * Status bar is currently the Keyguard. In single column mode, when you swipe from the top of
-         * the keyguard to expand QS immediately, it's still KEYGUARD state.
-         */
-        const val KEYGUARD: Int = 1
-
-        /**
-         * Status bar is in the special mode, where it was transitioned from lockscreen to shade.
-         * Depending on user's security settings, dismissing the shade will either show the
-         * bouncer or go directly to unlocked [.SHADE] mode.
-         */
-        const val SHADE_LOCKED: Int = 2
     }
 }
