@@ -91,7 +91,6 @@ import com.drdisagree.iconify.data.common.Preferences.HEADER_CLOCK_FONT_PICKER
 import com.drdisagree.iconify.data.common.Preferences.HEADER_CLOCK_FONT_SWITCH
 import com.drdisagree.iconify.data.common.Preferences.HEADER_CLOCK_LANDSCAPE_SWITCH
 import com.drdisagree.iconify.data.common.Preferences.HIDE_QSLABEL_SWITCH
-import com.drdisagree.iconify.data.common.Preferences.HIDE_QS_ON_LOCKSCREEN
 import com.drdisagree.iconify.data.common.Preferences.LIGHT_QSPANEL
 import com.drdisagree.iconify.data.common.Preferences.LOCKSCREEN_SHADE_SWITCH
 import com.drdisagree.iconify.data.common.Preferences.LOCKSCREEN_WALLPAPER_BLUR
@@ -171,7 +170,7 @@ object PrefsHelper {
 
     fun isVisible(key: String?): Boolean {
         val lockscreenClockStyle = getInt(LSCLOCK_STYLE, 0)
-        val lockscreenClockWithImage1 = lockscreenClockStyle in setOf(26, 27, 30, 39, 40, 53)
+        val lockscreenClockWithImage1 = lockscreenClockStyle in setOf(26, 27, 30, 39, 40, 42, 53)
         val lockscreenClockWithImage2 = lockscreenClockStyle in setOf(26)
 
         return when (key) {

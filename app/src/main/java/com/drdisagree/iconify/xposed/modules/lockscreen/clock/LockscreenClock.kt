@@ -10,7 +10,6 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.graphics.Typeface
-import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.media.AudioManager
 import android.os.BatteryManager
@@ -32,6 +31,8 @@ import android.widget.RelativeLayout
 import android.widget.TextClock
 import android.widget.TextView
 import androidx.core.content.res.ResourcesCompat
+import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory
+import androidx.core.graphics.drawable.toDrawable
 import com.drdisagree.iconify.BuildConfig
 import com.drdisagree.iconify.R
 import com.drdisagree.iconify.data.common.Const.RESET_LOCKSCREEN_CLOCK_COMMAND
@@ -320,7 +321,7 @@ class LockscreenClock(context: Context) : ModPack(context) {
                             executor.shutdownNow()
                         }
                     }, 0, 200, TimeUnit.MILLISECONDS)
-                } catch (ignored: Throwable) {
+                } catch (_: Throwable) {
                 }
             }
 
@@ -404,7 +405,7 @@ class LockscreenClock(context: Context) : ModPack(context) {
                     executor.shutdownNow()
                 }
             }, 0, 5, TimeUnit.SECONDS)
-        } catch (ignored: Throwable) {
+        } catch (_: Throwable) {
         }
     }
 
@@ -417,7 +418,7 @@ class LockscreenClock(context: Context) : ModPack(context) {
 
         try {
             context.registerReceiver(mBatteryReceiver, IntentFilter(Intent.ACTION_BATTERY_CHANGED))
-        } catch (ignored: Exception) {
+        } catch (_: Exception) {
         }
 
         try {
@@ -425,7 +426,7 @@ class LockscreenClock(context: Context) : ModPack(context) {
                 mVolumeReceiver,
                 IntentFilter("android.media.VOLUME_CHANGED_ACTION")
             )
-        } catch (ignored: Exception) {
+        } catch (_: Exception) {
         }
 
         loadColors()
@@ -596,10 +597,33 @@ class LockscreenClock(context: Context) : ModPack(context) {
                 if (File(path).exists()) {
                     clockView.findViewContainsTag(tag)?.let { view ->
                         val bitmap = BitmapFactory.decodeFile(path)
+
+                        val isRoundedImage = (clockStyle == 26 && tag.contains("1")) ||
+                                clockStyle in setOf(27, 30, 40, 53)
+                        val isCircleImage = (clockStyle == 26 && tag.contains("2")) ||
+                                clockStyle == 39
+                        val roundedSize = 32f
+
+                        val drawable: Drawable = when {
+                            isRoundedImage -> RoundedBitmapDrawableFactory
+                                .create(mContext.resources, bitmap)
+                                .apply {
+                                    setCornerRadius(roundedSize)
+                                }
+
+                            isCircleImage -> RoundedBitmapDrawableFactory
+                                .create(mContext.resources, bitmap)
+                                .apply {
+                                    setCornerRadius(12000f)
+                                }
+
+                            else -> bitmap.toDrawable(view.resources)
+                        }
+
                         if (view is ImageView) {
-                            view.setImageBitmap(bitmap)
+                            view.setImageDrawable(drawable)
                         } else {
-                            view.background = BitmapDrawable(view.resources, bitmap)
+                            view.background = drawable
                         }
                     }
                 }
@@ -877,7 +901,7 @@ class LockscreenClock(context: Context) : ModPack(context) {
             val userId = UserHandle::class.java.getDeclaredMethod("myUserId").invoke(null) as Int
             val bitmapUserIcon = getUserIconMethod.invoke(mUserManager, userId) as Bitmap
 
-            BitmapDrawable(mContext.resources, bitmapUserIcon)
+            bitmapUserIcon.toDrawable(mContext.resources)
         } catch (throwable: Throwable) {
             if (throwable !is NullPointerException) {
                 log(this@LockscreenClock, throwable)
