@@ -49,21 +49,34 @@ class HeadsUpBlur(context: Context) : ModPack(context) {
     }
 
     override fun handleLoadPackage(loadPackageParam: LoadPackageParam) {
-        val expandableNotificationRowClass =
-            findClass("$SYSTEMUI_PACKAGE.statusbar.notification.row.ExpandableNotificationRow")
+        val baseHeadsUpManagerClass =
+            findClass("$SYSTEMUI_PACKAGE.statusbar.policy.BaseHeadsUpManager")
 
-        expandableNotificationRowClass
-            .hookMethod("setHeadsUp")
+        baseHeadsUpManagerClass
+            .hookMethod("addListener")
             .runAfter { param ->
                 if (!headsUpBlurEnabled) return@runAfter
 
-                val isHeadsUpState = param.thisObject.callMethod("isHeadsUpState") as Boolean
-                val mBackgroundNormal = param.thisObject.getField("mBackgroundNormal") as View
+                val listener = param.args[0]
 
-                mBackgroundNormal.setExtraField("shouldApplyBlur", isHeadsUpState)
+                listener::class.java
+                    .hookMethod("onHeadsUpStateChanged")
+                    .runAfter runAfter2@{ param ->
+                        if (!headsUpBlurEnabled) return@runAfter2
 
-                notificationViews.add(param.thisObject as View)
+                        val row = param.args[0].getFieldSilently("row") as? View ?: return@runAfter2
+
+                        val isHeadsUpState = row.callMethod("isHeadsUpState") as Boolean
+                        val mBackgroundNormal = row.getField("mBackgroundNormal") as View
+
+                        mBackgroundNormal.setExtraField("shouldApplyBlur", isHeadsUpState)
+
+                        notificationViews.add(row)
+                    }
             }
+
+        val expandableNotificationRowClass =
+            findClass("$SYSTEMUI_PACKAGE.statusbar.notification.row.ExpandableNotificationRow")
 
         expandableNotificationRowClass
             .hookMethod("onAppearAnimationFinished")
