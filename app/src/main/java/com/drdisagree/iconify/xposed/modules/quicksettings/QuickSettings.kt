@@ -24,6 +24,8 @@ import android.widget.TextView
 import androidx.annotation.ColorInt
 import com.drdisagree.iconify.data.common.Const.FRAMEWORK_PACKAGE
 import com.drdisagree.iconify.data.common.Const.SYSTEMUI_PACKAGE
+import com.drdisagree.iconify.data.common.Preferences.BLUR_MEDIA_PLAYER_ARTWORK
+import com.drdisagree.iconify.data.common.Preferences.BLUR_MEDIA_PLAYER_ARTWORK_RADIUS
 import com.drdisagree.iconify.data.common.Preferences.COMPACT_MEDIA_PLAYER
 import com.drdisagree.iconify.data.common.Preferences.CUSTOM_QS_MARGIN
 import com.drdisagree.iconify.data.common.Preferences.CUSTOM_QS_TEXT_COLOR
@@ -43,6 +45,7 @@ import com.drdisagree.iconify.data.common.Preferences.VERTICAL_QSTILE_SWITCH
 import com.drdisagree.iconify.xposed.ModPack
 import com.drdisagree.iconify.xposed.modules.extras.utils.DisplayUtils.isLandscape
 import com.drdisagree.iconify.xposed.modules.extras.utils.DisplayUtils.isNightMode
+import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.applyBlur
 import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.toPx
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.ResourceHookManager
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.XposedHook.Companion.findClass
@@ -90,6 +93,8 @@ class QuickSettings(context: Context) : ModPack(context) {
     private var qsTilePrimaryTextSize: Float? = null
     private var qsTileSecondaryTextSize: Float? = null
     private var compactMediaPlayerEnabled = false
+    private var blurMediaPlayerArtwork = false
+    private var blurMediaPlayerArtworkRadius = 15f
     private var showHeaderClock = false
 
     override fun updatePrefs(vararg key: String) {
@@ -113,6 +118,9 @@ class QuickSettings(context: Context) : ModPack(context) {
             hideFooterButtons = getBoolean(HIDE_QS_FOOTER_BUTTONS, false)
             showHeaderClock = getBoolean(HEADER_CLOCK_SWITCH, false)
             compactMediaPlayerEnabled = getBoolean(COMPACT_MEDIA_PLAYER, false)
+            blurMediaPlayerArtwork = getBoolean(BLUR_MEDIA_PLAYER_ARTWORK, false)
+            blurMediaPlayerArtworkRadius =
+                getSliderInt(BLUR_MEDIA_PLAYER_ARTWORK_RADIUS, 60) / 100f * 25f
             isPixelVariant = getIsPixelVariant()
         }
 
@@ -127,6 +135,7 @@ class QuickSettings(context: Context) : ModPack(context) {
         fixNotificationColorA14()
         manageQsElementVisibility()
         compactMediaPlayer()
+        blurMediaPlayerArtwork()
     }
 
     private fun setVerticalTiles() {
@@ -713,6 +722,25 @@ class QuickSettings(context: Context) : ModPack(context) {
 
                         param2.thisObject.setFieldSilently("expansion", 0f)
                     }
+            }
+    }
+
+    private fun blurMediaPlayerArtwork() {
+        val mediaControlPanelClass = findClass(
+            "$SYSTEMUI_PACKAGE.media.controls.ui.controller.MediaControlPanel",
+            "$SYSTEMUI_PACKAGE.media.MediaControlPanel"
+        )
+
+        mediaControlPanelClass
+            .hookMethod("getScaledBackground", "scaleDrawable")
+            .runAfter { param ->
+                if (!blurMediaPlayerArtwork) return@runAfter
+
+                val artwork = param.result as? Drawable
+
+                if (artwork != null) {
+                    param.result = artwork.applyBlur(mContext, blurMediaPlayerArtworkRadius)
+                }
             }
     }
 

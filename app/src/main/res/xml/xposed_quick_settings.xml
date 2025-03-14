@@ -143,6 +143,23 @@
             android:title="@string/compact_media_player_title"
             app:iconSpaceReserved="false" />
 
+        <com.drdisagree.iconify.ui.preferences.SwitchPreference
+            android:key="xposed_blurmediaplayerartwork"
+            android:summary="@string/media_player_artwork_blur_desc"
+            android:title="@string/media_player_artwork_blur_title"
+            app:iconSpaceReserved="false" />
+
+        <com.drdisagree.iconify.ui.preferences.SliderPreference
+            android:dependency="xposed_blurmediaplayerartwork"
+            android:key="xposed_blurmediaplayerartworkradius"
+            android:title="@string/media_player_artwork_blur_radius_title"
+            app:defaultValue="60"
+            app:iconSpaceReserved="false"
+            app:maxVal="100"
+            app:minVal="0"
+            app:tickInterval="1"
+            app:valueFormat="%" />
+
     </com.drdisagree.iconify.ui.preferences.PreferenceCategory>
 
     <com.drdisagree.iconify.ui.preferences.PreferenceCategory

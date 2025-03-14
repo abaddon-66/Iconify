@@ -615,6 +615,9 @@
     <string name="section_title_media_player">Media Player</string>
     <string name="compact_media_player_title">Compact Media Player</string>
     <string name="compact_media_player_desc">Make media player compact</string>
+    <string name="media_player_artwork_blur_title">Blur Artwork</string>
+    <string name="media_player_artwork_blur_desc">Blur media player album art</string>
+    <string name="media_player_artwork_blur_radius_title">Blur Intensity</string>
     <string name="section_title_qs_elements">QS Elements</string>
     <string name="hide_qs_on_lockscreen_title">Hide QS on Lockscreen</string>
     <string name="hide_qs_on_lockscreen_desc">Disable quick settings panel on secured lockscreen</string>

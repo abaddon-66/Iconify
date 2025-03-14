@@ -29,6 +29,8 @@ import com.drdisagree.iconify.data.common.Preferences.BATTERY_STYLE_LANDSCAPE_BA
 import com.drdisagree.iconify.data.common.Preferences.BATTERY_STYLE_LANDSCAPE_BATTERYO
 import com.drdisagree.iconify.data.common.Preferences.BATTERY_STYLE_LANDSCAPE_IOS_16
 import com.drdisagree.iconify.data.common.Preferences.BATTERY_STYLE_LANDSCAPE_KIM
+import com.drdisagree.iconify.data.common.Preferences.BLUR_MEDIA_PLAYER_ARTWORK
+import com.drdisagree.iconify.data.common.Preferences.BLUR_MEDIA_PLAYER_ARTWORK_RADIUS
 import com.drdisagree.iconify.data.common.Preferences.BLUR_RADIUS_VALUE
 import com.drdisagree.iconify.data.common.Preferences.CHIP_STATUS_ICONS_SWITCH
 import com.drdisagree.iconify.data.common.Preferences.COLORED_NOTIFICATION_ALTERNATIVE_SWITCH
@@ -353,6 +355,8 @@ object PrefsHelper {
             LSCLOCK_IMAGE_PICKER1 -> getBoolean(LSCLOCK_IMAGE_SWITCH) && lockscreenClockWithImage1
 
             LSCLOCK_IMAGE_PICKER2 -> getBoolean(LSCLOCK_IMAGE_SWITCH) && lockscreenClockWithImage2
+
+            BLUR_MEDIA_PLAYER_ARTWORK_RADIUS -> getBoolean(BLUR_MEDIA_PLAYER_ARTWORK)
 
             else -> true
         }

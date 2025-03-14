@@ -113,6 +113,8 @@ object Preferences {
     const val LOCKSCREEN_WALLPAPER_BLUR = "xposed_lockscreenwallpaperblur"
     const val LOCKSCREEN_WALLPAPER_BLUR_RADIUS = "xposed_lockscreenwallpaperblurradius"
     const val COMPACT_MEDIA_PLAYER = "xposed_compactmediaplayer"
+    const val BLUR_MEDIA_PLAYER_ARTWORK = "xposed_blurmediaplayerartwork"
+    const val BLUR_MEDIA_PLAYER_ARTWORK_RADIUS = "xposed_blurmediaplayerartworkradius"
 
     // LS Widgets
     const val LOCKSCREEN_WIDGETS_ENABLED = "lockscreen_widgets_enabled"
