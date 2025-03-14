@@ -16,7 +16,6 @@ import android.graphics.PorterDuffXfermode
 import android.graphics.Rect
 import android.graphics.RectF
 import android.graphics.Shader
-import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.TransitionDrawable
@@ -47,8 +46,12 @@ import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.ColorUtils
+import androidx.core.graphics.createBitmap
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.graphics.drawable.toBitmap
+import androidx.core.graphics.drawable.toDrawable
+import androidx.core.graphics.get
+import androidx.core.graphics.scale
 import androidx.palette.graphics.Palette
 import com.drdisagree.iconify.data.common.Const.FRAMEWORK_PACKAGE
 import com.drdisagree.iconify.data.common.Const.SYSTEMUI_PACKAGE
@@ -83,6 +86,7 @@ import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.callMethod
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.callStaticMethod
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.getAnyField
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.getField
+import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.getFieldSilently
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookConstructor
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookMethod
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.isMethodAvailable
@@ -255,7 +259,7 @@ class OpQsHeader(context: Context) : ModPack(context) {
                     mActivityStarter =
                         callStaticMethod(dependencyClass, "get", activityStarterClass)
                     mActivityLauncherUtils = ActivityLauncherUtils(mContext, mActivityStarter)
-                } catch (ignored: Throwable) {
+                } catch (_: Throwable) {
                 }
             }
 
@@ -472,7 +476,7 @@ class OpQsHeader(context: Context) : ModPack(context) {
 
                 val mQsPanel = try {
                     param.thisObject.getField("mQSPanel")
-                } catch (ignored: Throwable) {
+                } catch (_: Throwable) {
                     (param.thisObject as FrameLayout).findViewById(
                         mContext.resources.getIdentifier(
                             "quick_settings_panel",
@@ -521,6 +525,25 @@ class OpQsHeader(context: Context) : ModPack(context) {
             .hookMethod("onInit")
             .runBefore { param ->
                 mQsPanelView = param.thisObject.getField("mView") as ViewGroup
+            }
+
+        qsPanelControllerBaseClass
+            .hookMethod("onInit")
+            .runAfter { param ->
+                if (!showOpQsHeaderView) return@runAfter
+
+                val qsPanel = param.thisObject.getField("mView") as LinearLayout
+                val mHorizontalLinearLayout =
+                    qsPanel.getFieldSilently("mHorizontalLinearLayout") as? LinearLayout
+
+                if (mHorizontalLinearLayout == null) {
+                    val dummyLayout = LinearLayout(mContext).apply {
+                        layoutParams = ViewGroup.LayoutParams(0, 0)
+                        orientation = LinearLayout.HORIZONTAL
+                        visibility = View.GONE
+                    }
+                    qsPanel.setField("mHorizontalLinearLayout", dummyLayout)
+                }
             }
 
         qsPanelClass
@@ -735,6 +758,7 @@ class OpQsHeader(context: Context) : ModPack(context) {
         }
     }
 
+    @Suppress("unused")
     private fun stopMediaUpdater() {
         mMediaUpdaterJob?.cancel()
     }
@@ -997,7 +1021,7 @@ class OpQsHeader(context: Context) : ModPack(context) {
             if (!ControllersProvider.showBluetoothDialog(mContext, v)) {
                 try {
                     mBluetoothController.callMethod("setBluetoothEnabled", !isBluetoothEnabled)
-                } catch (throwable: Throwable) {
+                } catch (_: Throwable) {
                     mBluetoothTile.callMethod("toggleBluetooth")
                 }
             }
@@ -1220,10 +1244,7 @@ class OpQsHeader(context: Context) : ModPack(context) {
                 it.applyBlur(mContext, mediaBlurLevel)
             }
             val newArtworkDrawable = when {
-                filteredArtwork != null -> BitmapDrawable(
-                    mContext.resources,
-                    filteredArtwork
-                )
+                filteredArtwork != null -> filteredArtwork.toDrawable(mContext.resources)
                 else -> mInactiveBackground
             }
 
@@ -1240,10 +1261,7 @@ class OpQsHeader(context: Context) : ModPack(context) {
                 showArtwork && mPrevMediaArtworkMap[packageName] != null && filteredArtwork != null -> {
                     TransitionDrawable(
                         arrayOf(
-                            BitmapDrawable(
-                                mContext.resources,
-                                mPrevMediaProcessedArtworkMap[packageName]
-                            ),
+                            mPrevMediaProcessedArtworkMap[packageName]!!.toDrawable(mContext.resources),
                             newArtworkDrawable
                         )
                     )
@@ -1252,10 +1270,7 @@ class OpQsHeader(context: Context) : ModPack(context) {
                 showArtwork && mPrevMediaArtworkMap[packageName] != null && filteredArtwork == null -> {
                     TransitionDrawable(
                         arrayOf(
-                            BitmapDrawable(
-                                mContext.resources,
-                                mPrevMediaProcessedArtworkMap[packageName]
-                            ),
+                            mPrevMediaProcessedArtworkMap[packageName]!!.toDrawable(mContext.resources),
                             newArtworkDrawable
                         )
                     )
@@ -1480,7 +1495,7 @@ class OpQsHeader(context: Context) : ModPack(context) {
         val scaledWidth = (bitmap.width * scaleFactor).toInt()
         val scaledHeight = (bitmap.height * scaleFactor).toInt()
 
-        val scaledBitmap = Bitmap.createScaledBitmap(bitmap, scaledWidth, scaledHeight, true)
+        val scaledBitmap = bitmap.scale(scaledWidth, scaledHeight)
 
         val xOffset = (scaledWidth - width) / 2
         val yOffset = (scaledHeight - height) / 2
@@ -1498,7 +1513,7 @@ class OpQsHeader(context: Context) : ModPack(context) {
             validHeight
         )
 
-        val output = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+        val output = createBitmap(width, height)
 
         val paint = Paint().apply {
             isAntiAlias = true
@@ -1513,11 +1528,8 @@ class OpQsHeader(context: Context) : ModPack(context) {
     }
 
     private fun applyColorFilterToBitmap(bitmap: Bitmap, color: Int?): Bitmap {
-        val colorFilteredBitmap = Bitmap.createBitmap(
-            bitmap.width,
-            bitmap.height,
-            bitmap.config ?: Bitmap.Config.ARGB_8888
-        )
+        val colorFilteredBitmap =
+            createBitmap(bitmap.width, bitmap.height, bitmap.config ?: Bitmap.Config.ARGB_8888)
 
         val paint = Paint().apply {
             isAntiAlias = true
@@ -1563,7 +1575,7 @@ class OpQsHeader(context: Context) : ModPack(context) {
         val width = this.width
         val height = this.height
         val diameter = width.coerceAtMost(height)
-        val output = Bitmap.createBitmap(diameter, diameter, Bitmap.Config.ARGB_8888)
+        val output = createBitmap(diameter, diameter)
 
         val paint = Paint()
         paint.isAntiAlias = true
@@ -1586,14 +1598,14 @@ class OpQsHeader(context: Context) : ModPack(context) {
     private fun Drawable.toCircularDrawable(): Drawable {
         val bitmap = this.toBitmap()
         val circularBitmap = bitmap.toCircularBitmap()
-        return BitmapDrawable(mContext.resources, circularBitmap)
+        return circularBitmap.toDrawable(mContext.resources)
     }
 
     @Suppress("SameParameterValue")
     private fun scaleBitmap(bitmap: Bitmap, scaleFactor: Float): Bitmap {
         val width = (bitmap.width * scaleFactor).toInt()
         val height = (bitmap.height * scaleFactor).toInt()
-        return Bitmap.createScaledBitmap(bitmap, width, height, true)
+        return bitmap.scale(width, height)
     }
 
     private data class ColorRGB(val r: Int, val g: Int, val b: Int) {
@@ -1615,7 +1627,7 @@ class OpQsHeader(context: Context) : ModPack(context) {
 
         for (x in 0 until width) {
             for (y in 0 until height) {
-                val pixel = bitmap.getPixel(x, y)
+                val pixel = bitmap[x, y]
                 val color = ColorRGB(
                     r = (pixel shr 16) and 0xFF,
                     g = (pixel shr 8) and 0xFF,
