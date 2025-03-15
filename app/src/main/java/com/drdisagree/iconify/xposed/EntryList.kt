@@ -22,7 +22,7 @@ import com.drdisagree.iconify.xposed.modules.lockscreen.AlbumArt
 import com.drdisagree.iconify.xposed.modules.lockscreen.Lockscreen
 import com.drdisagree.iconify.xposed.modules.lockscreen.clock.LockscreenClock
 import com.drdisagree.iconify.xposed.modules.lockscreen.clock.LockscreenClockA15
-import com.drdisagree.iconify.xposed.modules.lockscreen.depthwallpaper.DepthWallpaper
+import com.drdisagree.iconify.xposed.modules.lockscreen.depthwallpaper.DepthWallpaperA13
 import com.drdisagree.iconify.xposed.modules.lockscreen.depthwallpaper.DepthWallpaperA14
 import com.drdisagree.iconify.xposed.modules.lockscreen.depthwallpaper.DepthWallpaperA15
 import com.drdisagree.iconify.xposed.modules.lockscreen.weather.LockscreenWeather
@@ -95,7 +95,7 @@ object EntryList {
     )
 
     private val systemUiAndroid12ModPacks: List<Class<out ModPack>> = listOf(
-        DepthWallpaper::class.java,
+        DepthWallpaperA13::class.java,
         QSFluidThemeA13::class.java,
         QSBlackThemeA13::class.java,
         QSLightThemeA12::class.java,
@@ -103,7 +103,7 @@ object EntryList {
     )
 
     private val systemUiAndroid13ModPacks: List<Class<out ModPack>> = listOf(
-        DepthWallpaper::class.java,
+        DepthWallpaperA13::class.java,
         QSFluidThemeA13::class.java,
         QSBlackThemeA13::class.java,
         QSLightThemeA13::class.java,
