@@ -82,7 +82,7 @@ class AppIconInNotification(context: Context) : ModPack(context) {
             findClass("com.android.internal.widget.NotificationRowIconView")
 
         notificationRowIconViewClass
-            .hookMethod("onFinishInflate")
+            .hookMethod("onFinishInflate", "setImageIcon", "setImageIconAsync")
             .runAfter { param ->
                 if (!coloredNotificationIcon) return@runAfter
 
