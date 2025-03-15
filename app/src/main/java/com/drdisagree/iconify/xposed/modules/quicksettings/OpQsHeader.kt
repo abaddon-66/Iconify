@@ -16,6 +16,7 @@ import android.graphics.PorterDuffXfermode
 import android.graphics.Rect
 import android.graphics.RectF
 import android.graphics.Shader
+import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.TransitionDrawable
@@ -49,7 +50,6 @@ import androidx.core.graphics.ColorUtils
 import androidx.core.graphics.createBitmap
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.graphics.drawable.toBitmap
-import androidx.core.graphics.drawable.toDrawable
 import androidx.core.graphics.get
 import androidx.core.graphics.scale
 import androidx.palette.graphics.Palette
@@ -1184,6 +1184,7 @@ class OpQsHeader(context: Context) : ModPack(context) {
         }
     }
 
+    @SuppressLint("UseKtx")
     private fun updateMediaPlayer(
         packageName: String?,
         controller: MediaController?,
@@ -1244,7 +1245,10 @@ class OpQsHeader(context: Context) : ModPack(context) {
                 it.applyBlur(mContext, mediaBlurLevel)
             }
             val newArtworkDrawable = when {
-                filteredArtwork != null -> filteredArtwork.toDrawable(mContext.resources)
+                filteredArtwork != null -> BitmapDrawable(
+                    mContext.resources,
+                    filteredArtwork
+                )
                 else -> mInactiveBackground
             }
 
@@ -1261,7 +1265,10 @@ class OpQsHeader(context: Context) : ModPack(context) {
                 showArtwork && mPrevMediaArtworkMap[packageName] != null && filteredArtwork != null -> {
                     TransitionDrawable(
                         arrayOf(
-                            mPrevMediaProcessedArtworkMap[packageName]!!.toDrawable(mContext.resources),
+                            BitmapDrawable(
+                                mContext.resources,
+                                mPrevMediaProcessedArtworkMap[packageName]
+                            ),
                             newArtworkDrawable
                         )
                     )
@@ -1270,7 +1277,10 @@ class OpQsHeader(context: Context) : ModPack(context) {
                 showArtwork && mPrevMediaArtworkMap[packageName] != null && filteredArtwork == null -> {
                     TransitionDrawable(
                         arrayOf(
-                            mPrevMediaProcessedArtworkMap[packageName]!!.toDrawable(mContext.resources),
+                            BitmapDrawable(
+                                mContext.resources,
+                                mPrevMediaProcessedArtworkMap[packageName]
+                            ),
                             newArtworkDrawable
                         )
                     )
@@ -1595,10 +1605,11 @@ class OpQsHeader(context: Context) : ModPack(context) {
         return output
     }
 
+    @SuppressLint("UseKtx")
     private fun Drawable.toCircularDrawable(): Drawable {
         val bitmap = this.toBitmap()
         val circularBitmap = bitmap.toCircularBitmap()
-        return circularBitmap.toDrawable(mContext.resources)
+        return BitmapDrawable(mContext.resources, circularBitmap)
     }
 
     @Suppress("SameParameterValue")
