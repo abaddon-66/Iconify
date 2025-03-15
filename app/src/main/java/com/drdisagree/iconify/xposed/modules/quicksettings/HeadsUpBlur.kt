@@ -49,12 +49,13 @@ class HeadsUpBlur(context: Context) : ModPack(context) {
     }
 
     override fun handleLoadPackage(loadPackageParam: LoadPackageParam) {
-        val baseHeadsUpManagerClass = findClass(
+        val headsUpManagerClass = findClass(
+            "$SYSTEMUI_PACKAGE.statusbar.policy.HeadsUpManager",
             "$SYSTEMUI_PACKAGE.statusbar.policy.BaseHeadsUpManager",
             "$SYSTEMUI_PACKAGE.statusbar.notification.headsup.HeadsUpManagerImpl"
         )
 
-        baseHeadsUpManagerClass
+        headsUpManagerClass
             .hookMethod("addListener")
             .runAfter { param ->
                 if (!headsUpBlurEnabled) return@runAfter
