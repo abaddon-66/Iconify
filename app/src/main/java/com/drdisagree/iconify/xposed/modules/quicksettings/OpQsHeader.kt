@@ -242,7 +242,8 @@ class OpQsHeader(context: Context) : ModPack(context) {
             findClass("$SYSTEMUI_PACKAGE.statusbar.NotificationMediaManager")
         val mediaControlPanelClass = findClass(
             "$SYSTEMUI_PACKAGE.media.controls.ui.controller.MediaControlPanel",
-            "$SYSTEMUI_PACKAGE.media.controls.ui.MediaControlPanel"
+            "$SYSTEMUI_PACKAGE.media.controls.ui.MediaControlPanel",
+            "$SYSTEMUI_PACKAGE.media.MediaControlPanel"
         )
         val volumeDialogImplClass = findClass("$SYSTEMUI_PACKAGE.volume.VolumeDialogImpl")
         val utilsClass = findClass("$SYSTEMUI_PACKAGE.util.Utils")
