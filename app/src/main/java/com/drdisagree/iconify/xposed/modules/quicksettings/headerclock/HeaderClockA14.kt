@@ -73,10 +73,12 @@ import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.XposedHook.Com
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.callMethod
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.callStaticMethodSilently
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.getField
+import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.getFieldSilently
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookConstructor
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookLayout
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookMethod
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.log
+import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.setField
 import com.drdisagree.iconify.xposed.utils.XPrefs.Xprefs
 import com.drdisagree.iconify.xposed.utils.XPrefs.XprefsIsInitialized
 import de.robv.android.xposed.XC_MethodHook
@@ -310,6 +312,25 @@ class HeaderClockA14(context: Context) : ModPack(context) {
             .hookMethod("onInit")
             .runBefore { param ->
                 mQsPanelView = param.thisObject.getField("mView") as ViewGroup
+            }
+
+        qsPanelControllerBaseClass
+            .hookMethod("onInit")
+            .runAfter { param ->
+                if (!showHeaderClock) return@runAfter
+
+                val qsPanel = param.thisObject.getField("mView") as LinearLayout
+                val mHorizontalLinearLayout =
+                    qsPanel.getFieldSilently("mHorizontalLinearLayout") as? LinearLayout
+
+                if (mHorizontalLinearLayout == null) {
+                    val dummyLayout = LinearLayout(mContext).apply {
+                        layoutParams = LinearLayout.LayoutParams(0, 0)
+                        orientation = LinearLayout.HORIZONTAL
+                        visibility = View.GONE
+                    }
+                    qsPanel.setField("mHorizontalLinearLayout", dummyLayout)
+                }
             }
 
         qsPanelClass

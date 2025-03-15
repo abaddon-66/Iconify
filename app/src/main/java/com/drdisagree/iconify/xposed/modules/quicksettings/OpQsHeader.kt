@@ -538,7 +538,7 @@ class OpQsHeader(context: Context) : ModPack(context) {
 
                 if (mHorizontalLinearLayout == null) {
                     val dummyLayout = LinearLayout(mContext).apply {
-                        layoutParams = ViewGroup.LayoutParams(0, 0)
+                        layoutParams = LinearLayout.LayoutParams(0, 0)
                         orientation = LinearLayout.HORIZONTAL
                         visibility = View.GONE
                     }
