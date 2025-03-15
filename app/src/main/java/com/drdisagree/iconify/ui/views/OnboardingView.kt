@@ -23,7 +23,7 @@ import com.airbnb.lottie.model.KeyPath
 import com.airbnb.lottie.value.LottieValueCallback
 import com.drdisagree.iconify.BuildConfig
 import com.drdisagree.iconify.R
-import com.drdisagree.iconify.SplashActivity.Companion.FORCE_OVERLAY_INSTALLATION
+import com.drdisagree.iconify.BaseSplashActivity.Companion.FORCE_OVERLAY_INSTALLATION
 import com.drdisagree.iconify.data.common.Const.TRANSITION_DELAY
 import com.drdisagree.iconify.data.common.Dynamic.skippedInstallation
 import com.drdisagree.iconify.data.common.Preferences.FIRST_INSTALL
