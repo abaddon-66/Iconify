@@ -21,19 +21,14 @@ class IconUpdater(context: Context) : ModPack(context) {
 
     override fun handleLoadPackage(loadPackageParam: LoadPackageParam) {
         val launcherModelClass = findClass("com.android.launcher3.LauncherModel")
-        val baseDraggingActivityClass = findClass("com.android.launcher3.BaseDraggingActivity")
+        val baseActivityClass = findClass("com.android.launcher3.BaseActivity")
         val userManager = mContext.getSystemService(UserManager::class.java) as UserManager
 
         launcherModelClass
             .hookConstructor()
             .runAfter { param ->
-                baseDraggingActivityClass
-                    .hookMethod(
-                        "onCreate",
-                        "onResume",
-                        "onConfigurationChanged",
-                        "onColorHintsChanged"
-                    )
+                baseActivityClass
+                    .hookMethod("onResume")
                     .runAfter {
                         try {
                             val myUserId = callStaticMethod(
