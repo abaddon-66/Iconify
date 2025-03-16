@@ -570,10 +570,15 @@
     <string name="section_title_notifications">Notificação</string>
     <string name="colored_qs_notification_title">Ícone de notificação colorido</string>
     <string name="colored_qs_notification_desc">Mostre o ícone do app como ícone de notificação</string>
+    <string name="notification_headsup_blur_title">Atenção desfocada</string>
+    <string name="notification_headsup_blur_desc">Mostrar desfoque na notificação de atenção</string>
     <string name="section_title_qs_margin">Margem QS</string>
     <string name="section_title_media_player">Reprodutor de mídia</string>
     <string name="compact_media_player_title">Reprodutor de mídia compacto</string>
     <string name="compact_media_player_desc">Torne o reprodutor de mídia compacto</string>
+    <string name="media_player_artwork_blur_title">Desfocar arte</string>
+    <string name="media_player_artwork_blur_desc">Desfoca a arte do álbum do reprodutor de mídia</string>
+    <string name="media_player_artwork_blur_radius_title">Intensidade de desfoque da arte</string>
     <string name="section_title_qs_elements">Elementos QS</string>
     <string name="hide_qs_on_lockscreen_title">Ocultar QS na tela de bloqueio</string>
     <string name="hide_qs_on_lockscreen_desc">Desative o painel de configurações rápidas na tela de bloqueio segura</string>

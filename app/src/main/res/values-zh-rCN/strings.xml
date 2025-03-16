@@ -451,7 +451,7 @@
     <string name="activity_title_xposed_others">其他</string>
     <string name="activity_desc_xposed_others">Xposed 杂项调整</string>
     <string name="activity_title_xposed_weather_settings">天气设置</string>
-    <string name="activity_title_xposed_launcher">启动器</string>
+    <string name="activity_title_xposed_launcher">桌面启动器</string>
     <string name="activity_desc_xposed_launcher">启动器相关修改</string>
     <string name="activity_title_lockscreen_album_art">媒体专辑封面</string>
     <!-- Oneplus QS Header -->
@@ -498,7 +498,7 @@
     <string name="mini_widget_icon_active">小部件图标活动颜色</string>
     <string name="mini_widget_icon_inactive">小部件图标非活动颜色</string>
     <string name="weather_settings">天气设置</string>
-    <string name="lockscreen_widgets_roundness">部件圆度</string>
+    <string name="lockscreen_widgets_roundness">部件圆角大小</string>
     <string name="lockscreen_widgets_scale">部件比例</string>
     <string name="lockscreen_device_widget_style_title">设备小部件样式</string>
     <string name="lockscreen_device_widget_style_classic">两条圆角</string>
@@ -570,10 +570,15 @@
     <string name="section_title_notifications">通知</string>
     <string name="colored_qs_notification_title">彩色通知图标</string>
     <string name="colored_qs_notification_desc">显示应用图标作为通知图标</string>
+    <string name="notification_headsup_blur_title">浮动通知模糊</string>
+    <string name="notification_headsup_blur_desc">在浮动通知上使用模糊效果</string>
     <string name="section_title_qs_margin">快速设置边距</string>
     <string name="section_title_media_player">媒体播放器</string>
-    <string name="compact_media_player_title">紧凑型媒体播放器</string>
+    <string name="compact_media_player_title">更紧凑的媒体播放器</string>
     <string name="compact_media_player_desc">使媒体播放器更紧凑</string>
+    <string name="media_player_artwork_blur_title">Blur Artwork</string>
+    <string name="media_player_artwork_blur_desc">Blur media player album art</string>
+    <string name="media_player_artwork_blur_radius_title">Artwork Blur Intensity</string>
     <string name="section_title_qs_elements">快速设置元素</string>
     <string name="hide_qs_on_lockscreen_title">在锁屏界面隐藏快速设置</string>
     <string name="hide_qs_on_lockscreen_desc">在安全锁屏界面禁用快速设置面板</string>
@@ -714,7 +719,7 @@
     <string name="lockscreen_clock_auto_hide_clock_desc">在收到通知时隐藏时钟</string>
     <string name="custom_lockscreen_clock_style_title">时钟样式</string>
     <string name="lockscreen_clock_move_notification_icon_title">时钟下的AOD图标</string>
-    <string name="lockscreen_clock_move_notification_icon_desc">移动AOD图标到自定义时钟下面，在旧的ROM上可能会有问题</string>
+    <string name="lockscreen_clock_move_notification_icon_desc">将AOD图标移动到自定义时钟下面，在一些旧的ROM上可能会有问题</string>
     <string name="lockscreen_clock_font_title">时钟字体</string>
     <string name="lockscreen_clock_font_desc">对锁屏时钟使用自定义字体</string>
     <string name="lockscreen_clock_image_title">锁屏时钟自定义图像</string>
@@ -1135,7 +1140,7 @@
     <string name="text_color_primary">主文本颜色</string>
     <string name="text_color_inverse">文本颜色反转</string>
     <string name="learn_more">了解更多</string>
-    <string name="custom_tiles_footer_info">为确保自定义磁贴正常工作，在使用自定义磁贴之前，请先使用默认的互联网和蓝牙磁贴一次。</string>
+    <string name="custom_tiles_footer_info">为确保自定义磁贴正常工作，在使用自定义磁贴之前，请先使用一次默认的互联网和蓝牙磁贴。</string>
     <string name="hig_res_image_footer_info">尽量避免使用高分辨率的图片，因为这可能会导致您的SystemUI崩溃。</string>
     <string name="more">更多</string>
     <!-- Weather -->
@@ -1262,23 +1267,23 @@
     <string name="section_title_icons">图标</string>
     <string name="section_title_home_screen">主屏幕</string>
     <string name="section_title_app_drawer">应用程序抽屉</string>
-    <string name="section_title_recents">后台</string>
-    <string name="force_themed_icons_title">强制启用主题图标</string>
+    <string name="section_title_recents">最近任务</string>
+    <string name="force_themed_icons_title">强制使用主题图标</string>
     <string name="force_themed_icons_desc">如果应用程序未提供单色图标，则生成单色图标</string>
     <string name="app_drawer_themed_icons_title">应用程序抽屉主题图标</string>
-    <string name="app_drawer_themed_icons_desc">应用程序抽屉主题图标</string>
+    <string name="app_drawer_themed_icons_desc">在应用程序抽屉内使用主题图标</string>
     <string name="double_tap_to_sleep_title">双击熄屏</string>
     <string name="double_tap_to_sleep_desc">双击主屏幕空白区域关闭屏幕</string>
-    <string name="desktop_icon_labels_title">桌面上的图标标签</string>
+    <string name="desktop_icon_labels_title">显示桌面上的图标名</string>
     <string name="app_drawer_icon_labels_title">应用程序抽屉中的图标标签</string>
     <string name="disable_recents_live_tile_title">禁用动态磁贴</string>
-    <string name="disable_recents_live_tile_desc">如果最近的显示有问题则禁用动态磁贴</string>
+    <string name="disable_recents_live_tile_desc">如果最近任务显示有问题则禁用动态磁贴</string>
     <string name="hide_desktop_search_bar_title">隐藏桌面搜索栏</string>
     <string name="hide_desktop_search_bar_desc">隐藏桌面搜索栏</string>
-    <string name="dock_spacing_title">Dock栏空间</string>
-    <string name="app_drawer_background_opacity_title">应用程序抽屉背景不透明度</string>
+    <string name="dock_spacing_title">除Dock栏固定的图标外桌面上的图标距离底部的距离</string>
+    <string name="app_drawer_background_opacity_title">应用程序抽屉背景的不透明度（100%表示完全不透明）</string>
     <string name="recents_background_opacity_title">后台界面不透明度</string>
-    <string name="launcher_mod_footer_info">目前只有Pixel Launcher和Launcher3支持该功能。</string>
+    <string name="launcher_mod_footer_info">目前只有Pixel启动器和Launcher3支持该功能。</string>
     <!-- Alert Dialogs -->
     <string name="systemui_restart_required_title">系统界面需要重启</string>
     <string name="systemui_restart_required_desc">需要重启系统界面才能使此更改生效。</string>

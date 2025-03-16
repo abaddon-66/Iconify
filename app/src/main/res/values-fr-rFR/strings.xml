@@ -570,10 +570,15 @@
     <string name="section_title_notifications">Notification</string>
     <string name="colored_qs_notification_title">Icône de notification colorée</string>
     <string name="colored_qs_notification_desc">Afficher l\'icône de l\'application en tant qu\'icône de notification</string>
+    <string name="notification_headsup_blur_title">Heads Up Blur</string>
+    <string name="notification_headsup_blur_desc">Show blur on heads up notification</string>
     <string name="section_title_qs_margin">Marges QS</string>
     <string name="section_title_media_player">Lecteur multimédia</string>
     <string name="compact_media_player_title">Lecteur multimédia compact</string>
     <string name="compact_media_player_desc">Rendre le lecteur multimédia compact</string>
+    <string name="media_player_artwork_blur_title">Blur Artwork</string>
+    <string name="media_player_artwork_blur_desc">Blur media player album art</string>
+    <string name="media_player_artwork_blur_radius_title">Artwork Blur Intensity</string>
     <string name="section_title_qs_elements">Éléments des réglages rapides</string>
     <string name="hide_qs_on_lockscreen_title">Masquer les réglages rapides sur l\'écran de verrouillage</string>
     <string name="hide_qs_on_lockscreen_desc">Désactiver les réglages rapides sur écran de verrouillage sécurisé</string>
