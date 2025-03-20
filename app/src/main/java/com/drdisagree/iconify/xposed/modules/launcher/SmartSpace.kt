@@ -344,19 +344,19 @@ class SmartSpace(context: Context) : ModPack(context) {
                     if (dbEntry.getField("minSpanX") as Int > trgX || dbEntry.getField("minSpanY") as Int > trgY) {
                         iterator.callMethod("remove")
                     } else {
-                        var i7 = next.x
-                        var i8 = next.y
-                        val i9 = trg.y
+                        var x = next.x
+                        var y = next.y
+                        val gridHeight = trg.y
 
                         while (true) {
-                            if (i8 < i9) {
-                                val i10 = trg.x
+                            if (y < gridHeight) {
+                                val gridWidth = trg.x
 
-                                while (i7 < i10) {
+                                while (x < gridWidth) {
                                     if (occupied.callMethod(
                                             "isRegionVacant",
-                                            i7,
-                                            i8,
+                                            x,
+                                            y,
                                             dbEntry.getField("minSpanX"),
                                             dbEntry.getField("minSpanY")
                                         ) as Boolean
@@ -369,19 +369,19 @@ class SmartSpace(context: Context) : ModPack(context) {
                                                 Int::class.javaPrimitiveType
                                             )
                                             .newInstance(
-                                                i7,
-                                                i8,
+                                                x,
+                                                y,
                                                 dbEntry.getField("minSpanX"),
                                                 dbEntry.getField("minSpanY")
                                             )
                                         break
                                     }
 
-                                    i7++
+                                    x++
                                 }
 
-                                i8++
-                                i7 = 0
+                                y++
+                                x = 0
                             } else {
                                 cellAndSpan = null
                                 break
