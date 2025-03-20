@@ -17,6 +17,7 @@ import com.drdisagree.iconify.xposed.modules.launcher.IconLabels
 import com.drdisagree.iconify.xposed.modules.launcher.IconUpdater
 import com.drdisagree.iconify.xposed.modules.launcher.LauncherUtils
 import com.drdisagree.iconify.xposed.modules.launcher.OpacityModifier
+import com.drdisagree.iconify.xposed.modules.launcher.SmartSpace
 import com.drdisagree.iconify.xposed.modules.launcher.ThemedIcons
 import com.drdisagree.iconify.xposed.modules.lockscreen.AlbumArt
 import com.drdisagree.iconify.xposed.modules.lockscreen.Lockscreen
@@ -138,7 +139,8 @@ object EntryList {
         OpacityModifier::class.java,
         GestureMod::class.java,
         IconLabels::class.java,
-        HotseatMod::class.java
+        HotseatMod::class.java,
+        SmartSpace::class.java
     )
 
     private val launcher3ModPacks: List<Class<out ModPack>> = listOf(
@@ -147,7 +149,8 @@ object EntryList {
         OpacityModifier::class.java,
         GestureMod::class.java,
         IconLabels::class.java,
-        HotseatMod::class.java
+        HotseatMod::class.java,
+        SmartSpace::class.java
     )
 
     private val settingsCommonModPacks: List<Class<out ModPack>> = listOf(

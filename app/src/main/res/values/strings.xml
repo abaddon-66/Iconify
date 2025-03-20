@@ -1358,6 +1358,8 @@
     <string name="app_drawer_icon_labels_title">Icon Labels in App Drawer</string>
     <string name="disable_recents_live_tile_title">Disable Recents Live Tile</string>
     <string name="disable_recents_live_tile_desc">Disable live tile if recents screen is buggy</string>
+    <string name="hide_at_a_glance_title">Hide At A Glance</string>
+    <string name="hide_at_a_glance_desc">Hide at a glance from home screen</string>
     <string name="hide_desktop_search_bar_title">Hide Desktop Search Bar</string>
     <string name="hide_desktop_search_bar_desc">Hide search bar from desktop dock</string>
     <string name="dock_spacing_title">Dock Spacing</string>

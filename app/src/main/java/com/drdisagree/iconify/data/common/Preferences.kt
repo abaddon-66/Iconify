@@ -262,6 +262,7 @@ object Preferences {
     const val DOUBLE_TAP_TO_SLEEP = "xposed_doubletaptosleep"
     const val DESKTOP_ICON_LABELS = "xposed_desktopiconlabels"
     const val APP_DRAWER_ICON_LABELS = "xposed_appdrawericonlabels"
+    const val HIDE_AT_A_GLANCE = "xposed_hideataglance"
     const val DESKTOP_SEARCH_BAR = "xposed_desktopsearchbar"
     const val DESKTOP_DOCK_SPACING = "xposed_desktopdockspacing"
     const val NOTIFICATION_HEADSUP_BLUR = "xposed_notificationsheadsupblur"
