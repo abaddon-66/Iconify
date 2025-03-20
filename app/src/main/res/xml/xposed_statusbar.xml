@@ -10,6 +10,12 @@
         app:iconSpaceReserved="false" />
 
     <com.drdisagree.iconify.ui.preferences.SwitchPreference
+        android:key="xposed_chipstatusbarclockclickable"
+        android:summary="@string/statusbar_clock_clickable_desc"
+        android:title="@string/statusbar_clock_clickable_title"
+        app:iconSpaceReserved="false" />
+
+    <com.drdisagree.iconify.ui.preferences.SwitchPreference
         android:key="xposed_sbclocksizeswitch"
         android:summary="@string/sb_clock_size_switch_desc"
         android:title="@string/sb_clock_size_switch_title"
