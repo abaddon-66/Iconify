@@ -3,6 +3,7 @@ package com.drdisagree.iconify.xposed.modules.quicksettings
 import android.annotation.SuppressLint
 import android.app.Notification
 import android.content.Context
+import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.LayerDrawable
@@ -293,8 +294,12 @@ class HeadsUpBlur(context: Context) : ModPack(context) {
             )
 
             val mutatedDrawable = notificationBgDrawable.mutate() as LayerDrawable
-            val baseLayer = mutatedDrawable.getDrawable(0)
-            val statefulLayer = mutatedDrawable.getDrawable(1)
+            val baseLayer = mutatedDrawable.getDrawable(0).apply {
+                setTint(Color.TRANSPARENT)
+            }
+            val statefulLayer = mutatedDrawable.getDrawable(1).apply {
+                setTint(Color.TRANSPARENT)
+            }
 
             val layerDrawable = LayerDrawable(
                 arrayOf(
