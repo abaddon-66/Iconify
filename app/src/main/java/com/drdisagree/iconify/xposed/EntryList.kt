@@ -54,6 +54,7 @@ import com.drdisagree.iconify.xposed.modules.settings.GoogleIcon
 import com.drdisagree.iconify.xposed.modules.settings.ZenPriorityModeIcon
 import com.drdisagree.iconify.xposed.modules.statusbar.AppIconsInStatusbar
 import com.drdisagree.iconify.xposed.modules.statusbar.DualStatusbar
+import com.drdisagree.iconify.xposed.modules.statusbar.OnGoingActionChip
 import com.drdisagree.iconify.xposed.modules.statusbar.StatusbarMisc
 import com.drdisagree.iconify.xposed.modules.statusbar.SwapSignalNetworkType
 import com.drdisagree.iconify.xposed.modules.statusbar.SwapWiFiCellular
@@ -92,7 +93,8 @@ object EntryList {
         VolumePanelStyle::class.java,
         ColorizeNotificationView::class.java,
         AppIconInNotification::class.java,
-        HeadsUpBlur::class.java
+        HeadsUpBlur::class.java,
+        OnGoingActionChip::class.java
     )
 
     private val systemUiAndroid12ModPacks: List<Class<out ModPack>> = listOf(
