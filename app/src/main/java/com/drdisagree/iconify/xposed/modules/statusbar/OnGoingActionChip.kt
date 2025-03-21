@@ -40,15 +40,15 @@ class OnGoingActionChip(context: Context) : ModPack(context) {
             .hookMethod("onFinishInflate")
             .runAfter { param ->
                 val phoneStatusBarView = param.thisObject as ViewGroup
-                val secondaryChip = phoneStatusBarView.findViewById<View>(
+                val notificationIconArea = phoneStatusBarView.findViewById<View>(
                     mContext.resources.getIdentifier(
-                        "ongoing_activity_chip_secondary",
+                        "notification_icon_area",
                         "id",
                         mContext.packageName
                     )
                 )
-                val startSideExceptHeadsUp = secondaryChip.parent as ViewGroup
-                val secondaryChipIndex = startSideExceptHeadsUp.indexOfChild(secondaryChip)
+                val startSideExceptHeadsUp = notificationIconArea.parent as ViewGroup
+                val activityChipIndex = startSideExceptHeadsUp.indexOfChild(notificationIconArea)
 
                 if (mOnGoingActionChipView == null) {
                     mOnGoingActionChipView = OnGoingActionChipView(mContext)
@@ -61,7 +61,7 @@ class OnGoingActionChip(context: Context) : ModPack(context) {
                     ) { onGoingActionChipEnabled }
                 }
 
-                startSideExceptHeadsUp.reAddView(mOnGoingActionChipView, secondaryChipIndex + 1)
+                startSideExceptHeadsUp.reAddView(mOnGoingActionChipView, activityChipIndex)
             }
 
         val notificationListenerClass =
