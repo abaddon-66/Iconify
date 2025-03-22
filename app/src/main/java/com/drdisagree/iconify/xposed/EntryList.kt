@@ -134,19 +134,9 @@ object EntryList {
         OpQsHeader::class.java
     )
 
-    private val pixelLauncherModPacks: List<Class<out ModPack>> = listOf(
+    private val launcherModPacks: List<Class<out ModPack>> = listOf(
         LauncherUtils::class.java,
         IconUpdater::class.java,
-        ThemedIcons::class.java,
-        OpacityModifier::class.java,
-        GestureMod::class.java,
-        IconLabels::class.java,
-        HotseatMod::class.java,
-        SmartSpace::class.java
-    )
-
-    private val launcher3ModPacks: List<Class<out ModPack>> = listOf(
-        LauncherUtils::class.java,
         ThemedIcons::class.java,
         OpacityModifier::class.java,
         GestureMod::class.java,
@@ -193,12 +183,9 @@ object EntryList {
                 }
             }
 
-            PIXEL_LAUNCHER_PACKAGE -> {
-                modPacks.addAll(pixelLauncherModPacks)
-            }
-
+            PIXEL_LAUNCHER_PACKAGE,
             LAUNCHER3_PACKAGE -> {
-                modPacks.addAll(launcher3ModPacks)
+                modPacks.addAll(launcherModPacks)
             }
 
             SETTINGS_PACKAGE -> {
