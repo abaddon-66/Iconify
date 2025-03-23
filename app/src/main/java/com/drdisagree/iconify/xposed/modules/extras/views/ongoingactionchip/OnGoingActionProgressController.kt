@@ -114,13 +114,17 @@ class OnGoingActionProgressController(
             return
         }
 
+        if (!isEnabled) return
+
+        if (chipView.visibility != View.VISIBLE) {
+            chipView.visibility = View.VISIBLE
+        }
+
         // Check if there's actually a change before updating views
         if (mProgressBar.max != mCurrentProgressMax ||
             mProgressBar.progress != mCurrentProgress ||
             mIconView.drawable != mCurrentDrawable
         ) {
-            chipView.visibility = View.VISIBLE
-
             if (mCurrentProgressMax == 0) {
                 mCurrentProgressMax = 100
             }
@@ -147,8 +151,6 @@ class OnGoingActionProgressController(
      * Should be called when new notification is posted
      */
     fun onNotificationPosted(sbn: StatusBarNotification) {
-        if (!isEnabled) return
-
         if (!hasProgress(sbn.notification)) {
             if (sbn.key == mTrackedNotificationKey) {
                 // The notification we track has no progress anymore
@@ -159,6 +161,8 @@ class OnGoingActionProgressController(
             }
             return
         }
+
+        if (!isEnabled) return
 
         synchronized(this) {
             if (!mIsTrackingProgress) {

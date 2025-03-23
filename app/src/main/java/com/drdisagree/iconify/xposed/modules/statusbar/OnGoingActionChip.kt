@@ -30,6 +30,10 @@ class OnGoingActionChip(context: Context) : ModPack(context) {
         Xprefs.apply {
             onGoingActionChipEnabled = getBoolean(ONGOING_ACTION_CHIP_SWITCH, false)
         }
+
+        when (key.firstOrNull()) {
+            ONGOING_ACTION_CHIP_SWITCH -> mOnGoingActionProgressController?.setForceHidden(!onGoingActionChipEnabled)
+        }
     }
 
     override fun handleLoadPackage(loadPackageParam: LoadPackageParam) {
@@ -88,7 +92,7 @@ class OnGoingActionChip(context: Context) : ModPack(context) {
             .hookMethod("notifyKeyguardState")
             .runAfter { param ->
                 val showing = param.args[0] as Boolean
-                mOnGoingActionProgressController?.setForceHidden(showing)
+                mOnGoingActionProgressController?.setForceHidden(showing || !onGoingActionChipEnabled)
             }
 
         val headsUpAppearanceControllerClass =
