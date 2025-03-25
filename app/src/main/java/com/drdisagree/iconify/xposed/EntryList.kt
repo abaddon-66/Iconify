@@ -12,6 +12,7 @@ import com.drdisagree.iconify.xposed.modules.extras.callbacks.ThemeChange
 import com.drdisagree.iconify.xposed.modules.extras.utils.MyConstraintSet
 import com.drdisagree.iconify.xposed.modules.extras.utils.SettingsLibUtils
 import com.drdisagree.iconify.xposed.modules.launcher.GestureMod
+import com.drdisagree.iconify.xposed.modules.launcher.HideStatusbar
 import com.drdisagree.iconify.xposed.modules.launcher.HotseatMod
 import com.drdisagree.iconify.xposed.modules.launcher.IconLabels
 import com.drdisagree.iconify.xposed.modules.launcher.IconTextSize
@@ -144,7 +145,8 @@ object EntryList {
         IconLabels::class.java,
         HotseatMod::class.java,
         IconTextSize::class.java,
-        SmartSpace::class.java
+        SmartSpace::class.java,
+        HideStatusbar::class.java
     )
 
     private val settingsCommonModPacks: List<Class<out ModPack>> = listOf(

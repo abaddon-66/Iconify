@@ -261,6 +261,7 @@ object Preferences {
     const val RECENTS_BACKGROUND_OPACITY = "xposed_recentsbackgroundopacity"
     const val DISABLE_RECENTS_LIVE_TILE = "xposed_disablerecentslivetile"
     const val DOUBLE_TAP_TO_SLEEP = "xposed_doubletaptosleep"
+    const val LAUNCHER_HIDE_STATUSBAR = "xposed_launcherhidestatusbar"
     const val DESKTOP_ICON_LABELS = "xposed_desktopiconlabels"
     const val APP_DRAWER_ICON_LABELS = "xposed_appdrawericonlabels"
     const val HIDE_AT_A_GLANCE = "xposed_hideataglance"
