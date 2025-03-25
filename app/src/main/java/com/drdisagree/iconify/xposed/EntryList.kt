@@ -21,6 +21,7 @@ import com.drdisagree.iconify.xposed.modules.launcher.LauncherUtils
 import com.drdisagree.iconify.xposed.modules.launcher.OpacityModifier
 import com.drdisagree.iconify.xposed.modules.launcher.SmartSpace
 import com.drdisagree.iconify.xposed.modules.launcher.ThemedIcons
+import com.drdisagree.iconify.xposed.modules.launcher.TopShadow
 import com.drdisagree.iconify.xposed.modules.lockscreen.AlbumArt
 import com.drdisagree.iconify.xposed.modules.lockscreen.Lockscreen
 import com.drdisagree.iconify.xposed.modules.lockscreen.clock.LockscreenClock
@@ -146,7 +147,8 @@ object EntryList {
         HotseatMod::class.java,
         IconTextSize::class.java,
         SmartSpace::class.java,
-        HideStatusbar::class.java
+        HideStatusbar::class.java,
+        TopShadow::class.java
     )
 
     private val settingsCommonModPacks: List<Class<out ModPack>> = listOf(
