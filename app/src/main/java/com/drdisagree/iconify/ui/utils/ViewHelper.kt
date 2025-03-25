@@ -238,6 +238,53 @@ object ViewHelper {
         return chargingIcons
     }
 
+    fun getStatusbarLogoDrawables(context: Context): Array<Drawable> {
+        val logoColor = appContext.getColor(R.color.textColorPrimary)
+
+        val logoDrawables = arrayOf<Drawable>(
+            getDrawable(context, R.drawable.ic_android_logo)!!,
+            getDrawable(context, R.drawable.ic_adidas)!!,
+            getDrawable(context, R.drawable.ic_alien)!!,
+            getDrawable(context, R.drawable.ic_apple_logo)!!,
+            getDrawable(context, R.drawable.ic_avengers)!!,
+            getDrawable(context, R.drawable.ic_batman)!!,
+            getDrawable(context, R.drawable.ic_batman_tdk)!!,
+            getDrawable(context, R.drawable.ic_beats)!!,
+            getDrawable(context, R.drawable.ic_biohazard)!!,
+            getDrawable(context, R.drawable.ic_blackberry)!!,
+            getDrawable(context, R.drawable.ic_cannabis)!!,
+            getDrawable(context, R.drawable.ic_emoticon_cool)!!,
+            getDrawable(context, R.drawable.ic_emoticon_devil)!!,
+            getDrawable(context, R.drawable.ic_fire)!!,
+            getDrawable(context, R.drawable.ic_heart)!!,
+            getDrawable(context, R.drawable.ic_nike)!!,
+            getDrawable(context, R.drawable.ic_pac_man)!!,
+            getDrawable(context, R.drawable.ic_puma)!!,
+            getDrawable(context, R.drawable.ic_rog)!!,
+            getDrawable(context, R.drawable.ic_spiderman)!!,
+            getDrawable(context, R.drawable.ic_superman)!!,
+            getDrawable(context, R.drawable.ic_windows)!!,
+            getDrawable(context, R.drawable.ic_xbox)!!,
+            getDrawable(context, R.drawable.ic_ghost)!!,
+            getDrawable(context, R.drawable.ic_ninja)!!,
+            getDrawable(context, R.drawable.ic_robot)!!,
+            getDrawable(context, R.drawable.ic_ironman)!!,
+            getDrawable(context, R.drawable.ic_captain_america)!!,
+            getDrawable(context, R.drawable.ic_flash)!!,
+            getDrawable(context, R.drawable.ic_tux_logo)!!,
+            getDrawable(context, R.drawable.ic_ubuntu_logo)!!,
+            getDrawable(context, R.drawable.ic_mint_logo)!!,
+            getDrawable(context, R.drawable.ic_amogus)!!,
+            getDrawable(context, R.drawable.ic_android_logo)!!,
+        )
+
+        logoDrawables.forEach {
+            it.setTint(logoColor)
+        }
+
+        return logoDrawables
+    }
+
     private fun getRotateDrawable(d: Drawable, angle: Float): Drawable {
         val arD = arrayOf(d)
         return object : LayerDrawable(arD) {
