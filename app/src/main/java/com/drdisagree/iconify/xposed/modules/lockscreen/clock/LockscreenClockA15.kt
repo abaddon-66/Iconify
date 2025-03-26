@@ -349,7 +349,10 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
             }
 
         // Hide stock clock for ROMs with MigrateClocksToBlueprint disabled
-        val keyguardClockSwitchClass = findClass("com.android.keyguard.KeyguardClockSwitch")
+        val keyguardClockSwitchClass = findClass(
+            "com.android.keyguard.KeyguardClockSwitch",
+            suppressError = Build.VERSION.SDK_INT >= 36
+        )
 
         keyguardClockSwitchClass
             .hookMethod("onFinishInflate")
