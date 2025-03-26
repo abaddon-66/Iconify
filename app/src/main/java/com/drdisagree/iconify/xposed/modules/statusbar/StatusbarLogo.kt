@@ -89,15 +89,21 @@ class StatusbarLogo(context: Context) : ModPack(context) {
             .runAfter { param ->
                 val phoneStatusBarView = param.thisObject as ViewGroup
 
-                val operatorName = phoneStatusBarView.findViewById<View>(
+                val startSideExceptHeadsUp = phoneStatusBarView.findViewById<ViewGroup>(
                     mContext.resources.getIdentifier(
-                        "operator_name_stub",
+                        "status_bar_start_side_except_heads_up",
                         "id",
                         mContext.packageName
                     )
                 )
-                val startSideExceptHeadsUp = operatorName.parent as ViewGroup
-                val logoIndex = startSideExceptHeadsUp.indexOfChild(operatorName) + 1
+                val clockView = startSideExceptHeadsUp.findViewById<View>(
+                    mContext.resources.getIdentifier(
+                        "clock",
+                        "id",
+                        mContext.packageName
+                    )
+                )
+                val logoIndex = startSideExceptHeadsUp.indexOfChild(clockView)
 
                 val systemIcons = phoneStatusBarView.findViewById<ViewGroup>(
                     mContext.resources.getIdentifier(
