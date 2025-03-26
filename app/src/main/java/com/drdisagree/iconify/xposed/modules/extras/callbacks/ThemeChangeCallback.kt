@@ -6,13 +6,13 @@ import com.drdisagree.iconify.data.common.Const.SYSTEMUI_PACKAGE
 import com.drdisagree.iconify.xposed.ModPack
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.XposedHook.Companion.findClass
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookMethod
-import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.isMethodAvailable
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.log
 import de.robv.android.xposed.callbacks.XC_LoadPackage
 import java.util.concurrent.CopyOnWriteArrayList
 
 class ThemeChangeCallback(context: Context) : ModPack(context) {
 
+    private var lastCallbackTime = 0L
     private val mThemeChangedListeners = CopyOnWriteArrayList<OnThemeChangedListener>()
 
     override fun updatePrefs(vararg key: String) {}
@@ -21,31 +21,24 @@ class ThemeChangeCallback(context: Context) : ModPack(context) {
 
         instance = this
 
-        // Get monet change so we can apply theme
         val scrimControllerClass = findClass("$SYSTEMUI_PACKAGE.statusbar.phone.ScrimController")
-
-        scrimControllerClass
-            .hookMethod("updateThemeColors")
-            .runAfter { onThemeChanged() }
-
-        if (scrimControllerClass.isMethodAvailable("updateThemeColors")) return
-
         val notificationPanelViewControllerClass = findClass(
             "$SYSTEMUI_PACKAGE.shade.NotificationPanelViewController",
             "$SYSTEMUI_PACKAGE.statusbar.phone.NotificationPanelViewController"
         )
-
-        notificationPanelViewControllerClass
-            .hookMethod("onThemeChanged")
-            .runAfter { onThemeChanged() }
-
-        if (notificationPanelViewControllerClass.isMethodAvailable("onThemeChanged")) return
-
         val configurationListenerClass = findClass(
             "$SYSTEMUI_PACKAGE.shade.NotificationPanelViewController\$ConfigurationListener",
             "$SYSTEMUI_PACKAGE.statusbar.phone.NotificationPanelViewController\$ConfigurationListener",
             suppressError = true
         )
+
+        scrimControllerClass
+            .hookMethod("updateThemeColors")
+            .runAfter { onThemeChanged() }
+
+        notificationPanelViewControllerClass
+            .hookMethod("onThemeChanged")
+            .runAfter { onThemeChanged() }
 
         configurationListenerClass
             .hookMethod("onThemeChanged")
@@ -58,12 +51,17 @@ class ThemeChangeCallback(context: Context) : ModPack(context) {
     }
 
     private fun onThemeChanged() {
-        mThemeChangedListeners.forEach {
-            try {
-                it.onThemeChanged()
-            } catch (throwable: Throwable) {
-                log(this@ThemeChangeCallback, "onThemeChanged: $throwable")
+        val currentTime = System.currentTimeMillis()
+
+        if (currentTime - lastCallbackTime >= 200) {
+            mThemeChangedListeners.forEach {
+                try {
+                    it.onThemeChanged()
+                } catch (throwable: Throwable) {
+                    log(this@ThemeChangeCallback, "onThemeChanged: $throwable")
+                }
             }
+            lastCallbackTime = currentTime
         }
     }
 
