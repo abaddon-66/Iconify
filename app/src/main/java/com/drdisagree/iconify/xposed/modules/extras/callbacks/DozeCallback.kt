@@ -29,6 +29,10 @@ class DozeCallback(context: Context) : ModPack(context) {
             findClass("$SYSTEMUI_PACKAGE.statusbar.StatusBarStateControllerImpl")
         val dozeScrimControllerClass =
             findClass("$SYSTEMUI_PACKAGE.statusbar.phone.DozeScrimController")
+        val collapsedStatusBarFragment = findClass(
+            "$SYSTEMUI_PACKAGE.statusbar.phone.CollapsedStatusBarFragment",
+            "$SYSTEMUI_PACKAGE.statusbar.phone.fragment.CollapsedStatusBarFragment"
+        )
 
         fun updateState(isDozing: Boolean, isPulsing: Boolean) {
             synchronized(this@DozeCallback) {
@@ -55,6 +59,13 @@ class DozeCallback(context: Context) : ModPack(context) {
             }
 
         dozeScrimControllerClass
+            .hookMethod("onDozingChanged")
+            .runAfter { param ->
+                val isDozing = param.args[0] as Boolean
+                updateState(isDozing, mIsPulsing)
+            }
+
+        collapsedStatusBarFragment
             .hookMethod("onDozingChanged")
             .runAfter { param ->
                 val isDozing = param.args[0] as Boolean
