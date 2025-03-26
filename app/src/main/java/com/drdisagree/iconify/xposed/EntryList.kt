@@ -8,6 +8,7 @@ import com.drdisagree.iconify.data.common.Const.SYSTEMUI_PACKAGE
 import com.drdisagree.iconify.xposed.modules.BackgroundChip
 import com.drdisagree.iconify.xposed.modules.BatteryStyleManager
 import com.drdisagree.iconify.xposed.modules.extras.callbacks.ControllersProvider
+import com.drdisagree.iconify.xposed.modules.extras.callbacks.HeadsUpCallback
 import com.drdisagree.iconify.xposed.modules.extras.callbacks.ThemeChange
 import com.drdisagree.iconify.xposed.modules.extras.utils.MyConstraintSet
 import com.drdisagree.iconify.xposed.modules.extras.utils.SettingsLibUtils
@@ -77,6 +78,7 @@ object EntryList {
         MyConstraintSet::class.java,
         ControllersProvider::class.java,
         ThemeChange::class.java,
+        HeadsUpCallback::class.java,
         BackgroundChip::class.java,
         HeaderImage::class.java,
         Lockscreen::class.java,
