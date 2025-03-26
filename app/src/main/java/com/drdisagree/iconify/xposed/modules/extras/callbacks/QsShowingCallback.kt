@@ -57,13 +57,13 @@ class QsShowingCallback(context: Context) : ModPack(context) {
     }
 
     fun registerQsShowingListener(callback: QsShowingListener) {
-        if (!instance!!.mQuickSettingsListeners.contains(callback)) {
-            instance!!.mQuickSettingsListeners.add(callback)
+        if (!mQuickSettingsListeners.contains(callback)) {
+            mQuickSettingsListeners.add(callback)
         }
     }
 
     fun unregisterQsShowingListener(callback: QsShowingListener) {
-        instance!!.mQuickSettingsListeners.remove(callback)
+        mQuickSettingsListeners.remove(callback)
     }
 
     companion object {

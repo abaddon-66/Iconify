@@ -86,13 +86,13 @@ class HeadsUpCallback(context: Context) : ModPack(context) {
     }
 
     fun registerHeadsUpListener(callback: HeadsUpListener) {
-        if (!instance!!.mHeadsUpListeners.contains(callback)) {
-            instance!!.mHeadsUpListeners.add(callback)
+        if (!mHeadsUpListeners.contains(callback)) {
+            mHeadsUpListeners.add(callback)
         }
     }
 
     fun unregisterHeadsUpListener(callback: HeadsUpListener) {
-        instance!!.mHeadsUpListeners.remove(callback)
+        mHeadsUpListeners.remove(callback)
     }
 
     companion object {
