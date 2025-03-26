@@ -9,15 +9,18 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import com.drdisagree.iconify.data.common.Const.SYSTEMUI_PACKAGE
 import com.drdisagree.iconify.data.common.Preferences.STATUSBAR_LOGO_POSITION
+import com.drdisagree.iconify.data.common.Preferences.STATUSBAR_LOGO_SIZE
 import com.drdisagree.iconify.data.common.Preferences.STATUSBAR_LOGO_STYLE
 import com.drdisagree.iconify.data.common.Preferences.STATUSBAR_LOGO_SWITCH
 import com.drdisagree.iconify.xposed.ModPack
 import com.drdisagree.iconify.xposed.modules.extras.callbacks.HeadsUpCallback
 import com.drdisagree.iconify.xposed.modules.extras.callbacks.KeyguardShowingCallback
 import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.reAddView
+import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.toPx
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.XposedHook.Companion.findClass
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.callStaticMethod
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookMethod
+import com.drdisagree.iconify.xposed.modules.extras.views.logoview.LogoImage
 import com.drdisagree.iconify.xposed.modules.extras.views.logoview.LogoImageView
 import com.drdisagree.iconify.xposed.modules.extras.views.logoview.LogoImageViewRight
 import com.drdisagree.iconify.xposed.utils.XPrefs.Xprefs
@@ -29,6 +32,7 @@ class StatusbarLogo(context: Context) : ModPack(context) {
     private var showLogo = false
     private var logoPosition = 0
     private var logoStyle = 0
+    private var logoSize = 12
     private var logoImageView: LogoImageView? = null
     private var logoImageViewRight: LogoImageViewRight? = null
     private var darkIconDispatcherClass: Class<*>? = null
@@ -38,14 +42,22 @@ class StatusbarLogo(context: Context) : ModPack(context) {
             showLogo = getBoolean(STATUSBAR_LOGO_SWITCH, false)
             logoPosition = getString(STATUSBAR_LOGO_POSITION, "0")!!.toInt()
             logoStyle = getString(STATUSBAR_LOGO_STYLE, "0")!!.toInt()
+            logoSize = getSliderInt(STATUSBAR_LOGO_SIZE, 12)
         }
 
         when (key.firstOrNull()) {
-            STATUSBAR_LOGO_SWITCH,
-            STATUSBAR_LOGO_POSITION,
-            STATUSBAR_LOGO_STYLE -> {
+            in setOf(
+                STATUSBAR_LOGO_SWITCH,
+                STATUSBAR_LOGO_POSITION,
+                STATUSBAR_LOGO_STYLE
+            ) -> {
                 logoImageView?.updateSettings(showLogo, logoPosition, logoStyle)
                 logoImageViewRight?.updateSettings(showLogo, logoPosition, logoStyle)
+            }
+
+            STATUSBAR_LOGO_SIZE -> {
+                logoImageView?.updateLeftLogo()
+                logoImageViewRight?.updateRightLogo()
             }
         }
     }
@@ -81,63 +93,19 @@ class StatusbarLogo(context: Context) : ModPack(context) {
 
                 if (logoImageView == null) {
                     logoImageView = LogoImageView(mContext).apply {
-                        layoutParams = LinearLayout.LayoutParams(
-                            LinearLayout.LayoutParams.WRAP_CONTENT,
-                            LinearLayout.LayoutParams.MATCH_PARENT
-                        ).apply {
-                            gravity = Gravity.CENTER_VERTICAL or Gravity.START
-                        }
-                        setPaddingRelative(
-                            mContext.resources.getDimensionPixelSize(
-                                mContext.resources.getIdentifier(
-                                    "status_bar_left_clock_starting_padding",
-                                    "dimen",
-                                    mContext.packageName
-                                )
-                            ),
-                            0,
-                            mContext.resources.getDimensionPixelSize(
-                                mContext.resources.getIdentifier(
-                                    "status_bar_left_clock_end_padding",
-                                    "dimen",
-                                    mContext.packageName
-                                )
-                            ),
-                            0
+                        setupLogo(
+                            "status_bar_left_clock_starting_padding",
+                            "status_bar_left_clock_end_padding"
                         )
-                        scaleType = ImageView.ScaleType.CENTER
-                        visibility = View.GONE
                     }
                 }
 
                 if (logoImageViewRight == null) {
                     logoImageViewRight = LogoImageViewRight(mContext).apply {
-                        layoutParams = LinearLayout.LayoutParams(
-                            LinearLayout.LayoutParams.WRAP_CONTENT,
-                            LinearLayout.LayoutParams.MATCH_PARENT
-                        ).apply {
-                            gravity = Gravity.CENTER_VERTICAL or Gravity.END
-                        }
-                        setPaddingRelative(
-                            mContext.resources.getDimensionPixelSize(
-                                mContext.resources.getIdentifier(
-                                    "status_bar_clock_starting_padding",
-                                    "dimen",
-                                    mContext.packageName
-                                )
-                            ),
-                            0,
-                            mContext.resources.getDimensionPixelSize(
-                                mContext.resources.getIdentifier(
-                                    "status_bar_clock_end_padding",
-                                    "dimen",
-                                    mContext.packageName
-                                )
-                            ),
-                            0
+                        setupLogo(
+                            "status_bar_clock_starting_padding",
+                            "status_bar_clock_end_padding"
                         )
-                        scaleType = ImageView.ScaleType.CENTER
-                        visibility = View.GONE
                     }
                 }
 
@@ -201,5 +169,46 @@ class StatusbarLogo(context: Context) : ModPack(context) {
                     logoImageViewRight!!.updateLogo()
                 }
             }
+    }
+
+    private fun LogoImage.updateLeftLogo() {
+        setupLogo(
+            "status_bar_left_clock_starting_padding",
+            "status_bar_left_clock_end_padding"
+        )
+        updateSettings(showLogo, logoPosition, logoStyle)
+    }
+
+    private fun LogoImage.updateRightLogo() {
+        setupLogo(
+            "status_bar_clock_starting_padding",
+            "status_bar_clock_end_padding"
+        )
+        updateSettings(showLogo, logoPosition, logoStyle)
+    }
+
+    private fun LogoImage.setupLogo(startPaddingRes: String, endPaddingRes: String) {
+        layoutParams = LinearLayout.LayoutParams(
+            mContext.toPx(logoSize),
+            mContext.toPx(logoSize)
+        ).apply {
+            gravity = Gravity.CENTER_VERTICAL or Gravity.END
+            marginStart = mContext.resources.getDimensionPixelSize(
+                mContext.resources.getIdentifier(
+                    startPaddingRes,
+                    "dimen",
+                    mContext.packageName
+                )
+            )
+            marginEnd = mContext.resources.getDimensionPixelSize(
+                mContext.resources.getIdentifier(
+                    endPaddingRes,
+                    "dimen",
+                    mContext.packageName
+                )
+            )
+        }
+        scaleType = ImageView.ScaleType.FIT_CENTER
+        visibility = View.GONE
     }
 }

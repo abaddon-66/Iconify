@@ -27,4 +27,16 @@
         app:iconSpaceReserved="false"
         app:useSimpleSummaryProvider="true" />
 
+    <com.drdisagree.iconify.ui.preferences.SliderPreference
+        android:dependency="xposed_statusbarlogo"
+        android:key="xposed_statusbarlogosize"
+        android:title="@string/status_bar_logo_size_title"
+        app:defaultValue="18"
+        app:iconSpaceReserved="false"
+        app:maxVal="24"
+        app:minVal="12"
+        app:showResetButton="true"
+        app:tickInterval="1"
+        app:valueFormat="dp" />
+
 </PreferenceScreen>
