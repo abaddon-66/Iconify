@@ -15,6 +15,7 @@ import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookMethod
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.isMethodAvailable
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.log
 import de.robv.android.xposed.callbacks.XC_LoadPackage
+import java.util.concurrent.CopyOnWriteArrayList
 
 class ControllersProvider(context: Context) : ModPack(context) {
 
@@ -27,12 +28,12 @@ class ControllersProvider(context: Context) : ModPack(context) {
 
     private var mCellularTile: Any? = null
 
-    private val mMobileDataChangedListeners = ArrayList<OnMobileDataChanged>()
-    private val mWifiChangedListeners = ArrayList<OnWifiChanged>()
-    private val mBluetoothChangedListeners = ArrayList<OnBluetoothChanged>()
-    private val mTorchModeChangedListeners = ArrayList<OnTorchModeChanged>()
-    private val mHotspotChangedListeners = ArrayList<OnHotspotChanged>()
-    private val mDozeChangedListeners = ArrayList<OnDozingChanged>()
+    private val mMobileDataChangedListeners = CopyOnWriteArrayList<OnMobileDataChanged>()
+    private val mWifiChangedListeners = CopyOnWriteArrayList<OnWifiChanged>()
+    private val mBluetoothChangedListeners = CopyOnWriteArrayList<OnBluetoothChanged>()
+    private val mTorchModeChangedListeners = CopyOnWriteArrayList<OnTorchModeChanged>()
+    private val mHotspotChangedListeners = CopyOnWriteArrayList<OnHotspotChanged>()
+    private val mDozeChangedListeners = CopyOnWriteArrayList<OnDozingChanged>()
 
     private var mExpandableClass: Class<*>? = null
 

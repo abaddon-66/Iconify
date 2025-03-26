@@ -9,10 +9,11 @@ import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookMethod
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.isMethodAvailable
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.log
 import de.robv.android.xposed.callbacks.XC_LoadPackage
+import java.util.concurrent.CopyOnWriteArrayList
 
 class ThemeChangeCallback(context: Context) : ModPack(context) {
 
-    private val mThemeChangedListeners = ArrayList<OnThemeChangedListener>()
+    private val mThemeChangedListeners = CopyOnWriteArrayList<OnThemeChangedListener>()
 
     override fun updatePrefs(vararg key: String) {}
 
