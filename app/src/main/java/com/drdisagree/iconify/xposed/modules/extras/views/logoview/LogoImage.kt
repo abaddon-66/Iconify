@@ -20,10 +20,14 @@ package com.drdisagree.iconify.xposed.modules.extras.views.logoview
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Color
+import android.graphics.ImageDecoder
+import android.os.Environment
 import android.util.AttributeSet
 import android.widget.ImageView
 import com.drdisagree.iconify.R
 import com.drdisagree.iconify.xposed.HookRes.Companion.modRes
+import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.toCircularDrawable
+import java.io.File
 
 @SuppressLint("AppCompatCustomView")
 abstract class LogoImage @JvmOverloads constructor(
@@ -63,6 +67,7 @@ abstract class LogoImage @JvmOverloads constructor(
     @Suppress("deprecation")
     @SuppressLint("UseCompatLoadingForDrawables")
     fun updateLogo() {
+        var requiresTint = true
         val drawable = when (mLogoStyle) {
             0 -> modRes.getDrawable(R.drawable.ic_android_logo)
             1 -> modRes.getDrawable(R.drawable.ic_adidas)
@@ -97,10 +102,32 @@ abstract class LogoImage @JvmOverloads constructor(
             30 -> modRes.getDrawable(R.drawable.ic_ubuntu_logo)
             31 -> modRes.getDrawable(R.drawable.ic_mint_logo)
             32 -> modRes.getDrawable(R.drawable.ic_amogus)
+            33 -> {
+                try {
+                    val drawable = ImageDecoder.decodeDrawable(
+                        ImageDecoder.createSource(
+                            File(
+                                Environment.getExternalStorageDirectory(),
+                                "/.iconify_files/statusbar_logo.png"
+                            )
+                        )
+                    ).toCircularDrawable(mContext)
+
+                    requiresTint = false
+                    drawable
+                } catch (_: Throwable) {
+                    modRes.getDrawable(R.drawable.ic_android_logo)
+                }
+            }
             else -> modRes.getDrawable(R.drawable.ic_android_logo)
         }
 
-        drawable.setTint(mTintColor)
+        if (requiresTint) {
+            drawable.setTint(mTintColor)
+        } else {
+            drawable.clearColorFilter()
+        }
+
         setImageDrawable(drawable)
     }
 

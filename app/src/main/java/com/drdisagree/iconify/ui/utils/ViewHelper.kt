@@ -2,9 +2,11 @@ package com.drdisagree.iconify.ui.utils
 
 import android.content.Context
 import android.graphics.Canvas
+import android.graphics.ImageDecoder
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.LayerDrawable
 import android.os.BatteryManager
+import android.os.Environment
 import android.os.Handler
 import android.os.Looper
 import android.util.TypedValue
@@ -59,6 +61,8 @@ import com.drdisagree.iconify.xposed.modules.batterystyles.RLandscapeBattery
 import com.drdisagree.iconify.xposed.modules.batterystyles.RLandscapeBatteryColorOS
 import com.drdisagree.iconify.xposed.modules.batterystyles.RLandscapeBatteryStyleA
 import com.drdisagree.iconify.xposed.modules.batterystyles.RLandscapeBatteryStyleB
+import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.toCircularDrawable
+import java.io.File
 
 object ViewHelper {
 
@@ -241,48 +245,62 @@ object ViewHelper {
     fun getStatusbarLogoDrawables(context: Context): Array<Drawable> {
         val logoColor = appContext.getColor(R.color.textColorPrimary)
 
-        val logoDrawables = arrayOf<Drawable>(
-            getDrawable(context, R.drawable.ic_android_logo)!!,
-            getDrawable(context, R.drawable.ic_adidas)!!,
-            getDrawable(context, R.drawable.ic_alien)!!,
-            getDrawable(context, R.drawable.ic_apple_logo)!!,
-            getDrawable(context, R.drawable.ic_avengers)!!,
-            getDrawable(context, R.drawable.ic_batman)!!,
-            getDrawable(context, R.drawable.ic_batman_tdk)!!,
-            getDrawable(context, R.drawable.ic_beats)!!,
-            getDrawable(context, R.drawable.ic_biohazard)!!,
-            getDrawable(context, R.drawable.ic_blackberry)!!,
-            getDrawable(context, R.drawable.ic_cannabis)!!,
-            getDrawable(context, R.drawable.ic_emoticon_cool)!!,
-            getDrawable(context, R.drawable.ic_emoticon_devil)!!,
-            getDrawable(context, R.drawable.ic_fire)!!,
-            getDrawable(context, R.drawable.ic_heart)!!,
-            getDrawable(context, R.drawable.ic_nike)!!,
-            getDrawable(context, R.drawable.ic_pac_man)!!,
-            getDrawable(context, R.drawable.ic_puma)!!,
-            getDrawable(context, R.drawable.ic_rog)!!,
-            getDrawable(context, R.drawable.ic_spiderman)!!,
-            getDrawable(context, R.drawable.ic_superman)!!,
-            getDrawable(context, R.drawable.ic_windows)!!,
-            getDrawable(context, R.drawable.ic_xbox)!!,
-            getDrawable(context, R.drawable.ic_ghost)!!,
-            getDrawable(context, R.drawable.ic_ninja)!!,
-            getDrawable(context, R.drawable.ic_robot)!!,
-            getDrawable(context, R.drawable.ic_ironman)!!,
-            getDrawable(context, R.drawable.ic_captain_america)!!,
-            getDrawable(context, R.drawable.ic_flash)!!,
-            getDrawable(context, R.drawable.ic_tux_logo)!!,
-            getDrawable(context, R.drawable.ic_ubuntu_logo)!!,
-            getDrawable(context, R.drawable.ic_mint_logo)!!,
-            getDrawable(context, R.drawable.ic_amogus)!!,
-            getDrawable(context, R.drawable.ic_android_logo)!!,
+        val predefinedLogos = arrayOf(
+            R.drawable.ic_android_logo,
+            R.drawable.ic_adidas,
+            R.drawable.ic_alien,
+            R.drawable.ic_apple_logo,
+            R.drawable.ic_avengers,
+            R.drawable.ic_batman,
+            R.drawable.ic_batman_tdk,
+            R.drawable.ic_beats,
+            R.drawable.ic_biohazard,
+            R.drawable.ic_blackberry,
+            R.drawable.ic_cannabis,
+            R.drawable.ic_emoticon_cool,
+            R.drawable.ic_emoticon_devil,
+            R.drawable.ic_fire,
+            R.drawable.ic_heart,
+            R.drawable.ic_nike,
+            R.drawable.ic_pac_man,
+            R.drawable.ic_puma,
+            R.drawable.ic_rog,
+            R.drawable.ic_spiderman,
+            R.drawable.ic_superman,
+            R.drawable.ic_windows,
+            R.drawable.ic_xbox,
+            R.drawable.ic_ghost,
+            R.drawable.ic_ninja,
+            R.drawable.ic_robot,
+            R.drawable.ic_ironman,
+            R.drawable.ic_captain_america,
+            R.drawable.ic_flash,
+            R.drawable.ic_tux_logo,
+            R.drawable.ic_ubuntu_logo,
+            R.drawable.ic_mint_logo,
+            R.drawable.ic_amogus
         )
 
-        logoDrawables.forEach {
-            it.setTint(logoColor)
+        val logoDrawables = predefinedLogos.map { getDrawable(context, it)!! }.toMutableList()
+
+        val customDrawable = try {
+            ImageDecoder.decodeDrawable(
+                ImageDecoder.createSource(
+                    File(
+                        Environment.getExternalStorageDirectory(),
+                        "/.iconify_files/statusbar_logo.png"
+                    )
+                )
+            ).toCircularDrawable(context)
+        } catch (_: Throwable) {
+            @Suppress("DEPRECATION")
+            getDrawable(context, R.drawable.ic_upload_file)?.apply { setTint(logoColor) }
         }
 
-        return logoDrawables
+        logoDrawables.forEach { it.setTint(logoColor) }
+        customDrawable?.let { logoDrawables.add(it) }
+
+        return logoDrawables.toTypedArray()
     }
 
     private fun getRotateDrawable(d: Drawable, angle: Float): Drawable {

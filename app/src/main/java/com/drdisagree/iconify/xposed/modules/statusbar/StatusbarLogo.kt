@@ -2,20 +2,26 @@ package com.drdisagree.iconify.xposed.modules.statusbar
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.ImageDecoder
+import android.os.Environment
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
+import com.drdisagree.iconify.R
 import com.drdisagree.iconify.data.common.Const.SYSTEMUI_PACKAGE
+import com.drdisagree.iconify.data.common.Preferences.STATUSBAR_LOGO_CUSTOM
 import com.drdisagree.iconify.data.common.Preferences.STATUSBAR_LOGO_POSITION
 import com.drdisagree.iconify.data.common.Preferences.STATUSBAR_LOGO_SIZE
 import com.drdisagree.iconify.data.common.Preferences.STATUSBAR_LOGO_STYLE
 import com.drdisagree.iconify.data.common.Preferences.STATUSBAR_LOGO_SWITCH
+import com.drdisagree.iconify.xposed.HookRes.Companion.modRes
 import com.drdisagree.iconify.xposed.ModPack
 import com.drdisagree.iconify.xposed.modules.extras.callbacks.HeadsUpCallback
 import com.drdisagree.iconify.xposed.modules.extras.callbacks.KeyguardShowingCallback
 import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.reAddView
+import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.toCircularDrawable
 import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.toPx
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.XposedHook.Companion.findClass
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.callStaticMethod
@@ -25,6 +31,9 @@ import com.drdisagree.iconify.xposed.modules.extras.views.logoview.LogoImageView
 import com.drdisagree.iconify.xposed.modules.extras.views.logoview.LogoImageViewRight
 import com.drdisagree.iconify.xposed.utils.XPrefs.Xprefs
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam
+import java.io.File
+import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
 
 @SuppressLint("DiscouragedApi")
 class StatusbarLogo(context: Context) : ModPack(context) {
@@ -33,6 +42,7 @@ class StatusbarLogo(context: Context) : ModPack(context) {
     private var logoPosition = 0
     private var logoStyle = 0
     private var logoSize = 12
+    private var customLogo = false
     private var logoImageView: LogoImageView? = null
     private var logoImageViewRight: LogoImageViewRight? = null
     private var darkIconDispatcherClass: Class<*>? = null
@@ -43,6 +53,7 @@ class StatusbarLogo(context: Context) : ModPack(context) {
             logoPosition = getString(STATUSBAR_LOGO_POSITION, "0")!!.toInt()
             logoStyle = getString(STATUSBAR_LOGO_STYLE, "0")!!.toInt()
             logoSize = getSliderInt(STATUSBAR_LOGO_SIZE, 12)
+            customLogo = logoStyle == 33
         }
 
         when (key.firstOrNull()) {
@@ -53,6 +64,11 @@ class StatusbarLogo(context: Context) : ModPack(context) {
             ) -> {
                 logoImageView?.updateSettings(showLogo, logoPosition, logoStyle)
                 logoImageViewRight?.updateSettings(showLogo, logoPosition, logoStyle)
+            }
+
+            STATUSBAR_LOGO_CUSTOM -> {
+                logoImageView?.loadCustomLogo()
+                logoImageViewRight?.loadCustomLogo()
             }
 
             STATUSBAR_LOGO_SIZE -> {
@@ -112,6 +128,9 @@ class StatusbarLogo(context: Context) : ModPack(context) {
                 logoImageView!!.updateSettings(showLogo, logoPosition, logoStyle)
                 logoImageViewRight!!.updateSettings(showLogo, logoPosition, logoStyle)
 
+                logoImageView!!.loadCustomLogo()
+                logoImageViewRight!!.loadCustomLogo()
+
                 startSideExceptHeadsUp.reAddView(logoImageView, logoIndex)
                 systemIcons.reAddView(logoImageViewRight)
             }
@@ -162,11 +181,13 @@ class StatusbarLogo(context: Context) : ModPack(context) {
 
                 if (!showLogo) return@runAfter
 
-                if (logoImageView!!.isLogoVisible) {
-                    logoImageView!!.updateLogo()
-                }
-                if (logoImageViewRight!!.isLogoVisible) {
-                    logoImageViewRight!!.updateLogo()
+                if (!customLogo) {
+                    if (logoImageView!!.isLogoVisible) {
+                        logoImageView!!.updateLogo()
+                    }
+                    if (logoImageViewRight!!.isLogoVisible) {
+                        logoImageViewRight!!.updateLogo()
+                    }
                 }
             }
     }
@@ -210,5 +231,40 @@ class StatusbarLogo(context: Context) : ModPack(context) {
         }
         scaleType = ImageView.ScaleType.FIT_CENTER
         visibility = View.GONE
+    }
+
+    @SuppressLint("UseCompatLoadingForDrawables")
+    private fun LogoImage.loadCustomLogo() {
+        if (!customLogo) return
+
+        try {
+            val executor = Executors.newSingleThreadScheduledExecutor()
+
+            executor.scheduleWithFixedDelay({
+                val androidDir = File(Environment.getExternalStorageDirectory(), "/Android")
+
+                if (androidDir.isDirectory) {
+                    try {
+                        val drawable = ImageDecoder.decodeDrawable(
+                            ImageDecoder.createSource(
+                                File(
+                                    Environment.getExternalStorageDirectory(),
+                                    "/.iconify_files/statusbar_logo.png"
+                                )
+                            )
+                        ).toCircularDrawable(mContext)
+
+                        setImageDrawable(drawable)
+                    } catch (_: Throwable) {
+                        @Suppress("DEPRECATION")
+                        modRes.getDrawable(R.drawable.ic_android_logo)
+                    }
+
+                    executor.shutdown()
+                    executor.shutdownNow()
+                }
+            }, 0, 5, TimeUnit.SECONDS)
+        } catch (_: Throwable) {
+        }
     }
 }
