@@ -6,9 +6,11 @@ import com.drdisagree.iconify.data.common.Const.SYSTEMUI_PACKAGE
 import com.drdisagree.iconify.xposed.ModPack
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.XposedHook.Companion.findClass
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookMethod
+import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.isMethodAvailable
+import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.log
 import de.robv.android.xposed.callbacks.XC_LoadPackage
 
-class ThemeChange(context: Context) : ModPack(context) {
+class ThemeChangeCallback(context: Context) : ModPack(context) {
 
     private val mThemeChangedListeners = ArrayList<OnThemeChangedListener>()
 
@@ -25,6 +27,8 @@ class ThemeChange(context: Context) : ModPack(context) {
             .hookMethod("updateThemeColors")
             .runAfter { onThemeChanged() }
 
+        if (scrimControllerClass.isMethodAvailable("updateThemeColors")) return
+
         val notificationPanelViewControllerClass = findClass(
             "$SYSTEMUI_PACKAGE.shade.NotificationPanelViewController",
             "$SYSTEMUI_PACKAGE.statusbar.phone.NotificationPanelViewController"
@@ -33,6 +37,8 @@ class ThemeChange(context: Context) : ModPack(context) {
         notificationPanelViewControllerClass
             .hookMethod("onThemeChanged")
             .runAfter { onThemeChanged() }
+
+        if (notificationPanelViewControllerClass.isMethodAvailable("onThemeChanged")) return
 
         val configurationListenerClass = findClass(
             "$SYSTEMUI_PACKAGE.shade.NotificationPanelViewController\$ConfigurationListener",
@@ -51,30 +57,30 @@ class ThemeChange(context: Context) : ModPack(context) {
     }
 
     private fun onThemeChanged() {
-        for (callback in mThemeChangedListeners) {
+        mThemeChangedListeners.forEach {
             try {
-                callback.onThemeChanged()
-            } catch (ignored: Throwable) {
+                it.onThemeChanged()
+            } catch (throwable: Throwable) {
+                log(this@ThemeChangeCallback, "onThemeChanged: $throwable")
             }
         }
     }
 
     fun registerThemeChangedCallback(callback: OnThemeChangedListener) {
-        instance!!.mThemeChangedListeners.add(callback)
+        mThemeChangedListeners.add(callback)
     }
 
-    /** @noinspection unused */
     fun unRegisterThemeChangedCallback(callback: OnThemeChangedListener?) {
-        instance!!.mThemeChangedListeners.remove(callback)
+        mThemeChangedListeners.remove(callback)
     }
 
     companion object {
         @SuppressLint("StaticFieldLeak")
         @Volatile
-        private var instance: ThemeChange? = null
+        private var instance: ThemeChangeCallback? = null
 
-        fun getInstance(): ThemeChange {
-            return instance!!
+        fun getInstance(): ThemeChangeCallback {
+            return checkNotNull(instance) { "ThemeChangeCallback is not initialized yet!" }
         }
     }
 }

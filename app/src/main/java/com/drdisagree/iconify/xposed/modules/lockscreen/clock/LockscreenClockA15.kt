@@ -58,7 +58,7 @@ import com.drdisagree.iconify.data.common.Resources.LOCKSCREEN_CLOCK_LAYOUT
 import com.drdisagree.iconify.utils.TextUtils
 import com.drdisagree.iconify.xposed.HookEntry.Companion.enqueueProxyCommand
 import com.drdisagree.iconify.xposed.ModPack
-import com.drdisagree.iconify.xposed.modules.extras.callbacks.ThemeChange
+import com.drdisagree.iconify.xposed.modules.extras.callbacks.ThemeChangeCallback
 import com.drdisagree.iconify.xposed.modules.extras.utils.MyConstraintSet.Companion.applyTo
 import com.drdisagree.iconify.xposed.modules.extras.utils.MyConstraintSet.Companion.clear
 import com.drdisagree.iconify.xposed.modules.extras.utils.MyConstraintSet.Companion.clone
@@ -167,8 +167,8 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
             initSoundManager()
         }
     }
-    private val mThemeChangeCallback: ThemeChange.OnThemeChangedListener =
-        object : ThemeChange.OnThemeChangedListener {
+    private val mThemeChangeCallback: ThemeChangeCallback.OnThemeChangedListener =
+        object : ThemeChangeCallback.OnThemeChangedListener {
             override fun onThemeChanged() {
                 loadColors()
                 updateClockView()
@@ -181,7 +181,7 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
     }
 
     init {
-        ThemeChange.getInstance().registerThemeChangedCallback(mThemeChangeCallback)
+        ThemeChangeCallback.getInstance().registerThemeChangedCallback(mThemeChangeCallback)
     }
 
     override fun updatePrefs(vararg key: String) {
