@@ -15,6 +15,7 @@ import java.util.concurrent.CopyOnWriteArrayList
 
 class KeyguardShowingCallback(context: Context) : ModPack(context) {
 
+    @Volatile
     private var isKeyguardState: Boolean = false
     private var mScrimControllerObj: Any? = null
     private val mKeyguardShowingListeners = CopyOnWriteArrayList<KeyguardShowingListener>()
@@ -41,13 +42,15 @@ class KeyguardShowingCallback(context: Context) : ModPack(context) {
             .runAfter { param ->
                 val isKeyguardState = param.thisObject.callMethod("isKeyguardState") as Boolean
 
-                if (this.isKeyguardState != isKeyguardState) {
-                    if (isKeyguardState) {
-                        notifyKeyguardShown()
-                    } else {
-                        notifyKeyguardDismissed()
+                synchronized(this@KeyguardShowingCallback) {
+                    if (this.isKeyguardState != isKeyguardState) {
+                        if (isKeyguardState) {
+                            notifyKeyguardShown()
+                        } else {
+                            notifyKeyguardDismissed()
+                        }
+                        this.isKeyguardState = isKeyguardState
                     }
-                    this.isKeyguardState = isKeyguardState
                 }
             }
 
@@ -58,13 +61,15 @@ class KeyguardShowingCallback(context: Context) : ModPack(context) {
                 .getField("mState")
                 .toString() == "KEYGUARD"
 
-            if (instance?.isKeyguardState != isKeyguardState) {
-                if (isKeyguardState) {
-                    notifyKeyguardShown()
-                } else {
-                    notifyKeyguardDismissed()
+            synchronized(instance!!) {
+                if (instance!!.isKeyguardState != isKeyguardState) {
+                    if (isKeyguardState) {
+                        notifyKeyguardShown()
+                    } else {
+                        notifyKeyguardDismissed()
+                    }
+                    instance!!.isKeyguardState = isKeyguardState
                 }
-                instance?.isKeyguardState = isKeyguardState
             }
         }
 
