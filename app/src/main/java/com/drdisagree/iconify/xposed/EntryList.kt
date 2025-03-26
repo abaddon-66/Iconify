@@ -9,6 +9,7 @@ import com.drdisagree.iconify.xposed.modules.BackgroundChip
 import com.drdisagree.iconify.xposed.modules.BatteryStyleManager
 import com.drdisagree.iconify.xposed.modules.extras.callbacks.ControllersProvider
 import com.drdisagree.iconify.xposed.modules.extras.callbacks.HeadsUpCallback
+import com.drdisagree.iconify.xposed.modules.extras.callbacks.QsShowingCallback
 import com.drdisagree.iconify.xposed.modules.extras.callbacks.ThemeChangeCallback
 import com.drdisagree.iconify.xposed.modules.extras.utils.MyConstraintSet
 import com.drdisagree.iconify.xposed.modules.extras.utils.SettingsLibUtils
@@ -79,6 +80,7 @@ object EntryList {
         ControllersProvider::class.java,
         ThemeChangeCallback::class.java,
         HeadsUpCallback::class.java,
+        QsShowingCallback::class.java,
         BackgroundChip::class.java,
         HeaderImage::class.java,
         Lockscreen::class.java,
