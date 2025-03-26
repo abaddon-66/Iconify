@@ -73,17 +73,19 @@ class KeyguardShowingCallback(context: Context) : ModPack(context) {
             }
         }
 
-        QsShowingCallback.getInstance().registerQsShowingListener(
-            object : QsShowingCallback.QsShowingListener {
-                override fun onQuickSettingsExpanded() {
-                    updateKeyguardState()
-                }
+        val visualStabilityCoordinatorClass =
+            findClass("$SYSTEMUI_PACKAGE.statusbar.notification.collection.coordinator.VisualStabilityCoordinator")
 
-                override fun onQuickSettingsCollapsed() {
-                    updateKeyguardState()
-                }
+        visualStabilityCoordinatorClass
+            .hookConstructor()
+            .runAfter { param ->
+                val mStatusBarStateControllerListener =
+                    param.thisObject.getField("mStatusBarStateControllerListener")
+
+                mStatusBarStateControllerListener::class.java
+                    .hookMethod("onExpandedChanged")
+                    .runAfter runAfter2@{ updateKeyguardState() }
             }
-        )
     }
 
     interface KeyguardShowingListener {
