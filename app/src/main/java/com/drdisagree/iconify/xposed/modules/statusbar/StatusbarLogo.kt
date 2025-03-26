@@ -13,6 +13,7 @@ import com.drdisagree.iconify.data.common.Preferences.STATUSBAR_LOGO_STYLE
 import com.drdisagree.iconify.data.common.Preferences.STATUSBAR_LOGO_SWITCH
 import com.drdisagree.iconify.xposed.ModPack
 import com.drdisagree.iconify.xposed.modules.extras.callbacks.HeadsUpCallback
+import com.drdisagree.iconify.xposed.modules.extras.callbacks.KeyguardShowingCallback
 import com.drdisagree.iconify.xposed.modules.extras.utils.ViewHelper.reAddView
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.XposedHook.Companion.findClass
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.callStaticMethod
@@ -154,6 +155,18 @@ class StatusbarLogo(context: Context) : ModPack(context) {
                 }
 
                 override fun onHeadsUpGone() {
+                    logoImageView?.alpha = 1f
+                }
+            }
+        )
+
+        KeyguardShowingCallback.getInstance().registerKeyguardShowingListener(
+            object : KeyguardShowingCallback.KeyguardShowingListener {
+                override fun onKeyguardShown() {
+                    logoImageView?.alpha = 0f
+                }
+
+                override fun onKeyguardDismissed() {
                     logoImageView?.alpha = 1f
                 }
             }
