@@ -258,7 +258,10 @@ class LockscreenClockA15(context: Context) : ModPack(context) {
 
         // Apparently ROMs like CrDroid doesn't even use AodBurnInLayer class
         // So we hook which ever is available
-        val keyguardStatusViewClass = findClass("com.android.keyguard.KeyguardStatusView")
+        val keyguardStatusViewClass = findClass(
+            "com.android.keyguard.KeyguardStatusView",
+            suppressError = Build.VERSION.SDK_INT >= 36
+        )
         var keyguardStatusViewHooked = false
 
         fun initializeLockscreenLayout(param: XC_MethodHook.MethodHookParam) {
