@@ -6,6 +6,8 @@ import com.drdisagree.iconify.data.common.Const.SYSTEMUI_PACKAGE
 import com.drdisagree.iconify.xposed.ModPack
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.XposedHook.Companion.findClass
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.callMethod
+import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.getField
+import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookConstructor
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.hookMethod
 import com.drdisagree.iconify.xposed.modules.extras.utils.toolkit.log
 import de.robv.android.xposed.callbacks.XC_LoadPackage
@@ -14,6 +16,7 @@ import java.util.concurrent.CopyOnWriteArrayList
 class KeyguardShowingCallback(context: Context) : ModPack(context) {
 
     private var isKeyguardState: Boolean = false
+    private var mScrimControllerObj: Any? = null
     private val mKeyguardShowingListeners = CopyOnWriteArrayList<KeyguardShowingListener>()
 
     override fun updatePrefs(vararg key: String) {}
@@ -21,10 +24,17 @@ class KeyguardShowingCallback(context: Context) : ModPack(context) {
     override fun handleLoadPackage(loadPackageParam: XC_LoadPackage.LoadPackageParam) {
         instance = this
 
+        val scrimControllerClass = findClass("$SYSTEMUI_PACKAGE.statusbar.phone.ScrimController")
         val qsImplClass = findClass(
             "$SYSTEMUI_PACKAGE.qs.QSImpl",
             "$SYSTEMUI_PACKAGE.qs.QSFragment"
         )
+
+        scrimControllerClass
+            .hookConstructor()
+            .runAfter { param ->
+                mScrimControllerObj = param.thisObject
+            }
 
         qsImplClass
             .hookMethod("setQsExpansion")
@@ -40,6 +50,35 @@ class KeyguardShowingCallback(context: Context) : ModPack(context) {
                     this.isKeyguardState = isKeyguardState
                 }
             }
+
+        fun updateKeyguardState() {
+            if (mScrimControllerObj == null) return
+
+            val isKeyguardState = mScrimControllerObj
+                .getField("mState")
+                .toString() == "KEYGUARD"
+
+            if (instance?.isKeyguardState != isKeyguardState) {
+                if (isKeyguardState) {
+                    notifyKeyguardShown()
+                } else {
+                    notifyKeyguardDismissed()
+                }
+                instance?.isKeyguardState = isKeyguardState
+            }
+        }
+
+        QsShowingCallback.getInstance().registerQsShowingListener(
+            object : QsShowingCallback.QsShowingListener {
+                override fun onQuickSettingsExpanded() {
+                    updateKeyguardState()
+                }
+
+                override fun onQuickSettingsCollapsed() {
+                    updateKeyguardState()
+                }
+            }
+        )
     }
 
     interface KeyguardShowingListener {
