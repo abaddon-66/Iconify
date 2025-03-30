@@ -63,6 +63,7 @@ import com.drdisagree.iconify.data.common.Preferences.CUSTOM_BATTERY_STYLE
 import com.drdisagree.iconify.data.common.Preferences.CUSTOM_BATTERY_SWAP_PERCENTAGE
 import com.drdisagree.iconify.data.common.Preferences.CUSTOM_BATTERY_WIDTH
 import com.drdisagree.iconify.data.common.Preferences.CUSTOM_DEPTH_WALLPAPER_SWITCH
+import com.drdisagree.iconify.data.common.Preferences.CUSTOM_QS_MARGIN
 import com.drdisagree.iconify.data.common.Preferences.CUSTOM_QS_TEXT_COLOR
 import com.drdisagree.iconify.data.common.Preferences.DEPTH_WALLPAPER_AI_MODE
 import com.drdisagree.iconify.data.common.Preferences.DEPTH_WALLPAPER_AI_STATUS
@@ -140,6 +141,7 @@ import com.drdisagree.iconify.data.common.Preferences.NOTIFICATION_HEADSUP_TRANS
 import com.drdisagree.iconify.data.common.Preferences.NOTIF_TRANSPARENCY_SWITCH
 import com.drdisagree.iconify.data.common.Preferences.OP_QS_HEADER_BLUR_LEVEL
 import com.drdisagree.iconify.data.common.Preferences.OP_QS_HEADER_SHOW_ARTWORK
+import com.drdisagree.iconify.data.common.Preferences.OP_QS_HEADER_SWITCH
 import com.drdisagree.iconify.data.common.Preferences.PREF_KEY_UPDATE_STATUS
 import com.drdisagree.iconify.data.common.Preferences.QSALPHA_LEVEL
 import com.drdisagree.iconify.data.common.Preferences.QSPANEL_BLUR_SWITCH
@@ -495,6 +497,8 @@ object PrefsHelper {
             LSCLOCK_FONT_TEXT_SCALING,
             LSCLOCK_USERNAME,
             LSCLOCK_DEVICENAME -> getBoolean(LSCLOCK_SWITCH)
+
+            CUSTOM_QS_MARGIN -> !getBoolean(OP_QS_HEADER_SWITCH)
 
             else -> true
         }
