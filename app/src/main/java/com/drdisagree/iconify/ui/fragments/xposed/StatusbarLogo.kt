@@ -60,7 +60,12 @@ class StatusbarLogo : ControlledPreferenceFragmentCompat() {
                     ).show()
 
                     findPreference<BottomSheetListPreference>(STATUSBAR_LOGO_STYLE)?.apply {
-                        createDefaultAdapter(getStatusbarLogoDrawables(requireContext()))
+                        setDrawables(getStatusbarLogoDrawables(requireContext()))
+                        getAdapter()!!.notifyItemChanged(
+                            listOf<String>(
+                                *resources.getStringArray(R.array.status_bar_logo_style_entries)
+                            ).indexOf(resources.getString(R.string.status_bar_logo_style_custom))
+                        )
                     }
                 } else {
                     Toast.makeText(
@@ -73,23 +78,24 @@ class StatusbarLogo : ControlledPreferenceFragmentCompat() {
         }
     }
 
-    override fun updateScreen(key: String?) {
-        super.updateScreen(key)
-
-        when (key) {
-            STATUSBAR_LOGO_STYLE -> {
-                if (RPrefs.getString(key, "0")!!.toInt() == 33) {
-                    launchFilePicker(appContext, "image", startActivityIntent)
-                }
-            }
-        }
-    }
-
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         super.onCreatePreferences(savedInstanceState, rootKey)
 
         findPreference<BottomSheetListPreference>(STATUSBAR_LOGO_STYLE)?.apply {
-            createDefaultAdapter(getStatusbarLogoDrawables(requireContext()))
+            createDefaultAdapter(
+                getStatusbarLogoDrawables(requireContext()),
+                object : BottomSheetListPreference.OnItemClickListener {
+                    override fun onItemClick(position: Int) {
+                        if (listOf<String>(
+                                *resources.getStringArray(R.array.status_bar_logo_style_entries)
+                            )[RPrefs.getString(key, "0")!!.toInt()]
+                            == resources.getString(R.string.status_bar_logo_style_custom)
+                        ) {
+                            launchFilePicker(appContext, "image", startActivityIntent)
+                        }
+                    }
+                }
+            )
         }
     }
 }

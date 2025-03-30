@@ -148,7 +148,7 @@ import com.drdisagree.iconify.data.common.Preferences.SB_CLOCK_SIZE
 import com.drdisagree.iconify.data.common.Preferences.SB_CLOCK_SIZE_SWITCH
 import com.drdisagree.iconify.data.common.Preferences.SELECTED_QS_TEXT_COLOR
 import com.drdisagree.iconify.data.common.Preferences.SHOW_HOME_CARD
-import com.drdisagree.iconify.data.common.Preferences.STATUSBAR_LOGO_SWITCH
+import com.drdisagree.iconify.data.common.Preferences.STATUSBAR_LOGO_STYLE
 import com.drdisagree.iconify.data.common.Preferences.STATUSBAR_LOGO_TINT
 import com.drdisagree.iconify.data.common.Preferences.UNZOOM_DEPTH_WALLPAPER
 import com.drdisagree.iconify.data.common.Preferences.UPDATE_OVER_WIFI
@@ -366,7 +366,12 @@ object PrefsHelper {
             NOTIFICATION_HEADSUP_BLUR_RADIUS,
             NOTIFICATION_HEADSUP_TRANSPARENCY -> getBoolean(NOTIFICATION_HEADSUP_BLUR)
 
-            STATUSBAR_LOGO_TINT -> getBoolean(STATUSBAR_LOGO_SWITCH)
+            STATUSBAR_LOGO_TINT -> {
+                listOf<String>(
+                    *appContext.resources.getStringArray(R.array.status_bar_logo_style_entries)
+                )[getString(STATUSBAR_LOGO_STYLE, "0")!!.toInt()] ==
+                        appContext.resources.getString(R.string.status_bar_logo_style_custom)
+            }
 
             else -> true
         }
@@ -553,7 +558,7 @@ object PrefsHelper {
                     val switchPreference: TwoTargetSwitchPreference = thisPreference
                     switchPreference.isChecked = getBoolean(switchPreference.key)
                 }
-            } catch (ignored: Throwable) {
+            } catch (_: Throwable) {
                 break
             }
 
@@ -571,7 +576,7 @@ object PrefsHelper {
             getSummary(preference.context, key)?.let {
                 preference.summary = it
             }
-        } catch (ignored: Throwable) {
+        } catch (_: Throwable) {
         }
     }
 }

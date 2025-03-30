@@ -282,7 +282,6 @@ object ViewHelper {
         )
 
         val logoDrawables = predefinedLogos.map { getDrawable(context, it)!! }.toMutableList()
-
         val customDrawable = try {
             ImageDecoder.decodeDrawable(
                 ImageDecoder.createSource(
