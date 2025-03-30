@@ -213,6 +213,7 @@ object PrefsHelper {
 
             // Weather Common
             WEATHER_OWM_KEY -> getString(WEATHER_PROVIDER, "0") == "1"
+            WEATHER_YANDEX_KEY -> getString(WEATHER_PROVIDER, "0") == "2"
             WEATHER_CUSTOM_LOCATION_PICKER -> getBoolean(WEATHER_CUSTOM_LOCATION)
 
             // Lockscreen Weather
