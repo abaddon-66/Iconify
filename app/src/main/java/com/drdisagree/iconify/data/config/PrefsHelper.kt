@@ -73,6 +73,7 @@ import com.drdisagree.iconify.data.common.Preferences.DEPTH_WALLPAPER_FOREGROUND
 import com.drdisagree.iconify.data.common.Preferences.DEPTH_WALLPAPER_ON_AOD
 import com.drdisagree.iconify.data.common.Preferences.DEPTH_WALLPAPER_PARALLAX_EFFECT
 import com.drdisagree.iconify.data.common.Preferences.DUALTONE_QSPANEL
+import com.drdisagree.iconify.data.common.Preferences.FIRST_INSTALL
 import com.drdisagree.iconify.data.common.Preferences.FIXED_STATUS_ICONS_SIDEMARGIN
 import com.drdisagree.iconify.data.common.Preferences.FIXED_STATUS_ICONS_SWITCH
 import com.drdisagree.iconify.data.common.Preferences.FIXED_STATUS_ICONS_TOPMARGIN
@@ -153,6 +154,7 @@ import com.drdisagree.iconify.data.common.Preferences.SHOW_HOME_CARD
 import com.drdisagree.iconify.data.common.Preferences.STATUSBAR_LOGO_STYLE
 import com.drdisagree.iconify.data.common.Preferences.STATUSBAR_LOGO_TINT
 import com.drdisagree.iconify.data.common.Preferences.UNZOOM_DEPTH_WALLPAPER
+import com.drdisagree.iconify.data.common.Preferences.UPDATE_DETECTED
 import com.drdisagree.iconify.data.common.Preferences.UPDATE_OVER_WIFI
 import com.drdisagree.iconify.data.common.Preferences.VERTICAL_QSTILE_SWITCH
 import com.drdisagree.iconify.data.common.Preferences.WEATHER_CUSTOM_LOCATION
@@ -166,13 +168,13 @@ import com.drdisagree.iconify.data.common.Preferences.WEATHER_UNITS
 import com.drdisagree.iconify.data.common.Preferences.WEATHER_UPDATE_INTERVAL
 import com.drdisagree.iconify.data.common.Preferences.WEATHER_YANDEX_KEY
 import com.drdisagree.iconify.data.common.Preferences.XPOSED_HOOK_CHECK
-import com.drdisagree.iconify.data.common.Resources.shouldShowRebootDialog
 import com.drdisagree.iconify.data.config.RPrefs.getBoolean
 import com.drdisagree.iconify.data.config.RPrefs.getInt
 import com.drdisagree.iconify.data.config.RPrefs.getSliderFloat
 import com.drdisagree.iconify.data.config.RPrefs.getString
 import com.drdisagree.iconify.data.config.RPrefs.getStringSet
 import com.drdisagree.iconify.ui.preferences.TwoTargetSwitchPreference
+import com.drdisagree.iconify.utils.RootUtils.folderExists
 import com.drdisagree.iconify.utils.weather.WeatherConfig
 
 object PrefsHelper {
@@ -187,7 +189,8 @@ object PrefsHelper {
 
             "iconifyHomeCard" -> getBoolean(SHOW_HOME_CARD, true)
 
-            "rebootReminder" -> shouldShowRebootDialog()
+            "rebootReminder" -> (!getBoolean(FIRST_INSTALL) && getBoolean(UPDATE_DETECTED)) ||
+                    folderExists("/data/adb/modules_update/Iconify")
 
             "newUpdate" -> getBoolean(NEW_UPDATE_FOUND)
 

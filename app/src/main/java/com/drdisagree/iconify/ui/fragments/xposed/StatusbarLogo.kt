@@ -13,7 +13,7 @@ import com.drdisagree.iconify.Iconify.Companion.appContextLocale
 import com.drdisagree.iconify.R
 import com.drdisagree.iconify.data.common.Preferences.STATUSBAR_LOGO_CUSTOM
 import com.drdisagree.iconify.data.common.Preferences.STATUSBAR_LOGO_STYLE
-import com.drdisagree.iconify.data.common.Resources.STATUSBAR_LOGO_DIR
+import com.drdisagree.iconify.data.common.XposedConst.STATUSBAR_LOGO_FILE
 import com.drdisagree.iconify.data.config.RPrefs
 import com.drdisagree.iconify.data.config.RPrefs.getBoolean
 import com.drdisagree.iconify.data.config.RPrefs.putBoolean
@@ -50,7 +50,9 @@ class StatusbarLogo : ControlledPreferenceFragmentCompat() {
                 val data = result.data
                 val path = getRealPath(data)
 
-                if (path != null && moveToIconifyHiddenDir(path, STATUSBAR_LOGO_DIR)) {
+                if (path != null &&
+                    moveToIconifyHiddenDir(path, STATUSBAR_LOGO_FILE.absolutePath)
+                ) {
                     putBoolean(STATUSBAR_LOGO_CUSTOM, !getBoolean(STATUSBAR_LOGO_CUSTOM))
 
                     Toast.makeText(
