@@ -497,6 +497,10 @@ class LockscreenWidgetsA15(context: Context) : ModPack(context) {
                     width = ViewGroup.LayoutParams.MATCH_PARENT
                     height = ViewGroup.LayoutParams.WRAP_CONTENT
                 }
+                mWidgetsContainer.layoutParams.apply {
+                    width = ViewGroup.LayoutParams.MATCH_PARENT
+                    height = ViewGroup.LayoutParams.WRAP_CONTENT
+                }
             }
         }
 

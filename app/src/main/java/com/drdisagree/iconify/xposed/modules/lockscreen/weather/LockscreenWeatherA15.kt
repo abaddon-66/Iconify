@@ -405,6 +405,10 @@ class LockscreenWeatherA15(context: Context) : ModPack(context) {
                     width = ViewGroup.LayoutParams.MATCH_PARENT
                     height = ViewGroup.LayoutParams.WRAP_CONTENT
                 }
+                mWeatherContainer.layoutParams.apply {
+                    width = ViewGroup.LayoutParams.MATCH_PARENT
+                    height = ViewGroup.LayoutParams.WRAP_CONTENT
+                }
             }
         }
 
@@ -523,7 +527,7 @@ class LockscreenWeatherA15(context: Context) : ModPack(context) {
             if ((weatherView == mWeatherContainer && !mLockscreenClockEnabled && !mWidgetsEnabled) ||
                 (weatherView == mLsItemsContainer && !mLockscreenClockEnabled && mWidgetsEnabled)
             ) {
-                val dateSmartspaceViewId = if (dateSmartSpaceViewAvailable) {
+                val smartspaceViewId = if (dateSmartSpaceViewAvailable) {
                     mContext.resources.getIdentifier(
                         "date_smartspace_view",
                         "id",
@@ -542,7 +546,7 @@ class LockscreenWeatherA15(context: Context) : ModPack(context) {
                 constraintSet.connect(
                     weatherView.id,
                     ConstraintSet.TOP,
-                    dateSmartspaceViewId,
+                    smartspaceViewId,
                     ConstraintSet.BOTTOM
                 )
             } else if (weatherView == mLsItemsContainer && mLockscreenClockEnabled) {
