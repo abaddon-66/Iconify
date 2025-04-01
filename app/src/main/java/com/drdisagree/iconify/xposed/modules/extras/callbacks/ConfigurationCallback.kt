@@ -106,14 +106,14 @@ class ConfigurationCallback(context: Context) : ModPack(context) {
     }
 
     interface ConfigurationListener {
-        fun onConfigChanged(newConfig: Configuration)
-        fun onDensityOrFontScaleChanged()
-        fun onLayoutDirectionChanged(isLayoutRtl: Boolean)
-        fun onLocaleListChanged()
-        fun onOrientationChanged(orientation: Int)
-        fun onSmallestScreenWidthChanged()
-        fun onThemeChanged()
-        fun onUiModeChanged()
+        fun onConfigChanged(newConfig: Configuration) {}
+        fun onDensityOrFontScaleChanged() {}
+        fun onLayoutDirectionChanged(isLayoutRtl: Boolean) {}
+        fun onLocaleListChanged() {}
+        fun onOrientationChanged(orientation: Int) {}
+        fun onSmallestScreenWidthChanged() {}
+        fun onThemeChanged() {}
+        fun onUiModeChanged() {}
     }
 
     fun registerConfigListener(callback: ConfigurationListener) {
