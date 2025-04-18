@@ -398,11 +398,20 @@ class ColorizeNotificationView(context: Context) : ModPack(context) {
                 }
         } catch (_: Throwable) {
             val rowContentBindStageClass =
-                findClass("$SYSTEMUI_PACKAGE.statusbar.notification.row.RowContentBindStage\$AnonymousClass1")
+                findClass("$SYSTEMUI_PACKAGE.statusbar.notification.row.RowContentBindStage")
+            val inflationCallbackInterfaceClass =
+                findClass("$SYSTEMUI_PACKAGE.statusbar.notification.row.NotificationRowContentBinder\$InflationCallback")
             val notificationEntryClass =
                 findClass("$SYSTEMUI_PACKAGE.statusbar.notification.collection.NotificationEntry")
 
-            rowContentBindStageClass
+            val innerClasses = rowContentBindStageClass!!.classes.toList()
+                .union(rowContentBindStageClass.declaredClasses.toList())
+
+            val targetClass = innerClasses.firstOrNull { innerClass ->
+                inflationCallbackInterfaceClass!!.isAssignableFrom(innerClass)
+            }
+
+            targetClass
                 .hookMethod("onAsyncInflationFinished")
                 .parameters(notificationEntryClass)
                 .runAfter { param ->
